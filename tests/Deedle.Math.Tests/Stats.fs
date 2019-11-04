@@ -49,6 +49,23 @@ let ``Quantile is the same as in Math.NET``() =
       Stats.quantile(s, 0.75) |> should beWithin (expected +/- 1e-9) )
 
 [<Test>]
+let ``ewmMean shall work `` () =
+  // pandas v0.24.2: series.ewm(alpha=0.97, adjust=False, ignore_na=True).mean()
+  let s1 = Series.ofValues [ 100.; 105.; 90.; 100.; 110.; 120. ]
+  let s2 = Series.ofValues [ 100.; nan; 90.; 100.; nan; 120. ]
+  let s3 = Series.ofValues [ nan; nan; nan; nan; nan; 1.; 2.; 3. ]
+  let lambda = 0.97
+  let actual1 = Stats.ewmMean(s1, alpha = lambda)
+  let actual2 = Stats.ewmMean(s2, alpha = lambda)
+  let actual3 = Stats.ewmMean(s3, alpha = lambda)
+  let expected1 = Series.ofValues [ 100.; 104.85; 90.4455; 99.713365; 109.691401; 119.690742 ]
+  let expected2 = Series.ofValues [ 100.; 100.; 90.3; 99.709; 99.709; 119.39127 ]
+  let expected3 = Series.ofValues [ nan; nan; nan; nan; nan; 1.; 1.9700; 2.9691 ]
+  actual1 - expected1 |> Stats.sum |> should beWithin (0. +/- 1e-6)
+  actual2 - expected2 |> Stats.sum |> should beWithin (0. +/- 1e-6)
+  actual3 - expected3 |> Stats.sum |> should beWithin (0. +/- 1e-6)
+
+[<Test>]
 let ``Ex-ante vol of equally weighted portfolio using normal covariance matrix works`` () =
   let nObsAnnual = 52.
   let cov = stockReturns |> Stats.cov

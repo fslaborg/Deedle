@@ -7,28 +7,28 @@ open MathNet.Numerics.Statistics
 
 type StatsInternal =
   static member ewDecay(com, span, halfLife, alpha) =
-      match com, span, halfLife, alpha with
-      | _, _, _, Some a ->
-        if a > 0. && a <= 1. then
-          a
-        else
-          invalidArg "parameter" "alpha must be larger than 0 and smaller or equal to 1"
-      | Some c, _, _, None ->
-        if c >= 0. then
-          1. / (1. + c)
-        else
-          invalidArg "parameter" "center of mass must be larger than or equal to 0"
-      | None, Some s, _, None ->
-        if s >= 1. then
-          2. / (s + 1.)
-        else
-          invalidArg "parameter" "span must be larger than or equal to 1"
-      | None, None, Some hl, None ->
-        if hl > 0. then
-          Math.Exp(Math.Log(0.5) / hl)
-        else
-          invalidArg "parameter" "half life must be larger than 0"
-      | _ -> invalidArg "parameter" "Unspecificed decay parameters"
+    match com, span, halfLife, alpha with
+    | _, _, _, Some a ->
+      if a > 0. && a <= 1. then
+        a
+      else
+        invalidArg "parameter" "alpha must be larger than 0 and smaller or equal to 1"
+    | Some c, _, _, None ->
+      if c >= 0. then
+        1. / (1. + c)
+      else
+        invalidArg "parameter" "center of mass must be larger than or equal to 0"
+    | None, Some s, _, None ->
+      if s >= 1. then
+        2. / (s + 1.)
+      else
+        invalidArg "parameter" "span must be larger than or equal to 1"
+    | None, None, Some hl, None ->
+      if hl > 0. then
+        1. - Math.Exp(Math.Log(0.5) / hl)
+      else
+        invalidArg "parameter" "half life must be larger than 0"
+    | _ -> invalidArg "parameter" "Unspecificed decay parameters"
 
 /// Correlation method (Pearson or Spearman)
 ///
@@ -48,19 +48,28 @@ type Stats =
   /// [category: Exponentially Weighted Moving]
   static member ewmMean (x:Series<'R, float>, ?com, ?span, ?halfLife, ?alpha) =
     let alpha = StatsInternal.ewDecay(com, span, halfLife, alpha)
-    let x = x |> Series.dropMissing
-    if x.KeyCount < 2 then
-      x |> Series.mapValues(fun _ -> nan)
-    else
-      let data = x.Values |> Array.ofSeq
-      let init = data.[0] + data.[1]
-      let res = Array.zeroCreate x.KeyCount
-      for i in [|0..x.KeyCount-1|] do
-        if i = 0 then
-          res.[i] <- init
-        else
-          res.[i] <- alpha * res.[i-1] + (1. - alpha) * data.[i]
-      Series(x.Keys, res)
+    let data = 
+      x
+      |> Series.valuesAll
+      |> Seq.map (Option.defaultValue nan)
+      |> Array.ofSeq
+    let res = Array.zeroCreate x.KeyCount
+    for i in [|0..x.KeyCount-1|] do
+      if i = 0 then
+        res.[i] <- data.[0]
+      else
+        let prev = res.[i-1]
+        let curr = data.[i]
+        res.[i] <-
+          if Double.IsNaN(prev) && Double.IsNaN(curr) then
+            nan
+          elif Double.IsNaN(prev) then
+            curr
+          elif Double.IsNaN(curr) then
+            prev
+          else
+            (1. - alpha) * prev + alpha * curr
+    Series(x.Keys, res)
 
   /// Exponentially weighted moving average on frame
   ///
@@ -89,8 +98,8 @@ type Stats =
           res.[i] <- init
         else
           res.[i] <- (
-              alpha * res.[i-1] * res.[i-1] + 
-              (1. - alpha) * data.[i] * data.[i] )
+              (1. - alpha) * res.[i-1] * res.[i-1] + 
+              alpha * data.[i] * data.[i] )
               |> Math.Sqrt
       Series(x.Keys, res)
 
@@ -133,7 +142,7 @@ type Stats =
         res.[i] <-
           let vector = matrix.Row(i)
           let inc = vector.ToColumnMatrix() * vector.ToRowMatrix()
-          inc * (1. - alpha) + alpha * res.[i-1]
+          (1. - alpha) * res.[i-1] + alpha * inc
     Series(df.RowKeys, res)
 
   /// Exponentially weighted moving covariance frame 
