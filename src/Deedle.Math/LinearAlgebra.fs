@@ -188,7 +188,7 @@ type Matrix =
   /// [category: Matrix multiplication]
   static member dot (df:Frame<'R, 'C>, m2:Matrix<float>) =
     let m1 = df |> Frame.toMatrix
-    m1 * m2
+    m1 * m2 |> Frame.ofMatrix df.RowKeys df.RowKeys
   
   /// matrix multiply frame
   ///
@@ -209,7 +209,7 @@ type Matrix =
   /// [category: Matrix multiplication]
   static member dot (df:Frame<'R, 'C>, v2:Vector<float>) =
     let m1 = df |> Frame.toMatrix
-    m1 * v2
+    m1 * v2 |> Series.ofVector df.RowKeys
   
   /// series multiply matrix
   ///
@@ -239,26 +239,46 @@ type Matrix =
   ///
   /// [category: Matrix multiplication]
   static member dot (df1:Frame<'R, 'C>, df2:Frame<'C, 'R>) =
-    let m1 = df1 |> Frame.toMatrix
-    // Align keys in the same order
-    let m2 = df2.Rows.[df1.ColumnKeys] |> Frame.toMatrix
-    m1 * m2
+    let set1 = df1.ColumnKeys |> Set.ofSeq
+    let set2 = df2.RowKeys |> Set.ofSeq
+    let common = Set.union set1 set2
+    if common.Count > set1.Count || common.Count > set2.Count then
+      invalidOp "Matrices are not aligned"
+    let left = df1.Columns.[common]
+    let right = df2.Rows.[common]
+    let m1 = left |> Frame.toMatrix
+    let m2 = right |> Frame.toMatrix
+    m1 * m2 |> Frame.ofMatrix left.RowKeys df2.ColumnKeys
   
   /// frame multiply series
   ///
   /// [category: Matrix multiplication]
   static member dot (df:Frame<'R, 'C>, s:Series<'C, float>) =
-    let m1 = df |> Frame.toMatrix
-    let v2 = Series.toVector s
-    m1 * v2
+    let set1 = df.ColumnKeys |> Set.ofSeq
+    let set2 = s.Keys |> Set.ofSeq
+    let common = Set.union set1 set2
+    if common.Count > set1.Count || common.Count > set2.Count then
+      invalidOp "Matrices are not aligned"
+    let left = df.Columns.[common]
+    let right = s.[common]
+    let m1 = left |> Frame.toMatrix
+    let v2 = right |> Series.toVector
+    m1 * v2 |> Series.ofVector common
   
   /// series multiply frame
   ///
   /// [category: Matrix multiplication]
   static member dot (s:Series<'C, float>, df:Frame<'R, 'C>) =
-    let m2 = df |> Frame.toMatrix
-    let v1 = Series.toVector s
-    v1 * m2
+    let set1 = s.Keys |> Set.ofSeq
+    let set2 = df.ColumnKeys |> Set.ofSeq
+    let common = Set.union set1 set2
+    if common.Count > set1.Count || common.Count > set2.Count then
+      invalidOp "Matrices are not aligned"
+    let right = df.Columns.[common]
+    let left = s.[common]
+    let v1 = left |> Series.toVector
+    let m2 = right |> Frame.toMatrix
+    v1 * m2 |> Series.ofVector common
 
   /// series multiply series
   ///
