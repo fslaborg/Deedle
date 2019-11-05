@@ -353,44 +353,44 @@ Euro area:</p>
 <td><p> ... </p></td>
 </tr>
 <tr class="even">
-<td><p>2014</p></td>
-<td><p>333.06</p></td>
-<td><p>400.06</p></td>
-<td><p>17.61</p></td>
+<td><p>2015</p></td>
+<td><p>344.26</p></td>
+<td><p>411.1</p></td>
+<td><p>17.75</p></td>
 <td><p> ... </p></td>
-<td><p>3936.84</p></td>
-<td><p>2044.47</p></td>
-<td><p>17427.61</p></td>
+<td><p>4201.54</p></td>
+<td><p>2338.65</p></td>
+<td><p>18219.3</p></td>
 </tr>
 <tr class="odd">
-<td><p>2015</p></td>
-<td><p>344.49</p></td>
-<td><p>410.29</p></td>
-<td><p>17.74</p></td>
+<td><p>2016</p></td>
+<td><p>356.24</p></td>
+<td><p>424.6</p></td>
+<td><p>18.49</p></td>
 <td><p> ... </p></td>
-<td><p>4199.86</p></td>
-<td><p>2338.65</p></td>
-<td><p>18120.71</p></td>
+<td><p>4385.5</p></td>
+<td><p>2608.53</p></td>
+<td><p>18707.19</p></td>
 </tr>
 <tr class="even">
-<td><p>2016</p></td>
-<td><p>353.3</p></td>
-<td><p>422.68</p></td>
-<td><p>18.22</p></td>
+<td><p>2017</p></td>
+<td><p>369.9</p></td>
+<td><p>439.17</p></td>
+<td><p>19.65</p></td>
 <td><p> ... </p></td>
-<td><p>4404.8</p></td>
-<td><p>2608.53</p></td>
-<td><p>18624.47</p></td>
+<td><p>4578.83</p></td>
+<td><p>3106.54</p></td>
+<td><p>19485.39</p></td>
 </tr>
 <tr class="odd">
-<td><p>2017</p></td>
-<td><p>369.69</p></td>
-<td><p>437.2</p></td>
-<td><p>19.21</p></td>
+<td><p>2018</p></td>
+<td><p>386.09</p></td>
+<td><p>450.51</p></td>
+<td><p>20.73</p></td>
 <td><p> ... </p></td>
-<td><p>4599.63</p></td>
-<td><p>3104.91</p></td>
-<td><p>19390.6</p></td>
+<td><p>4789.85</p></td>
+<td><p>3700.99</p></td>
+<td><p>20494.1</p></td>
 </tr>
 </tbody>
 </table>
@@ -1775,7 +1775,7 @@ at all):</p>
 <div class="tip" id="fs45">Multiple items<br />module Series<br /><br />from Deedle<br /><br />--------------------<br />type Series =<br />&#160;&#160;static member ofNullables : values:seq&lt;Nullable&lt;&#39;a0&gt;&gt; -&gt; Series&lt;int,&#39;a0&gt; (requires default constructor and value type and &#39;a0 :&gt; ValueType)<br />&#160;&#160;static member ofObservations : observations:seq&lt;&#39;c * &#39;d&gt; -&gt; Series&lt;&#39;c,&#39;d&gt; (requires equality)<br />&#160;&#160;static member ofOptionalObservations : observations:seq&lt;&#39;K * &#39;a1 option&gt; -&gt; Series&lt;&#39;K,&#39;a1&gt; (requires equality)<br />&#160;&#160;static member ofValues : values:seq&lt;&#39;a&gt; -&gt; Series&lt;int,&#39;a&gt;<br /><br />--------------------<br />type Series&lt;&#39;K,&#39;V (requires equality)&gt; =<br />&#160;&#160;interface IFsiFormattable<br />&#160;&#160;interface ISeries&lt;&#39;K&gt;<br />&#160;&#160;new : pairs:seq&lt;KeyValuePair&lt;&#39;K,&#39;V&gt;&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;new : keys:&#39;K [] * values:&#39;V [] -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;new : keys:seq&lt;&#39;K&gt; * values:seq&lt;&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;new : index:IIndex&lt;&#39;K&gt; * vector:IVector&lt;&#39;V&gt; * vectorBuilder:IVectorBuilder * indexBuilder:IIndexBuilder -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;member After : lowerExclusive:&#39;K -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;member Aggregate : aggregation:Aggregation&lt;&#39;K&gt; * observationSelector:Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,KeyValuePair&lt;&#39;TNewKey,OptionalValue&lt;&#39;R&gt;&gt;&gt; -&gt; Series&lt;&#39;TNewKey,&#39;R&gt; (requires equality)<br />&#160;&#160;member Aggregate : aggregation:Aggregation&lt;&#39;K&gt; * keySelector:Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,&#39;TNewKey&gt; * valueSelector:Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,OptionalValue&lt;&#39;R&gt;&gt; -&gt; Series&lt;&#39;TNewKey,&#39;R&gt; (requires equality)<br />&#160;&#160;member AsyncMaterialize : unit -&gt; Async&lt;Series&lt;&#39;K,&#39;V&gt;&gt;<br />&#160;&#160;...<br /><br />--------------------<br />new : pairs:seq&lt;Collections.Generic.KeyValuePair&lt;&#39;K,&#39;V&gt;&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />new : keys:seq&lt;&#39;K&gt; * values:seq&lt;&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />new : keys:&#39;K [] * values:&#39;V [] -&gt; Series&lt;&#39;K,&#39;V&gt;<br />new : index:Indices.IIndex&lt;&#39;K&gt; * vector:IVector&lt;&#39;V&gt; * vectorBuilder:Vectors.IVectorBuilder * indexBuilder:Indices.IIndexBuilder -&gt; Series&lt;&#39;K,&#39;V&gt;</div>
 <div class="tip" id="fs46">static member Series.ofObservations : observations:seq&lt;&#39;c * &#39;d&gt; -&gt; Series&lt;&#39;c,&#39;d&gt; (requires equality)</div>
 <div class="tip" id="fs47">property WorldBankData.ServiceTypes.Country.Indicators: WorldBankData.ServiceTypes.Indicators<br /><em><br /><br />&lt;summary&gt;The indicators for the country&lt;/summary&gt;</em></div>
-<div class="tip" id="fs48">property WorldBankData.ServiceTypes.Indicators.( GDP (current LCU) ): Runtime.WorldBank.Indicator<br /><em><br /><br />GDP at purchasers prices is the sum of gross value added by all resident producers in the economy plus any product taxes and minus any subsidies not included in the value of the products. It is calculated without making deductions for depreciation of fabricated assets or for depletion and degradation of natural resources. Data are in current local currency.</em></div>
+<div class="tip" id="fs48">property WorldBankData.ServiceTypes.Indicators.( GDP (current LCU) ): Runtime.WorldBank.Indicator<br /><em><br /><br />GDP at purchaser&#39;s prices is the sum of gross value added by all resident producers in the economy plus any product taxes and minus any subsidies not included in the value of the products. It is calculated without making deductions for depreciation of fabricated assets or for depletion and degradation of natural resources. Data are in current local currency.</em></div>
 <div class="tip" id="fs49">val frame : columns:seq&lt;&#39;a * #ISeries&lt;&#39;c&gt;&gt; -&gt; Frame&lt;&#39;c,&#39;a&gt; (requires equality and equality)</div>
 <div class="tip" id="fs50">val eu : Frame&lt;int,(string * string)&gt;</div>
 <div class="tip" id="fs51">property WorldBankData.ServiceTypes.WorldBankDataService.Regions: WorldBankData.ServiceTypes.Regions</div>
@@ -1937,54 +1937,58 @@ at all):</p>
             <li><a href="https://nuget.org/packages/Deedle">Get Library via NuGet</a></li>
             <li><a href="http://github.com/fslaborg/Deedle">Source Code on GitHub</a></li>
             <li><a href="http://github.com/fslaborg/Deedle/blob/master/LICENSE.md">License (BSD)</a></li>
-            <li><a href="https://fslab.org/Deedle/RELEASE_NOTES.html">Release notes</a></li>
-            <li><a href="https://fslab.org/Deedle/design.html">Design notes</a></li>
-            <li><a href="http://stackoverflow.com/questions/tagged/deedle">Ask a question!</a></li>
+            <li><a href="https://fslab.org/Deedle/RELEASE_NOTES.html">Release Notes</a></li>
+            <li><a href="https://fslab.org/Deedle/design.html">Design Notes</a></li>
+            <li><a href="http://stackoverflow.com/questions/tagged/deedle">Ask a Question!</a></li>
             
             <li class="nav-header">Using from F#</li>
             <li>
-              <a href="https://fslab.org/Deedle/tutorial.html">Quick start tutorial</a>
+              <a href="https://fslab.org/Deedle/tutorial.html">Quick Start Tutorial</a>
             </li>
             <li>
-              <a href="https://fslab.org/Deedle/series.html">Working with time series</a>
+              <a href="https://fslab.org/Deedle/series.html">Working with Time Series</a>
             </li>
             <li>
-              <a href="https://fslab.org/Deedle/frame.html">Working with data frames</a>
+              <a href="https://fslab.org/Deedle/frame.html">Working with Data Frames</a>
               <ul class="nav nav-list">
-                <li><a href="https://fslab.org/Deedle/frame.html#creating">Creating & loading</a></li>
-                <li><a href="https://fslab.org/Deedle/frame.html#dataframe">Frame manipulation</a></li>
-                <li><a href="https://fslab.org/Deedle/frame.html#slicing">Advanced slicing</a></li>
-                <li><a href="https://fslab.org/Deedle/frame.html#grouping">Grouping data</a></li>
-                <li><a href="https://fslab.org/Deedle/frame.html#pivot">Pivot table</a></li>
-                <li><a href="https://fslab.org/Deedle/frame.html#indexing">Hierarchical indexing</a></li>
-                <li><a href="https://fslab.org/Deedle/frame.html#missing">Missing values</a></li>
+                <li><a href="https://fslab.org/Deedle/frame.html#creating">Creating & Loading</a></li>
+                <li><a href="https://fslab.org/Deedle/frame.html#dataframe">Frame Manipulation</a></li>
+                <li><a href="https://fslab.org/Deedle/frame.html#slicing">Advanced Slicing</a></li>
+                <li><a href="https://fslab.org/Deedle/frame.html#grouping">Grouping Data</a></li>
+                <li><a href="https://fslab.org/Deedle/frame.html#pivot">Pivot Table</a></li>
+                <li><a href="https://fslab.org/Deedle/frame.html#indexing">Hierarchical Indexing</a></li>
+                <li><a href="https://fslab.org/Deedle/frame.html#missing">Missing Values</a></li>
               </ul>
             </li>
             <li>
-              <a href="https://fslab.org/Deedle/stats.html">Statistics &amp; calculations</a>
+              <a href="https://fslab.org/Deedle/stats.html">Statistics &amp; Calculations</a>
             </li>
             <li>
               <a href="https://fslab.org/Deedle/rinterop.html">Using Deedle with R</a>
             </li>
 
             <li class="nav-header">Using from C#</li>
-            <li><a href="https://fslab.org/Deedle/csharpintro.html">Getting started</a></li>
+            <li><a href="https://fslab.org/Deedle/csharpintro.html">Getting Started</a></li>
             <li>
-              <a href="https://fslab.org/Deedle/csharpseries.html">Working with data series</a>
+              <a href="https://fslab.org/Deedle/csharpseries.html">Working with Data Series</a>
             </li>
             <li>
-              <a href="https://fslab.org/Deedle/csharpframe.html">Working with data frames</a>
+              <a href="https://fslab.org/Deedle/csharpframe.html">Working with Data Frames</a>
             </li>
 
-            <li class="nav-header">Documentation</li>
+            <li class="nav-header">Core Documentation</li>
             <li><a href="https://fslab.org/Deedle/reference/index.html">API Reference</a></li>
             <li class="divider"></li>
-            <li><a href="https://fslab.org/Deedle/reference/deedle-seriesmodule.html">Series module</a></li>
-            <li><a href="https://fslab.org/Deedle/reference/deedle-framemodule.html">Frame module</a></li>
-            <li><a href="https://fslab.org/Deedle/reference/deedle-stats.html">Stats module</a></li>
-
+            <li><a href="https://fslab.org/Deedle/reference/deedle-seriesmodule.html">Series Module</a></li>
+            <li><a href="https://fslab.org/Deedle/reference/deedle-framemodule.html">Frame Module</a></li>
+            <li><a href="https://fslab.org/Deedle/reference/deedle-stats.html">Stats Module</a></li>
+            
+            <li class="nav-header">Math Documentation</li>            
+            <li><a href="https://fslab.org/Deedle/reference/deedle-math-linearalgebra.html">Linear Algebra Module</a></li>
+            <li><a href="https://fslab.org/Deedle/reference/deedle-math-stats.html">Stats Module</a></li>
+            <li><a href="https://fslab.org/Deedle/reference/deedle-math-finance.html">Finance Module</a></li>             
             <li class="nav-header">Samples</li>
-            <li><a href="https://fslab.org/Deedle/lazysource.html">Lazy data loading</a></li>
+            <li><a href="https://fslab.org/Deedle/lazysource.html">Lazy Data Loading</a></li>
           </ul>
         </div>
       </div>

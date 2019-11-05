@@ -170,7 +170,7 @@ global configuration for reflection-based expansion.</p>
           <td class="xmldoc">
           <p>Contains C# and F# extension methods for the <code>Frame&lt;'R, 'C&gt;</code> type. The members are
 automatically available when you import the <code>Deedle</code> namespace. The type contains
-object-oriented counterparts to most of the functionality from the <a href="deedle-frame.html" title="Frame"><code>Frame</code></a> module.</p>
+object-oriented counterparts to most of the functionality from the <code>Frame</code> module.</p>
 
 
           </td>
@@ -183,7 +183,7 @@ object-oriented counterparts to most of the functionality from the <a href="deed
           <p>The type implements C# and F# extension methods for the <code>Series&lt;'K, 'V&gt;</code> type.
 The members are automatically available when you import the <code>Deedle</code> namespace.
 The type contains object-oriented counterparts to most of the functionality
-from the <a href="deedle-f__series_extensions-series.html" title="Series"><code>Series</code></a> module.</p>
+from the <code>Series</code> module.</p>
 
 
           </td>
@@ -205,7 +205,7 @@ series containing floating-point values, that is <code>Series&lt;'K, float&gt;</
             <a href="deedle-stats.html">Stats</a>
           </td>
           <td class="xmldoc">
-          <p>The <a href="deedle-stats.html" title="Stats"><code>Stats</code></a> type contains functions for fast calculation of statistics over
+          <p>The <code>Stats</code> type contains functions for fast calculation of statistics over
 series and frames as well as over a moving and an expanding window in a series.</p>
 <p>The resulting series has the same keys as the input series. When there are
 no values, or missing values, different functions behave in different ways.
@@ -240,7 +240,7 @@ also provides additional F# extension methods including <code>ReadCsv</code>, <c
             <a href="deedle-framemodule.html">Frame</a>
           </td>
           <td class="xmldoc">
-          <p>The <a href="deedle-frame.html" title="Frame"><code>Frame</code></a> module provides an F#-friendly API for working with data frames.
+          <p>The <code>Frame</code> module provides an F#-friendly API for working with data frames.
 The module follows the usual desing for collection-processing in F#, so the
 functions work well with the pipelining operator (<code>|&gt;</code>). For example, given
 a frame with two columns representing prices, we can use <code>Frame.diff</code> and
@@ -260,8 +260,8 @@ numerical operators to calculate daily returns like this:</p>
 <p>Note that the <code>Stats.mean</code> operation is overloaded and works both on series
 (returning a number) and on frames (returning a series).</p>
 <p>The functions in this module are designed to be used from F#. For a C#-friendly
-API, see the <a href="deedle-frameextensions.html" title="FrameExtensions"><code>FrameExtensions</code></a> type. For working with individual series, see the
-<a href="deedle-f__series_extensions-series.html" title="Series"><code>Series</code></a> module. The functions in the <a href="deedle-frame.html" title="Frame"><code>Frame</code></a> module are grouped in a number of
+API, see the <code>FrameExtensions</code> type. For working with individual series, see the
+<code>Series</code> module. The functions in the <code>Frame</code> module are grouped in a number of
 categories and documented below.</p>
 <div class="tip" id="fs1">val df : float</div>
 <div class="tip" id="fs2">val past : float</div>
@@ -287,7 +287,7 @@ can use <code>new FrameBuilder.Rows&lt;...&gt;</code> to create a new frame from
             <a href="deedle-seriesmodule.html">Series</a>
           </td>
           <td class="xmldoc">
-          <p>The <a href="deedle-f__series_extensions-series.html" title="Series"><code>Series</code></a> module provides an F#-friendly API for working with data and time series.
+          <p>The <code>Series</code> module provides an F#-friendly API for working with data and time series.
 The API follows the usual design for collection-processing in F#, so the functions work
 well with the pipelining (<code>|&gt;</code>) operator. For example, given a series with ages,
 we can use <code>Series.filterValues</code> to filter outliers and then <code>Stats.mean</code> to calculate
@@ -313,9 +313,9 @@ be written as:</p>
   .Where(kvp <span class="o">=</span><span class="o">&gt;</span> kvp.Value <span class="o">&gt;</span> <span class="n">0.0</span> <span class="o">&amp;</span><span class="o">&amp;</span> kvp.Value <span class="o">&lt;</span> <span class="n">120.0</span>)
   .Mean()
 </code></pre></td></tr></table>
-<p>For more information about similar frame-manipulation functions, see the <a href="deedle-frame.html" title="Frame"><code>Frame</code></a> module.
-For more information about C#-friendly extensions, see <a href="deedle-seriesextensions.html" title="SeriesExtensions"><code>SeriesExtensions</code></a>. The functions
-in the <a href="deedle-f__series_extensions-series.html" title="Series"><code>Series</code></a> module are grouped in a number of categories and documented below.</p>
+<p>For more information about similar frame-manipulation functions, see the <code>Frame</code> module.
+For more information about C#-friendly extensions, see <code>SeriesExtensions</code>. The functions
+in the <code>Series</code> module are grouped in a number of categories and documented below.</p>
 
 
           </td>
@@ -436,7 +436,7 @@ customized pattern matching (equality testing)</p>
           </td>
           <td class="xmldoc">
           <p>This enumeration specifies joining behavior for <code>Join</code> method provided
-by <a href="deedle-f__series_extensions-series.html" title="Series"><code>Series</code></a> and <a href="deedle-frame.html" title="Frame"><code>Frame</code></a>. Outer join unions the keys (and may introduce
+by <code>Series</code> and <code>Frame</code>. Outer join unions the keys (and may introduce
 missing values), inner join takes the intersection of keys; left and
 right joins take the keys of the first or the second series/frame.</p>
 
@@ -729,7 +729,7 @@ hides slicing operations with new versions that return frames.</p>
           </td>
           <td class="xmldoc">
           <p>The type can be used for creating series using mutation. You can add
-items using <code>Add</code> and get the resulting series using the <a href="deedle-f__series_extensions-series.html" title="Series"><code>Series</code></a> property.</p>
+items using <code>Add</code> and get the resulting series using the <code>Series</code> property.</p>
 
 
           </td>
@@ -1276,6 +1276,198 @@ get parts of the keys based on levels. <code>CustomKey.Get</code> provides a way
 optional objects (that represent missing/set parts of a key)</p>
 
 
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+    </div>
+  <h2>Deedle.Math Namespace</h2>
+    <!-- If there is more than 1 category in the type, generate TOC -->
+    <ul>
+        <li><a href="#section7_0">Financial Analysis</a></li>            
+        <li><a href="#section7_1">Linear Algebra</a></li>            
+        <li><a href="#section7_2">Matrix conversions and operators</a></li>            
+        <li><a href="#section7_3">Statistical Analysis</a></li>            
+        <li><a href="#section7_4">Vector conversions and operators</a></li>            
+        <li><a href="#section7_5">Other namespace members</a></li>            
+    </ul>
+      <h3><a class="anchor" name="section7_0" href="#section7_0">Financial Analysis</a></h3>    
+    <div>
+      <table class="table table-bordered type-list">
+    <thead>
+      <tr><td>Type</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td class="type-name">
+            <a href="deedle-math-finance.html">Finance</a>
+          </td>
+          <td class="xmldoc">
+          <p>Financial analysis</p>
+
+
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+    </div>
+      <h3><a class="anchor" name="section7_1" href="#section7_1">Linear Algebra</a></h3>    
+    <div>
+      <table class="table table-bordered type-list">
+    <thead>
+      <tr><td>Type</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td class="type-name">
+            <a href="deedle-math-linearalgebra.html">LinearAlgebra</a>
+          </td>
+          <td class="xmldoc">
+          <p>Linear algebra on frame using MathNet.Numerics library.</p>
+
+
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+    </div>
+      <h3><a class="anchor" name="section7_2" href="#section7_2">Matrix conversions and operators</a></h3>    
+    <div>
+      <table class="table table-bordered type-list">
+    <thead>
+      <tr><td>Type</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td class="type-name">
+            <a href="deedle-math-frame.html">Frame</a>
+          </td>
+          <td class="xmldoc">
+          <p>Frame to matrix conversion</p>
+
+
+          </td>
+        </tr>
+        <tr>
+          <td class="type-name">
+            <a href="deedle-math-frameextensions.html">FrameExtensions</a>
+          </td>
+          <td class="xmldoc">
+          <p>Extension of Frame<'R, 'C></p>
+
+
+          </td>
+        </tr>
+        <tr>
+          <td class="type-name">
+            <a href="deedle-math-matrix.html">Matrix</a>
+          </td>
+          <td class="xmldoc">
+          <p>Matrix conversions and operators between Frame and Series</p>
+
+
+          </td>
+        </tr>
+        <tr>
+          <td class="type-name">
+            <a href="deedle-math-matrixextensions.html">MatrixExtensions</a>
+          </td>
+          <td class="xmldoc">
+          <p>Extension of Matrix<float></p>
+
+
+          </td>
+        </tr>
+        <tr>
+          <td class="type-name">
+            <a href="deedle-math-seriesextensions.html">SeriesExtensions</a>
+          </td>
+          <td class="xmldoc">
+          <p>Extension of Series<'C, float></p>
+
+
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+    </div>
+      <h3><a class="anchor" name="section7_3" href="#section7_3">Statistical Analysis</a></h3>    
+    <div>
+      <table class="table table-bordered type-list">
+    <thead>
+      <tr><td>Type</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td class="type-name">
+            <a href="deedle-math-correlationmethod.html">CorrelationMethod</a>
+          </td>
+          <td class="xmldoc">
+          <p>Correlation method (Pearson or Spearman)</p>
+
+
+          </td>
+        </tr>
+        <tr>
+          <td class="type-name">
+            <a href="deedle-math-stats.html">Stats</a>
+          </td>
+          <td class="xmldoc">
+          <p>Statistical analysis using MathNet.Numerics</p>
+
+
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+    </div>
+      <h3><a class="anchor" name="section7_4" href="#section7_4">Vector conversions and operators</a></h3>    
+    <div>
+      <table class="table table-bordered type-list">
+    <thead>
+      <tr><td>Type</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td class="type-name">
+            <a href="deedle-math-vectorextensions.html">VectorExtensions</a>
+          </td>
+          <td class="xmldoc">
+          <p>Extension of Vector<float></p>
+
+
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+    </div>
+      <h3><a class="anchor" name="section7_5" href="#section7_5">Other namespace members</a></h3>    
+    <div>
+      <table class="table table-bordered type-list">
+    <thead>
+      <tr><td>Type</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td class="type-name">
+            <a href="deedle-math-series.html">Series</a>
+          </td>
+          <td class="xmldoc">
+          
+          </td>
+        </tr>
+        <tr>
+          <td class="type-name">
+            <a href="deedle-math-statsinternal.html">StatsInternal</a>
+          </td>
+          <td class="xmldoc">
+          
           </td>
         </tr>
     </tbody>
@@ -1896,45 +2088,49 @@ resources with specified headers, query parameters and HTTP body</p>
             <li><a href="https://nuget.org/packages/Deedle">Get Library via NuGet</a></li>
             <li><a href="http://github.com/fslaborg/Deedle">Source Code on GitHub</a></li>
             <li><a href="http://github.com/fslaborg/Deedle/blob/master/LICENSE.md">License (BSD)</a></li>
-            <li><a href="https://fslab.org/Deedle/RELEASE_NOTES.html">Release notes</a></li>
-            <li><a href="https://fslab.org/Deedle/design.html">Design notes</a></li>
-            <li><a href="http://stackoverflow.com/questions/tagged/deedle">Ask a question!</a></li>
+            <li><a href="https://fslab.org/Deedle/RELEASE_NOTES.html">Release Notes</a></li>
+            <li><a href="https://fslab.org/Deedle/design.html">Design Notes</a></li>
+            <li><a href="http://stackoverflow.com/questions/tagged/deedle">Ask a Question!</a></li>
             
             <li class="nav-header">Using from F#</li>
             <li>
-              <a href="https://fslab.org/Deedle/tutorial.html">Quick start tutorial</a>
+              <a href="https://fslab.org/Deedle/tutorial.html">Quick Start Tutorial</a>
             </li>
             <li>
-              <a href="https://fslab.org/Deedle/series.html">Working with time series</a>
+              <a href="https://fslab.org/Deedle/series.html">Working with Time Series</a>
             </li>
             <li>
-              <a href="https://fslab.org/Deedle/frame.html">Working with data frames</a>
+              <a href="https://fslab.org/Deedle/frame.html">Working with Data Frames</a>
             </li>
             <li>
-              <a href="https://fslab.org/Deedle/stats.html">Statistics &amp; calculations</a>
+              <a href="https://fslab.org/Deedle/stats.html">Statistics &amp; Calculations</a>
             </li>
             <li>
               <a href="https://fslab.org/Deedle/rinterop.html">Using Deedle with R</a>
             </li>
 
             <li class="nav-header">Using from C#</li>
-            <li><a href="https://fslab.org/Deedle/csharpintro.html">Getting started</a></li>
+            <li><a href="https://fslab.org/Deedle/csharpintro.html">Getting Started</a></li>
             <li>
-              <a href="https://fslab.org/Deedle/csharpseries.html">Working with data series</a>
+              <a href="https://fslab.org/Deedle/csharpseries.html">Working with Data Series</a>
             </li>
             <li>
-              <a href="https://fslab.org/Deedle/csharpframe.html">Working with data frames</a>
+              <a href="https://fslab.org/Deedle/csharpframe.html">Working with Data Frames</a>
             </li>
 
-            <li class="nav-header">Documentation</li>
+            <li class="nav-header">Core Documentation</li>
             <li><a href="https://fslab.org/Deedle/reference/index.html">API Reference</a></li>
             <li class="divider"></li>
-            <li><a href="https://fslab.org/Deedle/reference/deedle-seriesmodule.html">Series module</a></li>
-            <li><a href="https://fslab.org/Deedle/reference/deedle-framemodule.html">Frame module</a></li>
-            <li><a href="https://fslab.org/Deedle/reference/deedle-stats.html">Stats module</a></li>
-
+            <li><a href="https://fslab.org/Deedle/reference/deedle-seriesmodule.html">Series Module</a></li>
+            <li><a href="https://fslab.org/Deedle/reference/deedle-framemodule.html">Frame Module</a></li>
+            <li><a href="https://fslab.org/Deedle/reference/deedle-stats.html">Stats Module</a></li>
+            
+            <li class="nav-header">Math Documentation</li>            
+            <li><a href="https://fslab.org/Deedle/reference/deedle-math-linearalgebra.html">Linear Algebra Module</a></li>
+            <li><a href="https://fslab.org/Deedle/reference/deedle-math-stats.html">Stats Module</a></li>
+            <li><a href="https://fslab.org/Deedle/reference/deedle-math-finance.html">Finance Module</a></li>             
             <li class="nav-header">Samples</li>
-            <li><a href="https://fslab.org/Deedle/lazysource.html">Lazy data loading</a></li>
+            <li><a href="https://fslab.org/Deedle/lazysource.html">Lazy Data Loading</a></li>
           </ul>
         </div>
       </div>

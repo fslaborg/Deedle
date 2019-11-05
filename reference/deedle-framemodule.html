@@ -50,7 +50,7 @@
       </span>
 </p>
 <div class="xmldoc">
-<p>The <a href="deedle-frame.html" title="Frame"><code>Frame</code></a> module provides an F#-friendly API for working with data frames.
+<p>The <code>Frame</code> module provides an F#-friendly API for working with data frames.
 The module follows the usual desing for collection-processing in F#, so the
 functions work well with the pipelining operator (<code>|&gt;</code>). For example, given
 a frame with two columns representing prices, we can use <code>Frame.diff</code> and
@@ -70,8 +70,8 @@ numerical operators to calculate daily returns like this:</p>
 <p>Note that the <code>Stats.mean</code> operation is overloaded and works both on series
 (returning a number) and on frames (returning a series).</p>
 <p>The functions in this module are designed to be used from F#. For a C#-friendly
-API, see the <a href="deedle-frameextensions.html" title="FrameExtensions"><code>FrameExtensions</code></a> type. For working with individual series, see the
-<a href="deedle-f__series_extensions-series.html" title="Series"><code>Series</code></a> module. The functions in the <a href="deedle-frame.html" title="Frame"><code>Frame</code></a> module are grouped in a number of
+API, see the <code>FrameExtensions</code> type. For working with individual series, see the
+<code>Series</code> module. The functions in the <code>Frame</code> module are grouped in a number of
 categories and documented below.</p>
 <div class="tip" id="fs1">val df : float</div>
 <div class="tip" id="fs2">val past : float</div>
@@ -405,8 +405,8 @@ missing values where the conversion fails.</p>
             getRow row frame
           </code>
           <div class="tip" id="49">
-            <strong>Signature:</strong> row:&#39;R -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,&#39;?661776&gt;<br />
-                          <strong>Type parameters:</strong> 'R, 'C, '?661776                        <span>
+            <strong>Signature:</strong> row:&#39;R -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,&#39;?686991&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C, '?686991                        <span>
             <strong>Attributes:</strong><br />
 [&lt;CompiledName(&quot;GetRow&quot;)&gt;]<br />
           </span>
@@ -486,8 +486,8 @@ with nearest greater/smaller key. For exact semantics, you can use <code>getCol<
             lookupRow row lookup frame
           </code>
           <div class="tip" id="52">
-            <strong>Signature:</strong> row:&#39;R -&gt; lookup:Lookup -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,&#39;?661796&gt;<br />
-                          <strong>Type parameters:</strong> 'R, 'C, '?661796                        <span>
+            <strong>Signature:</strong> row:&#39;R -&gt; lookup:Lookup -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,&#39;?687011&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C, '?687011                        <span>
             <strong>Attributes:</strong><br />
 [&lt;CompiledName(&quot;LookupRow&quot;)&gt;]<br />
           </span>
@@ -703,8 +703,8 @@ column doesn't exist.</p>
             tryLookupColObservation(...)
           </code>
           <div class="tip" id="60">
-            <strong>Signature:</strong> column:&#39;C -&gt; lookup:Lookup -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; (&#39;C * Series&lt;&#39;R,&#39;?661792&gt;) option<br />
-                          <strong>Type parameters:</strong> 'C, 'R, '?661792                        <span>
+            <strong>Signature:</strong> column:&#39;C -&gt; lookup:Lookup -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; (&#39;C * Series&lt;&#39;R,&#39;?687007&gt;) option<br />
+                          <strong>Type parameters:</strong> 'C, 'R, '?687007                        <span>
             <strong>Attributes:</strong><br />
 [&lt;CompiledName(&quot;TryLookupColObservation&quot;)&gt;]<br />
           </span>
@@ -729,8 +729,8 @@ doesn't exist.</p>
             tryLookupRow row lookup frame
           </code>
           <div class="tip" id="61">
-            <strong>Signature:</strong> row:&#39;R -&gt; lookup:Lookup -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,&#39;?661800&gt; option<br />
-                          <strong>Type parameters:</strong> 'R, 'C, '?661800                        <span>
+            <strong>Signature:</strong> row:&#39;R -&gt; lookup:Lookup -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,&#39;?687015&gt; option<br />
+                          <strong>Type parameters:</strong> 'R, 'C, '?687015                        <span>
             <strong>Attributes:</strong><br />
 [&lt;CompiledName(&quot;TryLookupRow&quot;)&gt;]<br />
           </span>
@@ -755,8 +755,8 @@ row doesn't exit.</p>
             tryLookupRowObservation row lookup frame
           </code>
           <div class="tip" id="62">
-            <strong>Signature:</strong> row:&#39;R -&gt; lookup:Lookup -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; (&#39;R * Series&lt;&#39;C,&#39;?661804&gt;) option<br />
-                          <strong>Type parameters:</strong> 'R, 'C, '?661804                        <span>
+            <strong>Signature:</strong> row:&#39;R -&gt; lookup:Lookup -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; (&#39;R * Series&lt;&#39;C,&#39;?687019&gt;) option<br />
+                          <strong>Type parameters:</strong> 'R, 'C, '?687019                        <span>
             <strong>Attributes:</strong><br />
 [&lt;CompiledName(&quot;TryLookupRowObservation&quot;)&gt;]<br />
           </span>
@@ -787,7 +787,7 @@ the column or row. You can use functions ending with <code>Values</code> (such a
 when you do not require the row key, but only the row series; <code>mapRowKeys</code> and
 <code>mapColKeys</code> can be used to transform the keys.</p>
 <p>You can use <code>reduceValues</code> to apply a custom reduction to values of columns. Other
-aggregations are available in the <a href="deedle-stats.html" title="Stats"><code>Stats</code></a> module. You can also get a row with the
+aggregations are available in the <code>Stats</code> module. You can also get a row with the
 greaterst or smallest value of a given column using <code>[min|max]RowBy</code>.</p>
 <p>The functions <code>take[Last]</code> and <code>skip[Last]</code> can be used to take a sub-frame of the
 original source frame by skipping a specified number of rows. Note that this
@@ -1023,8 +1023,8 @@ if you need to access the row key).</p>
             map f frame
           </code>
           <div class="tip" id="69">
-            <strong>Signature:</strong> f:(&#39;R -&gt; &#39;C -&gt; &#39;?662010 -&gt; &#39;?662011) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
-                          <strong>Type parameters:</strong> 'R, 'C, '?662010, '?662011                      </div>
+            <strong>Signature:</strong> f:(&#39;R -&gt; &#39;C -&gt; &#39;?687225 -&gt; &#39;?687226) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C, '?687225, '?687226                      </div>
         </td>
         <td class="xmldoc">
                       <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1148-1148" class="github-link">
@@ -1050,8 +1050,8 @@ to the appropriate type for input to the mapping function.</p>
             mapColKeys f frame
           </code>
           <div class="tip" id="70">
-            <strong>Signature:</strong> f:(&#39;C -&gt; &#39;?662000) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;?662000&gt;<br />
-                          <strong>Type parameters:</strong> 'C, '?662000, 'R                        <span>
+            <strong>Signature:</strong> f:(&#39;C -&gt; &#39;?687215) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;?687215&gt;<br />
+                          <strong>Type parameters:</strong> 'C, '?687215, 'R                        <span>
             <strong>Attributes:</strong><br />
 [&lt;CompiledName(&quot;SelectColumnKeys&quot;)&gt;]<br />
           </span>
@@ -1081,8 +1081,8 @@ specified function on the column keys of the original data frame.</p>
             mapCols f frame
           </code>
           <div class="tip" id="71">
-            <strong>Signature:</strong> f:(&#39;C -&gt; ObjectSeries&lt;&#39;R&gt; -&gt; &#39;?661991) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;?661992,&#39;C&gt;<br />
-                          <strong>Type parameters:</strong> 'C, 'R, '?661991, '?661992                        <span>
+            <strong>Signature:</strong> f:(&#39;C -&gt; ObjectSeries&lt;&#39;R&gt; -&gt; &#39;?687206) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;?687207,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'C, 'R, '?687206, '?687207                        <span>
             <strong>Attributes:</strong><br />
 [&lt;CompiledName(&quot;SelectColumns&quot;)&gt;]<br />
           </span>
@@ -1113,8 +1113,8 @@ with the column key and object series that represents the column data.</p>
             mapColValues f frame
           </code>
           <div class="tip" id="72">
-            <strong>Signature:</strong> f:(ObjectSeries&lt;&#39;R&gt; -&gt; &#39;?661995) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;?661996,&#39;C&gt;<br />
-                          <strong>Type parameters:</strong> 'R, '?661995, '?661996, 'C                        <span>
+            <strong>Signature:</strong> f:(ObjectSeries&lt;&#39;R&gt; -&gt; &#39;?687210) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;?687211,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'R, '?687210, '?687211, 'C                        <span>
             <strong>Attributes:</strong><br />
 [&lt;CompiledName(&quot;SelectColumnValues&quot;)&gt;]<br />
           </span>
@@ -1242,8 +1242,8 @@ if you need to access the row key).</p>
             mapValues f frame
           </code>
           <div class="tip" id="76">
-            <strong>Signature:</strong> f:(&#39;?662003 -&gt; &#39;?662004) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
-                          <strong>Type parameters:</strong> '?662003, '?662004, 'R, 'C                        <span>
+            <strong>Signature:</strong> f:(&#39;?687218 -&gt; &#39;?687219) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> '?687218, '?687219, 'R, 'C                        <span>
             <strong>Attributes:</strong><br />
 [&lt;CompiledName(&quot;MapValues&quot;)&gt;]<br />
           </span>
@@ -2017,7 +2017,7 @@ used to perform group by operation and return the result as a series of frems.</
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1581-1581" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1589-1589" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2045,7 +2045,7 @@ you want to reduce values using a simpler function <code>'T -&gt; 'T -&gt; 'T</c
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1593-1593" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1601-1601" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2073,7 +2073,7 @@ can be used if you want to perform a transformation individually on each group
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1604-1604" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1612-1612" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2100,7 +2100,7 @@ of frames (indexed by the second-level).</p>
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1558-1558" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1566-1566" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2127,7 +2127,7 @@ an entire group of values at once, you can use <code>applyLevel</code> instead.<
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1619-1619" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1627-1627" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2316,9 +2316,34 @@ keys before calling append.</p>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '109', 109)" onmouseover="showTip(event, '109', 109)">
-            zip op frame1 frame2
+            strConcat frame1 frame2
           </code>
           <div class="tip" id="109">
+            <strong>Signature:</strong> frame1:Frame&lt;&#39;R,&#39;C&gt; -&gt; frame2:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;CompiledName(&quot;StrConcat&quot;)&gt;]<br />
+          </span>
+          </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1541-1541" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Piecewise concatenate two frames of string values</p>
+
+
+              <p>CompiledName: <code>StrConcat</code></p>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '110', 110)" onmouseover="showTip(event, '110', 110)">
+            zip op frame1 frame2
+          </code>
+          <div class="tip" id="110">
             <strong>Signature:</strong> op:(&#39;V1 -&gt; &#39;V2 -&gt; &#39;V) -&gt; frame1:Frame&lt;&#39;R,&#39;C&gt; -&gt; frame2:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'V1, 'V2, 'V, 'R, 'C                        <span>
             <strong>Attributes:</strong><br />
@@ -2358,10 +2383,10 @@ values in the frames are zipped and which are left unchanged.
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '110', 110)" onmouseover="showTip(event, '110', 110)">
+          <code onmouseout="hideTip(event, '111', 111)" onmouseover="showTip(event, '111', 111)">
             zipAlign(...)
           </code>
-          <div class="tip" id="110">
+          <div class="tip" id="111">
             <strong>Signature:</strong> columnKind:JoinKind -&gt; rowKind:JoinKind -&gt; lookup:Lookup -&gt; op:(&#39;V1 -&gt; &#39;V2 -&gt; &#39;V) -&gt; frame1:Frame&lt;&#39;R,&#39;C&gt; -&gt; frame2:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'V1, 'V2, 'V, 'R, 'C                        <span>
             <strong>Attributes:</strong><br />
@@ -2427,10 +2452,10 @@ functions drop these missing values and return a frame with no missing values.</
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '111', 111)" onmouseover="showTip(event, '111', 111)">
+          <code onmouseout="hideTip(event, '112', 112)" onmouseover="showTip(event, '112', 112)">
             denseCols(frame)
           </code>
-          <div class="tip" id="111">
+          <div class="tip" id="112">
             <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; ColumnSeries&lt;&#39;R,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C                        <span>
             <strong>Attributes:</strong><br />
@@ -2455,10 +2480,10 @@ to <code>Columns</code>, but it skips columns that contain missing value in <em>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '112', 112)" onmouseover="showTip(event, '112', 112)">
+          <code onmouseout="hideTip(event, '113', 113)" onmouseover="showTip(event, '113', 113)">
             denseRows(frame)
           </code>
-          <div class="tip" id="112">
+          <div class="tip" id="113">
             <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; RowSeries&lt;&#39;R,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C                        <span>
             <strong>Attributes:</strong><br />
@@ -2483,10 +2508,10 @@ to <code>Rows</code>, but it skips rows that contain missing value in <em>any</e
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '113', 113)" onmouseover="showTip(event, '113', 113)">
+          <code onmouseout="hideTip(event, '114', 114)" onmouseover="showTip(event, '114', 114)">
             dropSparseCols(frame)
           </code>
-          <div class="tip" id="113">
+          <div class="tip" id="114">
             <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C                        <span>
             <strong>Attributes:</strong><br />
@@ -2511,10 +2536,10 @@ fewer columns (or no columns at all).</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '114', 114)" onmouseover="showTip(event, '114', 114)">
+          <code onmouseout="hideTip(event, '115', 115)" onmouseover="showTip(event, '115', 115)">
             dropSparseRows(frame)
           </code>
-          <div class="tip" id="114">
+          <div class="tip" id="115">
             <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C                        <span>
             <strong>Attributes:</strong><br />
@@ -2539,10 +2564,10 @@ fewer rows (or no rows at all).</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '115', 115)" onmouseover="showTip(event, '115', 115)">
+          <code onmouseout="hideTip(event, '116', 116)" onmouseover="showTip(event, '116', 116)">
             dropSparseRowsBy colKey frame
           </code>
-          <div class="tip" id="115">
+          <div class="tip" id="116">
             <strong>Signature:</strong> colKey:&#39;C -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'C, 'R                        <span>
             <strong>Attributes:</strong><br />
@@ -2567,10 +2592,10 @@ fewer rows (or no rows at all).</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '116', 116)" onmouseover="showTip(event, '116', 116)">
+          <code onmouseout="hideTip(event, '117', 117)" onmouseover="showTip(event, '117', 117)">
             fillMissing direction frame
           </code>
-          <div class="tip" id="116">
+          <div class="tip" id="117">
             <strong>Signature:</strong> direction:Direction -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C                        <span>
             <strong>Attributes:</strong><br />
@@ -2606,10 +2631,10 @@ for the nearest greater key.
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '117', 117)" onmouseover="showTip(event, '117', 117)">
+          <code onmouseout="hideTip(event, '118', 118)" onmouseover="showTip(event, '118', 118)">
             fillMissingUsing f frame
           </code>
-          <div class="tip" id="117">
+          <div class="tip" id="118">
             <strong>Signature:</strong> f:(Series&lt;&#39;R,&#39;T&gt; -&gt; &#39;R -&gt; &#39;T) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'T, 'C                        <span>
             <strong>Attributes:</strong><br />
@@ -2646,10 +2671,10 @@ series contains a missing value.
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '118', 118)" onmouseover="showTip(event, '118', 118)">
+          <code onmouseout="hideTip(event, '119', 119)" onmouseover="showTip(event, '119', 119)">
             fillMissingWith value frame
           </code>
-          <div class="tip" id="118">
+          <div class="tip" id="119">
             <strong>Signature:</strong> value:&#39;T -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'T, 'R, 'C                        <span>
             <strong>Attributes:</strong><br />
@@ -2699,7 +2724,7 @@ the type of values cannot be tracked in the type. For this reason, it is better 
 can be used to get values, or fill failed values inside an entire data frame.</p>
 <p>The <code>tryMapRows</code> function is more useful. It can be used to write a transformation
 that applies a computation (which may fail) to each row of a data frame. The resulting
-series is of type <code>Series&lt;'R, tryval&lt;'T&gt;&gt;</code> and can be processed using the <a href="deedle-f__series_extensions-series.html" title="Series"><code>Series</code></a> module
+series is of type <code>Series&lt;'R, tryval&lt;'T&gt;&gt;</code> and can be processed using the <code>Series</code> module
 functions.</p>
 <div class="tip" id="fs1">type tryval&lt;&#39;T&gt; =<br />&#160;&#160;| Success of &#39;T<br />&#160;&#160;| Error of exn</div>
 <div class="tip" id="fs2">union case tryval.Success: &#39;T -&gt; tryval&lt;&#39;T&gt;</div>
@@ -2717,10 +2742,10 @@ functions.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '119', 119)" onmouseover="showTip(event, '119', 119)">
+          <code onmouseout="hideTip(event, '120', 120)" onmouseover="showTip(event, '120', 120)">
             fillErrorsWith value frame
           </code>
-          <div class="tip" id="119">
+          <div class="tip" id="120">
             <strong>Signature:</strong> value:&#39;T -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'T, 'R, 'C                        <span>
             <strong>Attributes:</strong><br />
@@ -2744,10 +2769,10 @@ to fill the error values with the specified default value.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '120', 120)" onmouseover="showTip(event, '120', 120)">
+          <code onmouseout="hideTip(event, '121', 121)" onmouseover="showTip(event, '121', 121)">
             tryMapRows f frame
           </code>
-          <div class="tip" id="120">
+          <div class="tip" id="121">
             <strong>Signature:</strong> f:(&#39;R -&gt; ObjectSeries&lt;&#39;C&gt; -&gt; &#39;V) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;R,&#39;V tryval&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C, 'V                        <span>
             <strong>Attributes:</strong><br />
@@ -2771,10 +2796,10 @@ function fails, the exception is wrapped using the <code>Error</code> case.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '121', 121)" onmouseover="showTip(event, '121', 121)">
+          <code onmouseout="hideTip(event, '122', 122)" onmouseover="showTip(event, '122', 122)">
             tryValues(frame)
           </code>
-          <div class="tip" id="121">
+          <div class="tip" id="122">
             <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C                        <span>
             <strong>Attributes:</strong><br />
@@ -2841,10 +2866,10 @@ applies the expansion to all columns of the data frame.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '122', 122)" onmouseover="showTip(event, '122', 122)">
+          <code onmouseout="hideTip(event, '123', 123)" onmouseover="showTip(event, '123', 123)">
             expandAllCols nesting frame
           </code>
-          <div class="tip" id="122">
+          <div class="tip" id="123">
             <strong>Signature:</strong> nesting:int -&gt; frame:Frame&lt;&#39;R,string&gt; -&gt; Frame&lt;&#39;R,string&gt;<br />
                           <strong>Type parameters:</strong> 'R                        <span>
             <strong>Attributes:</strong><br />
@@ -2875,10 +2900,10 @@ properties.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '123', 123)" onmouseover="showTip(event, '123', 123)">
+          <code onmouseout="hideTip(event, '124', 124)" onmouseover="showTip(event, '124', 124)">
             expandCols names frame
           </code>
-          <div class="tip" id="123">
+          <div class="tip" id="124">
             <strong>Signature:</strong> names:seq&lt;string&gt; -&gt; frame:Frame&lt;&#39;R,string&gt; -&gt; Frame&lt;&#39;R,string&gt;<br />
                           <strong>Type parameters:</strong> 'R                        <span>
             <strong>Attributes:</strong><br />
@@ -2920,10 +2945,10 @@ tuple members and get a frame with columns <code>S.Item1</code> and <code>S.Item
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '124', 124)" onmouseover="showTip(event, '124', 124)">
+          <code onmouseout="hideTip(event, '125', 125)" onmouseover="showTip(event, '125', 125)">
             indexColsWith keys frame
           </code>
-          <div class="tip" id="124">
+          <div class="tip" id="125">
             <strong>Signature:</strong> keys:seq&lt;&#39;C2&gt; -&gt; frame:Frame&lt;&#39;R,&#39;C1&gt; -&gt; Frame&lt;&#39;R,&#39;C2&gt;<br />
                           <strong>Type parameters:</strong> 'C2, 'R, 'C1                        <span>
             <strong>Attributes:</strong><br />
@@ -2952,10 +2977,10 @@ The specified column is removed from the resulting frame.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '125', 125)" onmouseover="showTip(event, '125', 125)">
+          <code onmouseout="hideTip(event, '126', 126)" onmouseover="showTip(event, '126', 126)">
             indexRows column frame
           </code>
-          <div class="tip" id="125">
+          <div class="tip" id="126">
             <strong>Signature:</strong> column:&#39;C -&gt; frame:Frame&lt;&#39;R1,&#39;C&gt; -&gt; Frame&lt;&#39;R2,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'C, 'R1, 'R2                        <span>
             <strong>Attributes:</strong><br />
@@ -2988,10 +3013,10 @@ index. Note that the values in the column need to be unique.
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '126', 126)" onmouseover="showTip(event, '126', 126)">
+          <code onmouseout="hideTip(event, '127', 127)" onmouseover="showTip(event, '127', 127)">
             indexRowsDate column frame
           </code>
-          <div class="tip" id="126">
+          <div class="tip" id="127">
             <strong>Signature:</strong> column:&#39;C -&gt; frame:Frame&lt;&#39;R1,&#39;C&gt; -&gt; Frame&lt;DateTime,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'C, 'R1                        <span>
             <strong>Attributes:</strong><br />
@@ -3024,10 +3049,10 @@ index. Note that the values in the column need to be unique.
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '127', 127)" onmouseover="showTip(event, '127', 127)">
+          <code onmouseout="hideTip(event, '128', 128)" onmouseover="showTip(event, '128', 128)">
             indexRowsDateOffs column frame
           </code>
-          <div class="tip" id="127">
+          <div class="tip" id="128">
             <strong>Signature:</strong> column:&#39;C -&gt; frame:Frame&lt;&#39;R1,&#39;C&gt; -&gt; Frame&lt;DateTimeOffset,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'C, 'R1                        <span>
             <strong>Attributes:</strong><br />
@@ -3060,10 +3085,10 @@ index. Note that the values in the column need to be unique.
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '128', 128)" onmouseover="showTip(event, '128', 128)">
+          <code onmouseout="hideTip(event, '129', 129)" onmouseover="showTip(event, '129', 129)">
             indexRowsInt column frame
           </code>
-          <div class="tip" id="128">
+          <div class="tip" id="129">
             <strong>Signature:</strong> column:&#39;C -&gt; frame:Frame&lt;&#39;R1,&#39;C&gt; -&gt; Frame&lt;int,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'C, 'R1                        <span>
             <strong>Attributes:</strong><br />
@@ -3096,10 +3121,10 @@ index. Note that the values in the column need to be unique.
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '129', 129)" onmouseover="showTip(event, '129', 129)">
+          <code onmouseout="hideTip(event, '130', 130)" onmouseover="showTip(event, '130', 130)">
             indexRowsObj column frame
           </code>
-          <div class="tip" id="129">
+          <div class="tip" id="130">
             <strong>Signature:</strong> column:&#39;C -&gt; frame:Frame&lt;&#39;R1,&#39;C&gt; -&gt; Frame&lt;obj,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'C, 'R1                        <span>
             <strong>Attributes:</strong><br />
@@ -3132,10 +3157,10 @@ index. Note that the values in the column need to be unique.
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '130', 130)" onmouseover="showTip(event, '130', 130)">
+          <code onmouseout="hideTip(event, '131', 131)" onmouseover="showTip(event, '131', 131)">
             indexRowsOrdinally(frame)
           </code>
-          <div class="tip" id="130">
+          <div class="tip" id="131">
             <strong>Signature:</strong> frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;int,&#39;TColumnKey&gt;<br />
                           <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey                        <span>
             <strong>Attributes:</strong><br />
@@ -3159,10 +3184,10 @@ non-deterministic way, if the current row index is not ordered.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '131', 131)" onmouseover="showTip(event, '131', 131)">
+          <code onmouseout="hideTip(event, '132', 132)" onmouseover="showTip(event, '132', 132)">
             indexRowsString column frame
           </code>
-          <div class="tip" id="131">
+          <div class="tip" id="132">
             <strong>Signature:</strong> column:&#39;C -&gt; frame:Frame&lt;&#39;R1,&#39;C&gt; -&gt; Frame&lt;string,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'C, 'R1                        <span>
             <strong>Attributes:</strong><br />
@@ -3195,10 +3220,10 @@ index. Note that the values in the column need to be unique.
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '132', 132)" onmouseover="showTip(event, '132', 132)">
+          <code onmouseout="hideTip(event, '133', 133)" onmouseover="showTip(event, '133', 133)">
             indexRowsUsing f frame
           </code>
-          <div class="tip" id="132">
+          <div class="tip" id="133">
             <strong>Signature:</strong> f:(ObjectSeries&lt;&#39;C&gt; -&gt; &#39;R2) -&gt; frame:Frame&lt;&#39;R1,&#39;C&gt; -&gt; Frame&lt;&#39;R2,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'C, 'R2, 'R1                        <span>
             <strong>Attributes:</strong><br />
@@ -3226,10 +3251,10 @@ a function invoked on each row.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '133', 133)" onmouseover="showTip(event, '133', 133)">
+          <code onmouseout="hideTip(event, '134', 134)" onmouseover="showTip(event, '134', 134)">
             indexRowsWith keys frame
           </code>
-          <div class="tip" id="133">
+          <div class="tip" id="134">
             <strong>Signature:</strong> keys:seq&lt;&#39;R2&gt; -&gt; frame:Frame&lt;&#39;R1,&#39;C&gt; -&gt; Frame&lt;&#39;R2,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'R2, 'R1, 'C                        <span>
             <strong>Attributes:</strong><br />
@@ -3257,10 +3282,10 @@ The rows of the frame are assigned keys according to the provided order.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '134', 134)" onmouseover="showTip(event, '134', 134)">
+          <code onmouseout="hideTip(event, '135', 135)" onmouseover="showTip(event, '135', 135)">
             realignRows keys frame
           </code>
-          <div class="tip" id="134">
+          <div class="tip" id="135">
             <strong>Signature:</strong> keys:seq&lt;&#39;R&gt; -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C                        <span>
             <strong>Attributes:</strong><br />
@@ -3292,10 +3317,10 @@ frame keys (because the rows are realigned).
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '135', 135)" onmouseover="showTip(event, '135', 135)">
+          <code onmouseout="hideTip(event, '136', 136)" onmouseover="showTip(event, '136', 136)">
             sortColsByKey(frame)
           </code>
-          <div class="tip" id="135">
+          <div class="tip" id="136">
             <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C                        <span>
             <strong>Attributes:</strong><br />
@@ -3319,10 +3344,10 @@ only available on indexed series such as alignment and inexact lookup.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '136', 136)" onmouseover="showTip(event, '136', 136)">
+          <code onmouseout="hideTip(event, '137', 137)" onmouseover="showTip(event, '137', 137)">
             sortRows colKey frame
           </code>
-          <div class="tip" id="136">
+          <div class="tip" id="137">
             <strong>Signature:</strong> colKey:&#39;C -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'C, 'R                        <span>
             <strong>Attributes:</strong><br />
@@ -3345,10 +3370,10 @@ but whose rows are ordered on a particular column of the frame.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '137', 137)" onmouseover="showTip(event, '137', 137)">
+          <code onmouseout="hideTip(event, '138', 138)" onmouseover="showTip(event, '138', 138)">
             sortRowsBy colKey f frame
           </code>
-          <div class="tip" id="137">
+          <div class="tip" id="138">
             <strong>Signature:</strong> colKey:&#39;C -&gt; f:(&#39;T -&gt; &#39;V) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'C, 'T, 'V, 'R                        <span>
             <strong>Attributes:</strong><br />
@@ -3371,10 +3396,10 @@ but whose rows are ordered on a particular column of the frame.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '138', 138)" onmouseover="showTip(event, '138', 138)">
+          <code onmouseout="hideTip(event, '139', 139)" onmouseover="showTip(event, '139', 139)">
             sortRowsByKey(frame)
           </code>
-          <div class="tip" id="138">
+          <div class="tip" id="139">
             <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C                        <span>
             <strong>Attributes:</strong><br />
@@ -3398,10 +3423,10 @@ only available on indexed series such as alignment and inexact lookup.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '139', 139)" onmouseover="showTip(event, '139', 139)">
+          <code onmouseout="hideTip(event, '140', 140)" onmouseover="showTip(event, '140', 140)">
             sortRowsWith colKey compareFunc frame
           </code>
-          <div class="tip" id="139">
+          <div class="tip" id="140">
             <strong>Signature:</strong> colKey:&#39;C -&gt; compareFunc:(&#39;a -&gt; &#39;a -&gt; int) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'C, 'a, 'R                        <span>
             <strong>Attributes:</strong><br />
@@ -3424,10 +3449,10 @@ but whose rows are ordered on a particular column of the frame.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '140', 140)" onmouseover="showTip(event, '140', 140)">
+          <code onmouseout="hideTip(event, '141', 141)" onmouseover="showTip(event, '141', 141)">
             transpose(frame)
           </code>
-          <div class="tip" id="140">
+          <div class="tip" id="141">
             <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TColumnKey,&#39;R&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'TColumnKey                        <span>
             <strong>Attributes:</strong><br />
@@ -3465,45 +3490,49 @@ series is more efficient).</p>
             <li><a href="https://nuget.org/packages/Deedle">Get Library via NuGet</a></li>
             <li><a href="http://github.com/fslaborg/Deedle">Source Code on GitHub</a></li>
             <li><a href="http://github.com/fslaborg/Deedle/blob/master/LICENSE.md">License (BSD)</a></li>
-            <li><a href="https://fslab.org/Deedle/RELEASE_NOTES.html">Release notes</a></li>
-            <li><a href="https://fslab.org/Deedle/design.html">Design notes</a></li>
-            <li><a href="http://stackoverflow.com/questions/tagged/deedle">Ask a question!</a></li>
+            <li><a href="https://fslab.org/Deedle/RELEASE_NOTES.html">Release Notes</a></li>
+            <li><a href="https://fslab.org/Deedle/design.html">Design Notes</a></li>
+            <li><a href="http://stackoverflow.com/questions/tagged/deedle">Ask a Question!</a></li>
             
             <li class="nav-header">Using from F#</li>
             <li>
-              <a href="https://fslab.org/Deedle/tutorial.html">Quick start tutorial</a>
+              <a href="https://fslab.org/Deedle/tutorial.html">Quick Start Tutorial</a>
             </li>
             <li>
-              <a href="https://fslab.org/Deedle/series.html">Working with time series</a>
+              <a href="https://fslab.org/Deedle/series.html">Working with Time Series</a>
             </li>
             <li>
-              <a href="https://fslab.org/Deedle/frame.html">Working with data frames</a>
+              <a href="https://fslab.org/Deedle/frame.html">Working with Data Frames</a>
             </li>
             <li>
-              <a href="https://fslab.org/Deedle/stats.html">Statistics &amp; calculations</a>
+              <a href="https://fslab.org/Deedle/stats.html">Statistics &amp; Calculations</a>
             </li>
             <li>
               <a href="https://fslab.org/Deedle/rinterop.html">Using Deedle with R</a>
             </li>
 
             <li class="nav-header">Using from C#</li>
-            <li><a href="https://fslab.org/Deedle/csharpintro.html">Getting started</a></li>
+            <li><a href="https://fslab.org/Deedle/csharpintro.html">Getting Started</a></li>
             <li>
-              <a href="https://fslab.org/Deedle/csharpseries.html">Working with data series</a>
+              <a href="https://fslab.org/Deedle/csharpseries.html">Working with Data Series</a>
             </li>
             <li>
-              <a href="https://fslab.org/Deedle/csharpframe.html">Working with data frames</a>
+              <a href="https://fslab.org/Deedle/csharpframe.html">Working with Data Frames</a>
             </li>
 
-            <li class="nav-header">Documentation</li>
+            <li class="nav-header">Core Documentation</li>
             <li><a href="https://fslab.org/Deedle/reference/index.html">API Reference</a></li>
             <li class="divider"></li>
-            <li><a href="https://fslab.org/Deedle/reference/deedle-seriesmodule.html">Series module</a></li>
-            <li><a href="https://fslab.org/Deedle/reference/deedle-framemodule.html">Frame module</a></li>
-            <li><a href="https://fslab.org/Deedle/reference/deedle-stats.html">Stats module</a></li>
-
+            <li><a href="https://fslab.org/Deedle/reference/deedle-seriesmodule.html">Series Module</a></li>
+            <li><a href="https://fslab.org/Deedle/reference/deedle-framemodule.html">Frame Module</a></li>
+            <li><a href="https://fslab.org/Deedle/reference/deedle-stats.html">Stats Module</a></li>
+            
+            <li class="nav-header">Math Documentation</li>            
+            <li><a href="https://fslab.org/Deedle/reference/deedle-math-linearalgebra.html">Linear Algebra Module</a></li>
+            <li><a href="https://fslab.org/Deedle/reference/deedle-math-stats.html">Stats Module</a></li>
+            <li><a href="https://fslab.org/Deedle/reference/deedle-math-finance.html">Finance Module</a></li>             
             <li class="nav-header">Samples</li>
-            <li><a href="https://fslab.org/Deedle/lazysource.html">Lazy data loading</a></li>
+            <li><a href="https://fslab.org/Deedle/lazysource.html">Lazy Data Loading</a></li>
           </ul>
         </div>
       </div>

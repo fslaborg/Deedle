@@ -54,7 +54,7 @@
 <p>The type implements C# and F# extension methods for the <code>Series&lt;'K, 'V&gt;</code> type.
 The members are automatically available when you import the <code>Deedle</code> namespace.
 The type contains object-oriented counterparts to most of the functionality
-from the <a href="deedle-f__series_extensions-series.html" title="Series"><code>Series</code></a> module.</p>
+from the <code>Series</code> module.</p>
 
 </div>
     <!-- If there is more than 1 category in the type, generate TOC -->
@@ -75,10 +75,10 @@ from the <a href="deedle-f__series_extensions-series.html" title="Series"><code>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1100', 1100)" onmouseover="showTip(event, '1100', 1100)">
+          <code onmouseout="hideTip(event, '1109', 1109)" onmouseover="showTip(event, '1109', 1109)">
             SeriesExtensions.SortByKey(series)
           </code>
-          <div class="tip" id="1100">
+          <div class="tip" id="1109">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T                        <span>
             <strong>Attributes:</strong><br />
@@ -112,12 +112,12 @@ from the <a href="deedle-f__series_extensions-series.html" title="Series"><code>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1101', 1101)" onmouseover="showTip(event, '1101', 1101)">
+          <code onmouseout="hideTip(event, '1110', 1110)" onmouseover="showTip(event, '1110', 1110)">
             SeriesExtensions.ResampleEquivalence(...)
           </code>
-          <div class="tip" id="1101">
-            <strong>Signature:</strong> (series:Series&lt;&#39;K,&#39;V&gt; * keyProj:Func&lt;&#39;K,&#39;?660216&gt; * aggregate:Func&lt;Series&lt;&#39;K,&#39;V&gt;,&#39;?660217&gt;) -&gt; Series&lt;&#39;?660216,&#39;?660217&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'V, '?660216, '?660217                        <span>
+          <div class="tip" id="1110">
+            <strong>Signature:</strong> (series:Series&lt;&#39;K,&#39;V&gt; * keyProj:Func&lt;&#39;K,&#39;?685422&gt; * aggregate:Func&lt;Series&lt;&#39;K,&#39;V&gt;,&#39;?685423&gt;) -&gt; Series&lt;&#39;?685422,&#39;?685423&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'V, '?685422, '?685423                        <span>
             <strong>Attributes:</strong><br />
 [&lt;Extension&gt;]<br />
           </span>
@@ -155,12 +155,12 @@ series, similar functionality can be implemented using <code>GroupBy</code>.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1102', 1102)" onmouseover="showTip(event, '1102', 1102)">
+          <code onmouseout="hideTip(event, '1111', 1111)" onmouseover="showTip(event, '1111', 1111)">
             SeriesExtensions.ResampleEquivalence(...)
           </code>
-          <div class="tip" id="1102">
-            <strong>Signature:</strong> (series:Series&lt;&#39;K,&#39;V&gt; * keyProj:Func&lt;&#39;K,&#39;?660212&gt;) -&gt; Series&lt;&#39;?660212,Series&lt;&#39;K,&#39;V&gt;&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'V, '?660212                        <span>
+          <div class="tip" id="1111">
+            <strong>Signature:</strong> (series:Series&lt;&#39;K,&#39;V&gt; * keyProj:Func&lt;&#39;K,&#39;?685418&gt;) -&gt; Series&lt;&#39;?685418,Series&lt;&#39;K,&#39;V&gt;&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'V, '?685418                        <span>
             <strong>Attributes:</strong><br />
 [&lt;Extension&gt;]<br />
           </span>
@@ -194,10 +194,10 @@ series, similar functionality can be implemented using <code>GroupBy</code>.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1103', 1103)" onmouseover="showTip(event, '1103', 1103)">
+          <code onmouseout="hideTip(event, '1112', 1112)" onmouseover="showTip(event, '1112', 1112)">
             SeriesExtensions.ResampleUniform(...)
           </code>
-          <div class="tip" id="1103">
+          <div class="tip" id="1112">
             <strong>Signature:</strong> (series:Series&lt;&#39;K1,&#39;V&gt; * keyProj:Func&lt;&#39;K1,&#39;K2&gt; * nextKey:Func&lt;&#39;K2,&#39;K2&gt; * fillMode:Lookup) -&gt; Series&lt;&#39;K2,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'V, 'K2                        <span>
             <strong>Attributes:</strong><br />
@@ -241,12 +241,12 @@ space (which is then used for grouping based on equivalence)
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1104', 1104)" onmouseover="showTip(event, '1104', 1104)">
+          <code onmouseout="hideTip(event, '1113', 1113)" onmouseover="showTip(event, '1113', 1113)">
             SeriesExtensions.ResampleUniform(...)
           </code>
-          <div class="tip" id="1104">
-            <strong>Signature:</strong> (series:Series&lt;&#39;K,&#39;V&gt; * keyProj:Func&lt;&#39;K,&#39;?660221&gt; * nextKey:Func&lt;&#39;?660221,&#39;?660221&gt;) -&gt; Series&lt;&#39;?660221,&#39;V&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'V, '?660221                        <span>
+          <div class="tip" id="1113">
+            <strong>Signature:</strong> (series:Series&lt;&#39;K,&#39;V&gt; * keyProj:Func&lt;&#39;K,&#39;?685427&gt; * nextKey:Func&lt;&#39;?685427,&#39;?685427&gt;) -&gt; Series&lt;&#39;?685427,&#39;V&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'V, '?685427                        <span>
             <strong>Attributes:</strong><br />
 [&lt;Extension&gt;]<br />
           </span>
@@ -284,10 +284,10 @@ space (which is then used for grouping based on equivalence)
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1105', 1105)" onmouseover="showTip(event, '1105', 1105)">
+          <code onmouseout="hideTip(event, '1114', 1114)" onmouseover="showTip(event, '1114', 1114)">
             SeriesExtensions.Sample(...)
           </code>
-          <div class="tip" id="1105">
+          <div class="tip" id="1114">
             <strong>Signature:</strong> (series:Series&lt;DateTimeOffset,&#39;V&gt; * interval:TimeSpan) -&gt; Series&lt;DateTimeOffset,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'V                        <span>
             <strong>Attributes:</strong><br />
@@ -319,10 +319,10 @@ at, or just before the end of an interval and at, or after, the end of the serie
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1106', 1106)" onmouseover="showTip(event, '1106', 1106)">
+          <code onmouseout="hideTip(event, '1115', 1115)" onmouseover="showTip(event, '1115', 1115)">
             SeriesExtensions.Sample(...)
           </code>
-          <div class="tip" id="1106">
+          <div class="tip" id="1115">
             <strong>Signature:</strong> (series:Series&lt;DateTime,&#39;V&gt; * interval:TimeSpan) -&gt; Series&lt;DateTime,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'V                        <span>
             <strong>Attributes:</strong><br />
@@ -354,10 +354,10 @@ at, or just before the end of an interval and at, or after, the end of the serie
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1107', 1107)" onmouseover="showTip(event, '1107', 1107)">
+          <code onmouseout="hideTip(event, '1116', 1116)" onmouseover="showTip(event, '1116', 1116)">
             SeriesExtensions.Sample(...)
           </code>
-          <div class="tip" id="1107">
+          <div class="tip" id="1116">
             <strong>Signature:</strong> (series:Series&lt;DateTimeOffset,&#39;V&gt; * interval:TimeSpan * dir:Direction) -&gt; Series&lt;DateTimeOffset,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'V                        <span>
             <strong>Attributes:</strong><br />
@@ -395,10 +395,10 @@ of interval and at the end of the series.
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1108', 1108)" onmouseover="showTip(event, '1108', 1108)">
+          <code onmouseout="hideTip(event, '1117', 1117)" onmouseover="showTip(event, '1117', 1117)">
             SeriesExtensions.Sample(...)
           </code>
-          <div class="tip" id="1108">
+          <div class="tip" id="1117">
             <strong>Signature:</strong> (series:Series&lt;DateTime,&#39;V&gt; * interval:TimeSpan * dir:Direction) -&gt; Series&lt;DateTime,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'V                        <span>
             <strong>Attributes:</strong><br />
@@ -435,10 +435,10 @@ values at exact keys will be returned; <code>NearestGreater</code> returns the n
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1109', 1109)" onmouseover="showTip(event, '1109', 1109)">
+          <code onmouseout="hideTip(event, '1118', 1118)" onmouseover="showTip(event, '1118', 1118)">
             SeriesExtensions.Sample(...)
           </code>
-          <div class="tip" id="1109">
+          <div class="tip" id="1118">
             <strong>Signature:</strong> (series:Series&lt;DateTimeOffset,&#39;V&gt; * start:DateTimeOffset * interval:TimeSpan * dir:Direction) -&gt; Series&lt;DateTimeOffset,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'V                        <span>
             <strong>Attributes:</strong><br />
@@ -476,10 +476,10 @@ values at exact keys will be returned; <code>NearestGreater</code> returns the n
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1110', 1110)" onmouseover="showTip(event, '1110', 1110)">
+          <code onmouseout="hideTip(event, '1119', 1119)" onmouseover="showTip(event, '1119', 1119)">
             SeriesExtensions.Sample(...)
           </code>
-          <div class="tip" id="1110">
+          <div class="tip" id="1119">
             <strong>Signature:</strong> (series:Series&lt;DateTime,&#39;V&gt; * start:DateTime * interval:TimeSpan * dir:Direction) -&gt; Series&lt;DateTime,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'V                        <span>
             <strong>Attributes:</strong><br />
@@ -517,10 +517,10 @@ values at exact keys will be returned; <code>NearestGreater</code> returns the n
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1111', 1111)" onmouseover="showTip(event, '1111', 1111)">
+          <code onmouseout="hideTip(event, '1120', 1120)" onmouseover="showTip(event, '1120', 1120)">
             SeriesExtensions.Sample(series, keys)
           </code>
-          <div class="tip" id="1111">
+          <div class="tip" id="1120">
             <strong>Signature:</strong> (series:Series&lt;&#39;K,&#39;V&gt; * keys:seq&lt;&#39;K&gt;) -&gt; Series&lt;&#39;K,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V                        <span>
             <strong>Attributes:</strong><br />
@@ -550,10 +550,10 @@ for some new sequence of keys.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1112', 1112)" onmouseover="showTip(event, '1112', 1112)">
+          <code onmouseout="hideTip(event, '1121', 1121)" onmouseover="showTip(event, '1121', 1121)">
             SeriesExtensions.SampleInto(...)
           </code>
-          <div class="tip" id="1112">
+          <div class="tip" id="1121">
             <strong>Signature:</strong> (series:Series&lt;DateTimeOffset,&#39;V&gt; * interval:TimeSpan * dir:Direction * aggregate:Func&lt;DateTimeOffset,(Series&lt;DateTimeOffset,&#39;V&gt; -&gt; obj)&gt;) -&gt; Series&lt;DateTimeOffset,obj&gt;<br />
                           <strong>Type parameters:</strong> 'V                        <span>
             <strong>Attributes:</strong><br />
@@ -591,10 +591,10 @@ used as the greatest keys in a chunk.
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1113', 1113)" onmouseover="showTip(event, '1113', 1113)">
+          <code onmouseout="hideTip(event, '1122', 1122)" onmouseover="showTip(event, '1122', 1122)">
             SeriesExtensions.SampleInto(...)
           </code>
-          <div class="tip" id="1113">
+          <div class="tip" id="1122">
             <strong>Signature:</strong> (series:Series&lt;DateTime,&#39;V&gt; * interval:TimeSpan * dir:Direction * aggregate:Func&lt;DateTime,(Series&lt;DateTime,&#39;V&gt; -&gt; obj)&gt;) -&gt; Series&lt;DateTime,obj&gt;<br />
                           <strong>Type parameters:</strong> 'V                        <span>
             <strong>Attributes:</strong><br />
@@ -641,10 +641,10 @@ used as the greatest keys in a chunk.
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1114', 1114)" onmouseover="showTip(event, '1114', 1114)">
+          <code onmouseout="hideTip(event, '1123', 1123)" onmouseover="showTip(event, '1123', 1123)">
             SeriesExtensions.DropMissing(series)
           </code>
-          <div class="tip" id="1114">
+          <div class="tip" id="1123">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V                        <span>
             <strong>Attributes:</strong><br />
@@ -685,10 +685,10 @@ only those keys for which there is a value available in the original one.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1115', 1115)" onmouseover="showTip(event, '1115', 1115)">
+          <code onmouseout="hideTip(event, '1124', 1124)" onmouseover="showTip(event, '1124', 1124)">
             SeriesExtensions.FillMissing(...)
           </code>
-          <div class="tip" id="1115">
+          <div class="tip" id="1124">
             <strong>Signature:</strong> (series:Series&lt;&#39;K,&#39;T&gt; * filler:Func&lt;&#39;K,&#39;T&gt;) -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T                        <span>
             <strong>Attributes:</strong><br />
@@ -723,10 +723,10 @@ For example see <a href="../frame.html#missing">handling missing values in the t
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1116', 1116)" onmouseover="showTip(event, '1116', 1116)">
+          <code onmouseout="hideTip(event, '1125', 1125)" onmouseover="showTip(event, '1125', 1125)">
             SeriesExtensions.FillMissing(...)
           </code>
-          <div class="tip" id="1116">
+          <div class="tip" id="1125">
             <strong>Signature:</strong> (series:Series&lt;&#39;K,&#39;T&gt; * direction:Direction) -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T                        <span>
             <strong>Attributes:</strong><br />
@@ -779,10 +779,10 @@ for the nearest greater key.
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1117', 1117)" onmouseover="showTip(event, '1117', 1117)">
+          <code onmouseout="hideTip(event, '1126', 1126)" onmouseover="showTip(event, '1126', 1126)">
             SeriesExtensions.FillMissing(...)
           </code>
-          <div class="tip" id="1117">
+          <div class="tip" id="1126">
             <strong>Signature:</strong> (series:Series&lt;&#39;K,&#39;T&gt; * value:&#39;T) -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T                        <span>
             <strong>Attributes:</strong><br />
@@ -817,10 +817,10 @@ for the nearest greater key.
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1118', 1118)" onmouseover="showTip(event, '1118', 1118)">
+          <code onmouseout="hideTip(event, '1127', 1127)" onmouseover="showTip(event, '1127', 1127)">
             SeriesExtensions.Chunk(series, size)
           </code>
-          <div class="tip" id="1118">
+          <div class="tip" id="1127">
             <strong>Signature:</strong> (series:Series&lt;&#39;K,&#39;V&gt; * size:int) -&gt; Series&lt;&#39;K,Series&lt;&#39;K,&#39;V&gt;&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V                        <span>
             <strong>Attributes:</strong><br />
@@ -839,10 +839,10 @@ for the nearest greater key.
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1119', 1119)" onmouseover="showTip(event, '1119', 1119)">
+          <code onmouseout="hideTip(event, '1128', 1128)" onmouseover="showTip(event, '1128', 1128)">
             SeriesExtensions.ChunkInto(...)
           </code>
-          <div class="tip" id="1119">
+          <div class="tip" id="1128">
             <strong>Signature:</strong> (series:Series&lt;&#39;K,&#39;V&gt; * size:int * reduce:Func&lt;Series&lt;&#39;K,&#39;V&gt;,&#39;U&gt;) -&gt; Series&lt;&#39;K,&#39;U&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V, 'U                        <span>
             <strong>Attributes:</strong><br />
@@ -861,10 +861,10 @@ for the nearest greater key.
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1120', 1120)" onmouseover="showTip(event, '1120', 1120)">
+          <code onmouseout="hideTip(event, '1129', 1129)" onmouseover="showTip(event, '1129', 1129)">
             SeriesExtensions.ChunkInto(...)
           </code>
-          <div class="tip" id="1120">
+          <div class="tip" id="1129">
             <strong>Signature:</strong> (series:Series&lt;&#39;K1,&#39;V&gt; * size:int * selector:Func&lt;Series&lt;&#39;K1,&#39;V&gt;,KeyValuePair&lt;&#39;K2,&#39;U&gt;&gt;) -&gt; Series&lt;&#39;K2,&#39;U&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'V, 'K2, 'U                        <span>
             <strong>Attributes:</strong><br />
@@ -883,10 +883,10 @@ for the nearest greater key.
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1121', 1121)" onmouseover="showTip(event, '1121', 1121)">
+          <code onmouseout="hideTip(event, '1130', 1130)" onmouseover="showTip(event, '1130', 1130)">
             SeriesExtensions.ContainsKey(...)
           </code>
-          <div class="tip" id="1121">
+          <div class="tip" id="1130">
             <strong>Signature:</strong> (series:Series&lt;&#39;K,&#39;T&gt; * key:&#39;K) -&gt; bool<br />
                           <strong>Type parameters:</strong> 'K, 'T                        <span>
             <strong>Attributes:</strong><br />
@@ -905,10 +905,10 @@ for the nearest greater key.
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1122', 1122)" onmouseover="showTip(event, '1122', 1122)">
+          <code onmouseout="hideTip(event, '1131', 1131)" onmouseover="showTip(event, '1131', 1131)">
             SeriesExtensions.Diff(series, offset)
           </code>
-          <div class="tip" id="1122">
+          <div class="tip" id="1131">
             <strong>Signature:</strong> (series:Series&lt;&#39;K,int&gt; * offset:int) -&gt; Series&lt;&#39;K,int&gt;<br />
                           <strong>Type parameters:</strong> 'K                        <span>
             <strong>Attributes:</strong><br />
@@ -939,10 +939,10 @@ when negative, subtracts the future values from the current values.
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1123', 1123)" onmouseover="showTip(event, '1123', 1123)">
+          <code onmouseout="hideTip(event, '1132', 1132)" onmouseover="showTip(event, '1132', 1132)">
             SeriesExtensions.Diff(series, offset)
           </code>
-          <div class="tip" id="1123">
+          <div class="tip" id="1132">
             <strong>Signature:</strong> (series:Series&lt;&#39;K,decimal&gt; * offset:int) -&gt; Series&lt;&#39;K,decimal&gt;<br />
                           <strong>Type parameters:</strong> 'K                        <span>
             <strong>Attributes:</strong><br />
@@ -973,10 +973,10 @@ when negative, subtracts the future values from the current values.
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1124', 1124)" onmouseover="showTip(event, '1124', 1124)">
+          <code onmouseout="hideTip(event, '1133', 1133)" onmouseover="showTip(event, '1133', 1133)">
             SeriesExtensions.Diff(series, offset)
           </code>
-          <div class="tip" id="1124">
+          <div class="tip" id="1133">
             <strong>Signature:</strong> (series:Series&lt;&#39;K,float32&gt; * offset:int) -&gt; Series&lt;&#39;K,float32&gt;<br />
                           <strong>Type parameters:</strong> 'K                        <span>
             <strong>Attributes:</strong><br />
@@ -1007,10 +1007,10 @@ when negative, subtracts the future values from the current values.
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1125', 1125)" onmouseover="showTip(event, '1125', 1125)">
+          <code onmouseout="hideTip(event, '1134', 1134)" onmouseover="showTip(event, '1134', 1134)">
             SeriesExtensions.Diff(series, offset)
           </code>
-          <div class="tip" id="1125">
+          <div class="tip" id="1134">
             <strong>Signature:</strong> (series:Series&lt;&#39;K,float&gt; * offset:int) -&gt; Series&lt;&#39;K,float&gt;<br />
                           <strong>Type parameters:</strong> 'K                        <span>
             <strong>Attributes:</strong><br />
@@ -1041,10 +1041,10 @@ when negative, subtracts the future values from the current values.
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1126', 1126)" onmouseover="showTip(event, '1126', 1126)">
+          <code onmouseout="hideTip(event, '1135', 1135)" onmouseover="showTip(event, '1135', 1135)">
             SeriesExtensions.FillMissing(...)
           </code>
-          <div class="tip" id="1126">
+          <div class="tip" id="1135">
             <strong>Signature:</strong> (series:Series&lt;&#39;K,&#39;T&gt; * startKey:&#39;K * endKey:&#39;K * direction:Direction) -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T                        <span>
             <strong>Attributes:</strong><br />
@@ -1063,10 +1063,10 @@ when negative, subtracts the future values from the current values.
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1127', 1127)" onmouseover="showTip(event, '1127', 1127)">
+          <code onmouseout="hideTip(event, '1136', 1136)" onmouseover="showTip(event, '1136', 1136)">
             SeriesExtensions.FirstKey(series)
           </code>
-          <div class="tip" id="1127">
+          <div class="tip" id="1136">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;K<br />
                           <strong>Type parameters:</strong> 'K, 'V                        <span>
             <strong>Attributes:</strong><br />
@@ -1085,10 +1085,10 @@ when negative, subtracts the future values from the current values.
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1128', 1128)" onmouseover="showTip(event, '1128', 1128)">
+          <code onmouseout="hideTip(event, '1137', 1137)" onmouseover="showTip(event, '1137', 1137)">
             SeriesExtensions.FirstValue(series)
           </code>
-          <div class="tip" id="1128">
+          <div class="tip" id="1137">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;V<br />
                           <strong>Type parameters:</strong> 'K, 'V                        <span>
             <strong>Attributes:</strong><br />
@@ -1107,10 +1107,10 @@ when negative, subtracts the future values from the current values.
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1129', 1129)" onmouseover="showTip(event, '1129', 1129)">
+          <code onmouseout="hideTip(event, '1138', 1138)" onmouseover="showTip(event, '1138', 1138)">
             SeriesExtensions.Flatten(series)
           </code>
-          <div class="tip" id="1129">
+          <div class="tip" id="1138">
             <strong>Signature:</strong> (series:Series&lt;&#39;K,&#39;T opt&gt;) -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T                        <span>
             <strong>Attributes:</strong><br />
@@ -1131,10 +1131,10 @@ when negative, subtracts the future values from the current values.
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1130', 1130)" onmouseover="showTip(event, '1130', 1130)">
+          <code onmouseout="hideTip(event, '1139', 1139)" onmouseover="showTip(event, '1139', 1139)">
             SeriesExtensions.GetAllObservations(...)
           </code>
-          <div class="tip" id="1130">
+          <div class="tip" id="1139">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;T&gt; -&gt; seq&lt;KeyValuePair&lt;&#39;K,OptionalValue&lt;&#39;T&gt;&gt;&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T                        <span>
             <strong>Attributes:</strong><br />
@@ -1157,10 +1157,10 @@ provides <code>HasValue</code> for testing if the value is available.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1131', 1131)" onmouseover="showTip(event, '1131', 1131)">
+          <code onmouseout="hideTip(event, '1140', 1140)" onmouseover="showTip(event, '1140', 1140)">
             SeriesExtensions.GetAllValues(series)
           </code>
-          <div class="tip" id="1131">
+          <div class="tip" id="1140">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;T&gt; -&gt; seq&lt;OptionalValue&lt;&#39;T&gt;&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T                        <span>
             <strong>Attributes:</strong><br />
@@ -1183,10 +1183,10 @@ if the value is available.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1132', 1132)" onmouseover="showTip(event, '1132', 1132)">
+          <code onmouseout="hideTip(event, '1141', 1141)" onmouseover="showTip(event, '1141', 1141)">
             SeriesExtensions.GetObservations(series)
           </code>
-          <div class="tip" id="1132">
+          <div class="tip" id="1141">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;T&gt; -&gt; seq&lt;KeyValuePair&lt;&#39;K,&#39;T&gt;&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T                        <span>
             <strong>Attributes:</strong><br />
@@ -1209,10 +1209,10 @@ all keys with missing values (such as values created from <code>null</code>,
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1133', 1133)" onmouseover="showTip(event, '1133', 1133)">
+          <code onmouseout="hideTip(event, '1142', 1142)" onmouseover="showTip(event, '1142', 1142)">
             SeriesExtensions.GetSlice(...)
           </code>
-          <div class="tip" id="1133">
+          <div class="tip" id="1142">
             <strong>Signature:</strong> (series:Series&lt;(&#39;K1 * &#39;K2),&#39;V&gt; * k1:&#39;K1 * lo2:&#39;K2 option * hi2:&#39;K2 option) -&gt; Series&lt;(&#39;K1 * &#39;K2),&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'K2, 'V                        <span>
             <strong>Attributes:</strong><br />
@@ -1232,10 +1232,10 @@ all keys with missing values (such as values created from <code>null</code>,
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1134', 1134)" onmouseover="showTip(event, '1134', 1134)">
+          <code onmouseout="hideTip(event, '1143', 1143)" onmouseover="showTip(event, '1143', 1143)">
             SeriesExtensions.GetSlice(...)
           </code>
-          <div class="tip" id="1134">
+          <div class="tip" id="1143">
             <strong>Signature:</strong> (series:Series&lt;(&#39;K1 * &#39;K2),&#39;V&gt; * lo1:&#39;K1 option * hi1:&#39;K1 option * k2:&#39;K2) -&gt; Series&lt;(&#39;K1 * &#39;K2),&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'K2, 'V                        <span>
             <strong>Attributes:</strong><br />
@@ -1255,10 +1255,10 @@ all keys with missing values (such as values created from <code>null</code>,
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1135', 1135)" onmouseover="showTip(event, '1135', 1135)">
+          <code onmouseout="hideTip(event, '1144', 1144)" onmouseover="showTip(event, '1144', 1144)">
             SeriesExtensions.GetSlice(...)
           </code>
-          <div class="tip" id="1135">
+          <div class="tip" id="1144">
             <strong>Signature:</strong> (series:Series&lt;(&#39;K1 * &#39;K2),&#39;V&gt; * lo1:&#39;K1 option * hi1:&#39;K1 option * lo2:&#39;K2 option * hi2:&#39;K2 option) -&gt; Series&lt;(&#39;K1 * &#39;K2),&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'K2, 'V                        <span>
             <strong>Attributes:</strong><br />
@@ -1278,10 +1278,10 @@ all keys with missing values (such as values created from <code>null</code>,
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1136', 1136)" onmouseover="showTip(event, '1136', 1136)">
+          <code onmouseout="hideTip(event, '1145', 1145)" onmouseover="showTip(event, '1145', 1145)">
             SeriesExtensions.LastKey(series)
           </code>
-          <div class="tip" id="1136">
+          <div class="tip" id="1145">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;K<br />
                           <strong>Type parameters:</strong> 'K, 'V                        <span>
             <strong>Attributes:</strong><br />
@@ -1300,10 +1300,10 @@ all keys with missing values (such as values created from <code>null</code>,
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1137', 1137)" onmouseover="showTip(event, '1137', 1137)">
+          <code onmouseout="hideTip(event, '1146', 1146)" onmouseover="showTip(event, '1146', 1146)">
             SeriesExtensions.LastValue(series)
           </code>
-          <div class="tip" id="1137">
+          <div class="tip" id="1146">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;V<br />
                           <strong>Type parameters:</strong> 'K, 'V                        <span>
             <strong>Attributes:</strong><br />
@@ -1322,10 +1322,10 @@ all keys with missing values (such as values created from <code>null</code>,
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1138', 1138)" onmouseover="showTip(event, '1138', 1138)">
+          <code onmouseout="hideTip(event, '1147', 1147)" onmouseover="showTip(event, '1147', 1147)">
             SeriesExtensions.Log(series)
           </code>
-          <div class="tip" id="1138">
+          <div class="tip" id="1147">
             <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
                           <strong>Type parameters:</strong> 'K                        <span>
             <strong>Attributes:</strong><br />
@@ -1344,10 +1344,10 @@ all keys with missing values (such as values created from <code>null</code>,
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1139', 1139)" onmouseover="showTip(event, '1139', 1139)">
+          <code onmouseout="hideTip(event, '1148', 1148)" onmouseover="showTip(event, '1148', 1148)">
             SeriesExtensions.OrderByKey(series)
           </code>
-          <div class="tip" id="1139">
+          <div class="tip" id="1148">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T                        <span>
             <strong>Attributes:</strong><br />
@@ -1371,10 +1371,10 @@ all keys with missing values (such as values created from <code>null</code>,
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1140', 1140)" onmouseover="showTip(event, '1140', 1140)">
+          <code onmouseout="hideTip(event, '1149', 1149)" onmouseover="showTip(event, '1149', 1149)">
             SeriesExtensions.Print(series)
           </code>
-          <div class="tip" id="1140">
+          <div class="tip" id="1149">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; unit<br />
                           <strong>Type parameters:</strong> 'K, 'V                        <span>
             <strong>Attributes:</strong><br />
@@ -1393,10 +1393,10 @@ all keys with missing values (such as values created from <code>null</code>,
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1141', 1141)" onmouseover="showTip(event, '1141', 1141)">
+          <code onmouseout="hideTip(event, '1150', 1150)" onmouseover="showTip(event, '1150', 1150)">
             SeriesExtensions.Shift(series, offset)
           </code>
-          <div class="tip" id="1141">
+          <div class="tip" id="1150">
             <strong>Signature:</strong> (series:Series&lt;&#39;K,&#39;V&gt; * offset:int) -&gt; Series&lt;&#39;K,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V                        <span>
             <strong>Attributes:</strong><br />
@@ -1434,10 +1434,10 @@ use <code>Series.diff</code> which will be a little bit faster.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1142', 1142)" onmouseover="showTip(event, '1142', 1142)">
+          <code onmouseout="hideTip(event, '1151', 1151)" onmouseover="showTip(event, '1151', 1151)">
             SeriesExtensions.Sort(series)
           </code>
-          <div class="tip" id="1142">
+          <div class="tip" id="1151">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V                        <span>
             <strong>Attributes:</strong><br />
@@ -1456,10 +1456,10 @@ use <code>Series.diff</code> which will be a little bit faster.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1143', 1143)" onmouseover="showTip(event, '1143', 1143)">
+          <code onmouseout="hideTip(event, '1152', 1152)" onmouseover="showTip(event, '1152', 1152)">
             SeriesExtensions.SortBy(series, f)
           </code>
-          <div class="tip" id="1143">
+          <div class="tip" id="1152">
             <strong>Signature:</strong> (series:Series&lt;&#39;K,&#39;V&gt; * f:Func&lt;&#39;V,&#39;V2&gt;) -&gt; Series&lt;&#39;K,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V, 'V2                        <span>
             <strong>Attributes:</strong><br />
@@ -1478,10 +1478,10 @@ use <code>Series.diff</code> which will be a little bit faster.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1144', 1144)" onmouseover="showTip(event, '1144', 1144)">
+          <code onmouseout="hideTip(event, '1153', 1153)" onmouseover="showTip(event, '1153', 1153)">
             SeriesExtensions.SortWith(series, cmp)
           </code>
-          <div class="tip" id="1144">
+          <div class="tip" id="1153">
             <strong>Signature:</strong> (series:Series&lt;&#39;K,&#39;V&gt; * cmp:Comparer&lt;&#39;V&gt;) -&gt; Series&lt;&#39;K,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V                        <span>
             <strong>Attributes:</strong><br />
@@ -1500,10 +1500,10 @@ use <code>Series.diff</code> which will be a little bit faster.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1145', 1145)" onmouseover="showTip(event, '1145', 1145)">
+          <code onmouseout="hideTip(event, '1154', 1154)" onmouseover="showTip(event, '1154', 1154)">
             SeriesExtensions.TryFirstValue(series)
           </code>
-          <div class="tip" id="1145">
+          <div class="tip" id="1154">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;V option<br />
                           <strong>Type parameters:</strong> 'K, 'V                        <span>
             <strong>Attributes:</strong><br />
@@ -1522,10 +1522,10 @@ use <code>Series.diff</code> which will be a little bit faster.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1146', 1146)" onmouseover="showTip(event, '1146', 1146)">
+          <code onmouseout="hideTip(event, '1155', 1155)" onmouseover="showTip(event, '1155', 1155)">
             SeriesExtensions.TryLastValue(series)
           </code>
-          <div class="tip" id="1146">
+          <div class="tip" id="1155">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;V option<br />
                           <strong>Type parameters:</strong> 'K, 'V                        <span>
             <strong>Attributes:</strong><br />
@@ -1544,10 +1544,10 @@ use <code>Series.diff</code> which will be a little bit faster.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1147', 1147)" onmouseover="showTip(event, '1147', 1147)">
+          <code onmouseout="hideTip(event, '1156', 1156)" onmouseover="showTip(event, '1156', 1156)">
             SeriesExtensions.Window(series, size)
           </code>
-          <div class="tip" id="1147">
+          <div class="tip" id="1156">
             <strong>Signature:</strong> (series:Series&lt;&#39;K,&#39;V&gt; * size:int) -&gt; Series&lt;&#39;K,Series&lt;&#39;K,&#39;V&gt;&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V                        <span>
             <strong>Attributes:</strong><br />
@@ -1566,10 +1566,10 @@ use <code>Series.diff</code> which will be a little bit faster.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1148', 1148)" onmouseover="showTip(event, '1148', 1148)">
+          <code onmouseout="hideTip(event, '1157', 1157)" onmouseover="showTip(event, '1157', 1157)">
             SeriesExtensions.WindowInto(...)
           </code>
-          <div class="tip" id="1148">
+          <div class="tip" id="1157">
             <strong>Signature:</strong> (series:Series&lt;&#39;K,&#39;V&gt; * size:int * reduce:Func&lt;Series&lt;&#39;K,&#39;V&gt;,&#39;U&gt;) -&gt; Series&lt;&#39;K,&#39;U&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V, 'U                        <span>
             <strong>Attributes:</strong><br />
@@ -1588,10 +1588,10 @@ use <code>Series.diff</code> which will be a little bit faster.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1149', 1149)" onmouseover="showTip(event, '1149', 1149)">
+          <code onmouseout="hideTip(event, '1158', 1158)" onmouseover="showTip(event, '1158', 1158)">
             SeriesExtensions.WindowInto(...)
           </code>
-          <div class="tip" id="1149">
+          <div class="tip" id="1158">
             <strong>Signature:</strong> (series:Series&lt;&#39;K1,&#39;V&gt; * size:int * selector:Func&lt;Series&lt;&#39;K1,&#39;V&gt;,KeyValuePair&lt;&#39;K2,&#39;U&gt;&gt;) -&gt; Series&lt;&#39;K2,&#39;U&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'V, 'K2, 'U                        <span>
             <strong>Attributes:</strong><br />
@@ -1623,45 +1623,49 @@ use <code>Series.diff</code> which will be a little bit faster.</p>
             <li><a href="https://nuget.org/packages/Deedle">Get Library via NuGet</a></li>
             <li><a href="http://github.com/fslaborg/Deedle">Source Code on GitHub</a></li>
             <li><a href="http://github.com/fslaborg/Deedle/blob/master/LICENSE.md">License (BSD)</a></li>
-            <li><a href="https://fslab.org/Deedle/RELEASE_NOTES.html">Release notes</a></li>
-            <li><a href="https://fslab.org/Deedle/design.html">Design notes</a></li>
-            <li><a href="http://stackoverflow.com/questions/tagged/deedle">Ask a question!</a></li>
+            <li><a href="https://fslab.org/Deedle/RELEASE_NOTES.html">Release Notes</a></li>
+            <li><a href="https://fslab.org/Deedle/design.html">Design Notes</a></li>
+            <li><a href="http://stackoverflow.com/questions/tagged/deedle">Ask a Question!</a></li>
             
             <li class="nav-header">Using from F#</li>
             <li>
-              <a href="https://fslab.org/Deedle/tutorial.html">Quick start tutorial</a>
+              <a href="https://fslab.org/Deedle/tutorial.html">Quick Start Tutorial</a>
             </li>
             <li>
-              <a href="https://fslab.org/Deedle/series.html">Working with time series</a>
+              <a href="https://fslab.org/Deedle/series.html">Working with Time Series</a>
             </li>
             <li>
-              <a href="https://fslab.org/Deedle/frame.html">Working with data frames</a>
+              <a href="https://fslab.org/Deedle/frame.html">Working with Data Frames</a>
             </li>
             <li>
-              <a href="https://fslab.org/Deedle/stats.html">Statistics &amp; calculations</a>
+              <a href="https://fslab.org/Deedle/stats.html">Statistics &amp; Calculations</a>
             </li>
             <li>
               <a href="https://fslab.org/Deedle/rinterop.html">Using Deedle with R</a>
             </li>
 
             <li class="nav-header">Using from C#</li>
-            <li><a href="https://fslab.org/Deedle/csharpintro.html">Getting started</a></li>
+            <li><a href="https://fslab.org/Deedle/csharpintro.html">Getting Started</a></li>
             <li>
-              <a href="https://fslab.org/Deedle/csharpseries.html">Working with data series</a>
+              <a href="https://fslab.org/Deedle/csharpseries.html">Working with Data Series</a>
             </li>
             <li>
-              <a href="https://fslab.org/Deedle/csharpframe.html">Working with data frames</a>
+              <a href="https://fslab.org/Deedle/csharpframe.html">Working with Data Frames</a>
             </li>
 
-            <li class="nav-header">Documentation</li>
+            <li class="nav-header">Core Documentation</li>
             <li><a href="https://fslab.org/Deedle/reference/index.html">API Reference</a></li>
             <li class="divider"></li>
-            <li><a href="https://fslab.org/Deedle/reference/deedle-seriesmodule.html">Series module</a></li>
-            <li><a href="https://fslab.org/Deedle/reference/deedle-framemodule.html">Frame module</a></li>
-            <li><a href="https://fslab.org/Deedle/reference/deedle-stats.html">Stats module</a></li>
-
+            <li><a href="https://fslab.org/Deedle/reference/deedle-seriesmodule.html">Series Module</a></li>
+            <li><a href="https://fslab.org/Deedle/reference/deedle-framemodule.html">Frame Module</a></li>
+            <li><a href="https://fslab.org/Deedle/reference/deedle-stats.html">Stats Module</a></li>
+            
+            <li class="nav-header">Math Documentation</li>            
+            <li><a href="https://fslab.org/Deedle/reference/deedle-math-linearalgebra.html">Linear Algebra Module</a></li>
+            <li><a href="https://fslab.org/Deedle/reference/deedle-math-stats.html">Stats Module</a></li>
+            <li><a href="https://fslab.org/Deedle/reference/deedle-math-finance.html">Finance Module</a></li>             
             <li class="nav-header">Samples</li>
-            <li><a href="https://fslab.org/Deedle/lazysource.html">Lazy data loading</a></li>
+            <li><a href="https://fslab.org/Deedle/lazysource.html">Lazy Data Loading</a></li>
           </ul>
         </div>
       </div>

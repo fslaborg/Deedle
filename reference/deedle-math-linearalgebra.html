@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>LinearAlgebra - Deedle</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="BlueMountain Capital, FsLab.Org">
+
+    <script src="https://code.jquery.com/jquery-1.8.0.js"></script>
+    <script src="https://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
+    <script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
+
+    <link type="text/css" rel="stylesheet" href="https://fslab.org/Deedle/content/style.css" />
+    <link type="text/css" rel="stylesheet" href="https://fslab.org/Deedle/content/deedle.css" />
+    <script type="text/javascript" src="https://fslab.org/Deedle/content/tips.js"></script>
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="container">
+      <div class="masthead">
+        <ul class="nav nav-pills pull-right">
+          <li><a href="http://fsharp.org">fsharp.org</a></li>
+          <li><a href="http://fslab.org/RProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> R Provider</a></li>
+          <li><a href="https://fslab.org/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Data"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.png" /> F# Data</a></li>
+          <li><a href="http://fsprojects.github.io/FSharp.Data.Toolbox"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.Toolbox.png" /> F# Data Toolbox</a></li>
+        </ul>
+        <h3 class="muted"><a href="https://fslab.org/Deedle/index.html">Deedle</a></h3>
+      </div>
+      <hr />
+      <div class="row">
+        <div class="span9" id="main">
+          
+
+
+
+<h1>LinearAlgebra</h1>
+<p>
+
+    <span>Namespace: Deedle.Math</span><br />
+    </p>
+<div class="xmldoc">
+<p>Linear algebra on frame using MathNet.Numerics library.</p>
+
+</div>
+  <h3>Static members</h3>
+  <table class="table table-bordered member-list">
+    <thead>
+      <tr><td>Static member</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1323', 1323)" onmouseover="showTip(event, '1323', 1323)">
+            LinearAlgebra.cholesky(df)
+          </code>
+          <div class="tip" id="1323">
+            <strong>Signature:</strong> df:Frame&lt;&#39;R,&#39;C&gt; -&gt; Cholesky&lt;float&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle.Math/LinearAlgebra.fs#L136-136" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Cholesky decomposition</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1324', 1324)" onmouseover="showTip(event, '1324', 1324)">
+            LinearAlgebra.condition(df)
+          </code>
+          <div class="tip" id="1324">
+            <strong>Signature:</strong> df:Frame&lt;&#39;R,&#39;C&gt; -&gt; float<br />
+                          <strong>Type parameters:</strong> 'R, 'C                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle.Math/LinearAlgebra.fs#L94-94" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Matrix condition</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1325', 1325)" onmouseover="showTip(event, '1325', 1325)">
+            LinearAlgebra.conjugate(df)
+          </code>
+          <div class="tip" id="1325">
+            <strong>Signature:</strong> df:Frame&lt;&#39;R,&#39;C&gt; -&gt; Matrix&lt;float&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle.Math/LinearAlgebra.fs#L38-38" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Conjugate</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1326', 1326)" onmouseover="showTip(event, '1326', 1326)">
+            LinearAlgebra.conjugateTranspose(df)
+          </code>
+          <div class="tip" id="1326">
+            <strong>Signature:</strong> df:Frame&lt;&#39;R,&#39;C&gt; -&gt; Matrix&lt;float&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle.Math/LinearAlgebra.fs#L45-45" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Conjugate tranpose</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1327', 1327)" onmouseover="showTip(event, '1327', 1327)">
+            LinearAlgebra.determinant(df)
+          </code>
+          <div class="tip" id="1327">
+            <strong>Signature:</strong> df:Frame&lt;&#39;R,&#39;C&gt; -&gt; float<br />
+                          <strong>Type parameters:</strong> 'R, 'C                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle.Math/LinearAlgebra.fs#L87-87" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Matrix determinant</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1328', 1328)" onmouseover="showTip(event, '1328', 1328)">
+            LinearAlgebra.eigen(df)
+          </code>
+          <div class="tip" id="1328">
+            <strong>Signature:</strong> df:Frame&lt;&#39;R,&#39;C&gt; -&gt; Evd&lt;float&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle.Math/LinearAlgebra.fs#L164-164" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Eigen values and eigen vectors of matrix</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1329', 1329)" onmouseover="showTip(event, '1329', 1329)">
+            LinearAlgebra.inverse(df)
+          </code>
+          <div class="tip" id="1329">
+            <strong>Signature:</strong> df:Frame&lt;&#39;R,&#39;C&gt; -&gt; Matrix&lt;float&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle.Math/LinearAlgebra.fs#L24-24" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Inverse</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1330', 1330)" onmouseover="showTip(event, '1330', 1330)">
+            LinearAlgebra.isHermitian(df)
+          </code>
+          <div class="tip" id="1330">
+            <strong>Signature:</strong> df:Frame&lt;&#39;R,&#39;C&gt; -&gt; bool<br />
+                          <strong>Type parameters:</strong> 'R, 'C                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle.Math/LinearAlgebra.fs#L129-129" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Check whether it is Hermitian matrix</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1331', 1331)" onmouseover="showTip(event, '1331', 1331)">
+            LinearAlgebra.isSymmetric(df)
+          </code>
+          <div class="tip" id="1331">
+            <strong>Signature:</strong> df:Frame&lt;&#39;R,&#39;C&gt; -&gt; bool<br />
+                          <strong>Type parameters:</strong> 'R, 'C                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle.Math/LinearAlgebra.fs#L122-122" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Check whether it is symmetric matrix</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1332', 1332)" onmouseover="showTip(event, '1332', 1332)">
+            LinearAlgebra.kernel(df)
+          </code>
+          <div class="tip" id="1332">
+            <strong>Signature:</strong> df:Frame&lt;&#39;R,&#39;C&gt; -&gt; Vector&lt;float&gt; []<br />
+                          <strong>Type parameters:</strong> 'R, 'C                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle.Math/LinearAlgebra.fs#L108-108" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Matrix kernel</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1333', 1333)" onmouseover="showTip(event, '1333', 1333)">
+            LinearAlgebra.lu(df)
+          </code>
+          <div class="tip" id="1333">
+            <strong>Signature:</strong> df:Frame&lt;&#39;R,&#39;C&gt; -&gt; LU&lt;float&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle.Math/LinearAlgebra.fs#L143-143" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>LU decomposition</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1334', 1334)" onmouseover="showTip(event, '1334', 1334)">
+            LinearAlgebra.norm(df)
+          </code>
+          <div class="tip" id="1334">
+            <strong>Signature:</strong> df:Frame&lt;&#39;R,&#39;C&gt; -&gt; float<br />
+                          <strong>Type parameters:</strong> 'R, 'C                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle.Math/LinearAlgebra.fs#L52-52" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Norm</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1335', 1335)" onmouseover="showTip(event, '1335', 1335)">
+            LinearAlgebra.normCols(df)
+          </code>
+          <div class="tip" id="1335">
+            <strong>Signature:</strong> df:Frame&lt;&#39;R,&#39;C&gt; -&gt; Vector&lt;float&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle.Math/LinearAlgebra.fs#L66-66" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Norm of columns</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1336', 1336)" onmouseover="showTip(event, '1336', 1336)">
+            LinearAlgebra.normRows(df)
+          </code>
+          <div class="tip" id="1336">
+            <strong>Signature:</strong> df:Frame&lt;&#39;R,&#39;C&gt; -&gt; Vector&lt;float&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle.Math/LinearAlgebra.fs#L59-59" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Norm of rows</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1337', 1337)" onmouseover="showTip(event, '1337', 1337)">
+            LinearAlgebra.nullity(df)
+          </code>
+          <div class="tip" id="1337">
+            <strong>Signature:</strong> df:Frame&lt;&#39;R,&#39;C&gt; -&gt; int<br />
+                          <strong>Type parameters:</strong> 'R, 'C                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle.Math/LinearAlgebra.fs#L101-101" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Matrix nullity</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1338', 1338)" onmouseover="showTip(event, '1338', 1338)">
+            LinearAlgebra.pseudoInverse(df)
+          </code>
+          <div class="tip" id="1338">
+            <strong>Signature:</strong> df:Frame&lt;&#39;R,&#39;C&gt; -&gt; Matrix&lt;float&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle.Math/LinearAlgebra.fs#L31-31" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Pseudo-inverse of matrix</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1339', 1339)" onmouseover="showTip(event, '1339', 1339)">
+            LinearAlgebra.qr(df)
+          </code>
+          <div class="tip" id="1339">
+            <strong>Signature:</strong> df:Frame&lt;&#39;R,&#39;C&gt; -&gt; QR&lt;float&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle.Math/LinearAlgebra.fs#L150-150" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>QR decomposition</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1340', 1340)" onmouseover="showTip(event, '1340', 1340)">
+            LinearAlgebra.range(df)
+          </code>
+          <div class="tip" id="1340">
+            <strong>Signature:</strong> df:Frame&lt;&#39;R,&#39;C&gt; -&gt; Vector&lt;float&gt; []<br />
+                          <strong>Type parameters:</strong> 'R, 'C                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle.Math/LinearAlgebra.fs#L115-115" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Matrix range</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1341', 1341)" onmouseover="showTip(event, '1341', 1341)">
+            LinearAlgebra.rank(df)
+          </code>
+          <div class="tip" id="1341">
+            <strong>Signature:</strong> df:Frame&lt;&#39;R,&#39;C&gt; -&gt; int<br />
+                          <strong>Type parameters:</strong> 'R, 'C                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle.Math/LinearAlgebra.fs#L73-73" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Matrix rank</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1342', 1342)" onmouseover="showTip(event, '1342', 1342)">
+            LinearAlgebra.svd(df)
+          </code>
+          <div class="tip" id="1342">
+            <strong>Signature:</strong> df:Frame&lt;&#39;R,&#39;C&gt; -&gt; Svd&lt;float&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle.Math/LinearAlgebra.fs#L157-157" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>SVD decomposition</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1343', 1343)" onmouseover="showTip(event, '1343', 1343)">
+            LinearAlgebra.trace(df)
+          </code>
+          <div class="tip" id="1343">
+            <strong>Signature:</strong> df:Frame&lt;&#39;R,&#39;C&gt; -&gt; float<br />
+                          <strong>Type parameters:</strong> 'R, 'C                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle.Math/LinearAlgebra.fs#L80-80" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Matrix trace</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1344', 1344)" onmouseover="showTip(event, '1344', 1344)">
+            LinearAlgebra.transpose(df)
+          </code>
+          <div class="tip" id="1344">
+            <strong>Signature:</strong> df:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;C,&#39;R&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle.Math/LinearAlgebra.fs#L13-13" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Transpose.
+Performance is faster than generic Frame.transpose as it only applies to frame of float values</p>
+
+
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+        </div>
+        <div class="span3">
+          <a href="https://fslab.org/Deedle/index.html">
+            <img src="https://fslab.org/Deedle/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
+          </a>
+
+          <ul class="nav nav-list" id="menu">
+            <li class="nav-header">Deedle</li>
+            <li><a href="https://fslab.org/Deedle/index.html">Home page</a></li>
+            <li class="divider"></li>
+            <li><a href="https://nuget.org/packages/Deedle">Get Library via NuGet</a></li>
+            <li><a href="http://github.com/fslaborg/Deedle">Source Code on GitHub</a></li>
+            <li><a href="http://github.com/fslaborg/Deedle/blob/master/LICENSE.md">License (BSD)</a></li>
+            <li><a href="https://fslab.org/Deedle/RELEASE_NOTES.html">Release Notes</a></li>
+            <li><a href="https://fslab.org/Deedle/design.html">Design Notes</a></li>
+            <li><a href="http://stackoverflow.com/questions/tagged/deedle">Ask a Question!</a></li>
+            
+            <li class="nav-header">Using from F#</li>
+            <li>
+              <a href="https://fslab.org/Deedle/tutorial.html">Quick Start Tutorial</a>
+            </li>
+            <li>
+              <a href="https://fslab.org/Deedle/series.html">Working with Time Series</a>
+            </li>
+            <li>
+              <a href="https://fslab.org/Deedle/frame.html">Working with Data Frames</a>
+            </li>
+            <li>
+              <a href="https://fslab.org/Deedle/stats.html">Statistics &amp; Calculations</a>
+            </li>
+            <li>
+              <a href="https://fslab.org/Deedle/rinterop.html">Using Deedle with R</a>
+            </li>
+
+            <li class="nav-header">Using from C#</li>
+            <li><a href="https://fslab.org/Deedle/csharpintro.html">Getting Started</a></li>
+            <li>
+              <a href="https://fslab.org/Deedle/csharpseries.html">Working with Data Series</a>
+            </li>
+            <li>
+              <a href="https://fslab.org/Deedle/csharpframe.html">Working with Data Frames</a>
+            </li>
+
+            <li class="nav-header">Core Documentation</li>
+            <li><a href="https://fslab.org/Deedle/reference/index.html">API Reference</a></li>
+            <li class="divider"></li>
+            <li><a href="https://fslab.org/Deedle/reference/deedle-seriesmodule.html">Series Module</a></li>
+            <li><a href="https://fslab.org/Deedle/reference/deedle-framemodule.html">Frame Module</a></li>
+            <li><a href="https://fslab.org/Deedle/reference/deedle-stats.html">Stats Module</a></li>
+            
+            <li class="nav-header">Math Documentation</li>            
+            <li><a href="https://fslab.org/Deedle/reference/deedle-math-linearalgebra.html">Linear Algebra Module</a></li>
+            <li><a href="https://fslab.org/Deedle/reference/deedle-math-stats.html">Stats Module</a></li>
+            <li><a href="https://fslab.org/Deedle/reference/deedle-math-finance.html">Finance Module</a></li>             
+            <li class="nav-header">Samples</li>
+            <li><a href="https://fslab.org/Deedle/lazysource.html">Lazy Data Loading</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <a href="http://github.com/fslaborg/Deedle"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+    <script>
+      (function (i, s, o, g, r, a, m) {
+        i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+          (i[r].q = i[r].q || []).push(arguments)
+        }, i[r].l = 1 * new Date(); a = s.createElement(o),
+        m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+      })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+      ga('create', 'UA-45379232-1', 'bluemountaincapital.github.io');
+      ga('send', 'pageview');
+    </script>
+  </body>
+</html>

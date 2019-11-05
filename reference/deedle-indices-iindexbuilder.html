@@ -84,10 +84,10 @@ as an input, apply necessary transformations to it and return a new <a href="dee
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1259', 1259)" onmouseover="showTip(event, '1259', 1259)">
+          <code onmouseout="hideTip(event, '1268', 1268)" onmouseover="showTip(event, '1268', 1268)">
             x.Aggregate(...)
           </code>
-          <div class="tip" id="1259">
+          <div class="tip" id="1268">
             <strong>Signature:</strong> (index:IIndex&lt;&#39;K&gt; * aggregation:Aggregation&lt;&#39;K&gt; * source:VectorConstruction * selector:(DataSegmentKind * SeriesConstruction&lt;&#39;K&gt; -&gt; &#39;TNewKey * OptionalValue&lt;&#39;R&gt;)) -&gt; IIndex&lt;&#39;TNewKey&gt; * IVector&lt;&#39;R&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'K, 'TNewKey, 'R                      </div>
@@ -119,10 +119,10 @@ a new key, together with a new value for the returned vector.
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1260', 1260)" onmouseover="showTip(event, '1260', 1260)">
+          <code onmouseout="hideTip(event, '1269', 1269)" onmouseover="showTip(event, '1269', 1269)">
             x.AsyncMaterialize(arg1)
           </code>
-          <div class="tip" id="1260">
+          <div class="tip" id="1269">
             <strong>Signature:</strong> SeriesConstruction&lt;&#39;K&gt; -&gt; AsyncSeriesConstruction&lt;&#39;K&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'K                      </div>
@@ -142,10 +142,10 @@ vectors can be applied asynchronously using <code>vectorBuilder.AsyncBuild</code
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1261', 1261)" onmouseover="showTip(event, '1261', 1261)">
+          <code onmouseout="hideTip(event, '1270', 1270)" onmouseover="showTip(event, '1270', 1270)">
             x.Create(arg1, arg2)
           </code>
-          <div class="tip" id="1261">
+          <div class="tip" id="1270">
             <strong>Signature:</strong> (ReadOnlyCollection&lt;&#39;K&gt; * Option&lt;bool&gt;) -&gt; IIndex&lt;&#39;K&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'K                      </div>
@@ -166,10 +166,10 @@ is not set, the construction should check and infer this from the data.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1262', 1262)" onmouseover="showTip(event, '1262', 1262)">
+          <code onmouseout="hideTip(event, '1271', 1271)" onmouseover="showTip(event, '1271', 1271)">
             x.Create(arg1, arg2)
           </code>
-          <div class="tip" id="1262">
+          <div class="tip" id="1271">
             <strong>Signature:</strong> (seq&lt;&#39;K&gt; * Option&lt;bool&gt;) -&gt; IIndex&lt;&#39;K&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'K                      </div>
@@ -189,10 +189,10 @@ should check and infer this from the data.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1263', 1263)" onmouseover="showTip(event, '1263', 1263)">
+          <code onmouseout="hideTip(event, '1272', 1272)" onmouseover="showTip(event, '1272', 1272)">
             x.DropItem(arg1, arg2)
           </code>
-          <div class="tip" id="1263">
+          <div class="tip" id="1272">
             <strong>Signature:</strong> (SeriesConstruction&lt;&#39;K&gt; * &#39;K) -&gt; SeriesConstruction&lt;&#39;K&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'K                      </div>
@@ -210,10 +210,10 @@ should check and infer this from the data.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1264', 1264)" onmouseover="showTip(event, '1264', 1264)">
+          <code onmouseout="hideTip(event, '1273', 1273)" onmouseover="showTip(event, '1273', 1273)">
             x.GetAddressRange(arg1, arg2)
           </code>
-          <div class="tip" id="1264">
+          <div class="tip" id="1273">
             <strong>Signature:</strong> (SeriesConstruction&lt;&#39;K&gt; * RangeRestriction&lt;Address&gt;) -&gt; SeriesConstruction&lt;&#39;K&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'K                      </div>
@@ -233,10 +233,10 @@ used by operations such as "series.Take(5)" (which do not rely on keys)</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1265', 1265)" onmouseover="showTip(event, '1265', 1265)">
+          <code onmouseout="hideTip(event, '1274', 1274)" onmouseover="showTip(event, '1274', 1274)">
             x.GetRange(arg1, arg2)
           </code>
-          <div class="tip" id="1265">
+          <div class="tip" id="1274">
             <strong>Signature:</strong> (SeriesConstruction&lt;&#39;K&gt; * ((&#39;K * BoundaryBehavior) option * (&#39;K * BoundaryBehavior) option)) -&gt; SeriesConstruction&lt;&#39;K&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'K                      </div>
@@ -256,10 +256,10 @@ that contain boundary behavior and the boundary key.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1266', 1266)" onmouseover="showTip(event, '1266', 1266)">
+          <code onmouseout="hideTip(event, '1275', 1275)" onmouseover="showTip(event, '1275', 1275)">
             x.GroupBy(index, keySelector, arg3)
           </code>
-          <div class="tip" id="1266">
+          <div class="tip" id="1275">
             <strong>Signature:</strong> (index:IIndex&lt;&#39;K&gt; * keySelector:(&#39;K -&gt; OptionalValue&lt;&#39;TNewKey&gt;) * VectorConstruction) -&gt; ReadOnlyCollection&lt;&#39;TNewKey * SeriesConstruction&lt;&#39;K&gt;&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'K, 'TNewKey                      </div>
@@ -279,10 +279,10 @@ series construction objects which can be applied to arbitrary vectors/columns.</
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1267', 1267)" onmouseover="showTip(event, '1267', 1267)">
+          <code onmouseout="hideTip(event, '1276', 1276)" onmouseover="showTip(event, '1276', 1276)">
             x.Intersect(arg1, arg2)
           </code>
-          <div class="tip" id="1267">
+          <div class="tip" id="1276">
             <strong>Signature:</strong> (SeriesConstruction&lt;&#39;K&gt; * SeriesConstruction&lt;&#39;K&gt;) -&gt; IIndex&lt;&#39;K&gt; * VectorConstruction * VectorConstruction<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'K                      </div>
@@ -301,10 +301,10 @@ for both vectors that match the left and the right index.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1268', 1268)" onmouseover="showTip(event, '1268', 1268)">
+          <code onmouseout="hideTip(event, '1277', 1277)" onmouseover="showTip(event, '1277', 1277)">
             x.LookupLevel(arg1, arg2)
           </code>
-          <div class="tip" id="1268">
+          <div class="tip" id="1277">
             <strong>Signature:</strong> (SeriesConstruction&lt;&#39;K&gt; * ICustomLookup&lt;&#39;K&gt;) -&gt; SeriesConstruction&lt;&#39;K&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'K                      </div>
@@ -324,10 +324,10 @@ is used for custom equality testing (for example, when getting a level of a hier
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1269', 1269)" onmouseover="showTip(event, '1269', 1269)">
+          <code onmouseout="hideTip(event, '1278', 1278)" onmouseover="showTip(event, '1278', 1278)">
             x.Merge(arg1, arg2)
           </code>
-          <div class="tip" id="1269">
+          <div class="tip" id="1278">
             <strong>Signature:</strong> (SeriesConstruction&lt;&#39;K&gt; list * VectorListTransform) -&gt; IIndex&lt;&#39;K&gt; * VectorConstruction<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'K                      </div>
@@ -349,10 +349,10 @@ a key is defined in both indices (i.e. which value should be in the new vector).
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1270', 1270)" onmouseover="showTip(event, '1270', 1270)">
+          <code onmouseout="hideTip(event, '1279', 1279)" onmouseover="showTip(event, '1279', 1279)">
             x.OrderIndex(arg1)
           </code>
-          <div class="tip" id="1270">
+          <div class="tip" id="1279">
             <strong>Signature:</strong> SeriesConstruction&lt;&#39;K&gt; -&gt; SeriesConstruction&lt;&#39;K&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'K                      </div>
@@ -370,10 +370,10 @@ a key is defined in both indices (i.e. which value should be in the new vector).
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1271', 1271)" onmouseover="showTip(event, '1271', 1271)">
+          <code onmouseout="hideTip(event, '1280', 1280)" onmouseover="showTip(event, '1280', 1280)">
             x.Project(arg1)
           </code>
-          <div class="tip" id="1271">
+          <div class="tip" id="1280">
             <strong>Signature:</strong> IIndex&lt;&#39;K&gt; -&gt; IIndex&lt;&#39;K&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'K                      </div>
@@ -394,10 +394,10 @@ same (e.g. evaluate) on the index.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1272', 1272)" onmouseover="showTip(event, '1272', 1272)">
+          <code onmouseout="hideTip(event, '1281', 1281)" onmouseover="showTip(event, '1281', 1281)">
             x.Recreate(arg1)
           </code>
-          <div class="tip" id="1272">
+          <div class="tip" id="1281">
             <strong>Signature:</strong> IIndex&lt;&#39;K&gt; -&gt; IIndex&lt;&#39;K&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'K                      </div>
@@ -417,10 +417,10 @@ to <code>Project</code>, but used in different scenarios.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1273', 1273)" onmouseover="showTip(event, '1273', 1273)">
+          <code onmouseout="hideTip(event, '1282', 1282)" onmouseover="showTip(event, '1282', 1282)">
             x.Reindex(arg1, arg2, arg3, arg4, arg5)
           </code>
-          <div class="tip" id="1273">
+          <div class="tip" id="1282">
             <strong>Signature:</strong> (IIndex&lt;&#39;K&gt; * IIndex&lt;&#39;K&gt; * Lookup * VectorConstruction * (Address -&gt; bool)) -&gt; VectorConstruction<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'K                      </div>
@@ -445,10 +445,10 @@ appropriate value (e.g. when we need to skip over missing values).</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1274', 1274)" onmouseover="showTip(event, '1274', 1274)">
+          <code onmouseout="hideTip(event, '1283', 1283)" onmouseover="showTip(event, '1283', 1283)">
             x.Resample(...)
           </code>
-          <div class="tip" id="1274">
+          <div class="tip" id="1283">
             <strong>Signature:</strong> (IIndexBuilder * IIndex&lt;&#39;K&gt; * seq&lt;&#39;K&gt; * Direction * source:VectorConstruction * selector:(&#39;K * SeriesConstruction&lt;&#39;K&gt; -&gt; &#39;TNewKey * OptionalValue&lt;&#39;R&gt;)) -&gt; IIndex&lt;&#39;TNewKey&gt; * IVector&lt;&#39;R&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'K, 'TNewKey, 'R                      </div>
@@ -470,10 +470,10 @@ hold at the boundaries where values before/after the key may also be included)</
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1275', 1275)" onmouseover="showTip(event, '1275', 1275)">
+          <code onmouseout="hideTip(event, '1284', 1284)" onmouseover="showTip(event, '1284', 1284)">
             x.Search(arg1, arg2, arg3)
           </code>
-          <div class="tip" id="1275">
+          <div class="tip" id="1284">
             <strong>Signature:</strong> (SeriesConstruction&lt;&#39;K&gt; * IVector&lt;&#39;V&gt; * &#39;V) -&gt; SeriesConstruction&lt;&#39;K&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'K, 'V                      </div>
@@ -493,10 +493,10 @@ locations where the specified vector contains the specified value.
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1276', 1276)" onmouseover="showTip(event, '1276', 1276)">
+          <code onmouseout="hideTip(event, '1285', 1285)" onmouseover="showTip(event, '1285', 1285)">
             x.Shift(arg1, arg2)
           </code>
-          <div class="tip" id="1276">
+          <div class="tip" id="1285">
             <strong>Signature:</strong> (SeriesConstruction&lt;&#39;K&gt; * int) -&gt; SeriesConstruction&lt;&#39;K&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'K                      </div>
@@ -526,10 +526,10 @@ value should be dropped. For example:</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1277', 1277)" onmouseover="showTip(event, '1277', 1277)">
+          <code onmouseout="hideTip(event, '1286', 1286)" onmouseover="showTip(event, '1286', 1286)">
             x.Union(arg1, arg2)
           </code>
-          <div class="tip" id="1277">
+          <div class="tip" id="1286">
             <strong>Signature:</strong> (SeriesConstruction&lt;&#39;K&gt; * SeriesConstruction&lt;&#39;K&gt;) -&gt; IIndex&lt;&#39;K&gt; * VectorConstruction * VectorConstruction<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'K                      </div>
@@ -548,10 +548,10 @@ for both vectors that match the left and the right index.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1278', 1278)" onmouseover="showTip(event, '1278', 1278)">
+          <code onmouseout="hideTip(event, '1287', 1287)" onmouseover="showTip(event, '1287', 1287)">
             x.WithIndex(arg1, arg2, arg3)
           </code>
-          <div class="tip" id="1278">
+          <div class="tip" id="1287">
             <strong>Signature:</strong> (IIndex&lt;&#39;K&gt; * IVector&lt;&#39;TNewKey&gt; * VectorConstruction) -&gt; SeriesConstruction&lt;&#39;TNewKey&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'K, 'TNewKey                      </div>
@@ -583,45 +583,49 @@ for both vectors that match the left and the right index.</p>
             <li><a href="https://nuget.org/packages/Deedle">Get Library via NuGet</a></li>
             <li><a href="http://github.com/fslaborg/Deedle">Source Code on GitHub</a></li>
             <li><a href="http://github.com/fslaborg/Deedle/blob/master/LICENSE.md">License (BSD)</a></li>
-            <li><a href="https://fslab.org/Deedle/RELEASE_NOTES.html">Release notes</a></li>
-            <li><a href="https://fslab.org/Deedle/design.html">Design notes</a></li>
-            <li><a href="http://stackoverflow.com/questions/tagged/deedle">Ask a question!</a></li>
+            <li><a href="https://fslab.org/Deedle/RELEASE_NOTES.html">Release Notes</a></li>
+            <li><a href="https://fslab.org/Deedle/design.html">Design Notes</a></li>
+            <li><a href="http://stackoverflow.com/questions/tagged/deedle">Ask a Question!</a></li>
             
             <li class="nav-header">Using from F#</li>
             <li>
-              <a href="https://fslab.org/Deedle/tutorial.html">Quick start tutorial</a>
+              <a href="https://fslab.org/Deedle/tutorial.html">Quick Start Tutorial</a>
             </li>
             <li>
-              <a href="https://fslab.org/Deedle/series.html">Working with time series</a>
+              <a href="https://fslab.org/Deedle/series.html">Working with Time Series</a>
             </li>
             <li>
-              <a href="https://fslab.org/Deedle/frame.html">Working with data frames</a>
+              <a href="https://fslab.org/Deedle/frame.html">Working with Data Frames</a>
             </li>
             <li>
-              <a href="https://fslab.org/Deedle/stats.html">Statistics &amp; calculations</a>
+              <a href="https://fslab.org/Deedle/stats.html">Statistics &amp; Calculations</a>
             </li>
             <li>
               <a href="https://fslab.org/Deedle/rinterop.html">Using Deedle with R</a>
             </li>
 
             <li class="nav-header">Using from C#</li>
-            <li><a href="https://fslab.org/Deedle/csharpintro.html">Getting started</a></li>
+            <li><a href="https://fslab.org/Deedle/csharpintro.html">Getting Started</a></li>
             <li>
-              <a href="https://fslab.org/Deedle/csharpseries.html">Working with data series</a>
+              <a href="https://fslab.org/Deedle/csharpseries.html">Working with Data Series</a>
             </li>
             <li>
-              <a href="https://fslab.org/Deedle/csharpframe.html">Working with data frames</a>
+              <a href="https://fslab.org/Deedle/csharpframe.html">Working with Data Frames</a>
             </li>
 
-            <li class="nav-header">Documentation</li>
+            <li class="nav-header">Core Documentation</li>
             <li><a href="https://fslab.org/Deedle/reference/index.html">API Reference</a></li>
             <li class="divider"></li>
-            <li><a href="https://fslab.org/Deedle/reference/deedle-seriesmodule.html">Series module</a></li>
-            <li><a href="https://fslab.org/Deedle/reference/deedle-framemodule.html">Frame module</a></li>
-            <li><a href="https://fslab.org/Deedle/reference/deedle-stats.html">Stats module</a></li>
-
+            <li><a href="https://fslab.org/Deedle/reference/deedle-seriesmodule.html">Series Module</a></li>
+            <li><a href="https://fslab.org/Deedle/reference/deedle-framemodule.html">Frame Module</a></li>
+            <li><a href="https://fslab.org/Deedle/reference/deedle-stats.html">Stats Module</a></li>
+            
+            <li class="nav-header">Math Documentation</li>            
+            <li><a href="https://fslab.org/Deedle/reference/deedle-math-linearalgebra.html">Linear Algebra Module</a></li>
+            <li><a href="https://fslab.org/Deedle/reference/deedle-math-stats.html">Stats Module</a></li>
+            <li><a href="https://fslab.org/Deedle/reference/deedle-math-finance.html">Finance Module</a></li>             
             <li class="nav-header">Samples</li>
-            <li><a href="https://fslab.org/Deedle/lazysource.html">Lazy data loading</a></li>
+            <li><a href="https://fslab.org/Deedle/lazysource.html">Lazy Data Loading</a></li>
           </ul>
         </div>
       </div>
