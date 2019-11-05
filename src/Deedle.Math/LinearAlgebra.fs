@@ -193,47 +193,47 @@ type Matrix =
   /// matrix multiply frame
   ///
   /// [category: Matrix multiplication]
-  static member dot (m1:Matrix<float>, df:Frame<'R, 'C>) =
+  static member dot (m:Matrix<float>, df:Frame<'R, 'C>) =
     let m2 = df |> Frame.toMatrix
-    m1 * m2
+    m * m2
 
   /// vector multiply frame
   ///
   /// [category: Matrix multiplication]
-  static member dot (v1:Vector<float>, df:Frame<'R, 'C>) =
-    let m2 = df |> Frame.toMatrix
-    v1 * m2
+  static member dot (v:Vector<float>, df:Frame<'R, 'C>) =
+    let m = df |> Frame.toMatrix
+    v * m
 
   /// frame multiply vector
   ///
   /// [category: Matrix multiplication]
-  static member dot (df:Frame<'R, 'C>, v2:Vector<float>) =
-    let m1 = df |> Frame.toMatrix
-    m1 * v2 |> Series.ofVector df.RowKeys
+  static member dot (df:Frame<'R, 'C>, v:Vector<float>) =
+    let m = df |> Frame.toMatrix
+    m * v |> Series.ofVector df.RowKeys
   
   /// series multiply matrix
   ///
   /// [category: Matrix multiplication]
-  static member dot (s:Series<'K, float>, m2:Matrix<float>) =
-    (Series.toVector s) * m2
+  static member dot (s:Series<'K, float>, m:Matrix<float>) =
+    (Series.toVector s) * m
   
   /// matrix multiply series
   ///
   /// [category: Matrix multiplication]
-  static member dot (m1:Matrix<float>, s:Series<'K, float>) =
-    m1 * (Series.toVector s)
+  static member dot (m:Matrix<float>, s:Series<'K, float>) =
+    m * (Series.toVector s)
 
   /// vector multiply series
   ///
   /// [category: Matrix multiplication]
-  static member dot (v1:Vector<float>, s:Series<'R, float>) =
-    v1 * (Series.toVector s)
+  static member dot (v:Vector<float>, s:Series<'R, float>) =
+    v * (Series.toVector s)
 
   /// series multiply vector
   ///
   /// [category: Matrix multiplication]
-  static member dot (s:Series<'R, float>, v2:Vector<float>) =    
-    (Series.toVector s) * v2
+  static member dot (s:Series<'R, float>, v:Vector<float>) =    
+    (Series.toVector s) * v
 
   /// frame multiply frame
   ///

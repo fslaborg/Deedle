@@ -126,7 +126,10 @@ type Stats =
     Stats.corrMatrix(df, method)
     |> Frame.ofMatrix df.ColumnKeys df.ColumnKeys
 
-  static member correl (s1:Series<'K, float>, s2:Series<'K, float>, ?method:CorrelationMethod) =
+  /// Correlation of two series
+  ///
+  /// [category: Correlation and Covariance]
+  static member corr (s1:Series<'K, float>, s2:Series<'K, float>, ?method:CorrelationMethod) =
     let method = defaultArg method CorrelationMethod.Pearson
     let df = [1, s1; 2, s2] |> Frame.ofColumns
     Stats.corr(df, method).GetColumnAt(1).GetAt(0)

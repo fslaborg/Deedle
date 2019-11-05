@@ -9,7 +9,7 @@ open MathNet.Numerics.LinearAlgebra
 /// [category:Financial Analysis]
 type Finance =
 
-  /// Exponentially weighted moving volatility on series (RiskMetrics)
+  /// Exponentially weighted moving volatility on series
   ///
   /// [category: Exponentially Weighted Moving]
   static member ewmVol (x:Series<'R, float>, ?com, ?span, ?halfLife, ?alpha) =
