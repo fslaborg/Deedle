@@ -9,6 +9,7 @@ module Formatters
 #r "../../packages/MathNet.Numerics/lib/net40/MathNet.Numerics.dll"
 #load "../../packages/FSharp.Charting/FSharp.Charting.fsx"
 #r "../../packages/FSharp.Compiler.Service/lib/net45/FSharp.Compiler.Service.dll"
+#r "netstandard"
 
 // --------------------------------------------------------------------------------------
 // NOTE: The rest of the file is copied from the FsLab project:

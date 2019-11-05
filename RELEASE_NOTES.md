@@ -1,5 +1,10 @@
 # Release Notes
 
+## 2.1.0 - 2019-11-4
+* Release Deedle.Math to extend linear algebra, statisitical analysis and financial analysis on Frame and Series by leveraging MathNet.Numerics [#475](https://github.com/fslaborg/Deedle/pull/475)
+* Override + operator and add Frame.strConcat to concatenate Frame and Series of string values [#482](https://github.com/fslaborg/Deedle/issues/482)
+* Fix ResampleUniform with missing values [#470](https://github.com/fslaborg/Deedle/issues/480)
+
 ## 2.0.4 - 2019-04-29
 * Fix assembly version [#472](https://github.com/fslaborg/Deedle/issues/472)
 
