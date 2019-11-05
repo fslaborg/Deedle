@@ -52,9 +52,9 @@ let deedleExcelTags = "Excel"
 let deedleMathProject = "Deedle.Math"
 let deedleMathSummary = "Deedle interop with Math.Net"
 let deedleMathDescription = """
-  This package installs the core Deedle package, NetOffice.Excel, and a Deedle extension
-  which makes it possible to send Deedle Frames to Excel."""
-let deedleMathTags = "F# fsharp deedle dataframe series statistics data science math"
+  This package installs the core Deedle package, Deedle.Math extension and Mathnet.Numerics
+  to extend mathematic functions on Deedle Frames and Series."""
+let deedleMathTags = "F# fsharp deedle dataframe series statistics data science math quantitative finance"
 
 let gitHome = "https://github.com/fslaborg"
 let gitName = "Deedle"
@@ -140,7 +140,7 @@ Target.create "AssemblyInfo" (fun _ ->
         AssemblyInfo.Description deedleMathSummary
         AssemblyInfo.Version release.AssemblyVersion
         AssemblyInfo.InformationalVersion release.NugetVersion
-        AssemblyInfo.FileVersion release.AssemblyVersion]                  
+        AssemblyInfo.FileVersion release.AssemblyVersion]
 )
 
 // --------------------------------------------------------------------------------------
@@ -179,7 +179,7 @@ let testCoreProjs =
       "tests/Deedle.CSharp.Tests/Deedle.CSharp.Tests.csproj" 
       "tests/Deedle.Documentation.Tests/Deedle.Documentation.Tests.fsproj"
       "tests/Deedle.PerfTests/Deedle.PerfTests.fsproj"
-    ]      
+    ]
 
 let buildProjs =
     [ "src/Deedle/Deedle.fsproj"
@@ -256,6 +256,7 @@ Target.create "NuGet" (fun _ ->
             ReleaseNotes = releaseNotes
             Tags = tags
             OutputPath = "bin"
+            Dependencies = [ "FSharp.Core", NuGet.GetPackageVersion "packages" "FSharp.Core" ]            
             AccessKey = Environment.environVarOrDefault "nugetkey" ""
             Publish = Environment.hasEnvironVar "nugetkey" })
         ("nuget/Deedle.nuspec")
@@ -282,12 +283,12 @@ Target.create "NuGet" (fun _ ->
         { p with   
             ToolPath = nugetExe
             Authors = authors
-            Project = rpluginProject
-            Summary = rpluginSummary
-            Description = description + "\n\n" + rpluginDescription
+            Project = deedleMathProject
+            Summary = deedleMathSummary
+            Description = description + "\n\n" + deedleMathDescription
             Version = release.NugetVersion
             ReleaseNotes = releaseNotes
-            Tags = tags + " " + rpluginTags
+            Tags = tags + " " + deedleMathTags
             OutputPath = "bin"
             Dependencies = 
               [ "Deedle", release.NugetVersion
@@ -344,10 +345,10 @@ Target.create "ReleaseBinaries" (fun _ ->
     !! "temp/release/*" |> File.deleteAll
     "temp/release/bin" |> Shell.cleanDir
     Shell.copyRecursive "bin" "temp/release/bin" true |> printfn "%A"
-    !! "temp/release/bin/*.nupkg" |> File.deleteAll
+    !! "temp/release/bin/*" |> File.deleteAll
     "temp/release/bin/net45/Deedle.Math.fsx" |> Shell.moveFile "temp/release"
     "temp/release/bin/net45/Deedle.fsx" |> Shell.moveFile "temp/release"
-    "temp/release/bin/net45/RProvider.fsx" |> Shell.moveFile "temp/release"
+    "temp/release/bin/net451/RProvider.fsx" |> Shell.moveFile "temp/release"
 
     Git.CommandHelper.runSimpleGitCommand "temp/release" "add bin/*" |> printfn "%s"
     let cmd = sprintf """commit -a -m "Update binaries for version %s""" release.NugetVersion

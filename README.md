@@ -28,6 +28,11 @@ is available in the [API Reference](http://fslab.org/Deedle/reference/index.html
  * [`Frame` module](http://fslab.org/Deedle/reference/deedle-framemodule.html) for data frame manipulation
  * [`Stats` module](http://fslab.org/Deedle/reference/deedle-stats.html) for statistical functions, moving windows and a lot more.
 
+More functions related to linear algebra, statistical analysis and financial analysis can be found in Deedle.Math extension. Deedle.Math has dependency on MathNet.Numerics.
+ * [`Linear Algebra` module](http://fslab.org/Deedle/reference/deedle-math-linearalgebra.html) provides linear algebra operations and functions on frame, series, matrix and vector.
+ * [`Stats` module](http://fslab.org/Deedle/reference/deedle-math-stats.html) provides extra statistical functions on frame and series by applying existing functions in MathNet.Numerics.
+ * [`Finance` module](http://fslab.org/Deedle/reference/deedle-math-finance.html) provides statistical functions specific to finance domain.
+
 Maintainers
 -----------
 
