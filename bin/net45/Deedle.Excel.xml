@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doc>
+<assembly><name>Deedle.Excel</name></assembly>
+<members>
+<member name="M:Deedle.Excel.DeedleToExcel``1(Microsoft.FSharp.Core.FSharpFunc{Microsoft.FSharp.Core.FSharpFunc{``0,System.Object},Microsoft.FSharp.Core.Unit})">
+<summary>
+ Copy all Series and Frames in the FSharp interactive session to
+ Excel. A sheet is created for each Series and each Frame.
+ As series and frames are added to the session they will be added to
+ the current Excel workbook as new sheets.
+</summary>
+</member>
+<member name="M:Deedle.Excel.GetFsiSeriesAndFrames(System.Collections.Generic.ICollection{System.Type})">
+<summary>
+ Inspect the FSharp interactive session and find all Series and Frames
+</summary>
+</member>
+</members>
+</doc>

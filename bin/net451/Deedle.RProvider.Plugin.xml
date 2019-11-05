@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doc>
+<assembly><name>Deedle.RProvider.Plugin</name></assembly>
+<members>
+<member name="M:Deedle.RPlugin.Conversions.createDefaultSeries(RDotNet.SymbolicExpression)">
+<summary>
+ Given symbolic expression, convert it to a time series.
+ Pick the most appropriate key/value type, based on the data.
+</summary>
+</member>
+<member name="M:Deedle.RPlugin.Conversions.tryCreateSeries``2(RDotNet.SymbolicExpression)">
+<summary>
+ Try converting the specified symbolic expression to a series with arbitrary keys
+</summary>
+</member>
+<member name="M:Deedle.RPlugin.Conversions.tryCreateTimeSeries``2(Microsoft.FSharp.Core.FSharpFunc{System.DateTime,``0},RDotNet.SymbolicExpression)">
+<summary>
+ Try converting the specified symbolic expression to a time series
+</summary>
+</member>
+<member name="M:Deedle.RPlugin.Conversions.tryGetDateTimeKeys``1(RDotNet.SymbolicExpression,Microsoft.FSharp.Core.FSharpFunc{System.DateTime,``0})">
+<summary>
+ Try convert the keys of a specified zoo time series to DateTime
+</summary>
+</member>
+<member name="M:Deedle.RPlugin.Conversions.tryAsZooSeries(RDotNet.SymbolicExpression)">
+<summary>
+ Try converting symbolic expression to a Zoo series.
+ This works for almost everything, but not quite (e.g. lambda functions)
+</summary>
+</member>
+<member name="M:Deedle.RPlugin.Conversions.tryCreateFrame``2(RDotNet.SymbolicExpression)">
+<summary>
+ Convert R expression to a data frame of the specified (expected) type
+</summary>
+</member>
+<member name="M:Deedle.RPlugin.Conversions.createDefaultFrame(RDotNet.SymbolicExpression)">
+<summary>
+ Convert R expression to a data frame and return frame of an
+ appropriate type, based on the values of the indices
+</summary>
+</member>
+<member name="M:Deedle.RPlugin.Conversions.constructFrame``2(RDotNet.DataFrame,Deedle.Indices.IIndex{``0},Deedle.Indices.IIndex{``1})">
+<summary>
+ Creates data frame with the specified row &amp; col indices
+</summary>
+</member>
+<member name="M:Deedle.RPlugin.Conversions.convertVector(Deedle.IVector)">
+<summary>
+ Convert vector to a boxed array that can be passed to the R provider
+</summary>
+</member>
+<member name="M:Deedle.RPlugin.Conversions.convertIndex``1(System.String[])">
+<summary>
+ Turn columns/rows into an index with the specified type of keys
+</summary>
+</member>
+<member name="M:Deedle.RPlugin.Conversions.|NumericIndex|StringIndex|(System.String[])">
+<summary>
+ Turn columns/rows into an index with either int or string keys
+</summary>
+</member>
+<member name="M:Deedle.RPlugin.Conversions.convertKey(System.Object)">
+<summary>
+ Convert Deedle frame key (or multi-level tuple) to string that can be passed to R
+</summary>
+</member>
+</members>
+</doc>

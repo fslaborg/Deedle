@@ -1,0 +1,641 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doc>
+<assembly><name>Deedle.Math</name></assembly>
+<members>
+<member name="M:Deedle.Math.Series.toVector``1(Deedle.Series{``0,System.Double})">
+<summary>
+ Convert series to vector
+
+</summary>
+</member>
+<member name="M:Deedle.Math.Series.ofVector``1(System.Collections.Generic.IEnumerable{``0},MathNet.Numerics.LinearAlgebra.Vector{System.Double})">
+<summary>
+ Convert vector to series
+
+</summary>
+</member>
+<member name="M:Deedle.Math.Frame.toMatrix``2(Deedle.Frame{``0,``1})">
+<summary>
+ Convert frame to matrix
+
+</summary>
+</member>
+<member name="M:Deedle.Math.Frame.ofMatrix``3(System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEnumerable{``1},MathNet.Numerics.LinearAlgebra.Matrix{``2})">
+<summary>
+ Convert matrix to frame
+
+</summary>
+</member>
+<member name="T:Deedle.Math.Frame">
+<summary>
+ Frame to matrix conversion
+
+ [category:Matrix conversions and operators]
+</summary>
+</member>
+<member name="M:Deedle.Math.Matrix.toFrame``2(System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEnumerable{``1},MathNet.Numerics.LinearAlgebra.Matrix{System.Double})">
+<summary>
+ Convert matrix to frame
+
+ [category: Conversions]
+</summary>
+</member>
+<member name="M:Deedle.Math.Matrix.ofFrame``2(Deedle.Frame{``0,``1})">
+<summary>
+ Convert frame to matrix
+
+ [category: Conversions]
+</summary>
+</member>
+<member name="M:Deedle.Math.Matrix.dot``1(Deedle.Series{``0,System.Double},Deedle.Series{``0,System.Double})">
+<summary>
+ series multiply series
+
+ [category: Matrix multiplication]
+</summary>
+</member>
+<member name="M:Deedle.Math.Matrix.dot``2(Deedle.Series{``0,System.Double},Deedle.Frame{``1,``0})">
+<summary>
+ series multiply frame
+
+ [category: Matrix multiplication]
+</summary>
+</member>
+<member name="M:Deedle.Math.Matrix.dot``2(Deedle.Frame{``0,``1},Deedle.Series{``1,System.Double})">
+<summary>
+ frame multiply series
+
+ [category: Matrix multiplication]
+</summary>
+</member>
+<member name="M:Deedle.Math.Matrix.dot``2(Deedle.Frame{``0,``1},Deedle.Frame{``1,``0})">
+<summary>
+ frame multiply frame
+
+ [category: Matrix multiplication]
+</summary>
+</member>
+<member name="M:Deedle.Math.Matrix.dot``1(Deedle.Series{``0,System.Double},MathNet.Numerics.LinearAlgebra.Vector{System.Double})">
+<summary>
+ series multiply vector
+
+ [category: Matrix multiplication]
+</summary>
+</member>
+<member name="M:Deedle.Math.Matrix.dot``1(MathNet.Numerics.LinearAlgebra.Vector{System.Double},Deedle.Series{``0,System.Double})">
+<summary>
+ vector multiply series
+
+ [category: Matrix multiplication]
+</summary>
+</member>
+<member name="M:Deedle.Math.Matrix.dot``1(MathNet.Numerics.LinearAlgebra.Matrix{System.Double},Deedle.Series{``0,System.Double})">
+<summary>
+ matrix multiply series
+
+ [category: Matrix multiplication]
+</summary>
+</member>
+<member name="M:Deedle.Math.Matrix.dot``1(Deedle.Series{``0,System.Double},MathNet.Numerics.LinearAlgebra.Matrix{System.Double})">
+<summary>
+ series multiply matrix
+
+ [category: Matrix multiplication]
+</summary>
+</member>
+<member name="M:Deedle.Math.Matrix.dot``2(Deedle.Frame{``0,``1},MathNet.Numerics.LinearAlgebra.Vector{System.Double})">
+<summary>
+ frame multiply vector
+
+ [category: Matrix multiplication]
+</summary>
+</member>
+<member name="M:Deedle.Math.Matrix.dot``2(MathNet.Numerics.LinearAlgebra.Vector{System.Double},Deedle.Frame{``0,``1})">
+<summary>
+ vector multiply frame
+
+ [category: Matrix multiplication]
+</summary>
+</member>
+<member name="M:Deedle.Math.Matrix.dot``2(MathNet.Numerics.LinearAlgebra.Matrix{System.Double},Deedle.Frame{``0,``1})">
+<summary>
+ matrix multiply frame
+
+ [category: Matrix multiplication]
+</summary>
+</member>
+<member name="M:Deedle.Math.Matrix.dot``2(Deedle.Frame{``0,``1},MathNet.Numerics.LinearAlgebra.Matrix{System.Double})">
+<summary>
+ frame multiply matrix
+
+ [category: Matrix multiplication]
+</summary>
+</member>
+<member name="T:Deedle.Math.Matrix">
+<summary>
+ Matrix conversions and operators between Frame and Series
+
+ [category:Matrix conversions and operators]
+</summary>
+</member>
+<member name="M:Deedle.Math.LinearAlgebra.transpose``2(Deedle.Frame{``0,``1})">
+<summary>
+ Transpose.
+ Performance is faster than generic Frame.transpose as it only applies to frame of float values
+
+</summary>
+</member>
+<member name="M:Deedle.Math.LinearAlgebra.trace``2(Deedle.Frame{``0,``1})">
+<summary>
+ Matrix trace
+
+</summary>
+</member>
+<member name="M:Deedle.Math.LinearAlgebra.svd``2(Deedle.Frame{``0,``1})">
+<summary>
+ SVD decomposition
+
+</summary>
+</member>
+<member name="M:Deedle.Math.LinearAlgebra.rank``2(Deedle.Frame{``0,``1})">
+<summary>
+ Matrix rank
+
+</summary>
+</member>
+<member name="M:Deedle.Math.LinearAlgebra.range``2(Deedle.Frame{``0,``1})">
+<summary>
+ Matrix range
+
+</summary>
+</member>
+<member name="M:Deedle.Math.LinearAlgebra.qr``2(Deedle.Frame{``0,``1})">
+<summary>
+ QR decomposition
+
+</summary>
+</member>
+<member name="M:Deedle.Math.LinearAlgebra.pseudoInverse``2(Deedle.Frame{``0,``1})">
+<summary>
+ Pseudo-inverse of matrix
+
+</summary>
+</member>
+<member name="M:Deedle.Math.LinearAlgebra.nullity``2(Deedle.Frame{``0,``1})">
+<summary>
+ Matrix nullity
+
+</summary>
+</member>
+<member name="M:Deedle.Math.LinearAlgebra.normRows``2(Deedle.Frame{``0,``1})">
+<summary>
+ Norm of rows
+
+</summary>
+</member>
+<member name="M:Deedle.Math.LinearAlgebra.normCols``2(Deedle.Frame{``0,``1})">
+<summary>
+ Norm of columns
+
+</summary>
+</member>
+<member name="M:Deedle.Math.LinearAlgebra.norm``2(Deedle.Frame{``0,``1})">
+<summary>
+ Norm
+
+</summary>
+</member>
+<member name="M:Deedle.Math.LinearAlgebra.lu``2(Deedle.Frame{``0,``1})">
+<summary>
+ LU decomposition
+
+</summary>
+</member>
+<member name="M:Deedle.Math.LinearAlgebra.kernel``2(Deedle.Frame{``0,``1})">
+<summary>
+ Matrix kernel
+
+</summary>
+</member>
+<member name="M:Deedle.Math.LinearAlgebra.isSymmetric``2(Deedle.Frame{``0,``1})">
+<summary>
+ Check whether it is symmetric matrix
+
+</summary>
+</member>
+<member name="M:Deedle.Math.LinearAlgebra.isHermitian``2(Deedle.Frame{``0,``1})">
+<summary>
+ Check whether it is Hermitian matrix
+
+</summary>
+</member>
+<member name="M:Deedle.Math.LinearAlgebra.inverse``2(Deedle.Frame{``0,``1})">
+<summary>
+ Inverse
+
+</summary>
+</member>
+<member name="M:Deedle.Math.LinearAlgebra.eigen``2(Deedle.Frame{``0,``1})">
+<summary>
+ Eigen values and eigen vectors of matrix
+
+</summary>
+</member>
+<member name="M:Deedle.Math.LinearAlgebra.determinant``2(Deedle.Frame{``0,``1})">
+<summary>
+ Matrix determinant
+
+</summary>
+</member>
+<member name="M:Deedle.Math.LinearAlgebra.conjugateTranspose``2(Deedle.Frame{``0,``1})">
+<summary>
+ Conjugate tranpose
+
+</summary>
+</member>
+<member name="M:Deedle.Math.LinearAlgebra.conjugate``2(Deedle.Frame{``0,``1})">
+<summary>
+ Conjugate
+
+</summary>
+</member>
+<member name="M:Deedle.Math.LinearAlgebra.condition``2(Deedle.Frame{``0,``1})">
+<summary>
+ Matrix condition
+
+</summary>
+</member>
+<member name="M:Deedle.Math.LinearAlgebra.cholesky``2(Deedle.Frame{``0,``1})">
+<summary>
+ Cholesky decomposition
+
+</summary>
+</member>
+<member name="T:Deedle.Math.LinearAlgebra">
+<summary>
+ Linear algebra on frame using MathNet.Numerics library.
+
+ [category:Linear Algebra]
+</summary>
+</member>
+<member name="M:Deedle.Math.VectorExtensions.ToSeries``1(MathNet.Numerics.LinearAlgebra.Vector{System.Double},System.Collections.Generic.IEnumerable{``0})">
+<summary>
+ Convert vector to series
+
+</summary>
+</member>
+<member name="M:Deedle.Math.VectorExtensions.Dot(MathNet.Numerics.LinearAlgebra.Vector{System.Double},MathNet.Numerics.LinearAlgebra.Vector{System.Double})">
+<summary>
+ vector multiply vector
+
+</summary>
+</member>
+<member name="M:Deedle.Math.VectorExtensions.Dot(MathNet.Numerics.LinearAlgebra.Vector{System.Double},MathNet.Numerics.LinearAlgebra.Matrix{System.Double})">
+<summary>
+ vector multiply matrix
+
+</summary>
+</member>
+<member name="M:Deedle.Math.VectorExtensions.Dot``1(MathNet.Numerics.LinearAlgebra.Vector{System.Double},Deedle.Series{``0,System.Double})">
+<summary>
+ vector multiply series
+
+</summary>
+</member>
+<member name="M:Deedle.Math.VectorExtensions.Dot``2(MathNet.Numerics.LinearAlgebra.Vector{System.Double},Deedle.Frame{``0,``1})">
+<summary>
+ vector multiply frame
+
+</summary>
+</member>
+<member name="T:Deedle.Math.VectorExtensions">
+<summary>
+ Extension of Vector&lt;float&gt;
+
+ [category:Vector conversions and operators]  
+</summary>
+</member>
+<member name="M:Deedle.Math.MatrixExtensions.ToFrame``2(MathNet.Numerics.LinearAlgebra.Matrix{System.Double},System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEnumerable{``1})">
+<summary>
+ Convert matrix to frame
+
+</summary>
+</member>
+<member name="M:Deedle.Math.MatrixExtensions.Dot(MathNet.Numerics.LinearAlgebra.Matrix{System.Double},MathNet.Numerics.LinearAlgebra.Vector{System.Double})">
+<summary>
+ matrix multiply matrix
+
+</summary>
+</member>
+<member name="M:Deedle.Math.MatrixExtensions.Dot(MathNet.Numerics.LinearAlgebra.Matrix{System.Double},MathNet.Numerics.LinearAlgebra.Matrix{System.Double})">
+<summary>
+ matrix multiply matrix
+
+</summary>
+</member>
+<member name="M:Deedle.Math.MatrixExtensions.Dot``1(MathNet.Numerics.LinearAlgebra.Matrix{System.Double},Deedle.Series{``0,System.Double})">
+<summary>
+ matrix multiply series
+
+</summary>
+</member>
+<member name="M:Deedle.Math.MatrixExtensions.Dot``2(MathNet.Numerics.LinearAlgebra.Matrix{System.Double},Deedle.Frame{``0,``1})">
+<summary>
+ matrix multiply frame
+ 
+</summary>
+</member>
+<member name="T:Deedle.Math.MatrixExtensions">
+<summary>
+ Extension of Matrix&lt;float&gt;
+
+ [category:Matrix conversions and operators]  
+</summary>
+</member>
+<member name="M:Deedle.Math.SeriesExtensions.ToVector``1(Deedle.Series{``0,System.Double})">
+<summary>
+ Convert series to vector
+
+</summary>
+</member>
+<member name="M:Deedle.Math.SeriesExtensions.Dot``1(Deedle.Series{``0,System.Double},MathNet.Numerics.LinearAlgebra.Vector{System.Double})">
+<summary>
+ series multiply matrix
+
+</summary>
+</member>
+<member name="M:Deedle.Math.SeriesExtensions.Dot``1(Deedle.Series{``0,System.Double},MathNet.Numerics.LinearAlgebra.Matrix{System.Double})">
+<summary>
+ series multiply matrix
+
+</summary>
+</member>
+<member name="M:Deedle.Math.SeriesExtensions.Dot``1(Deedle.Series{``0,System.Double},Deedle.Series{``0,System.Double})">
+<summary>
+ series multiply series
+
+</summary>
+</member>
+<member name="M:Deedle.Math.SeriesExtensions.Dot``2(Deedle.Series{``0,System.Double},Deedle.Frame{``1,``0})">
+<summary>
+ series multiply frame
+ 
+</summary>
+</member>
+<member name="T:Deedle.Math.SeriesExtensions">
+<summary>
+ Extension of Series&lt;&apos;C, float&gt;
+
+ [category:Matrix conversions and operators]  
+</summary>
+</member>
+<member name="M:Deedle.Math.FrameExtensions.ToMatrix``2(Deedle.Frame{``0,``1})">
+<summary>
+ Convert frame to matrix
+
+</summary>
+</member>
+<member name="M:Deedle.Math.FrameExtensions.Dot``2(Deedle.Frame{``0,``1},MathNet.Numerics.LinearAlgebra.Vector{System.Double})">
+<summary>
+ frame multiply matrix
+
+</summary>
+</member>
+<member name="M:Deedle.Math.FrameExtensions.Dot``2(Deedle.Frame{``0,``1},MathNet.Numerics.LinearAlgebra.Matrix{System.Double})">
+<summary>
+ frame multiply matrix
+
+</summary>
+</member>
+<member name="M:Deedle.Math.FrameExtensions.Dot``2(Deedle.Frame{``0,``1},Deedle.Series{``1,System.Double})">
+<summary>
+ frame multiply 
+ 
+</summary>
+</member>
+<member name="M:Deedle.Math.FrameExtensions.Dot``2(Deedle.Frame{``0,``1},Deedle.Frame{``1,``0})">
+<summary>
+ frame multiply frame
+ 
+</summary>
+</member>
+<member name="T:Deedle.Math.FrameExtensions">
+<summary>
+ Extension of Frame&lt;&apos;R, &apos;C&gt;
+
+ [category:Matrix conversions and operators]  
+</summary>
+</member>
+<member name="M:Deedle.Math.Stats.ranks``2(Deedle.Frame{``0,``1},Microsoft.FSharp.Core.FSharpOption{MathNet.Numerics.Statistics.RankDefinition})">
+<summary>
+ Ranks of Frame
+
+ [category: Descriptive Statistics]
+</summary>
+</member>
+<member name="M:Deedle.Math.Stats.ranks``2(Deedle.Series{``0,``1},Microsoft.FSharp.Core.FSharpOption{MathNet.Numerics.Statistics.RankDefinition})">
+<summary>
+ Ranks of Series
+
+ [category: Descriptive Statistics]
+</summary>
+</member>
+<member name="M:Deedle.Math.Stats.quantile``2(Deedle.Frame{``0,``1},System.Double,Microsoft.FSharp.Core.FSharpOption{MathNet.Numerics.Statistics.QuantileDefinition})">
+<summary>
+ Quantile of Frame
+
+ [category: Descriptive Statistics]
+</summary>
+</member>
+<member name="M:Deedle.Math.Stats.quantile``2(Deedle.Series{``0,``1},System.Double,Microsoft.FSharp.Core.FSharpOption{MathNet.Numerics.Statistics.QuantileDefinition})">
+<summary>
+ Quantile
+
+ [category: Descriptive Statistics]
+</summary>
+</member>
+<member name="M:Deedle.Math.Stats.movingVarianceParallel``2(System.Int32,Deedle.Frame{``0,``1})">
+<summary>
+ Moving variance of frame (parallel implementation)
+
+ [category: Moving statistics]
+</summary>
+</member>
+<member name="M:Deedle.Math.Stats.movingStdDevParallel``2(System.Int32,Deedle.Frame{``0,``1})">
+<summary>
+ Moving standard deviation (parallel implementation)
+
+ [category: Moving statistics]
+</summary>
+</member>
+<member name="M:Deedle.Math.Stats.movingCovarianceParallel``2(System.Int32,Deedle.Frame{``0,``1})">
+<summary>
+ Moving covariance of frame (parallel implementation)
+
+ [category: Moving statistics]
+</summary>
+</member>
+<member name="M:Deedle.Math.Stats.median``2(Deedle.Frame{``0,``1})">
+<summary>
+ Median of Frame
+
+ [category: Descriptive Statistics]
+</summary>
+</member>
+<member name="M:Deedle.Math.Stats.median``2(Deedle.Series{``0,``1})">
+<summary>
+ Median of Series
+
+ [category: Descriptive Statistics]
+</summary>
+</member>
+<member name="M:Deedle.Math.Stats.ewmMean``2(Deedle.Frame{``0,``1},Microsoft.FSharp.Core.FSharpOption{System.Double},Microsoft.FSharp.Core.FSharpOption{System.Double},Microsoft.FSharp.Core.FSharpOption{System.Double},Microsoft.FSharp.Core.FSharpOption{System.Double})">
+<summary>
+ Exponentially weighted moving average on frame
+
+ [category: Exponentially Weighted Moving]
+</summary>
+</member>
+<member name="M:Deedle.Math.Stats.ewmMean``1(Deedle.Series{``0,System.Double},Microsoft.FSharp.Core.FSharpOption{System.Double},Microsoft.FSharp.Core.FSharpOption{System.Double},Microsoft.FSharp.Core.FSharpOption{System.Double},Microsoft.FSharp.Core.FSharpOption{System.Double})">
+<summary>
+ Exponentially weighted moving average on series
+
+ [category: Exponentially Weighted Moving]
+</summary>
+</member>
+<member name="M:Deedle.Math.Stats.covMatrix``2(Deedle.Frame{``0,``1})">
+<summary>
+ Covariance matrix
+
+ [category: Correlation and Covariance]
+</summary>
+</member>
+<member name="M:Deedle.Math.Stats.cov2Corr``1(Deedle.Frame{``0,``0})">
+<summary>
+ Convert covariance matrix to standard deviation series and correlation frame
+
+ [category: Correlation and Covariance]
+</summary>
+</member>
+<member name="M:Deedle.Math.Stats.cov``2(Deedle.Frame{``0,``1})">
+<summary>
+ Covariance frame
+
+ [category: Correlation and Covariance]
+</summary>
+</member>
+<member name="M:Deedle.Math.Stats.corrMatrix``2(Deedle.Frame{``0,``1},Microsoft.FSharp.Core.FSharpOption{Deedle.Math.CorrelationMethod})">
+<summary>
+ Correlation matrix
+
+ [category: Correlation and Covariance]
+</summary>
+</member>
+<member name="M:Deedle.Math.Stats.corr2Cov``1(Deedle.Series{``0,System.Double},Deedle.Frame{``0,``0})">
+<summary>
+ Convert standard deviation series and correlation frame to covariance frame
+
+ [category: Correlation and Covariance]
+</summary>
+</member>
+<member name="M:Deedle.Math.Stats.corr``2(Deedle.Series{``0,System.Double},Deedle.Series{``0,System.Double},Microsoft.FSharp.Core.FSharpOption{Deedle.Math.CorrelationMethod})">
+<summary>
+ Correlation of two series
+
+ [category: Correlation and Covariance]
+</summary>
+</member>
+<member name="M:Deedle.Math.Stats.corr``2(Deedle.Frame{``0,``1},Microsoft.FSharp.Core.FSharpOption{Deedle.Math.CorrelationMethod})">
+<summary>
+ Correlation frame
+
+ [category: Correlation and Covariance]
+</summary>
+</member>
+<member name="T:Deedle.Math.Stats">
+<summary>
+ Statistical analysis using MathNet.Numerics
+
+ [category:Statistical Analysis]
+</summary>
+</member>
+<member name="F:Deedle.Math.CorrelationMethod.Spearman">
+<summary>
+ Spearman correlation
+</summary>
+</member>
+<member name="F:Deedle.Math.CorrelationMethod.Pearson">
+<summary>
+ Pearson correlation
+</summary>
+</member>
+<member name="T:Deedle.Math.CorrelationMethod">
+<summary>
+ Correlation method (Pearson or Spearman)
+
+ [category:Statistical Analysis]
+</summary>
+</member>
+<member name="M:Deedle.Math.Finance.ewmVol``2(Deedle.Frame{``0,``1},Microsoft.FSharp.Core.FSharpOption{System.Double},Microsoft.FSharp.Core.FSharpOption{System.Double},Microsoft.FSharp.Core.FSharpOption{System.Double},Microsoft.FSharp.Core.FSharpOption{System.Double})">
+<summary>
+ Exponentially weighted moving volatility on frame
+
+ [category: Exponentially Weighted Moving]
+</summary>
+</member>
+<member name="M:Deedle.Math.Finance.ewmVol``1(Deedle.Series{``0,System.Double},Microsoft.FSharp.Core.FSharpOption{System.Double},Microsoft.FSharp.Core.FSharpOption{System.Double},Microsoft.FSharp.Core.FSharpOption{System.Double},Microsoft.FSharp.Core.FSharpOption{System.Double})">
+<summary>
+ Exponentially weighted moving volatility on series
+
+ [category: Exponentially Weighted Moving]
+</summary>
+</member>
+<member name="M:Deedle.Math.Finance.ewmVar``2(Deedle.Frame{``0,``1},Microsoft.FSharp.Core.FSharpOption{System.Double},Microsoft.FSharp.Core.FSharpOption{System.Double},Microsoft.FSharp.Core.FSharpOption{System.Double},Microsoft.FSharp.Core.FSharpOption{System.Double})">
+<summary>
+ Exponentially weighted moving variance on frame
+
+ [category: Exponentially Weighted Moving]
+</summary>
+</member>
+<member name="M:Deedle.Math.Finance.ewmVar``1(Deedle.Series{``0,System.Double},Microsoft.FSharp.Core.FSharpOption{System.Double},Microsoft.FSharp.Core.FSharpOption{System.Double},Microsoft.FSharp.Core.FSharpOption{System.Double},Microsoft.FSharp.Core.FSharpOption{System.Double})">
+<summary>
+ Exponentially weighted moving variance on series
+</summary>
+</member>
+<member name="M:Deedle.Math.Finance.ewmCovMatrix``2(Deedle.Frame{``0,``1},Microsoft.FSharp.Core.FSharpOption{System.Double},Microsoft.FSharp.Core.FSharpOption{System.Double},Microsoft.FSharp.Core.FSharpOption{System.Double},Microsoft.FSharp.Core.FSharpOption{System.Double})">
+<summary>
+ Exponentially weighted moving covariance matrix
+ 
+ [category: Exponentially Weighted Moving]
+</summary>
+</member>
+<member name="M:Deedle.Math.Finance.ewmCov``2(Deedle.Frame{``0,``1},Microsoft.FSharp.Core.FSharpOption{System.Double},Microsoft.FSharp.Core.FSharpOption{System.Double},Microsoft.FSharp.Core.FSharpOption{System.Double},Microsoft.FSharp.Core.FSharpOption{System.Double})">
+<summary>
+ Exponentially weighted moving covariance frame 
+ 
+ [category: Exponentially Weighted Moving]
+</summary>
+</member>
+<member name="M:Deedle.Math.Finance.ewmCorrMatrix``2(Deedle.Frame{``0,``1},Microsoft.FSharp.Core.FSharpOption{System.Double},Microsoft.FSharp.Core.FSharpOption{System.Double},Microsoft.FSharp.Core.FSharpOption{System.Double},Microsoft.FSharp.Core.FSharpOption{System.Double})">
+<summary>
+ Exponentially weighted moving correlation matrix 
+ 
+ [category: Exponentially Weighted Moving]
+</summary>
+</member>
+<member name="M:Deedle.Math.Finance.ewmCorr``2(Deedle.Frame{``0,``1},Microsoft.FSharp.Core.FSharpOption{System.Double},Microsoft.FSharp.Core.FSharpOption{System.Double},Microsoft.FSharp.Core.FSharpOption{System.Double},Microsoft.FSharp.Core.FSharpOption{System.Double})">
+<summary>
+ Exponentially weighted moving correlation frame 
+ 
+ [category: Exponentially Weighted Moving]
+</summary>
+</member>
+<member name="T:Deedle.Math.Finance">
+<summary>
+ Financial analysis
+
+ [category:Financial Analysis]
+</summary>
+</member>
+</members>
+</doc>
