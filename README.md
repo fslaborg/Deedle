@@ -1,14 +1,16 @@
 Deedle 
-[![Build Status](https://api.travis-ci.org/fslaborg/Deedle.svg?branch=master)](https://travis-ci.org/fslaborg/Deedle)
-[![Build Status](https://dev.azure.com/deedlefslab/Deedle/_apis/build/status/fslaborg.Deedle?branchName=master)](https://dev.azure.com/deedlefslab/Deedle/_build/latest?definitionId=1&branchName=master)
-[![Nuget Version](https://buildstats.info/nuget/Deedle)](https://www.nuget.org/packages/Deedle/)
 ======
-
 <img align="right" src="https://github.com/fslaborg/Deedle/raw/master/docs/files/images/logo.png" alt="Deedle" />
 
 Deedle is an easy to use library for data and time series manipulation and for scientific programming. It supports working with structured data frames, ordered and unordered data, as well as time series. Deedle is designed to work well for exploratory programming using F# and C# interactive console, but can be also used in efficient compiled .NET code.
 
 The library implements a wide range of operations for data manipulation including advanced indexing and slicing, joining and aligning data, handling of missing values, grouping and aggregation, statistics and more.
+
+[![Travis Build Status](https://api.travis-ci.org/fslaborg/Deedle.svg?branch=master)](https://travis-ci.org/fslaborg/Deedle) 
+[![Azure DevOps Build Status](https://dev.azure.com/deedlefslab/Deedle/_apis/build/status/fslaborg.Deedle?branchName=master)](https://dev.azure.com/deedlefslab/Deedle/_build/latest?definitionId=1&branchName=master)
+
+[![Deedle Nuget](https://buildstats.info/nuget/Deedle)](https://www.nuget.org/packages/Deedle/) Deedle  
+[![Deedle.Math Nuget](https://buildstats.info/nuget/Deedle.Math)](https://www.nuget.org/packages/Deedle.Math/) Deedle.Math
 
 Documentation
 -------------
