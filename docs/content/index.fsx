@@ -9,7 +9,6 @@ let root = __SOURCE_DIRECTORY__ + "/data/"
 Deedle: Exploratory data library for .NET
 =========================================
 
-<img src="http://www.bluemountaincapital.com/media/logo.gif" style="float:right;margin:10px" />
 
 Deedle is an easy to use library for data and time series manipulation and for scientific 
 programming. It supports working with structured data frames, ordered and unordered data, 
@@ -116,6 +115,18 @@ that are fully documented are the following:
    to those in the `Series` module, but operate on entire data frames.
  * [`Stats` module](reference/deedle-stats.html) implements standard statistical functions,
    moving windows and a lot more. It contains functions for both series and frames.
+
+More functions related to linear algebra, statistical analysis and financial analysis can be 
+found in Deedle.Math extension. Deedle.Math has dependency on MathNet.Numerics.
+
+ * [`LinearAlgebra` module](http://fslab.org/Deedle/reference/deedle-math-linearalgebra.html) 
+ provides linear algebra functions on frame.
+ * [`Matrix` module](http://fslab.org/Deedle/reference/deedle-math-matrix.html) provides matrix 
+ multiplication between frame, series, matrix and vector. They are also available via type extensions.
+ * [`Stats` module](http://fslab.org/Deedle/reference/deedle-math-stats.html) provides extra statistical 
+ functions on frame and series by applying existing functions in MathNet.Numerics.
+ * [`Finance` module](http://fslab.org/Deedle/reference/deedle-math-finance.html) provides statistical 
+ functions specific to finance domain.   
 
  
 Contributing and copyright
