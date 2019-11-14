@@ -294,7 +294,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     // Append the column indices and get transformation to combine them
     // (LeftOrRight - specifies that when column exist in both data frames then fail)
     let newColumnIndex, colCmd = 
-      indexBuilder.Merge( [(columnIndex, Vectors.Return 0); (otherFrame.ColumnIndex, Vectors.Return 1) ], BinaryTransform.AtMostOne)
+      indexBuilder.Merge( [(columnIndex, Vectors.Return 0); (otherFrame.ColumnIndex, Vectors.Return 1) ], BinaryTransform.AtMostOne, false)
     // Apply transformation to both data vectors
     let newThisData = data.Select(transformColumn vectorBuilder newRowIndex.AddressingScheme thisRowCmd)
     let newOtherData = otherFrame.Data.Select(transformColumn otherFrame.VectorBuilder newRowIndex.AddressingScheme otherRowCmd)
@@ -433,7 +433,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     // Merge the row indices and get a transformation that combines N vectors
     // (AtMostOne - specifies that when the vectors are merged, there should be no overlap)
     let constrs = frames |> Seq.mapi (fun i f -> f.RowIndex, Vectors.Return(i)) |> List.ofSeq
-    let newRowIndex, rowCmd = indexBuilder.Merge(constrs, NaryTransform.AtMostOne)
+    let newRowIndex, rowCmd = indexBuilder.Merge(constrs, NaryTransform.AtMostOne, true)
 
     // Define a function to construct result vector via the above row command, which will dynamically
     // dispatch to a type-specific generic implementation
@@ -460,7 +460,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
 
     // build the union of all column keys
     let colConstrs = frames |> Seq.mapi (fun i f -> f.ColumnIndex, Vectors.Return(i)) |> List.ofSeq
-    let newColIndex, frameCmd = indexBuilder.Merge(colConstrs, append)
+    let newColIndex, frameCmd = indexBuilder.Merge(colConstrs, append, false)
 
     let frameData = frames |> Array.map (fun f -> f.Data)
     let newData = vectorBuilder.Build(newColIndex.AddressingScheme, frameCmd, frameData)

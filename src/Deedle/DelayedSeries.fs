@@ -154,7 +154,7 @@ type internal DelayedSource<'K, 'V when 'K : equality>
       | 0 -> return indexBuilder.Create([], None), vectorBuilder.Create([||])
       | 1 -> return fst constrs.[0], vectors.[0]
       | _ -> 
-          let newIndex, cmd = indexBuilder.Merge( List.ofSeq constrs, BinaryTransform.AtMostOne )
+          let newIndex, cmd = indexBuilder.Merge( List.ofSeq constrs, BinaryTransform.AtMostOne, true )
           let newVector = vectorBuilder.Build(newIndex.AddressingScheme, cmd, vectors.ToArray())
           return newIndex, newVector } |> Async.StartAsTask)
 
@@ -249,7 +249,7 @@ and internal DelayedIndexBuilder() =
     member x.Shift(sc, offset) = builder.Shift(sc, offset)
     member x.Union(sc1, sc2) = builder.Union(sc1, sc2)
     member x.Intersect(sc1, sc2) = builder.Intersect(sc1, sc2)
-    member x.Merge(scs, transform) = builder.Merge(scs, transform)
+    member x.Merge(scs, transform, reorder) = builder.Merge(scs, transform, reorder)
     member x.Search(sc, idx, value) = builder.Search(sc, idx, value)
     member x.LookupLevel(sc, key) = builder.LookupLevel(sc, key)
     member x.WithIndex(index1, f, vector) = builder.WithIndex(index1, f, vector)

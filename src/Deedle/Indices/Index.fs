@@ -247,7 +247,7 @@ and IIndexBuilder =
   /// The specified `VectorListTransform` defines how to deal with the case when
   /// a key is defined in both indices (i.e. which value should be in the new vector).
   abstract Merge :
-    list<SeriesConstruction<'K>> * VectorListTransform -> 
+    list<SeriesConstruction<'K>> * VectorListTransform * bool -> 
     IIndex<'K> * VectorConstruction
 
   /// Given an old index and a new index, build a vector transformation that reorders

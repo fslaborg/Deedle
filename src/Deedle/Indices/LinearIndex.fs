@@ -476,8 +476,12 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
 
     /// Merge is similar to union, but it also combines the vectors using the specified
     /// vector transformation.
-    member builder.Merge<'K when 'K : equality>(constructions:SeriesConstruction<'K> list, transform) = 
-      let allOrdered = constructions |> List.forall (fun (index, _) -> index.IsOrdered)
+    member builder.Merge<'K when 'K : equality>(constructions:SeriesConstruction<'K> list, transform, reorder) =
+      let allOrdered =
+        if reorder then
+          constructions |> List.forall (fun (index, _) -> index.IsOrdered)
+        else
+          false
 
       // Merge ordered sequences (assuming `allOrdered = true`)
       let mergeOrdered comparer =
