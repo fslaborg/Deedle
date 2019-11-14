@@ -926,6 +926,15 @@ let ``Can append multiple frames`` () =
   actual.Rows.[8].TryGetAt(0).HasValue |> shouldEqual false
 
 [<Test>]
+let ``Can merge frames with original column order`` () =
+  let df1 = frame [ "Z" => series [ "a" => 1.0; "c" => 2.0 ]]
+  let df2 = frame [ "A" => series [ "a" => 1.0; "c" => 2.0 ] ]
+  let actual1 = df1.Merge(df2)
+  let actual2 = df2.Merge(df1)
+  actual1.ColumnKeys |> List.ofSeq |> shouldEqual ["Z"; "A"]
+  actual2.ColumnKeys |> List.ofSeq |> shouldEqual ["A"; "Z"]
+
+[<Test>]
 let ``AppendN works on non-primitives`` () =
   let df = frame []
   df?X <- series [ "a" => Decimal(1.0); "b" => Decimal(1.0); "c" => Decimal(2.0); "d" => Decimal(2.0)]

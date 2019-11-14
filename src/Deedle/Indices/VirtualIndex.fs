@@ -180,7 +180,7 @@ and VirtualIndexBuilder() =
     // We can merge series as long as they all have `VirtualOrderedIndex` or as long as they
     // all have `VirtualOrdinalIndex`. If they differ or they are fully evaluated, we call the
     // base vector builder and fully materialize them.
-    member x.Merge<'K when 'K : equality>(scs:list<SeriesConstruction<'K>>, transform) = 
+    member x.Merge<'K when 'K : equality>(scs:list<SeriesConstruction<'K>>, transform, reorder) = 
 
       /// Succeeds if all the specified indices are `VirtualOrderedIndex`
       let (|OrderedSources|_|) : list<SeriesConstruction<'K>> -> _ = 
@@ -217,7 +217,7 @@ and VirtualIndexBuilder() =
                 match index with
                 | :? VirtualOrderedIndex<'K> | :? VirtualOrdinalIndex -> materializeIndex index, vector
                 | _ -> index, vector ]
-          baseBuilder.Merge(scs, transform)
+          baseBuilder.Merge(scs, transform, true)
 
 
     // Search the given vector for a given value and return an index that represents only

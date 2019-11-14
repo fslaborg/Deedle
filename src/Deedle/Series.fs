@@ -481,7 +481,7 @@ and
     // (LeftOrRight - specifies that when column exist in both data frames then fail)
     let newIndex, cmd = 
       indexBuilder.Merge( [(index, Vectors.Return 0); (otherSeries.Index, Vectors.Return 1)], 
-                           BinaryTransform.AtMostOne )
+                           BinaryTransform.AtMostOne, true )
     let newVector = vectorBuilder.Build(newIndex.AddressingScheme, cmd, [| series.Vector; otherSeries.Vector |])
     Series(newIndex, newVector, vectorBuilder, indexBuilder)
 
@@ -497,7 +497,7 @@ and
     let vectors = otherSeries |> Array.map (fun s -> s.Vector)
 
     let newIndex, cmd = 
-      indexBuilder.Merge( (index, Vectors.Return 0)::constrs, BinaryTransform.AtMostOne )
+      indexBuilder.Merge( (index, Vectors.Return 0)::constrs, BinaryTransform.AtMostOne, true )
     let newVector = vectorBuilder.Build(newIndex.AddressingScheme, cmd, [| yield series.Vector; yield! vectors |])
     Series(newIndex, newVector, vectorBuilder, indexBuilder)
 
