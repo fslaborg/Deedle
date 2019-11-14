@@ -309,8 +309,8 @@ module internal FrameUtils =
           if dt.TimeOfDay = TimeSpan.Zero then dt.ToString("d", ci)
           else dt.ToString(ci))
         formatter (fun (dt:System.DateTimeOffset) ->
-          if dt.TimeOfDay = TimeSpan.Zero then dt.Date.ToString("d", ci)
-          else dt.DateTime.ToString(ci)) ] |> dict
+          // default of 100ns fractional second precision
+          dt.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffzzz", ci) ) ] |> dict
 
     // Format optional value, using
     let formatOptional (typ, opt:obj option) =
