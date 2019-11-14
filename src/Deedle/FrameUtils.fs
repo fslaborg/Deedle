@@ -284,7 +284,7 @@ module internal FrameUtils =
   /// caller needs to provide headers)
   let writeCsv (writer:TextWriter) fileNameOpt separatorOpt cultureOpt includeRowKeys (rowKeyNames:seq<_> option) (frame:Frame<_, _>) =
     let ci = defaultArg cultureOpt CultureInfo.InvariantCulture
-    let includeRowKeys = defaultArg includeRowKeys (rowKeyNames.IsSome)
+    let includeRowKeys = defaultArg includeRowKeys true
     let separator =
       // Automatically use \t if the file name ends with .tsv
       match separatorOpt, fileNameOpt with
@@ -309,8 +309,8 @@ module internal FrameUtils =
           if dt.TimeOfDay = TimeSpan.Zero then dt.ToString("d", ci)
           else dt.ToString(ci))
         formatter (fun (dt:System.DateTimeOffset) ->
-          if dt.TimeOfDay = TimeSpan.Zero then dt.Date.ToString("d", ci)
-          else dt.DateTime.ToString(ci)) ] |> dict
+          // default of 100ns fractional second precision
+          dt.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffzzz", ci) ) ] |> dict
 
     // Format optional value, using
     let formatOptional (typ, opt:obj option) =

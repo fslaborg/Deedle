@@ -91,7 +91,7 @@ let ``Can read MSFT data from CSV and rename``() =
 let ``Can save MSFT data as CSV file and read it afterwards (with default args)`` () =
   let file = System.IO.Path.GetTempFileName()
   let expected = msft()
-  expected.SaveCsv(file)
+  expected.SaveCsv(file, includeRowKeys = false)
   let actual = Frame.ReadCsv(file) 
   actual |> shouldEqual (Frame.indexRowsOrdinally expected)
 
@@ -159,7 +159,7 @@ let ``Can save MSFT data as CSV to a TextWriter and read it afterwards (with def
   let builder = new System.Text.StringBuilder()
   use writer = new System.IO.StringWriter(builder)
   let expected = msft()
-  expected.SaveCsv(writer)
+  expected.SaveCsv(writer, includeRowKeys = false)
   use reader = new System.IO.StringReader(builder.ToString())
   let actual = Frame.ReadCsv(reader) 
   actual |> shouldEqual (Frame.indexRowsOrdinally expected)
