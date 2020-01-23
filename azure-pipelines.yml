@@ -24,5 +24,5 @@ jobs:
     vmImage: 'ubuntu-18.04'
   steps:
   - bash: |
-    export FrameworkPathOverride=$(dirname $(which mono))/../lib/mono/4.7.1-api/
-    ./fake.sh build
+      export FrameworkPathOverride=$(dirname $(which mono))/../lib/mono/4.7.1-api/
+      ./fake.sh build
