@@ -9,7 +9,7 @@ trigger:
 jobs:
 - job: Windows
   pool:
-    vmImage: 'vs2017-win2016'
+    vmImage: 'windows-2019'
   steps:
   - script: ./fake.cmd build
 - job: macOS
@@ -25,4 +25,5 @@ jobs:
   steps:
   - bash: |
       export FrameworkPathOverride=$(dirname $(which mono))/../lib/mono/4.7.1-api/
+      dotnet tool restore
       ./fake.sh build
