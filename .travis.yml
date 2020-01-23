@@ -8,14 +8,11 @@ install:
 matrix:
   include:
     - mono: latest
-      dotnet: 2.2.105
+      dotnet: 3.0.100
       os: linux
     - mono: latest
-      dotnet: 2.2.105
+      dotnet: 3.0.100
       os: osx
-
-before_install:
-  - chmod +x fake.sh
  
 script: 
   - ./fake.sh build target AllCore
