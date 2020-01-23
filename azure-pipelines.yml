@@ -16,13 +16,13 @@ jobs:
   pool:
     vmImage: 'macOS-10.14'
   steps:
-  - bash: 
+  - bash: |
       export FrameworkPathOverride=$(dirname $(which mono))/../lib/mono/4.7.1-api/
       ./fake.sh build
 - job: Linux
   pool:
     vmImage: 'ubuntu-18.04'
   steps:
-  - bash: 
+  - bash: |
     export FrameworkPathOverride=$(dirname $(which mono))/../lib/mono/4.7.1-api/
     ./fake.sh build
