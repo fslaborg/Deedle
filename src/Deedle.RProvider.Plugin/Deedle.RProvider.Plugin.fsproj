@@ -1,6 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\..\netfx.props" />
   <PropertyGroup>
     <TargetFrameworks>net451</TargetFrameworks>
     <OutputPath>../../bin/</OutputPath>
@@ -33,6 +32,5 @@
     <Copy SourceFiles="..\..\packages\RProvider\lib\net40\FSharp.Core.sigdata" DestinationFolder="$(OutputPath)" />
     <Copy SourceFiles="..\..\packages\RProvider\lib\net40\FSharp.Core.optdata" DestinationFolder="$(OutputPath)" />
   </Target>
-  <Import Project="..\..\fsc.props" />
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
