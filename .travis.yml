@@ -8,10 +8,10 @@ install:
 matrix:
   include:
     - mono: latest
-      dotnet: 3.0.100
+      dotnet: 3.1.101
       os: linux
     - mono: latest
-      dotnet: 3.0.100
+      dotnet: 3.1.101
       os: osx
  
 script: 
