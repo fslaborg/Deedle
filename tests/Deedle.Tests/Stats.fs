@@ -321,9 +321,15 @@ let sampleFrame() =
 
 [<Test>]
 let ``Can calulate minimum and maximum of numeric series in a frame`` () =
-  let df = sampleFrame()
+  let df = sampleFrame()   
   df |> Stats.min |> shouldEqual <| series [ "A" => 1.0; "B" => nan; "C" => 3.3 ]
   df |> Stats.max |> shouldEqual <| series [ "A" => 3.0; "B" => nan; "C" => 6.6 ]
+
+[<Test>]
+let ``Can calulate minimum and maximum of numeric series in a frame using extension`` () =
+  let df = sampleFrame()
+  df.Min() |> shouldEqual <| series [ "A" => 1.0; "B" => nan; "C" => 3.3 ]
+  df.Max() |> shouldEqual <| series [ "A" => 3.0; "B" => nan; "C" => 6.6 ]
 
 // ------------------------------------------------------------------------------------------------
 // Some FsCheck tests

@@ -4,8 +4,7 @@ open System
 open System.Runtime.CompilerServices
 
 /// The type implements C# and F# extension methods that add numerical operations 
-/// to Deedle series. With a few exceptions, the methods are only available for 
-/// series containing floating-point values, that is `Series<'K, float>`.
+/// to Deedle series.
 ///
 /// [category:Frame and series operations]
 [<Extension>]
@@ -28,12 +27,12 @@ type SeriesStatsExtensions =
   /// Returns the smallest of all elements of the series.
   /// [category:Statistics]
   [<Extension>]
-  static member inline Min(series:Series<'K, 'V>) = Stats.tryMin series |> Option.get
+  static member inline Min(series:Series<'K, 'V>) = Stats.min series
 
   /// Returns the greatest of all elements of the series.
   /// [category:Statistics]
   [<Extension>]
-  static member inline Max(series:Series<'K, 'V>) = Stats.tryMax series |> Option.get
+  static member inline Max(series:Series<'K, 'V>) = Stats.max series
 
   /// Returns the mean of the elements of the series.
   /// [category:Statistics]
