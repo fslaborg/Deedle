@@ -14,7 +14,7 @@ jobs:
   - script: ./fake.cmd build
 - job: macOS
   pool:
-    vmImage: 'macOS-10.14'
+    vmImage: 'macOS-10.13'
   steps:
   - bash: |
       export FrameworkPathOverride=$(dirname $(which mono))/../lib/mono/4.7.1-api/
