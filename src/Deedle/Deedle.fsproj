@@ -57,6 +57,7 @@
     <Compile Include="FrameModule.fs" />
     <Compile Include="FrameExtensions.fs" />
     <Compile Include="SeriesStatsExtensions.fs" />
+    <Compile Include="FrameStatsExtensions.fs" />
     <Compile Include="DelayedSeries.fs" />
     <Compile Include="VirtualFrame.fs" />
     <None Include="paket.references" />
