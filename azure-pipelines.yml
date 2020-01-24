@@ -12,18 +12,11 @@ jobs:
     vmImage: 'windows-2019'
   steps:
   - script: ./fake.cmd build
-- job: macOS
-  pool:
-    vmImage: 'macOS-10.13'
-  steps:
-  - bash: |
-      export FrameworkPathOverride=$(dirname $(which mono))/../lib/mono/4.7.1-api/
-      ./fake.sh build
 - job: Linux
   pool:
     vmImage: 'ubuntu-18.04'
   steps:
   - bash: |
-      export FrameworkPathOverride=$(dirname $(which mono))/../lib/mono/4.7.1-api/
+      export FrameworkPathOverride=$(dirname $(which mono))/../lib/mono/4.6.1-api/
       dotnet tool restore
       ./fake.sh build

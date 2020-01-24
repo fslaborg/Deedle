@@ -4,7 +4,7 @@ sudo: required
 dist: xenial
 install:
   - mozroots --import --sync
-  - export FrameworkPathOverride=$(dirname $(which mono))/../lib/mono/4.7.1-api/
+  - export FrameworkPathOverride=$(dirname $(which mono))/../lib/mono/4.6.1-api/
 matrix:
   include:
     - mono: latest
