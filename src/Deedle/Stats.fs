@@ -758,7 +758,7 @@ type Stats =
 
   /// For each numerical column, returns the sum of the values in the column. 
   /// The function skips over missing values and `NaN` values. When there are no 
-  //// available values, the result is 0.
+  /// available values, the result is 0.
   ///
   /// [category:Frame statistics]
   static member sum (frame:Frame<'R, 'C>) = 
