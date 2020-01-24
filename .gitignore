@@ -44,3 +44,4 @@ tests/PerformanceTools/Deedle.PerfTest/bin
 /.vs/*
 /.fake
 docs/content/RELEASE_NOTES.md
+.ionide/

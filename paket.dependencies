@@ -1,5 +1,3 @@
-version 5.203.2
-
 source https://api.nuget.org/v3/index.json
 
 nuget FsCheck
@@ -14,7 +12,7 @@ nuget RProvider 1.1.22
 nuget System.Reflection.Emit
 nuget System.Reflection.Emit.Lightweight
 nuget FSharp.Core 4.5.2
-nuget Microsoft.NET.Test.Sdk 15.8.0
+nuget Microsoft.NET.Test.Sdk 16.4.0
 nuget NUnit3TestAdapter 3.9.0
 nuget Microsoft.CSharp
 nuget R.NET.Community

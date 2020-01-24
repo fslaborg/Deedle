@@ -4,18 +4,15 @@ sudo: required
 dist: xenial
 install:
   - mozroots --import --sync
-  - export FrameworkPathOverride=$(dirname $(which mono))/../lib/mono/4.5/
+  - export FrameworkPathOverride=$(dirname $(which mono))/../lib/mono/4.6.1-api/
 matrix:
   include:
     - mono: latest
-      dotnet: 2.2.105
+      dotnet: 3.0.100
       os: linux
     - mono: latest
-      dotnet: 2.2.105
+      dotnet: 3.0.100
       os: osx
-
-before_install:
-  - chmod +x fake.sh
  
 script: 
   - ./fake.sh build target AllCore

@@ -1,6 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\..\..\netfx.props" />
   <PropertyGroup>
     <TargetFrameworks>net45</TargetFrameworks>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -16,6 +15,5 @@
     <ProjectReference Include="..\Deedle.PerfTest.Core\Deedle.PerfTest.Core.fsproj"></ProjectReference>
     <ProjectReference Include="..\..\..\src\Deedle\Deedle.fsproj" />
   </ItemGroup>
-  <Import Project="..\..\..\fsc.props" />
   <Import Project="..\..\..\.paket\Paket.Restore.targets" />
 </Project>

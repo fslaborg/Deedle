@@ -1,6 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\..\netfx.props" />
   <PropertyGroup>
     <TargetFrameworks>net451</TargetFrameworks>  
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>    
@@ -24,6 +23,5 @@
   <ItemGroup>
     <Reference Include="System.Runtime" />
   </ItemGroup>  
-  <Import Project="..\..\fsc.props" />
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
