@@ -4565,6 +4565,10 @@
 </member>
 <member name="M:Deedle.Stats.sum``2(Deedle.Frame{``0,``1})">
 <summary>
+ For each numerical column, returns the sum of the values in the column. 
+ The function skips over missing values and `NaN` values. When there are no 
+ available values, the result is 0.
+
  [category:Frame statistics]
 </summary>
 </member>
@@ -5874,6 +5878,99 @@
 </summary>
 </member>
 <member name="T:Deedle.SeriesStatsExtensions">
+<summary>
+ The type implements C# and F# extension methods that add numerical operations 
+ to Deedle series.
+
+ [category:Frame and series operations]
+</summary>
+</member>
+<member name="M:Deedle.FrameStatsExtensions.Variance``2(Deedle.Frame{``0,``1})">
+<summary>
+ For each numerical column, returns the variance of the values in the column.
+ The function skips over missing values and `NaN` values. When there are less 
+ than 2 values, the result is NaN.
+
+ [category:Frame Statistics]
+</summary>
+</member>
+<member name="M:Deedle.FrameStatsExtensions.UniqueCount``2(Deedle.Frame{``0,``1})">
+<summary>
+ For each column, returns the number of unique values.
+ [category:Frame Statistics]
+</summary>
+</member>
+<member name="M:Deedle.FrameStatsExtensions.Sum``2(Deedle.Frame{``0,``1})">
+<summary>
+ For each numerical column, returns the sum of the values in the column. 
+ The function skips over missing values and `NaN` values. When there are no 
+ available values, the result is 0.
+
+ [category:Frame Statistics]
+</summary>
+</member>
+<member name="M:Deedle.FrameStatsExtensions.StdDev``2(Deedle.Frame{``0,``1})">
+<summary>
+ For each numerical column, returns the standard deviation of the values in the column. 
+ The function skips over missing values and `NaN` values. When there are less than 2 values, 
+ the result is NaN.
+
+ [category:Frame Statistics]
+</summary>
+</member>
+<member name="M:Deedle.FrameStatsExtensions.Skewness``2(Deedle.Frame{``0,``1})">
+<summary>
+ For each numerical column, returns the skewness of the values in a series. 
+ The function skips over missing values and `NaN` values. When there are less than 3 values, 
+ the result is NaN.
+
+ [category:Frame Statistics]
+</summary>
+</member>
+<member name="M:Deedle.FrameStatsExtensions.Min``2(Deedle.Frame{``0,``1})">
+<summary>
+ For each numerical column, returns the minimal values as a series.
+ The function skips over missing and `NaN` values. When there are no values,
+ the result is `NaN`.
+
+ [category:Frame Statistics]
+</summary>
+</member>
+<member name="M:Deedle.FrameStatsExtensions.Median``2(Deedle.Frame{``0,``1})">
+<summary>
+ For each numerical column, returns the median of the values in the column.
+
+ [category:Frame Statistics]
+</summary>
+</member>
+<member name="M:Deedle.FrameStatsExtensions.Mean``2(Deedle.Frame{``0,``1})">
+<summary>
+ For each numerical column, returns the mean of the values in the column. 
+ The function skips over missing values and `NaN` values. When there are 
+ no available values, the result is NaN.
+
+ [category:Frame Statistics]
+</summary>
+</member>
+<member name="M:Deedle.FrameStatsExtensions.Max``2(Deedle.Frame{``0,``1})">
+<summary>
+ For each numerical column, returns the maximal values as a series.
+ The function skips over missing and `NaN` values. When there are no values,
+ the result is `NaN`.
+
+ [category:Frame Statistics]
+</summary>
+</member>
+<member name="M:Deedle.FrameStatsExtensions.Kurtosis``2(Deedle.Frame{``0,``1})">
+<summary>
+ For each numerical column, returns the kurtosis of the values in a series. 
+ The function skips over missing values and `NaN` values. When there are less than 4 values, 
+ the result is NaN.
+
+ [category:Frame Statistics]
+</summary>
+</member>
+<member name="T:Deedle.FrameStatsExtensions">
 <summary>
  The type implements C# and F# extension methods that add numerical operations 
  to Deedle series. With a few exceptions, the methods are only available for 
@@ -8230,7 +8327,7 @@
  Order (possibly unordered) index and return transformation that reorders vector
 </summary>
 </member>
-<member name="M:Deedle.Indices.IIndexBuilder.Merge``1(Microsoft.FSharp.Collections.FSharpList{System.Tuple{Deedle.Indices.IIndex{``0},Deedle.Vectors.VectorConstruction}},Deedle.Vectors.VectorListTransform)">
+<member name="M:Deedle.Indices.IIndexBuilder.Merge``1(Microsoft.FSharp.Collections.FSharpList{System.Tuple{Deedle.Indices.IIndex{``0},Deedle.Vectors.VectorConstruction}},Deedle.Vectors.VectorListTransform,System.Boolean)">
 <summary>
  Append two indices and builds corresponding vector transformations
  for both vectors that match the left and the right index. If the indices
@@ -8502,7 +8599,7 @@
  Order index and build vector transformation 
 </summary>
 </member>
-<member name="M:Deedle.Indices.Linear.LinearIndexBuilder.Deedle-Indices-IIndexBuilder-Merge``1(Microsoft.FSharp.Collections.FSharpList{System.Tuple{Deedle.Indices.IIndex{``0},Deedle.Vectors.VectorConstruction}},Deedle.Vectors.VectorListTransform)">
+<member name="M:Deedle.Indices.Linear.LinearIndexBuilder.Deedle-Indices-IIndexBuilder-Merge``1(Microsoft.FSharp.Collections.FSharpList{System.Tuple{Deedle.Indices.IIndex{``0},Deedle.Vectors.VectorConstruction}},Deedle.Vectors.VectorListTransform,System.Boolean)">
 <summary>
  Merge is similar to union, but it also combines the vectors using the specified
  vector transformation.
