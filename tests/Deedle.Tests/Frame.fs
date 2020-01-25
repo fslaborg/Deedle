@@ -525,6 +525,7 @@ let ``Filter frame rows by column value`` () =
   (df |> Frame.filterRowsBy "X" true)?Y |> shouldEqual <| series [ "a" => 4.0; "e" => 6.0 ]
   (df |> Frame.filterRowsBy "X" false)?Y |> shouldEqual <| series [ "c" => nan; "f" => 4.0 ]
   (df |> Frame.filterRowsBy "Y" 4).GetColumn<bool>("X") |> shouldEqual <| series [ "a" => true; "f" => false ]
+  df.FilterRowsBy("Y", 4).GetColumn<bool>("X") |> shouldEqual <| series [ "a" => true; "f" => false ]
 
 // ------------------------------------------------------------------------------------------------
 // Slices
