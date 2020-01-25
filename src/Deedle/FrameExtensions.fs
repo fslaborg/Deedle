@@ -1161,8 +1161,7 @@ type FrameExtensions =
     frame.Rows.GetItems(rowKeys) |> FrameUtils.fromRows frame.IndexBuilder frame.VectorBuilder
 
   [<Extension>]
-  static member FilterRowsBy<'TRowKey, 'TColumnKey, 'V when 'TRowKey : equality and 'TColumnKey : equality>
-      (frame:Frame<'TRowKey, 'TColumnKey>, column, value) = 
+  static member FilterRowsBy(frame:Frame<'TRowKey, 'TColumnKey>, column, value) = 
     Frame.filterRowsBy column value frame
 
   [<Extension>]
