@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Ranges<'T> - Deedle</title>
+    <title>FrameStatsExtensions - Deedle</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="BlueMountain Capital, FsLab.Org">
@@ -39,89 +39,50 @@
 
 
 
-<h1>Ranges<'T></h1>
+<h1>FrameStatsExtensions</h1>
 <p>
 
-    <span>Namespace: Deedle.Ranges</span><br />
-    </p>
+    <span>Namespace: Deedle</span><br />
+            <span>
+            Attributes: <br />
+[&lt;Extension&gt;]<br />
+            
+        </span>
+</p>
 <div class="xmldoc">
-<p>Represents a sub-range of an ordinal index. The range can consist of
-multiple blocks, i.e. [ 0..9; 20..29 ]. The pairs represent indices
-of first and last element (inclusively) and we also keep size so that
-we do not have to recalculate it.</p>
-<p>For more information, see also the documentation for the <code>Ranges</code> module.</p>
+<p>The type implements C# and F# extension methods that add numerical operations
+to Deedle series. With a few exceptions, the methods are only available for
+series containing floating-point values, that is <code>Series&lt;'K, float&gt;</code>.</p>
 
 </div>
-  <h3>Constructors</h3>
+  <h3>Static members</h3>
   <table class="table table-bordered member-list">
     <thead>
-      <tr><td>Constructor</td><td>Description</td></tr>
+      <tr><td>Static member</td><td>Description</td></tr>
     </thead>
     <tbody>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1410', 1410)" onmouseover="showTip(event, '1410', 1410)">
-            new(ranges, ops)
+          <code onmouseout="hideTip(event, '881', 881)" onmouseover="showTip(event, '881', 881)">
+            FrameStatsExtensions.Kurtosis(df)
           </code>
-          <div class="tip" id="1410">
-            <strong>Signature:</strong> (ranges:seq&lt;&#39;T * &#39;T&gt; * ops:IRangeKeyOperations&lt;&#39;T&gt;) -&gt; Ranges&lt;&#39;T&gt;<br />
-                                  </div>
+          <div class="tip" id="881">
+            <strong>Signature:</strong> df:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Common/Ranges.fs#L61-61" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameStatsExtensions.fs#L80-80" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          
-              <p>CompiledName: <code>.ctor</code></p>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-  <h3>Instance members</h3>
-  <table class="table table-bordered member-list">
-    <thead>
-      <tr><td>Instance member</td><td>Description</td></tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '1411', 1411)" onmouseover="showTip(event, '1411', 1411)">
-            x.FirstKey
-          </code>
-          <div class="tip" id="1411">
-            <strong>Signature:</strong> &#39;T<br />
-                                  </div>
-        </td>
-        <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Common/Ranges.fs#L297-297" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Returns the first key in the range</p>
-
-
-              <p>CompiledName: <code>get_FirstKey</code></p>
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '1412', 1412)" onmouseover="showTip(event, '1412', 1412)">
-            x.KeyAtOffset(offset)
-          </code>
-          <div class="tip" id="1412">
-            <strong>Signature:</strong> offset:int64 -&gt; &#39;T<br />
-                                  </div>
-        </td>
-        <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Common/Ranges.fs#L301-301" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Returns the key at the specified offset</p>
+          <p>For each numerical column, returns the kurtosis of the values in a series.
+The function skips over missing values and <code>NaN</code> values. When there are less than 4 values,
+the result is NaN.</p>
 
 
         </td>
@@ -129,82 +90,25 @@ we do not have to recalculate it.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1413', 1413)" onmouseover="showTip(event, '1413', 1413)">
-            x.Keys
+          <code onmouseout="hideTip(event, '882', 882)" onmouseover="showTip(event, '882', 882)">
+            FrameStatsExtensions.Max(df)
           </code>
-          <div class="tip" id="1413">
-            <strong>Signature:</strong> seq&lt;&#39;T&gt;<br />
-                                  </div>
+          <div class="tip" id="882">
+            <strong>Signature:</strong> df:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Common/Ranges.fs#L308-308" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameStatsExtensions.fs#L40-40" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Returns a lazy sequence containing all keys</p>
-
-
-              <p>CompiledName: <code>get_Keys</code></p>
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '1414', 1414)" onmouseover="showTip(event, '1414', 1414)">
-            x.LastKey
-          </code>
-          <div class="tip" id="1414">
-            <strong>Signature:</strong> &#39;T<br />
-                                  </div>
-        </td>
-        <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Common/Ranges.fs#L299-299" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Returns the last key in the range</p>
-
-
-              <p>CompiledName: <code>get_LastKey</code></p>
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '1415', 1415)" onmouseover="showTip(event, '1415', 1415)">
-            x.Length
-          </code>
-          <div class="tip" id="1415">
-            <strong>Signature:</strong> int64<br />
-                                  </div>
-        </td>
-        <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Common/Ranges.fs#L310-310" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Returns the length of the ranges</p>
-
-
-              <p>CompiledName: <code>get_Length</code></p>
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '1416', 1416)" onmouseover="showTip(event, '1416', 1416)">
-            x.Lookup(key, semantics, check)
-          </code>
-          <div class="tip" id="1416">
-            <strong>Signature:</strong> (key:&#39;T * semantics:Lookup * check:Func&lt;&#39;T,int64,bool&gt;) -&gt; OptionalValue&lt;&#39;T * int64&gt;<br />
-                                  </div>
-        </td>
-        <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Common/Ranges.fs#L312-312" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Searches for a key in the range (see <code>Ranges.lookup</code> for more info)</p>
+          <p>For each numerical column, returns the maximal values as a series.
+The function skips over missing and <code>NaN</code> values. When there are no values,
+the result is <code>NaN</code>.</p>
 
 
         </td>
@@ -212,19 +116,25 @@ we do not have to recalculate it.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1417', 1417)" onmouseover="showTip(event, '1417', 1417)">
-            x.MergeWith(ranges)
+          <code onmouseout="hideTip(event, '883', 883)" onmouseover="showTip(event, '883', 883)">
+            FrameStatsExtensions.Mean(df)
           </code>
-          <div class="tip" id="1417">
-            <strong>Signature:</strong> ranges:seq&lt;Ranges&lt;&#39;T&gt;&gt; -&gt; Ranges&lt;&#39;T&gt;<br />
-                                  </div>
+          <div class="tip" id="883">
+            <strong>Signature:</strong> df:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Common/Ranges.fs#L315-315" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameStatsExtensions.fs#L48-48" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Merge the current range with other specified ranges</p>
+          <p>For each numerical column, returns the mean of the values in the column.
+The function skips over missing values and <code>NaN</code> values. When there are
+no available values, the result is NaN.</p>
 
 
         </td>
@@ -232,19 +142,23 @@ we do not have to recalculate it.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1418', 1418)" onmouseover="showTip(event, '1418', 1418)">
-            x.OffsetOfKey(key)
+          <code onmouseout="hideTip(event, '884', 884)" onmouseover="showTip(event, '884', 884)">
+            FrameStatsExtensions.Median(df)
           </code>
-          <div class="tip" id="1418">
-            <strong>Signature:</strong> key:&#39;T -&gt; int64<br />
-                                  </div>
+          <div class="tip" id="884">
+            <strong>Signature:</strong> df:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Common/Ranges.fs#L303-303" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameStatsExtensions.fs#L86-86" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Returns the absolute offset of the key in the ranges</p>
+          <p>For each numerical column, returns the median of the values in the column.</p>
 
 
         </td>
@@ -252,57 +166,153 @@ we do not have to recalculate it.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1419', 1419)" onmouseover="showTip(event, '1419', 1419)">
-            x.Operations
+          <code onmouseout="hideTip(event, '885', 885)" onmouseover="showTip(event, '885', 885)">
+            FrameStatsExtensions.Min(df)
           </code>
-          <div class="tip" id="1419">
-            <strong>Signature:</strong> IRangeKeyOperations&lt;&#39;T&gt;<br />
-                                  </div>
+          <div class="tip" id="885">
+            <strong>Signature:</strong> df:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Common/Ranges.fs#L68-68" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameStatsExtensions.fs#L32-32" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          
-              <p>CompiledName: <code>get_Operations</code></p>
+          <p>For each numerical column, returns the minimal values as a series.
+The function skips over missing and <code>NaN</code> values. When there are no values,
+the result is <code>NaN</code>.</p>
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1420', 1420)" onmouseover="showTip(event, '1420', 1420)">
-            x.Ranges
+          <code onmouseout="hideTip(event, '886', 886)" onmouseover="showTip(event, '886', 886)">
+            FrameStatsExtensions.Skewness(df)
           </code>
-          <div class="tip" id="1420">
-            <strong>Signature:</strong> (&#39;T * &#39;T) []<br />
-                                  </div>
+          <div class="tip" id="886">
+            <strong>Signature:</strong> df:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Common/Ranges.fs#L67-67" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameStatsExtensions.fs#L72-72" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          
-              <p>CompiledName: <code>get_Ranges</code></p>
+          <p>For each numerical column, returns the skewness of the values in a series.
+The function skips over missing values and <code>NaN</code> values. When there are less than 3 values,
+the result is NaN.</p>
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1421', 1421)" onmouseover="showTip(event, '1421', 1421)">
-            x.Restrict(restriction)
+          <code onmouseout="hideTip(event, '887', 887)" onmouseover="showTip(event, '887', 887)">
+            FrameStatsExtensions.StdDev(df)
           </code>
-          <div class="tip" id="1421">
-            <strong>Signature:</strong> restriction:RangeRestriction&lt;&#39;T&gt; -&gt; Ranges&lt;&#39;T&gt;<br />
-                                  </div>
+          <div class="tip" id="887">
+            <strong>Signature:</strong> df:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Common/Ranges.fs#L318-318" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameStatsExtensions.fs#L56-56" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Restricts the ranges according to the specified range restriction</p>
+          <p>For each numerical column, returns the standard deviation of the values in the column.
+The function skips over missing values and <code>NaN</code> values. When there are less than 2 values,
+the result is NaN.</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '888', 888)" onmouseover="showTip(event, '888', 888)">
+            FrameStatsExtensions.Sum(df)
+          </code>
+          <div class="tip" id="888">
+            <strong>Signature:</strong> df:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+          </span>
+          </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameStatsExtensions.fs#L24-24" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>For each numerical column, returns the sum of the values in the column.
+The function skips over missing values and <code>NaN</code> values. When there are no
+available values, the result is 0.</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '889', 889)" onmouseover="showTip(event, '889', 889)">
+            FrameStatsExtensions.UniqueCount(df)
+          </code>
+          <div class="tip" id="889">
+            <strong>Signature:</strong> df:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,int&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+          </span>
+          </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameStatsExtensions.fs#L91-91" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>For each column, returns the number of unique values.</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '890', 890)" onmouseover="showTip(event, '890', 890)">
+            FrameStatsExtensions.Variance(df)
+          </code>
+          <div class="tip" id="890">
+            <strong>Signature:</strong> df:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+          </span>
+          </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameStatsExtensions.fs#L64-64" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>For each numerical column, returns the variance of the values in the column.
+The function skips over missing values and <code>NaN</code> values. When there are less
+than 2 values, the result is NaN.</p>
 
 
         </td>
