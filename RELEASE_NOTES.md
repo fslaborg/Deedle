@@ -1,5 +1,9 @@
 # Release Notes
 
+## 2.1.1 - 2019-11-4
+* Fix FilterRowsBy [#491](https://github.com/fslaborg/Deedle/issues/491)
+* Add basic stats functions of Frame in extension [#490](https://github.com/fslaborg/Deedle/pull/490)
+
 ## 2.1.0 - 2019-11-4
 * Release Deedle.Math to extend linear algebra, statisitical analysis and financial analysis on Frame and Series by leveraging MathNet.Numerics [#475](https://github.com/fslaborg/Deedle/pull/475)
 * Override + operator and add Frame.strConcat to concatenate Frame and Series of string values [#482](https://github.com/fslaborg/Deedle/issues/482)
