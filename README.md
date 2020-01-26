@@ -6,6 +6,14 @@ Deedle is an easy to use library for data and time series manipulation and for s
 
 The library implements a wide range of operations for data manipulation including advanced indexing and slicing, joining and aligning data, handling of missing values, grouping and aggregation, statistics and more.
 
+Build
+-------------
+Install .Net SDK 3.0.100 or higher
+
+Windows: Run *fake build*
+
+Linux/Mac: Run *./fake.sh build*
+
 [![Travis Build Status](https://api.travis-ci.org/fslaborg/Deedle.svg?branch=master)](https://travis-ci.org/fslaborg/Deedle) 
 [![Azure DevOps Build Status](https://dev.azure.com/deedlefslab/Deedle/_apis/build/status/fslaborg.Deedle?branchName=master)](https://dev.azure.com/deedlefslab/Deedle/_build/latest?definitionId=1&branchName=master)
 
