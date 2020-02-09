@@ -1109,8 +1109,8 @@ when negative, subtracts the future values from the current values.
             FrameExtensions.FilterRowsBy(...)
           </code>
           <div class="tip" id="857">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * column:&#39;TColumnKey * value:&#39;?686683) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
-                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey, '?686683                        <span>
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * column:&#39;TColumnKey * value:&#39;?686563) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey, '?686563                        <span>
             <strong>Attributes:</strong><br />
 [&lt;Extension&gt;]<br />
           </span>
@@ -1425,8 +1425,8 @@ when negative, subtracts the future values from the current values.
             FrameExtensions.Select(...)
           </code>
           <div class="tip" id="871">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * projection:Func&lt;KeyValuePair&lt;&#39;TRowKey,ObjectSeries&lt;&#39;TColumnKey&gt;&gt;,int,&#39;?686654&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;?686655&gt;<br />
-                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey, '?686654, '?686655                        <span>
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * projection:Func&lt;KeyValuePair&lt;&#39;TRowKey,ObjectSeries&lt;&#39;TColumnKey&gt;&gt;,int,&#39;?686534&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;?686535&gt;<br />
+                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey, '?686534, '?686535                        <span>
             <strong>Attributes:</strong><br />
 [&lt;Extension&gt;]<br />
           </span>
@@ -1447,8 +1447,8 @@ when negative, subtracts the future values from the current values.
             FrameExtensions.Select(...)
           </code>
           <div class="tip" id="872">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * projection:Func&lt;KeyValuePair&lt;&#39;TRowKey,ObjectSeries&lt;&#39;TColumnKey&gt;&gt;,&#39;?686649&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;?686650&gt;<br />
-                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey, '?686649, '?686650                        <span>
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * projection:Func&lt;KeyValuePair&lt;&#39;TRowKey,ObjectSeries&lt;&#39;TColumnKey&gt;&gt;,&#39;?686529&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;?686530&gt;<br />
+                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey, '?686529, '?686530                        <span>
             <strong>Attributes:</strong><br />
 [&lt;Extension&gt;]<br />
           </span>
@@ -1469,8 +1469,8 @@ when negative, subtracts the future values from the current values.
             FrameExtensions.SelectColumnKeys(...)
           </code>
           <div class="tip" id="873">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * projection:Func&lt;KeyValuePair&lt;&#39;TColumnKey,OptionalValue&lt;ObjectSeries&lt;&#39;TRowKey&gt;&gt;&gt;,&#39;?686663&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;?686663&gt;<br />
-                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey, '?686663                        <span>
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * projection:Func&lt;KeyValuePair&lt;&#39;TColumnKey,OptionalValue&lt;ObjectSeries&lt;&#39;TRowKey&gt;&gt;&gt;,&#39;?686543&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;?686543&gt;<br />
+                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey, '?686543                        <span>
             <strong>Attributes:</strong><br />
 [&lt;Extension&gt;]<br />
           </span>
@@ -1491,8 +1491,8 @@ when negative, subtracts the future values from the current values.
             FrameExtensions.SelectRowKeys(...)
           </code>
           <div class="tip" id="874">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * projection:Func&lt;KeyValuePair&lt;&#39;TRowKey,OptionalValue&lt;ObjectSeries&lt;&#39;TColumnKey&gt;&gt;&gt;,&#39;?686659&gt;) -&gt; Frame&lt;&#39;?686659,&#39;TColumnKey&gt;<br />
-                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey, '?686659                        <span>
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * projection:Func&lt;KeyValuePair&lt;&#39;TRowKey,OptionalValue&lt;ObjectSeries&lt;&#39;TColumnKey&gt;&gt;&gt;,&#39;?686539&gt;) -&gt; Frame&lt;&#39;?686539,&#39;TColumnKey&gt;<br />
+                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey, '?686539                        <span>
             <strong>Attributes:</strong><br />
 [&lt;Extension&gt;]<br />
           </span>
@@ -1640,8 +1640,8 @@ gives access to the row series.</p>
             FrameExtensions.Window(...)
           </code>
           <div class="tip" id="879">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;R,&#39;C&gt; * size:int * aggregate:Func&lt;Frame&lt;&#39;R,&#39;C&gt;,&#39;?686633&gt;) -&gt; Series&lt;&#39;R,&#39;?686633&gt;<br />
-                          <strong>Type parameters:</strong> 'R, 'C, '?686633                        <span>
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;R,&#39;C&gt; * size:int * aggregate:Func&lt;Frame&lt;&#39;R,&#39;C&gt;,&#39;?686513&gt;) -&gt; Series&lt;&#39;R,&#39;?686513&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C, '?686513                        <span>
             <strong>Attributes:</strong><br />
 [&lt;Extension&gt;]<br />
           </span>

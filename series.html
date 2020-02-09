@@ -447,7 +447,7 @@ or at the end of the beginning. This way, we get <em>incomplete</em> windows tha
 <p>When you specify <code>Boundary.AtBeginning</code> (this example) or <code>Boundary.Skip</code>
 (default value used in the previous example), the function uses the last key
 of the window as the key of the aggregated value. When you specify
-<code>Boundary.AtEnding</code>, the last key is used, so the values can be nicely
+<code>Boundary.AtEnding</code>, the first key is used, so the values can be nicely
 aligned with original values. When you want to specify custom key selector,
 you can use a more general function <code>Series.aggregate</code>.</p>
 <p>In the previous sample, the code that performs aggregation is no longer

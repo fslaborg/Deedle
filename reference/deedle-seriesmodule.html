@@ -1226,8 +1226,8 @@ to determine when a window should end.
             chunkWhileInto cond f series
           </code>
           <div class="tip" id="216">
-            <strong>Signature:</strong> cond:(&#39;K -&gt; &#39;K -&gt; bool) -&gt; f:(Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;?690848) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;?690848&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'T, '?690848                        <span>
+            <strong>Signature:</strong> cond:(&#39;K -&gt; &#39;K -&gt; bool) -&gt; f:(Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;?690728) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;?690728&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'T, '?690728                        <span>
             <strong>Attributes:</strong><br />
 [&lt;CompiledName(&quot;ChunkWhileInto&quot;)&gt;]<br />
           </span>
@@ -1368,8 +1368,8 @@ value for the first key).</p>
             pairwiseWith f series
           </code>
           <div class="tip" id="220">
-            <strong>Signature:</strong> f:(&#39;K -&gt; &#39;T * &#39;T -&gt; &#39;?690872) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;?690872&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'T, '?690872                        <span>
+            <strong>Signature:</strong> f:(&#39;K -&gt; &#39;T * &#39;T -&gt; &#39;?690752) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;?690752&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'T, '?690752                        <span>
             <strong>Attributes:</strong><br />
 [&lt;CompiledName(&quot;PairwiseWith&quot;)&gt;]<br />
           </span>
@@ -1469,8 +1469,8 @@ keys of the series.
             windowDistInto distance f series
           </code>
           <div class="tip" id="223">
-            <strong>Signature:</strong> distance:^?690814 -&gt; f:(Series&lt;^K,&#39;T&gt; -&gt; &#39;?690817) -&gt; series:Series&lt;^K,&#39;T&gt; -&gt; Series&lt;^K,&#39;?690817&gt;<br />
-                          <strong>Type parameters:</strong> ^?690814, ^K, 'T, '?690817                        <span>
+            <strong>Signature:</strong> distance:^?690694 -&gt; f:(Series&lt;^K,&#39;T&gt; -&gt; &#39;?690697) -&gt; series:Series&lt;^K,&#39;T&gt; -&gt; Series&lt;^K,&#39;?690697&gt;<br />
+                          <strong>Type parameters:</strong> ^?690694, ^K, 'T, '?690697                        <span>
             <strong>Attributes:</strong><br />
 [&lt;CompiledName(&quot;WindowDistanceInto&quot;)&gt;]<br />
           </span>
@@ -1652,8 +1652,8 @@ to determine when a window should end.
             windowWhileInto cond f series
           </code>
           <div class="tip" id="228">
-            <strong>Signature:</strong> cond:(&#39;K -&gt; &#39;K -&gt; bool) -&gt; f:(Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;?690825) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;?690825&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'T, '?690825                        <span>
+            <strong>Signature:</strong> cond:(&#39;K -&gt; &#39;K -&gt; bool) -&gt; f:(Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;?690705) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;?690705&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'T, '?690705                        <span>
             <strong>Attributes:</strong><br />
 [&lt;CompiledName(&quot;WindowWhileInto&quot;)&gt;]<br />
           </span>
@@ -2884,8 +2884,8 @@ series, similar functionality can be implemented using <code>Series.groupBy</cod
             resampleInto keys dir f series
           </code>
           <div class="tip" id="261">
-            <strong>Signature:</strong> keys:seq&lt;&#39;K&gt; -&gt; dir:Direction -&gt; f:(&#39;K -&gt; Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;?690941) -&gt; series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;?690941&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'V, '?690941                      </div>
+            <strong>Signature:</strong> keys:seq&lt;&#39;K&gt; -&gt; dir:Direction -&gt; f:(&#39;K -&gt; Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;?690821) -&gt; series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;?690821&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'V, '?690821                      </div>
         </td>
         <td class="xmldoc">
                       <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1429-1429" class="github-link">
@@ -3019,8 +3019,8 @@ single value. The function may be called on empty series when <code>fillMode</co
             sampleTime interval dir series
           </code>
           <div class="tip" id="264">
-            <strong>Signature:</strong> interval:TimeSpan -&gt; dir:Direction -&gt; series:Series&lt;^?690972,^?690973&gt; -&gt; Series&lt;^?690972,Series&lt;^?690972,^?690973&gt;&gt;<br />
-                          <strong>Type parameters:</strong> ^?690972, ^?690973                      </div>
+            <strong>Signature:</strong> interval:TimeSpan -&gt; dir:Direction -&gt; series:Series&lt;^?690852,^?690853&gt; -&gt; Series&lt;^?690852,Series&lt;^?690852,^?690853&gt;&gt;<br />
+                          <strong>Type parameters:</strong> ^?690852, ^?690853                      </div>
         </td>
         <td class="xmldoc">
                       <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1685-1685" class="github-link">
@@ -3055,8 +3055,8 @@ used as the greatest keys in a chunk.
             sampleTimeAt start interval dir series
           </code>
           <div class="tip" id="265">
-            <strong>Signature:</strong> start:^?690975 -&gt; interval:TimeSpan -&gt; dir:Direction -&gt; series:Series&lt;^?690975,^?690976&gt; -&gt; Series&lt;^?690975,Series&lt;^?690975,^?690976&gt;&gt;<br />
-                          <strong>Type parameters:</strong> ^?690975, ^?690976                      </div>
+            <strong>Signature:</strong> start:^?690855 -&gt; interval:TimeSpan -&gt; dir:Direction -&gt; series:Series&lt;^?690855,^?690856&gt; -&gt; Series&lt;^?690855,Series&lt;^?690855,^?690856&gt;&gt;<br />
+                          <strong>Type parameters:</strong> ^?690855, ^?690856                      </div>
         </td>
         <td class="xmldoc">
                       <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1705-1705" class="github-link">
@@ -3092,8 +3092,8 @@ used as the greatest keys in a chunk.
             sampleTimeAtInto(...)
           </code>
           <div class="tip" id="266">
-            <strong>Signature:</strong> start:^K -&gt; interval:TimeSpan -&gt; dir:Direction -&gt; f:(Series&lt;^K,^V&gt; -&gt; &#39;?690970) -&gt; series:Series&lt;^K,^V&gt; -&gt; Series&lt;^K,&#39;?690970&gt;<br />
-                          <strong>Type parameters:</strong> ^K, ^V, '?690970                      </div>
+            <strong>Signature:</strong> start:^K -&gt; interval:TimeSpan -&gt; dir:Direction -&gt; f:(Series&lt;^K,^V&gt; -&gt; &#39;?690850) -&gt; series:Series&lt;^K,^V&gt; -&gt; Series&lt;^K,&#39;?690850&gt;<br />
+                          <strong>Type parameters:</strong> ^K, ^V, '?690850                      </div>
         </td>
         <td class="xmldoc">
                       <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1664-1664" class="github-link">
@@ -3130,8 +3130,8 @@ used as the greatest keys in a chunk.
             sampleTimeInto interval dir f series
           </code>
           <div class="tip" id="267">
-            <strong>Signature:</strong> interval:TimeSpan -&gt; dir:Direction -&gt; f:(Series&lt;^K,^V&gt; -&gt; &#39;?690966) -&gt; series:Series&lt;^K,^V&gt; -&gt; Series&lt;^K,&#39;?690966&gt;<br />
-                          <strong>Type parameters:</strong> ^K, ^V, '?690966                      </div>
+            <strong>Signature:</strong> interval:TimeSpan -&gt; dir:Direction -&gt; f:(Series&lt;^K,^V&gt; -&gt; &#39;?690846) -&gt; series:Series&lt;^K,^V&gt; -&gt; Series&lt;^K,&#39;?690846&gt;<br />
+                          <strong>Type parameters:</strong> ^K, ^V, '?690846                      </div>
         </td>
         <td class="xmldoc">
                       <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1641-1641" class="github-link">
@@ -3348,8 +3348,8 @@ become ordinary values in the resulting series.</p>
             foldValues op init series
           </code>
           <div class="tip" id="273">
-            <strong>Signature:</strong> op:(&#39;?690758 -&gt; &#39;T -&gt; &#39;?690758) -&gt; init:&#39;?690758 -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;?690758<br />
-                          <strong>Type parameters:</strong> '?690758, 'T, 'K                        <span>
+            <strong>Signature:</strong> op:(&#39;?690638 -&gt; &#39;T -&gt; &#39;?690638) -&gt; init:&#39;?690638 -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;?690638<br />
+                          <strong>Type parameters:</strong> '?690638, 'T, 'K                        <span>
             <strong>Attributes:</strong><br />
 [&lt;CompiledName(&quot;FoldValues&quot;)&gt;]<br />
           </span>

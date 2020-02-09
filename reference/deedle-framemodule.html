@@ -404,8 +404,8 @@ missing values where the conversion fails.</p>
             getRow row frame
           </code>
           <div class="tip" id="49">
-            <strong>Signature:</strong> row:&#39;R -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,&#39;?689417&gt;<br />
-                          <strong>Type parameters:</strong> 'R, 'C, '?689417                        <span>
+            <strong>Signature:</strong> row:&#39;R -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,&#39;?689297&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C, '?689297                        <span>
             <strong>Attributes:</strong><br />
 [&lt;CompiledName(&quot;GetRow&quot;)&gt;]<br />
           </span>
@@ -485,8 +485,8 @@ with nearest greater/smaller key. For exact semantics, you can use <code>getCol<
             lookupRow row lookup frame
           </code>
           <div class="tip" id="52">
-            <strong>Signature:</strong> row:&#39;R -&gt; lookup:Lookup -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,&#39;?689437&gt;<br />
-                          <strong>Type parameters:</strong> 'R, 'C, '?689437                        <span>
+            <strong>Signature:</strong> row:&#39;R -&gt; lookup:Lookup -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,&#39;?689317&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C, '?689317                        <span>
             <strong>Attributes:</strong><br />
 [&lt;CompiledName(&quot;LookupRow&quot;)&gt;]<br />
           </span>
@@ -702,8 +702,8 @@ column doesn't exist.</p>
             tryLookupColObservation(...)
           </code>
           <div class="tip" id="60">
-            <strong>Signature:</strong> column:&#39;C -&gt; lookup:Lookup -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; (&#39;C * Series&lt;&#39;R,&#39;?689433&gt;) option<br />
-                          <strong>Type parameters:</strong> 'C, 'R, '?689433                        <span>
+            <strong>Signature:</strong> column:&#39;C -&gt; lookup:Lookup -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; (&#39;C * Series&lt;&#39;R,&#39;?689313&gt;) option<br />
+                          <strong>Type parameters:</strong> 'C, 'R, '?689313                        <span>
             <strong>Attributes:</strong><br />
 [&lt;CompiledName(&quot;TryLookupColObservation&quot;)&gt;]<br />
           </span>
@@ -728,8 +728,8 @@ doesn't exist.</p>
             tryLookupRow row lookup frame
           </code>
           <div class="tip" id="61">
-            <strong>Signature:</strong> row:&#39;R -&gt; lookup:Lookup -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,&#39;?689441&gt; option<br />
-                          <strong>Type parameters:</strong> 'R, 'C, '?689441                        <span>
+            <strong>Signature:</strong> row:&#39;R -&gt; lookup:Lookup -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,&#39;?689321&gt; option<br />
+                          <strong>Type parameters:</strong> 'R, 'C, '?689321                        <span>
             <strong>Attributes:</strong><br />
 [&lt;CompiledName(&quot;TryLookupRow&quot;)&gt;]<br />
           </span>
@@ -754,8 +754,8 @@ row doesn't exit.</p>
             tryLookupRowObservation row lookup frame
           </code>
           <div class="tip" id="62">
-            <strong>Signature:</strong> row:&#39;R -&gt; lookup:Lookup -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; (&#39;R * Series&lt;&#39;C,&#39;?689445&gt;) option<br />
-                          <strong>Type parameters:</strong> 'R, 'C, '?689445                        <span>
+            <strong>Signature:</strong> row:&#39;R -&gt; lookup:Lookup -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; (&#39;R * Series&lt;&#39;C,&#39;?689325&gt;) option<br />
+                          <strong>Type parameters:</strong> 'R, 'C, '?689325                        <span>
             <strong>Attributes:</strong><br />
 [&lt;CompiledName(&quot;TryLookupRowObservation&quot;)&gt;]<br />
           </span>
@@ -1022,8 +1022,8 @@ if you need to access the row key).</p>
             map f frame
           </code>
           <div class="tip" id="69">
-            <strong>Signature:</strong> f:(&#39;R -&gt; &#39;C -&gt; &#39;?689651 -&gt; &#39;?689652) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
-                          <strong>Type parameters:</strong> 'R, 'C, '?689651, '?689652                      </div>
+            <strong>Signature:</strong> f:(&#39;R -&gt; &#39;C -&gt; &#39;?689531 -&gt; &#39;?689532) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C, '?689531, '?689532                      </div>
         </td>
         <td class="xmldoc">
                       <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1148-1148" class="github-link">
@@ -1049,8 +1049,8 @@ to the appropriate type for input to the mapping function.</p>
             mapColKeys f frame
           </code>
           <div class="tip" id="70">
-            <strong>Signature:</strong> f:(&#39;C -&gt; &#39;?689641) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;?689641&gt;<br />
-                          <strong>Type parameters:</strong> 'C, '?689641, 'R                        <span>
+            <strong>Signature:</strong> f:(&#39;C -&gt; &#39;?689521) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;?689521&gt;<br />
+                          <strong>Type parameters:</strong> 'C, '?689521, 'R                        <span>
             <strong>Attributes:</strong><br />
 [&lt;CompiledName(&quot;SelectColumnKeys&quot;)&gt;]<br />
           </span>
@@ -1080,8 +1080,8 @@ specified function on the column keys of the original data frame.</p>
             mapCols f frame
           </code>
           <div class="tip" id="71">
-            <strong>Signature:</strong> f:(&#39;C -&gt; ObjectSeries&lt;&#39;R&gt; -&gt; &#39;?689632) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;?689633,&#39;C&gt;<br />
-                          <strong>Type parameters:</strong> 'C, 'R, '?689632, '?689633                        <span>
+            <strong>Signature:</strong> f:(&#39;C -&gt; ObjectSeries&lt;&#39;R&gt; -&gt; &#39;?689512) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;?689513,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'C, 'R, '?689512, '?689513                        <span>
             <strong>Attributes:</strong><br />
 [&lt;CompiledName(&quot;SelectColumns&quot;)&gt;]<br />
           </span>
@@ -1112,8 +1112,8 @@ with the column key and object series that represents the column data.</p>
             mapColValues f frame
           </code>
           <div class="tip" id="72">
-            <strong>Signature:</strong> f:(ObjectSeries&lt;&#39;R&gt; -&gt; &#39;?689636) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;?689637,&#39;C&gt;<br />
-                          <strong>Type parameters:</strong> 'R, '?689636, '?689637, 'C                        <span>
+            <strong>Signature:</strong> f:(ObjectSeries&lt;&#39;R&gt; -&gt; &#39;?689516) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;?689517,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'R, '?689516, '?689517, 'C                        <span>
             <strong>Attributes:</strong><br />
 [&lt;CompiledName(&quot;SelectColumnValues&quot;)&gt;]<br />
           </span>
@@ -1241,8 +1241,8 @@ if you need to access the row key).</p>
             mapValues f frame
           </code>
           <div class="tip" id="76">
-            <strong>Signature:</strong> f:(&#39;?689644 -&gt; &#39;?689645) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
-                          <strong>Type parameters:</strong> '?689644, '?689645, 'R, 'C                        <span>
+            <strong>Signature:</strong> f:(&#39;?689524 -&gt; &#39;?689525) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> '?689524, '?689525, 'R, 'C                        <span>
             <strong>Attributes:</strong><br />
 [&lt;CompiledName(&quot;MapValues&quot;)&gt;]<br />
           </span>
