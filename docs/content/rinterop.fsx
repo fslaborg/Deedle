@@ -13,7 +13,7 @@ The [R type provider](http://fslab.org/RProvider/) enables
 smooth interoperation between R and F#. The type provider automatically discovers 
 installed packages and makes them accessible via the `RProvider` namespace.
 
-R type provider for F# automatically converts standard data structures betwene R
+R type provider for F# automatically converts standard data structures between R
 and F# (such as numerical values, arrays, etc.). However, the conversion mechanism
 is extensible and so it is possible to support conversion between other F# types.
 

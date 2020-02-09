@@ -307,7 +307,7 @@ As you can see, the values in the first column are equal, because the first
 When you specify `Boundary.AtBeginning` (this example) or `Boundary.Skip` 
 (default value used in the previous example), the function uses the last key
 of the window as the key of the aggregated value. When you specify 
-`Boundary.AtEnding`, the last key is used, so the values can be nicely 
+`Boundary.AtEnding`, the first key is used, so the values can be nicely 
 aligned with original values. When you want to specify custom key selector,
 you can use a more general function `Series.aggregate`. 
 
