@@ -155,6 +155,34 @@ let ``Can read CSV file with missing column keys when inferTypes = false`` () =
   |> shouldEqual [| "a"; "Column2"; "Column3" |]
 
 [<Test>]
+let ``Can read CSV with headers of multilines`` () =
+  let csv = """"
+col_A
+";"
+col_A
+2";col_B
+1;2;3
+4;5;6"""
+  use reader = new System.IO.StringReader(csv)
+  let df = Frame.ReadCsv(reader,separators = ";")
+  let actual = df.ColumnKeys |> Seq.toArray
+  Assert.IsTrue(
+    actual = [| "col_A"; "col_A\n2"; "col_B" |] ||
+    actual = [| "col_A"; "col_A\r\n2"; "col_B" |] )
+
+[<Test>]
+let ``Can read CSV file with empty cell`` () =
+  let csv = 
+    "row,c1,c2,c3\n" +
+    "1,,5,\n" +
+    "2,4,6,"
+  use reader = new System.IO.StringReader(csv)
+  let df = Frame.ReadCsv(reader) 
+  let actual = df?c1
+  let expected = [nan; 4.0] |> Series.ofValues
+  actual |> shouldEqual expected
+
+[<Test>]
 let ``Can save MSFT data as CSV to a TextWriter and read it afterwards (with default args)`` () =
   let builder = new System.Text.StringBuilder()
   use writer = new System.IO.StringWriter(builder)
