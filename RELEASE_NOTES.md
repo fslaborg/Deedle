@@ -1,5 +1,9 @@
 # Release Notes
 
+## 2.1.2 - 2020-02-25
+* Fix parsing csv of multi-line column headers [#479](https://github.com/fslaborg/Deedle/issues/479)
+* Fix type inference of empty cell [#441](https://github.com/fslaborg/Deedle/issues/441)
+
 ## 2.1.1 - 2019-11-4
 * Fix FilterRowsBy [#491](https://github.com/fslaborg/Deedle/issues/491)
 * Add basic stats functions of Frame in extension [#490](https://github.com/fslaborg/Deedle/pull/490)

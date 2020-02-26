@@ -116,6 +116,7 @@ Target.create "Clean" ( fun _ ->
     // have to clean netcore output directories because they corrupt the full-framework outputs
     seq {
         yield bindir
+        yield "./temp"
         yield! !!"**/bin"
         yield! !!"**/obj"
     } |> Shell.cleanDirs

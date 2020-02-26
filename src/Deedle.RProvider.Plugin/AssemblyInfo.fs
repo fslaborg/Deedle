@@ -5,15 +5,15 @@ open System.Reflection
 [<assembly: AssemblyTitleAttribute("Deedle.RPlugin")>]
 [<assembly: AssemblyProductAttribute("Deedle.RPlugin")>]
 [<assembly: AssemblyDescriptionAttribute("Easy to use .NET library for data manipulation with R project integration")>]
-[<assembly: AssemblyVersionAttribute("2.1.1")>]
-[<assembly: AssemblyInformationalVersionAttribute("2.1.1")>]
-[<assembly: AssemblyFileVersionAttribute("2.1.1")>]
+[<assembly: AssemblyVersionAttribute("2.1.2")>]
+[<assembly: AssemblyInformationalVersionAttribute("2.1.2")>]
+[<assembly: AssemblyFileVersionAttribute("2.1.2")>]
 do ()
 
 module internal AssemblyVersionInformation =
     let [<Literal>] AssemblyTitle = "Deedle.RPlugin"
     let [<Literal>] AssemblyProduct = "Deedle.RPlugin"
     let [<Literal>] AssemblyDescription = "Easy to use .NET library for data manipulation with R project integration"
-    let [<Literal>] AssemblyVersion = "2.1.1"
-    let [<Literal>] AssemblyInformationalVersion = "2.1.1"
-    let [<Literal>] AssemblyFileVersion = "2.1.1"
+    let [<Literal>] AssemblyVersion = "2.1.2"
+    let [<Literal>] AssemblyInformationalVersion = "2.1.2"
+    let [<Literal>] AssemblyFileVersion = "2.1.2"
