@@ -15,6 +15,7 @@
     <Compile Include="../Common/FsUnit.fs">
       <Link>FsUnit.fs</Link>
     </Compile>
+    <Compile Include="LinearRegression.fs" />
     <Compile Include="LinearAlgebra.fs" />
     <Compile Include="Stats.fs" />
     <Compile Include="Finance.fs" />

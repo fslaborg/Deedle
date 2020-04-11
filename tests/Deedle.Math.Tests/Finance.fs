@@ -33,7 +33,7 @@ let ``Ex-ante vol of equally weighted portfolio using normal covariance matrix w
   let annualVol =
     let vol = weights.Dot(cov).Dot(weights)
     Math.Sqrt(vol * nObsAnnual)
-  annualVol |> should beWithin (0.13575 +/- 1e-6)  
+  annualVol |> should beWithin (0.13575 +/- 1e-6)
 
 [<Test>]
 let ``Ex-ante vol of equally weighted portfolio using exponentially weighted covariance matrix works`` () =
@@ -49,7 +49,7 @@ let ``Ex-ante vol of equally weighted portfolio using exponentially weighted cov
     Math.Sqrt(vol * nObsAnnual)
   annualVol1 |> should beWithin (0.14437 +/- 1e-6)
   annualVol1 |> should beWithin (annualVol2 +/- 1e-6)
-  
+
 [<Test>]
 let ``Diagonals of ewmVar and ewmCov shall be identical `` () =
   let varFrame = Finance.ewmVar(stockReturns, halfLife = 52.)
