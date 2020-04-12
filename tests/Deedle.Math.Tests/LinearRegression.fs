@@ -12,7 +12,6 @@ module Deedle.Math.Tests.LinearRegression
 
 open Deedle
 open Deedle.Math
-open FsUnit
 open MathNet.Numerics.LinearAlgebra
 open MathNet.Numerics.LinearRegression
 open NUnit.Framework

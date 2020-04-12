@@ -66,19 +66,27 @@ module PCA =
 
     let colKeyArray = dataFrame.ColumnKeys |> Seq.toArray
 
-    let eigenValues =
-      // eigen values are returned with least significant first.
+    let eigenValuesSeq =
       factorization.EigenValues
       |> Vector.map (fun x -> x.Real)
       |> Vector.toSeq
-      |> Seq.rev
-      |> Series.ofValues
-      |> Series.mapKeys createPcNameForIndex
-    let eigenVectors =
-      // as eigen vectors match the eigen values, these also has to be reversed.
+    let eigenVectorsSeq =
       factorization.EigenVectors
       |> Matrix.toColSeq
-      |> Seq.rev
+    let pairs =
+      eigenVectorsSeq
+      |> Seq.zip eigenValuesSeq
+      |> Seq.sortByDescending fst
+
+    let eigenValues =
+      pairs
+      |> Seq.map fst
+      |> Series.ofValues
+      |> Series.mapKeys createPcNameForIndex
+
+    let eigenVectors =
+      pairs
+      |> Seq.map snd
       |> Seq.mapi (fun i x -> (createPcNameForIndex i, Vector.toSeq x |> Series.ofValues))
       |> Frame.ofColumns
       |> Frame.mapRowKeys (fun i -> colKeyArray.[i])
