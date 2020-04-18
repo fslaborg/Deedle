@@ -12,6 +12,8 @@
     <Compile Include="LinearAlgebra.fs" />
     <Compile Include="Extensions.fs" />
     <Compile Include="Stats.fs" />
+    <Compile Include="PCA.fs" />
+    <Compile Include="LinearRegression.fs" />
     <Compile Include="Finance.fs" />
     <None Include="paket.references" />
     <None Include="Deedle.Math.fsx">
