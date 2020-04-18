@@ -4,17 +4,19 @@ module rec LinearRegression =
   open Deedle
   open MathNet.Numerics
 
+  [<Literal>]
+  let interceptKey = "Intercept"
 
   module Fit =
     /// <summary>
     /// Represents a linear model fitted to specific values in a data frame.
     /// </summary>
-    type t<'a,'b> when 'a : equality and 'b : equality =
+    type t<'a> when 'a : equality =
       {
-        InputFrame : Frame<'a,'b>
-        Coefficients : Series<'b, float>
-        FitIntercept : 'b option
-        yKey : 'b
+        InputFrame : Frame<'a,string>
+        Coefficients : Series<string, float>
+        FitIntercept : bool
+        yKey : string
       }
 
     /// <summary>
@@ -32,18 +34,18 @@ module rec LinearRegression =
         yKey = yKey
       }
 
-    let private computeXtXinverse (fit : t<'a,'b>) =
-      let addInterceptColumn (frame : Frame<'a,'b>) =
+    let private computeXtXinverse (fit : t<'a>) =
+      let addInterceptColumn (frame : Frame<'a, string>) =
         match fit.FitIntercept with
-        | None -> frame
-        | Some columnKey ->
+        | false -> frame
+        | true ->
             let interceptSeries =
               frame.RowKeys
               |> Seq.map (fun rowKey -> (rowKey, 1.0))
               |> Series.ofObservations
             frame
-            |> Frame.addCol columnKey interceptSeries
-      let computeXtXInverse (frame : Frame<'a,'b>) =
+            |> Frame.addCol interceptKey interceptSeries
+      let computeXtXInverse (frame : Frame<'a, string>) =
         let columnKeys = frame.ColumnKeys
         let matrix = MathNet.Numerics.LinearAlgebra.Matrix.Build.DenseOfArray(Frame.toArray2D frame)
         (matrix.Transpose() * matrix).Inverse().ToArray()
@@ -85,16 +87,17 @@ module rec LinearRegression =
       let df = fit.InputFrame
       let coefficients = fit.Coefficients
       // TODO: Investigate whether we can simplify the code to pointwise multiply series.
-      let fitRow (series : ObjectSeries<'b>) =
+      let fitRow (series : ObjectSeries<string>) =
         match fitIntercept with
-        | None -> let terms = coefficients |> Series.map (fun k v -> v * series.GetAs<float>(k))
-                  terms.Sum()
-        | Some interceptKey ->
-                  let terms =
-                    coefficients
-                    |> Series.filter (fun k _ -> k<> interceptKey)
-                    |> Series.map (fun k v -> v * series.GetAs<float>(k))
-                  terms.Sum() + coefficients.[interceptKey]
+        | false ->
+            let terms = coefficients |> Series.map (fun k v -> v * series.GetAs<float>(k))
+            terms.Sum()
+        | true ->
+            let terms =
+              coefficients
+              |> Series.filter (fun k _ -> k <> interceptKey)
+              |> Series.map (fun k v -> v * series.GetAs<float>(k))
+            terms.Sum() + coefficients.[interceptKey]
       df |> Frame.mapRowValues fitRow
 
     /// <summary>
@@ -111,11 +114,11 @@ module rec LinearRegression =
     module Summary =
       open System
 
-      type t<'b> when 'b : equality =
+      type t =
         {
           LinearFormula : string
           ResidualFiveVals : Series<string,float>
-          TTable : Frame<'b,string>
+          TTable : Frame<string,string>
           RSquared : float
           AdjRSquared : float
         }
@@ -131,12 +134,12 @@ module rec LinearRegression =
 
     let private computeToleranceFor xKey xKeys frame =
       let otherKeys = xKeys |> Series.keys |> Seq.except (Seq.singleton xKey)
-      let fitXKey = multiDim otherKeys xKey None frame
+      let fitXKey = ols otherKeys xKey false frame
       let actual = Frame.getCol xKey frame |> Series.values |> Seq.toArray
       let fitted = Fit.fittedValues fitXKey |> Series.values |> Seq.toArray
       1.0 - (GoodnessOfFit.RSquared (fitted, actual))
 
-    let private computeSquaredErrorFor (stdErr : float) xKeys (frame : Frame<'a,'b>) xKey =
+    let private computeSquaredErrorFor (stdErr : float) xKeys (frame : Frame<'a,string>) xKey =
       let otherKeys = xKeys |> Series.keys |> Seq.except (Seq.singleton xKey)
       let xValues =
         frame.[xKey]
@@ -159,7 +162,7 @@ module rec LinearRegression =
       let leftTail = Distributions.StudentT.CDF(0.0, 1.0, df, -tValue)
       leftTail + rightTail
 
-    let summary (fit:t<'a,'b> when 'b : comparison) =
+    let summary (fit:t<'a>) =
       let residuals = fit |> (residuals >> Series.sort >> Series.values >> Seq.toArray)
       let fitted = fit |> (fittedValues >> Series.values >> Seq.toArray)
       let actual = fit.InputFrame.[fit.yKey] |> Series.values |> Seq.toArray
@@ -184,7 +187,7 @@ module rec LinearRegression =
         TTable = tTable
         RSquared = r2
         AdjRSquared = 1.0 - (1.0 - r2) * (nObs - 1.0) / (nObs - float nCoeffs)
-      } : Summary.t<'b>
+      } : Summary.t
 
   let private dataFrameContainsMissingValues columns df =
     let noOfColumns = Set.count columns
@@ -208,19 +211,21 @@ module rec LinearRegression =
   let private multiFitCleanDataFrame xCols yCol fitIntercept df =
     let xColArray = xCols |> Seq.toArray
     let y = df |> Frame.getCol yCol |> valuesToArray
-    let rowToArray (series:ObjectSeries<'a>) =
+    let rowToArray (series:ObjectSeries<string>) =
       xColArray
       |> Array.map series.GetAs<float>
     let xs =
       df |> Frame.mapRowValues rowToArray |> Series.values |> Seq.toArray
-    match fitIntercept with
-    | None -> fitWithOutIntercept xs y xColArray
-    | Some interceptKey -> fitWithIntercept xs y xColArray interceptKey
+    if fitIntercept then
+      fitWithIntercept xs y xColArray interceptKey
+    else
+      fitWithOutIntercept xs y xColArray
 
   let private interceptKeyIsEqualToColumnInDataFrame columns fitIntercept =
-    match fitIntercept with
-    | None -> false
-    | Some interceptKey -> Set.contains interceptKey columns
+    if fitIntercept then
+      Set.contains interceptKey columns
+    else
+      false
 
   /// <summary>
   /// Performs linear regression on the values in a dataframe.
@@ -230,7 +235,7 @@ module rec LinearRegression =
   /// <param name="fitIntercept">An option type that specifies a key to use for the intercept in the result, if set to None, the fit will not produce an intercept.</param>
   /// <param name="df">The dataframe to perform the regression on</param>
   /// <returns>A series with column keys as keys, and regression coefficients as values.</returns>
-  let multiDim xCols yCol fitIntercept df =
+  let ols (xCols : string seq) (yCol : string) (fitIntercept : bool) (df : Frame<'a, string>) =
     let columns = xCols |> Set.ofSeq |> Set.add yCol
     let df' = Frame.filterCols (fun k _ -> Set.contains k columns) df
     if dataFrameContainsMissingValues columns df then
@@ -239,15 +244,3 @@ module rec LinearRegression =
       failwith "The key specified for the intercept is equal to a column key in the dataframe, consider picking new key for your intercept or rename a column in the dataframe."
     let coefficients = multiFitCleanDataFrame xCols yCol fitIntercept df'
     Fit.make df coefficients yCol fitIntercept
-
-  /// <summary>
-  /// Performs a simple linear regression on two columns in the dataframe.
-  /// </summary>
-  /// <param name="xCol">The column key of the independent variable.</param>
-  /// <param name="yCol">The column key of the dependent variable.</param>
-  /// <param name="fitIntercept">An option type that specifies a key to use for the intercept in the result, if set to None, the fit will not produce an intercept.</param>
-  /// <param name="df">The dataframe to perform the regression on</param>
-  /// <returns>A series with the column keys of both the independent and dependent variable, and regression coefficients as values.</returns>
-  let simple xCol yCol fitIntercept df =
-    multiDim (Seq.singleton xCol) yCol fitIntercept df
-

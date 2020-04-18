@@ -31,7 +31,7 @@ let stockReturns =
 [<Test>]
 let ``Simple linear regression coefficients between MSFT and WMT returns the same as in Math.Net when fit without y-axis intersect`` () =
   let actualCoeffs =
-    LinearRegression.simple "MSFT" "WMT" None stockReturns
+    LinearRegression.ols ["MSFT"] "WMT" false stockReturns
     |> LinearRegression.Fit.coefficients
   let actualCoeff = actualCoeffs.["MSFT"]
   let expectedCoeff =
@@ -49,7 +49,7 @@ let ``Simple linear regression coefficients between MSFT and WMT returns the sam
 [<Test>]
 let ``Simple linear regression coefficients between MSFT and WMT returns the same as in Math.Net when fit with y-axis intersect`` () =
   let actualCoeffs =
-    LinearRegression.simple "MSFT" "WMT" (Some "yIntersect") stockReturns
+    LinearRegression.ols ["MSFT"] "WMT" true stockReturns
     |> LinearRegression.Fit.coefficients
   let actualCoeff = actualCoeffs.["MSFT"]
   let (yCross, xCoeff) =
@@ -62,14 +62,14 @@ let ``Simple linear regression coefficients between MSFT and WMT returns the sam
       |> Series.values
       |> Seq.toArray
     MathNet.Numerics.LinearRegression.SimpleRegression.Fit(xs, ys)
-  let intersect = actualCoeffs.["yIntersect"]
+  let intersect = actualCoeffs.[LinearRegression.interceptKey]
   Assert.AreEqual(yCross, intersect, 1e-10)
   Assert.AreEqual(xCoeff, actualCoeff, 1e-10)
 
 [<Test>]
 let ``Multiple linear regression coefficients between MSFT, WMT and AES returns the same as in Math.Net when fit without y-axis intersect`` () =
   let actualCoeffs =
-    LinearRegression.multiDim ["MSFT";"WMT"] "AES" None stockReturns
+    LinearRegression.ols ["MSFT";"WMT"] "AES" false stockReturns
     |> LinearRegression.Fit.coefficients
   let xs =
     stockReturns
@@ -91,7 +91,7 @@ let ``Multiple linear regression coefficients between MSFT, WMT and AES returns 
 [<Test>]
 let ``Multiple linear regression coefficients between MSFT, WMT and AES returns the same as in Math.Net when fit with y-axis intersect`` () =
   let actualCoeffs =
-    LinearRegression.multiDim ["MSFT";"WMT"] "AES" (Some "yIntersect") stockReturns
+    LinearRegression.ols ["MSFT";"WMT"] "AES" true stockReturns
     |> LinearRegression.Fit.coefficients
   let xs =
     stockReturns
@@ -107,6 +107,6 @@ let ``Multiple linear regression coefficients between MSFT, WMT and AES returns 
   let expectedYIntersect = results.[0]
   let expectedMsft = results.[1]
   let expectedWmt = results.[2]
-  Assert.AreEqual(expectedYIntersect, actualCoeffs.["yIntersect"], 1e-10)
+  Assert.AreEqual(expectedYIntersect, actualCoeffs.[LinearRegression.interceptKey], 1e-10)
   Assert.AreEqual(expectedMsft, actualCoeffs.["MSFT"], 1e-10)
   Assert.AreEqual(expectedWmt, actualCoeffs.["WMT"], 1e-10)
