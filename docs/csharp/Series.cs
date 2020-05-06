@@ -46,18 +46,16 @@ namespace CSharp
       // [/create-ordinal]
 
       // [create-kvp]
-      var sin = 
-        ( from i in Enumerable.Range(0, 1000)
-          let x = i / 100.0
-          select KeyValue.Create(x, Math.Sin(x)) ).ToSeries();
+      var sin = Enumerable.Range(0, 1000)
+        .Select(x => KeyValue.Create(x, Math.Sin(x / 100.0)))
+        .ToSeries();
       sin.Print();
       // [/create-kvp]
 
       // [create-sparse]
-      var opts =
-        (from i in Enumerable.Range(0, 10)
-         let v = OptionalValue.OfNullable(LookupEven(i))
-         select KeyValue.Create(i, v)).ToSparseSeries();
+      var opts = Enumerable.Range(0, 10) 
+        .Select(x => KeyValue.Create(x, OptionalValue.OfNullable<int>(x)))
+        .ToSparseSeries();
       opts.Print();
       // [/create-sparse]
 
