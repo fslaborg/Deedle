@@ -91,15 +91,15 @@ with <code>expanding</code>.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1186', 1186)" onmouseover="showTip(event, '1186', 1186)">
+          <code onmouseout="hideTip(event, '1201', 1201)" onmouseover="showTip(event, '1201', 1201)">
             Stats.expandingCount(series)
           </code>
-          <div class="tip" id="1186">
+          <div class="tip" id="1201">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L433-433" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L457-457" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -112,15 +112,15 @@ a given key is calculated from all elements with smaller keys).</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1187', 1187)" onmouseover="showTip(event, '1187', 1187)">
+          <code onmouseout="hideTip(event, '1202', 1202)" onmouseover="showTip(event, '1202', 1202)">
             Stats.expandingKurt(series)
           </code>
-          <div class="tip" id="1187">
+          <div class="tip" id="1202">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L493-493" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L517-517" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -134,21 +134,23 @@ entire window contains fewer than 4 values, the result is missing.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1188', 1188)" onmouseover="showTip(event, '1188', 1188)">
+          <code onmouseout="hideTip(event, '1203', 1203)" onmouseover="showTip(event, '1203', 1203)">
             Stats.expandingMax(series)
           </code>
-          <div class="tip" id="1188">
+          <div class="tip" id="1203">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L518-518" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L546-546" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Returns a series that contains maximum over an expanding window. The value
 for a key <em>k</em> in the returned series is the maximum from all elements with
-smaller keys.</p>
+smaller keys.
+Throws a <code>FormatException</code> or an <code>InvalidCastException</code> if the value type of the series
+is not convertible to floating point number.</p>
 
 
         </td>
@@ -156,15 +158,15 @@ smaller keys.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1189', 1189)" onmouseover="showTip(event, '1189', 1189)">
+          <code onmouseout="hideTip(event, '1204', 1204)" onmouseover="showTip(event, '1204', 1204)">
             Stats.expandingMean(series)
           </code>
-          <div class="tip" id="1189">
+          <div class="tip" id="1204">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L449-449" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L473-473" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -178,21 +180,23 @@ entire window contains no values, the result is missing.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1190', 1190)" onmouseover="showTip(event, '1190', 1190)">
+          <code onmouseout="hideTip(event, '1205', 1205)" onmouseover="showTip(event, '1205', 1205)">
             Stats.expandingMin(series)
           </code>
-          <div class="tip" id="1190">
+          <div class="tip" id="1205">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L506-506" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L532-532" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Returns a series that contains minimum over an expanding window. The value
 for a key <em>k</em> in the returned series is the minimum from all elements with
-smaller keys.</p>
+smaller keys.
+Throws a <code>FormatException</code> or an <code>InvalidCastException</code> if the value type of the series
+is not convertible to floating point number.</p>
 
 
         </td>
@@ -200,15 +204,15 @@ smaller keys.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1191', 1191)" onmouseover="showTip(event, '1191', 1191)">
+          <code onmouseout="hideTip(event, '1206', 1206)" onmouseover="showTip(event, '1206', 1206)">
             Stats.expandingSkew(series)
           </code>
-          <div class="tip" id="1191">
+          <div class="tip" id="1206">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L480-480" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L504-504" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -222,15 +226,15 @@ entire window contains fewer than 3 values, the result is missing.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1192', 1192)" onmouseover="showTip(event, '1192', 1192)">
+          <code onmouseout="hideTip(event, '1207', 1207)" onmouseover="showTip(event, '1207', 1207)">
             Stats.expandingStdDev(series)
           </code>
-          <div class="tip" id="1192">
+          <div class="tip" id="1207">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L469-469" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L493-493" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -244,15 +248,15 @@ entire window contains fewer than 2 values, the result is missing.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1193', 1193)" onmouseover="showTip(event, '1193', 1193)">
+          <code onmouseout="hideTip(event, '1208', 1208)" onmouseover="showTip(event, '1208', 1208)">
             Stats.expandingSum(series)
           </code>
-          <div class="tip" id="1193">
+          <div class="tip" id="1208">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L441-441" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L465-465" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -266,15 +270,15 @@ entire window contains no values, the result is 0.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1194', 1194)" onmouseover="showTip(event, '1194', 1194)">
+          <code onmouseout="hideTip(event, '1209', 1209)" onmouseover="showTip(event, '1209', 1209)">
             Stats.expandingVariance(series)
           </code>
-          <div class="tip" id="1194">
+          <div class="tip" id="1209">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L458-458" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L482-482" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -305,15 +309,15 @@ statistical calculation to all numerical columns of the frame.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1195', 1195)" onmouseover="showTip(event, '1195', 1195)">
+          <code onmouseout="hideTip(event, '1210', 1210)" onmouseover="showTip(event, '1210', 1210)">
             Stats.count(frame)
           </code>
-          <div class="tip" id="1195">
+          <div class="tip" id="1210">
             <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,int&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L756-756" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L806-806" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -326,15 +330,15 @@ This excludes missing values and values created from <code>Double.NaN</code> etc
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1196', 1196)" onmouseover="showTip(event, '1196', 1196)">
+          <code onmouseout="hideTip(event, '1211', 1211)" onmouseover="showTip(event, '1211', 1211)">
             Stats.kurt(frame)
           </code>
-          <div class="tip" id="1196">
+          <div class="tip" id="1211">
             <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L810-810" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L860-860" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -348,15 +352,15 @@ the result is NaN.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1197', 1197)" onmouseover="showTip(event, '1197', 1197)">
+          <code onmouseout="hideTip(event, '1212', 1212)" onmouseover="showTip(event, '1212', 1212)">
             Stats.max(frame)
           </code>
-          <div class="tip" id="1197">
+          <div class="tip" id="1212">
             <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L826-826" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L876-876" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -370,15 +374,15 @@ the result is <code>NaN</code>.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1198', 1198)" onmouseover="showTip(event, '1198', 1198)">
+          <code onmouseout="hideTip(event, '1213', 1213)" onmouseover="showTip(event, '1213', 1213)">
             Stats.mean(frame)
           </code>
-          <div class="tip" id="1198">
+          <div class="tip" id="1213">
             <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L772-772" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L822-822" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -392,15 +396,15 @@ no available values, the result is NaN.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1199', 1199)" onmouseover="showTip(event, '1199', 1199)">
+          <code onmouseout="hideTip(event, '1214', 1214)" onmouseover="showTip(event, '1214', 1214)">
             Stats.median(frame)
           </code>
-          <div class="tip" id="1199">
+          <div class="tip" id="1214">
             <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L778-778" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L828-828" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -412,15 +416,15 @@ no available values, the result is NaN.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1200', 1200)" onmouseover="showTip(event, '1200', 1200)">
+          <code onmouseout="hideTip(event, '1215', 1215)" onmouseover="showTip(event, '1215', 1215)">
             Stats.min(frame)
           </code>
-          <div class="tip" id="1200">
+          <div class="tip" id="1215">
             <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L818-818" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L868-868" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -434,15 +438,15 @@ the result is <code>NaN</code>.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1201', 1201)" onmouseover="showTip(event, '1201', 1201)">
+          <code onmouseout="hideTip(event, '1216', 1216)" onmouseover="showTip(event, '1216', 1216)">
             Stats.skew(frame)
           </code>
-          <div class="tip" id="1201">
+          <div class="tip" id="1216">
             <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L802-802" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L852-852" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -456,15 +460,15 @@ the result is NaN.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1202', 1202)" onmouseover="showTip(event, '1202', 1202)">
+          <code onmouseout="hideTip(event, '1217', 1217)" onmouseover="showTip(event, '1217', 1217)">
             Stats.stdDev(frame)
           </code>
-          <div class="tip" id="1202">
+          <div class="tip" id="1217">
             <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L786-786" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L836-836" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -478,15 +482,15 @@ the result is NaN.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1203', 1203)" onmouseover="showTip(event, '1203', 1203)">
+          <code onmouseout="hideTip(event, '1218', 1218)" onmouseover="showTip(event, '1218', 1218)">
             Stats.sum(frame)
           </code>
-          <div class="tip" id="1203">
+          <div class="tip" id="1218">
             <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L764-764" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L814-814" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -500,15 +504,15 @@ available values, the result is 0.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1204', 1204)" onmouseover="showTip(event, '1204', 1204)">
+          <code onmouseout="hideTip(event, '1219', 1219)" onmouseover="showTip(event, '1219', 1219)">
             Stats.variance(frame)
           </code>
-          <div class="tip" id="1204">
+          <div class="tip" id="1219">
             <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L794-794" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L844-844" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -538,164 +542,10 @@ of the window. The function names are prefixed with <code>moving</code>.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1205', 1205)" onmouseover="showTip(event, '1205', 1205)">
+          <code onmouseout="hideTip(event, '1220', 1220)" onmouseover="showTip(event, '1220', 1220)">
             Stats.movingCount size series
           </code>
-          <div class="tip" id="1205">
-            <strong>Signature:</strong> size:int -&gt; series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'V                      </div>
-        </td>
-        <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L358-358" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Returns a series that contains counts over a moving window of the specified size.
-The first <code>size-1</code> elements of the returned series are always missing; if the
-entire window contains missing values, the result is 0.</p>
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '1206', 1206)" onmouseover="showTip(event, '1206', 1206)">
-            Stats.movingKurt size series
-          </code>
-          <div class="tip" id="1206">
-            <strong>Signature:</strong> size:int -&gt; series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'V                      </div>
-        </td>
-        <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L406-406" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Returns a series that contains kurtosis over a moving window of the specified size.
-The first <code>size-1</code> elements of the returned series are always missing; if the
-entire window contains missing values, the result is also missing.</p>
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '1207', 1207)" onmouseover="showTip(event, '1207', 1207)">
-            Stats.movingMax size series
-          </code>
-          <div class="tip" id="1207">
-            <strong>Signature:</strong> size:int -&gt; series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'V                      </div>
-        </td>
-        <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L422-422" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Returns a series that contains maximum over a moving window of the specified size.
-The first <code>size-1</code> elements are calculated using smaller windows spanning over <code>1 .. size-1</code>
-values. If the entire window contains missing values, the result is missing.</p>
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '1208', 1208)" onmouseover="showTip(event, '1208', 1208)">
-            Stats.movingMean size series
-          </code>
-          <div class="tip" id="1208">
-            <strong>Signature:</strong> size:int -&gt; series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'V                      </div>
-        </td>
-        <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L374-374" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Returns a series that contains means over a moving window of the specified size.
-The first <code>size-1</code> elements of the returned series are always missing; if the
-entire window contains missing values, the result is also missing.</p>
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '1209', 1209)" onmouseover="showTip(event, '1209', 1209)">
-            Stats.movingMin size series
-          </code>
-          <div class="tip" id="1209">
-            <strong>Signature:</strong> size:int -&gt; series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'V                      </div>
-        </td>
-        <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L414-414" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Returns a series that contains minimum over a moving window of the specified size.
-The first <code>size-1</code> elements are calculated using smaller windows spanning over <code>1 .. size-1</code>
-values. If the entire window contains missing values, the result is missing.</p>
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '1210', 1210)" onmouseover="showTip(event, '1210', 1210)">
-            Stats.movingSkew size series
-          </code>
-          <div class="tip" id="1210">
-            <strong>Signature:</strong> size:int -&gt; series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'V                      </div>
-        </td>
-        <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L398-398" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Returns a series that contains skewness over a moving window of the specified size.
-The first <code>size-1</code> elements of the returned series are always missing; if the
-entire window contains missing values, the result is also missing.</p>
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '1211', 1211)" onmouseover="showTip(event, '1211', 1211)">
-            Stats.movingStdDev size series
-          </code>
-          <div class="tip" id="1211">
-            <strong>Signature:</strong> size:int -&gt; series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'V                      </div>
-        </td>
-        <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L390-390" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Returns a series that contains standard deviations over a moving window of the specified size.
-The first <code>size-1</code> elements of the returned series are always missing; if the
-entire window contains missing values, the result is also missing.</p>
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '1212', 1212)" onmouseover="showTip(event, '1212', 1212)">
-            Stats.movingSum size series
-          </code>
-          <div class="tip" id="1212">
+          <div class="tip" id="1220">
             <strong>Signature:</strong> size:int -&gt; series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V                      </div>
         </td>
@@ -704,9 +554,11 @@ entire window contains missing values, the result is also missing.</p>
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Returns a series that contains sums over a moving window of the specified size.
+          <p>Returns a series that contains counts over a moving window of the specified size.
 The first <code>size-1</code> elements of the returned series are always missing; if the
-entire window contains missing values, the result is 0.</p>
+entire window contains missing values, the result is 0.
+Throws a <code>FormatException</code> or an <code>InvalidCastException</code> if the value type of the specified series
+is not convertible to floating point number.</p>
 
 
         </td>
@@ -714,21 +566,191 @@ entire window contains missing values, the result is 0.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1213', 1213)" onmouseover="showTip(event, '1213', 1213)">
-            Stats.movingVariance size series
+          <code onmouseout="hideTip(event, '1221', 1221)" onmouseover="showTip(event, '1221', 1221)">
+            Stats.movingKurt size series
           </code>
-          <div class="tip" id="1213">
+          <div class="tip" id="1221">
             <strong>Signature:</strong> size:int -&gt; series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L382-382" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L426-426" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns a series that contains kurtosis over a moving window of the specified size.
+The first <code>size-1</code> elements of the returned series are always missing; if the
+entire window contains missing values, the result is also missing.
+Throws a <code>FormatException</code> or an <code>InvalidCastException</code> if the value type of the specified series
+is not convertible to floating point number.</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1222', 1222)" onmouseover="showTip(event, '1222', 1222)">
+            Stats.movingMax size series
+          </code>
+          <div class="tip" id="1222">
+            <strong>Signature:</strong> size:int -&gt; series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'V                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L446-446" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns a series that contains maximum over a moving window of the specified size.
+The first <code>size-1</code> elements are calculated using smaller windows spanning over <code>1 .. size-1</code>
+values. If the entire window contains missing values, the result is missing.
+Throws a <code>FormatException</code> or an <code>InvalidCastException</code> if the value type of the series
+is not convertible to floating point number.</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1223', 1223)" onmouseover="showTip(event, '1223', 1223)">
+            Stats.movingMean size series
+          </code>
+          <div class="tip" id="1223">
+            <strong>Signature:</strong> size:int -&gt; series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'V                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L386-386" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns a series that contains means over a moving window of the specified size.
+The first <code>size-1</code> elements of the returned series are always missing; if the
+entire window contains missing values, the result is also missing.
+Throws a <code>FormatException</code> or an <code>InvalidCastException</code> if the value type of the specified series
+is not convertible to floating point number.</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1224', 1224)" onmouseover="showTip(event, '1224', 1224)">
+            Stats.movingMin size series
+          </code>
+          <div class="tip" id="1224">
+            <strong>Signature:</strong> size:int -&gt; series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'V                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L436-436" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns a series that contains minimum over a moving window of the specified size.
+The first <code>size-1</code> elements are calculated using smaller windows spanning over <code>1 .. size-1</code>
+values. If the entire window contains missing values, the result is missing.
+Throws a <code>FormatException</code> or an <code>InvalidCastException</code> if the value type of the series
+is not convertible to floating point number.</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1225', 1225)" onmouseover="showTip(event, '1225', 1225)">
+            Stats.movingSkew size series
+          </code>
+          <div class="tip" id="1225">
+            <strong>Signature:</strong> size:int -&gt; series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'V                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L416-416" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns a series that contains skewness over a moving window of the specified size.
+The first <code>size-1</code> elements of the returned series are always missing; if the
+entire window contains missing values, the result is also missing.
+Throws a <code>FormatException</code> or an <code>InvalidCastException</code> if the value type of the specified series
+is not convertible to floating point number.</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1226', 1226)" onmouseover="showTip(event, '1226', 1226)">
+            Stats.movingStdDev size series
+          </code>
+          <div class="tip" id="1226">
+            <strong>Signature:</strong> size:int -&gt; series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'V                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L406-406" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns a series that contains standard deviations over a moving window of the specified size.
+The first <code>size-1</code> elements of the returned series are always missing; if the
+entire window contains missing values, the result is also missing.
+Throws a <code>FormatException</code> or an <code>InvalidCastException</code> if the value type of the specified series
+is not convertible to floating point number.</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1227', 1227)" onmouseover="showTip(event, '1227', 1227)">
+            Stats.movingSum size series
+          </code>
+          <div class="tip" id="1227">
+            <strong>Signature:</strong> size:int -&gt; series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'V                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L376-376" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns a series that contains sums over a moving window of the specified size.
+The first <code>size-1</code> elements of the returned series are always missing; if the
+entire window contains missing values, the result is 0.
+Throws a <code>FormatException</code> or an <code>InvalidCastException</code> if the value type of the specified series
+is notconvertible to floating point number.</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1228', 1228)" onmouseover="showTip(event, '1228', 1228)">
+            Stats.movingVariance size series
+          </code>
+          <div class="tip" id="1228">
+            <strong>Signature:</strong> size:int -&gt; series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'V                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L396-396" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Returns a series that contains variance over a moving window of the specified size.
 The first <code>size-1</code> elements of the returned series are always missing; if the
-entire window contains missing values, the result is also missing.</p>
+entire window contains missing values, the result is also missing.
+Throws a <code>FormatException</code> or an <code>InvalidCastException</code> if the value type of the specified series
+is not convertible to floating point number.</p>
 
 
         </td>
@@ -753,15 +775,15 @@ in a series <code>Series&lt;'K1 * 'K2, float&gt;</code> and get <code>Series&lt;
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1214', 1214)" onmouseover="showTip(event, '1214', 1214)">
+          <code onmouseout="hideTip(event, '1229', 1229)" onmouseover="showTip(event, '1229', 1229)">
             Stats.levelCount level series
           </code>
-          <div class="tip" id="1214">
+          <div class="tip" id="1229">
             <strong>Signature:</strong> (level:(&#39;K -&gt; &#39;L)) -&gt; series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;L,int&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'L, 'V                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L842-842" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L892-892" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -775,21 +797,23 @@ values and values created from <code>Double.NaN</code> etc.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1215', 1215)" onmouseover="showTip(event, '1215', 1215)">
+          <code onmouseout="hideTip(event, '1230', 1230)" onmouseover="showTip(event, '1230', 1230)">
             Stats.levelKurt level series
           </code>
-          <div class="tip" id="1215">
+          <div class="tip" id="1230">
             <strong>Signature:</strong> (level:(&#39;K -&gt; &#39;L)) -&gt; series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;L,float&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'L, 'V                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L897-897" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L961-961" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>For each group with equal keys at the level specified by <code>level</code>,
 returns the kurtosis of the values in a series. The function skips over missing values
-and <code>NaN</code> values. When there are less than 4 values, the result is NaN.</p>
+and <code>NaN</code> values. When there are less than 4 values, the result is NaN.
+Throws a <code>FormatException</code> or an <code>InvalidCastException</code> if the value type of the series
+is not convertible to floating point number.</p>
 
 
         </td>
@@ -797,21 +821,23 @@ and <code>NaN</code> values. When there are less than 4 values, the result is Na
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1216', 1216)" onmouseover="showTip(event, '1216', 1216)">
+          <code onmouseout="hideTip(event, '1231', 1231)" onmouseover="showTip(event, '1231', 1231)">
             Stats.levelMean level series
           </code>
-          <div class="tip" id="1216">
+          <div class="tip" id="1231">
             <strong>Signature:</strong> (level:(&#39;K -&gt; &#39;L)) -&gt; series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;L,float&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'L, 'V                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L858-858" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L912-912" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>For each group with equal keys at the level specified by <code>level</code>,
 returns the mean of the values in the group. The function skips over missing
-values and <code>NaN</code> values. When there are no available values, the result is NaN.</p>
+values and <code>NaN</code> values. When there are no available values, the result is NaN.
+Throws a <code>FormatException</code> or an <code>InvalidCastException</code> if the value type of the series
+is not convertible to floating point number.</p>
 
 
         </td>
@@ -819,20 +845,22 @@ values and <code>NaN</code> values. When there are no available values, the resu
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1217', 1217)" onmouseover="showTip(event, '1217', 1217)">
+          <code onmouseout="hideTip(event, '1232', 1232)" onmouseover="showTip(event, '1232', 1232)">
             Stats.levelMedian level series
           </code>
-          <div class="tip" id="1217">
+          <div class="tip" id="1232">
             <strong>Signature:</strong> (level:(&#39;K -&gt; &#39;L)) -&gt; series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;L,float&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'L, 'V                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L865-865" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L921-921" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>For each group with equal keys at the level specified by <code>level</code>,
-returns the median of the values in the group.</p>
+returns the median of the values in the group.
+Throws a <code>FormatException</code> or an <code>InvalidCastException</code> if the value type of the series
+is not convertible to floating point number.</p>
 
 
         </td>
@@ -840,21 +868,23 @@ returns the median of the values in the group.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1218', 1218)" onmouseover="showTip(event, '1218', 1218)">
+          <code onmouseout="hideTip(event, '1233', 1233)" onmouseover="showTip(event, '1233', 1233)">
             Stats.levelSkew level series
           </code>
-          <div class="tip" id="1218">
+          <div class="tip" id="1233">
             <strong>Signature:</strong> (level:(&#39;K -&gt; &#39;L)) -&gt; series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;L,float&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'L, 'V                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L889-889" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L951-951" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>For each group with equal keys at the level specified by <code>level</code>,
 returns the skewness of the values in a series. The function skips over missing
-values and <code>NaN</code> values. When there are less than 3 values, the result is NaN.</p>
+values and <code>NaN</code> values. When there are less than 3 values, the result is NaN.
+Throws a <code>FormatException</code> or an <code>InvalidCastException</code> if the value type of the series
+is not convertible to floating point number.</p>
 
 
         </td>
@@ -862,21 +892,23 @@ values and <code>NaN</code> values. When there are less than 3 values, the resul
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1219', 1219)" onmouseover="showTip(event, '1219', 1219)">
+          <code onmouseout="hideTip(event, '1234', 1234)" onmouseover="showTip(event, '1234', 1234)">
             Stats.levelStdDev level series
           </code>
-          <div class="tip" id="1219">
+          <div class="tip" id="1234">
             <strong>Signature:</strong> (level:(&#39;K -&gt; &#39;L)) -&gt; series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;L,float&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'L, 'V                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L873-873" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L931-931" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>For each group with equal keys at the level specified by <code>level</code>,
 returns the standard deviation of the values in the group. The function skips over
-missing values and <code>NaN</code> values. When there are less than 2 values, the result is NaN.</p>
+missing values and <code>NaN</code> values. When there are less than 2 values, the result is NaN.
+Throws a <code>FormatException</code> or an <code>InvalidCastException</code> if the value type of the series
+is not convertible to floating point number.</p>
 
 
         </td>
@@ -884,21 +916,23 @@ missing values and <code>NaN</code> values. When there are less than 2 values, t
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1220', 1220)" onmouseover="showTip(event, '1220', 1220)">
+          <code onmouseout="hideTip(event, '1235', 1235)" onmouseover="showTip(event, '1235', 1235)">
             Stats.levelSum level series
           </code>
-          <div class="tip" id="1220">
+          <div class="tip" id="1235">
             <strong>Signature:</strong> (level:(&#39;K -&gt; &#39;L)) -&gt; series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;L,float&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'L, 'V                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L850-850" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L902-902" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>For each group with equal keys at the level specified by <code>level</code>,
 returns the sum of the values in the group. The function skips over missing values
-and <code>NaN</code> values. When there are no available values, the result is 0.</p>
+and <code>NaN</code> values. When there are no available values, the result is 0.
+Throws a <code>FormatException</code> or an <code>InvalidCastException</code> if the value type of the series
+is not convertible to floating point number.</p>
 
 
         </td>
@@ -906,21 +940,23 @@ and <code>NaN</code> values. When there are no available values, the result is 0
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1221', 1221)" onmouseover="showTip(event, '1221', 1221)">
+          <code onmouseout="hideTip(event, '1236', 1236)" onmouseover="showTip(event, '1236', 1236)">
             Stats.levelVariance level series
           </code>
-          <div class="tip" id="1221">
+          <div class="tip" id="1236">
             <strong>Signature:</strong> (level:(&#39;K -&gt; &#39;L)) -&gt; series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;L,float&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'L, 'V                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L881-881" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L941-941" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>For each group with equal keys at the level specified by <code>level</code>,
 returns the variance of the values in the group. The function skips over missing
-values and <code>NaN</code> values. When there are less than 2 values, the result is NaN.</p>
+values and <code>NaN</code> values. When there are less than 2 values, the result is NaN.
+Throws a <code>FormatException</code> or an <code>InvalidCastException</code> if the value type of the series
+is not convertible to floating point number.</p>
 
 
         </td>
@@ -937,15 +973,15 @@ values and <code>NaN</code> values. When there are less than 2 values, the resul
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1222', 1222)" onmouseover="showTip(event, '1222', 1222)">
+          <code onmouseout="hideTip(event, '1237', 1237)" onmouseover="showTip(event, '1237', 1237)">
             Stats.interpolate keys f series
           </code>
-          <div class="tip" id="1222">
+          <div class="tip" id="1237">
             <strong>Signature:</strong> keys:seq&lt;&#39;K&gt; -&gt; (f:(&#39;K -&gt; (&#39;K * &#39;T) option -&gt; (&#39;K * &#39;T) option -&gt; &#39;T)) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L722-722" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L770-770" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -964,15 +1000,15 @@ observations from the series argument. The function must return a new valid floa
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1223', 1223)" onmouseover="showTip(event, '1223', 1223)">
+          <code onmouseout="hideTip(event, '1238', 1238)" onmouseover="showTip(event, '1238', 1238)">
             Stats.interpolateLinear(...)
           </code>
-          <div class="tip" id="1223">
+          <div class="tip" id="1238">
             <strong>Signature:</strong> keys:seq&lt;&#39;K&gt; -&gt; (keyDiff:(&#39;K -&gt; &#39;K -&gt; float)) -&gt; series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L737-737" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L787-787" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -980,7 +1016,11 @@ observations from the series argument. The function must return a new valid floa
 <h2>Parameters</h2>
 <ul>
 <li><code>keys</code> - Sequence of new keys that forms the index of interpolated results</li>
-<li><code>keyDiff</code> - A function representing "subtraction" between two keys</li>
+<li>
+<code>keyDiff</code> - A function representing "subtraction" between two keys
+Throws a <code>FormatException</code> or an <code>InvalidCastException</code> if the value type of the series
+is not convertible to floating point number.
+</li>
 </ul>
 
 
@@ -1006,15 +1046,15 @@ average of all <em>present</em> values.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1224', 1224)" onmouseover="showTip(event, '1224', 1224)">
+          <code onmouseout="hideTip(event, '1239', 1239)" onmouseover="showTip(event, '1239', 1239)">
             Stats.count(series)
           </code>
-          <div class="tip" id="1224">
+          <div class="tip" id="1239">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; int<br />
                           <strong>Type parameters:</strong> 'K, 'V                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L534-534" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L562-562" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1027,19 +1067,21 @@ and values created from <code>Double.NaN</code> etc.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1225', 1225)" onmouseover="showTip(event, '1225', 1225)">
+          <code onmouseout="hideTip(event, '1240', 1240)" onmouseover="showTip(event, '1240', 1240)">
             Stats.describe(series)
           </code>
-          <div class="tip" id="1225">
+          <div class="tip" id="1240">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;string,float&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L692-692" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L740-740" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Returns the series of main statistic values of the series.</p>
+          <p>Returns the series of main statistic values of the series.
+Throws a <code>FormatException</code> or an <code>InvalidCastException</code> if the value type of the series
+is not convertible to floating point number.</p>
 
 
         </td>
@@ -1047,15 +1089,15 @@ and values created from <code>Double.NaN</code> etc.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1226', 1226)" onmouseover="showTip(event, '1226', 1226)">
+          <code onmouseout="hideTip(event, '1241', 1241)" onmouseover="showTip(event, '1241', 1241)">
             Stats.kurt(series)
           </code>
-          <div class="tip" id="1226">
+          <div class="tip" id="1241">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; float<br />
                           <strong>Type parameters:</strong> 'K, 'V                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L584-584" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L622-622" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1068,20 +1110,22 @@ values and <code>NaN</code> values. When there are less than 4 values, the resul
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1227', 1227)" onmouseover="showTip(event, '1227', 1227)">
+          <code onmouseout="hideTip(event, '1242', 1242)" onmouseover="showTip(event, '1242', 1242)">
             Stats.max(series)
           </code>
-          <div class="tip" id="1227">
+          <div class="tip" id="1242">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; float<br />
                           <strong>Type parameters:</strong> 'K, 'V                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L616-616" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L658-658" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Returns the maximum of the values in a series. The result is an float value.
-When the series contains no values, the result is NaN.</p>
+When the series contains no values, the result is NaN.
+Throws a <code>FormatException</code> or an <code>InvalidCastException</code> if the value type of the series
+is not convertible to floating point number.</p>
 
 
         </td>
@@ -1089,15 +1133,15 @@ When the series contains no values, the result is NaN.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1228', 1228)" onmouseover="showTip(event, '1228', 1228)">
+          <code onmouseout="hideTip(event, '1243', 1243)" onmouseover="showTip(event, '1243', 1243)">
             Stats.maxBy f series
           </code>
-          <div class="tip" id="1228">
+          <div class="tip" id="1243">
             <strong>Signature:</strong> (f:(&#39;T -&gt; &#39;a)) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; (&#39;K * &#39;T) option<br />
                           <strong>Type parameters:</strong> 'T, 'a, 'K                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L631-631" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L673-673" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1110,20 +1154,22 @@ is an optional value. When the series contains no values, the result is <code>No
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1229', 1229)" onmouseover="showTip(event, '1229', 1229)">
+          <code onmouseout="hideTip(event, '1244', 1244)" onmouseover="showTip(event, '1244', 1244)">
             Stats.mean(series)
           </code>
-          <div class="tip" id="1229">
+          <div class="tip" id="1244">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; float<br />
                           <strong>Type parameters:</strong> 'K, 'V                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L555-555" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L587-587" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Returns the mean of the values in a series. The function skips over missing values
-and <code>NaN</code> values. When there are no available values, the result is NaN.</p>
+and <code>NaN</code> values. When there are no available values, the result is NaN.
+Throws a <code>FormatException</code> or an <code>InvalidCastException</code> if the value type of the series
+is not convertible to floating point number.</p>
 
 
         </td>
@@ -1131,19 +1177,21 @@ and <code>NaN</code> values. When there are no available values, the result is N
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1230', 1230)" onmouseover="showTip(event, '1230', 1230)">
+          <code onmouseout="hideTip(event, '1245', 1245)" onmouseover="showTip(event, '1245', 1245)">
             Stats.median(series)
           </code>
-          <div class="tip" id="1230">
+          <div class="tip" id="1245">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; float<br />
                           <strong>Type parameters:</strong> 'K, 'V                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L646-646" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L690-690" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Returns the median of the elements of the series.</p>
+          <p>Returns the median of the elements of the series.
+Throws a <code>FormatException</code> or an <code>InvalidCastException</code> if the value type of the series
+is not convertible to floating point number.</p>
 
 
         </td>
@@ -1151,20 +1199,22 @@ and <code>NaN</code> values. When there are no available values, the result is N
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1231', 1231)" onmouseover="showTip(event, '1231', 1231)">
+          <code onmouseout="hideTip(event, '1246', 1246)" onmouseover="showTip(event, '1246', 1246)">
             Stats.min(series)
           </code>
-          <div class="tip" id="1231">
+          <div class="tip" id="1246">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; float<br />
                           <strong>Type parameters:</strong> 'K, 'V                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L605-605" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L645-645" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Returns the minimum of the values in a series. The result is an float value.
-When the series contains no values, the result is NaN.</p>
+When the series contains no values, the result is NaN.
+Throws a <code>FormatException</code> or an <code>InvalidCastException</code> if the value type of the series
+is not convertible to floating point number.</p>
 
 
         </td>
@@ -1172,15 +1222,15 @@ When the series contains no values, the result is NaN.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1232', 1232)" onmouseover="showTip(event, '1232', 1232)">
+          <code onmouseout="hideTip(event, '1247', 1247)" onmouseover="showTip(event, '1247', 1247)">
             Stats.minBy f series
           </code>
-          <div class="tip" id="1232">
+          <div class="tip" id="1247">
             <strong>Signature:</strong> (f:(&#39;T -&gt; &#39;a)) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; (&#39;K * &#39;T) option<br />
                           <strong>Type parameters:</strong> 'T, 'a, 'K                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L639-639" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L681-681" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1193,15 +1243,15 @@ is an optional value. When the series contains no values, the result is <code>No
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1233', 1233)" onmouseover="showTip(event, '1233', 1233)">
+          <code onmouseout="hideTip(event, '1248', 1248)" onmouseover="showTip(event, '1248', 1248)">
             Stats.numSum(series)
           </code>
-          <div class="tip" id="1233">
+          <div class="tip" id="1248">
             <strong>Signature:</strong> series:Series&lt;&#39;K,^V&gt; -&gt; ^V<br />
                           <strong>Type parameters:</strong> 'K, ^V                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L548-548" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L578-578" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1214,20 +1264,22 @@ values, the result is zero of the approriate numeric type.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1234', 1234)" onmouseover="showTip(event, '1234', 1234)">
+          <code onmouseout="hideTip(event, '1249', 1249)" onmouseover="showTip(event, '1249', 1249)">
             Stats.quantile(quantiles, series)
           </code>
-          <div class="tip" id="1234">
+          <div class="tip" id="1249">
             <strong>Signature:</strong> (quantiles:float [] * series:Series&lt;&#39;K,&#39;V&gt;) -&gt; Series&lt;string,float&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L660-660" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L706-706" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Returns the series of quantiles of the series. Excel version of quantile,
-equivalent to QuantileDefinition.R7 from Math.Net</p>
+equivalent to QuantileDefinition.R7 from Math.Net
+Throws a <code>FormatException</code> or an <code>InvalidCastException</code> if the value type of the series
+is not convertible to floating point number.</p>
 
 
         </td>
@@ -1235,20 +1287,22 @@ equivalent to QuantileDefinition.R7 from Math.Net</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1235', 1235)" onmouseover="showTip(event, '1235', 1235)">
+          <code onmouseout="hideTip(event, '1250', 1250)" onmouseover="showTip(event, '1250', 1250)">
             Stats.skew(series)
           </code>
-          <div class="tip" id="1235">
+          <div class="tip" id="1250">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; float<br />
                           <strong>Type parameters:</strong> 'K, 'V                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L577-577" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L615-615" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Returns the skewness of the values in a series. The function skips over missing
-values and <code>NaN</code> values. When there are less than 3 values, the result is NaN.</p>
+values and <code>NaN</code> values. When there are less than 3 values, the result is NaN.
+Throws a <code>FormatException</code> or an <code>InvalidCastException</code> if the value type of the series
+is not convertible to floating point number.</p>
 
 
         </td>
@@ -1256,10 +1310,33 @@ values and <code>NaN</code> values. When there are less than 3 values, the resul
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1236', 1236)" onmouseover="showTip(event, '1236', 1236)">
+          <code onmouseout="hideTip(event, '1251', 1251)" onmouseover="showTip(event, '1251', 1251)">
             Stats.stdDev(series)
           </code>
-          <div class="tip" id="1236">
+          <div class="tip" id="1251">
+            <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; float<br />
+                          <strong>Type parameters:</strong> 'K, 'V                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L606-606" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns the standard deviation of the values in a series. The function skips over
+missing values and <code>NaN</code> values. When there are less than 2 values, the result is NaN.
+Throws a <code>FormatException</code> or an <code>InvalidCastException</code> if the value type of the series
+is not convertible to floating point number.</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1252', 1252)" onmouseover="showTip(event, '1252', 1252)">
+            Stats.sum(series)
+          </code>
+          <div class="tip" id="1252">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; float<br />
                           <strong>Type parameters:</strong> 'K, 'V                      </div>
         </td>
@@ -1268,29 +1345,10 @@ values and <code>NaN</code> values. When there are less than 3 values, the resul
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Returns the standard deviation of the values in a series. The function skips over
-missing values and <code>NaN</code> values. When there are less than 2 values, the result is NaN.</p>
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '1237', 1237)" onmouseover="showTip(event, '1237', 1237)">
-            Stats.sum(series)
-          </code>
-          <div class="tip" id="1237">
-            <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; float<br />
-                          <strong>Type parameters:</strong> 'K, 'V                      </div>
-        </td>
-        <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L540-540" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
           <p>Returns the sum of the values in a series. The function skips over missing values
-and <code>NaN</code> values. When there are no available values, the result is NaN.</p>
+and <code>NaN</code> values. When there are no available values, the result is NaN.
+Throws a <code>FormatException</code> or an <code>InvalidCastException</code> if the value type of the series
+is not convertible to floating point number.</p>
 
 
         </td>
@@ -1298,15 +1356,15 @@ and <code>NaN</code> values. When there are no available values, the result is N
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1238', 1238)" onmouseover="showTip(event, '1238', 1238)">
+          <code onmouseout="hideTip(event, '1253', 1253)" onmouseover="showTip(event, '1253', 1253)">
             Stats.tryMax(series)
           </code>
-          <div class="tip" id="1238">
+          <div class="tip" id="1253">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;V option<br />
                           <strong>Type parameters:</strong> 'K, 'V                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L598-598" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L636-636" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1319,15 +1377,15 @@ When the series contains no values, the result is <code>None</code>.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1239', 1239)" onmouseover="showTip(event, '1239', 1239)">
+          <code onmouseout="hideTip(event, '1254', 1254)" onmouseover="showTip(event, '1254', 1254)">
             Stats.tryMin(series)
           </code>
-          <div class="tip" id="1239">
+          <div class="tip" id="1254">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;V option<br />
                           <strong>Type parameters:</strong> 'K, 'V                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L591-591" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L629-629" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1340,20 +1398,22 @@ When the series contains no values, the result is <code>None</code>.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1240', 1240)" onmouseover="showTip(event, '1240', 1240)">
+          <code onmouseout="hideTip(event, '1255', 1255)" onmouseover="showTip(event, '1255', 1255)">
             Stats.variance(series)
           </code>
-          <div class="tip" id="1240">
+          <div class="tip" id="1255">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; float<br />
                           <strong>Type parameters:</strong> 'K, 'V                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L563-563" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L597-597" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Returns the variance of the values in a series. The function skips over missing values
-and <code>NaN</code> values. When there are less than 2 values, the result is NaN.</p>
+and <code>NaN</code> values. When there are less than 2 values, the result is NaN.
+Throws a <code>FormatException</code> or an <code>InvalidCastException</code> if the value type of the series
+is not convertible to floating point number.</p>
 
 
         </td>
@@ -1370,15 +1430,15 @@ and <code>NaN</code> values. When there are less than 2 values, the result is Na
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1241', 1241)" onmouseover="showTip(event, '1241', 1241)">
+          <code onmouseout="hideTip(event, '1256', 1256)" onmouseover="showTip(event, '1256', 1256)">
             Stats.uniqueCount(frame)
           </code>
-          <div class="tip" id="1241">
+          <div class="tip" id="1256">
             <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,int&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L830-830" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L880-880" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1390,15 +1450,15 @@ and <code>NaN</code> values. When there are less than 2 values, the result is Na
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1242', 1242)" onmouseover="showTip(event, '1242', 1242)">
+          <code onmouseout="hideTip(event, '1257', 1257)" onmouseover="showTip(event, '1257', 1257)">
             Stats.uniqueCount(series)
           </code>
-          <div class="tip" id="1242">
+          <div class="tip" id="1257">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; int<br />
                           <strong>Type parameters:</strong> 'K, 'V                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L624-624" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L666-666" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>

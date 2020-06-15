@@ -1277,7 +1277,7 @@ the newly produced keys, the nested series are indexed with the original keys.</
 <h2>Parameters</h2>
 <ul>
 <li>
-<code>keySelector</code> - Generates a new key that is used for aggregation, based on the original 
+<code>keySelector</code> - Generates a new key that is used for aggregation, based on the original
 key and value. The new key must support equality testing.
 </li>
 <li><code>series</code> - An input series to be grouped.</li>
@@ -1307,7 +1307,7 @@ using the provided <code>f</code> function.</p>
 <h2>Parameters</h2>
 <ul>
 <li>
-<code>keySelector</code> - Generates a new key that is used for aggregation, based on the original 
+<code>keySelector</code> - Generates a new key that is used for aggregation, based on the original
 key and value. The new key must support equality testing.
 </li>
 <li><code>f</code> - A function to aggregate each group of collected elements.</li>
@@ -2271,7 +2271,7 @@ only those keys for which there is a value available in the original one.</p>
 <span class="l">3: </span>
 </pre></td>
 <td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="id">s</span> <span class="o">=</span> <span class="id">series</span> <span class="pn">[</span> <span class="n">1</span> <span class="o">=&gt;</span> <span class="n">1.0</span><span class="pn">;</span> <span class="n">2</span> <span class="o">=&gt;</span> <span class="id">Double</span><span class="pn">.</span><span class="id">NaN</span> <span class="pn">]</span>
-<span onmouseout="hideTip(event, 'fs1', 2)" onmouseover="showTip(event, 'fs1', 2)" class="id">s</span> <span class="o">|&gt;</span> <span class="id">Series</span><span class="pn">.</span><span class="id">dropMissing</span> 
+<span onmouseout="hideTip(event, 'fs1', 2)" onmouseover="showTip(event, 'fs1', 2)" class="id">s</span> <span class="o">|&gt;</span> <span class="id">Series</span><span class="pn">.</span><span class="id">dropMissing</span>
 <span class="pn">[</span><span onmouseout="hideTip(event, 'fs2', 3)" onmouseover="showTip(event, 'fs2', 3)" class="id">fsi</span><span class="pn">:</span><span class="k">val</span> <span class="id">it</span> <span class="pn">:</span> <span class="id">Series</span><span class="pn">&lt;</span><span onmouseout="hideTip(event, 'fs3', 4)" onmouseover="showTip(event, 'fs3', 4)" class="id">int</span><span class="pn">,</span><span onmouseout="hideTip(event, 'fs4', 5)" onmouseover="showTip(event, 'fs4', 5)" class="id">float</span><span class="pn">&gt;</span> <span class="o">=</span> <span class="id">series</span> <span class="pn">[</span> <span class="n">1</span> <span class="o">=&gt;</span> <span class="n">1</span><span class="pn">]</span>
 </code></pre></td>
 </tr>
@@ -2312,7 +2312,7 @@ used on ordered series.</p>
 <ul>
 <li><code>series</code> - An input series that is to be filled</li>
 <li>
-<code>direction</code> - Specifies the direction used when searching for 
+<code>direction</code> - Specifies the direction used when searching for
 the nearest available value. <code>Backward</code> means that we want to
 look for the first value with a smaller key while <code>Forward</code> searches
 for the nearest greater key.
@@ -2333,7 +2333,7 @@ for the nearest greater key.
 <span onmouseout="hideTip(event, 'fs1', 2)" onmouseover="showTip(event, 'fs1', 2)" class="id">sample</span> <span class="o">|&gt;</span> <span class="id">Series</span><span class="pn">.</span><span class="id">fillMissing</span> <span class="id">Direction</span><span class="pn">.</span><span class="id">Backward</span>
 
 <span class="c">// Returns a series consisting of [&lt;missing&gt;; 1; 1; 3]</span>
-<span onmouseout="hideTip(event, 'fs1', 3)" onmouseover="showTip(event, 'fs1', 3)" class="id">sample</span> <span class="o">|&gt;</span> <span class="id">Series</span><span class="pn">.</span><span class="id">fillMissing</span> <span class="id">Direction</span><span class="pn">.</span><span class="id">Forward</span> 
+<span onmouseout="hideTip(event, 'fs1', 3)" onmouseover="showTip(event, 'fs1', 3)" class="id">sample</span> <span class="o">|&gt;</span> <span class="id">Series</span><span class="pn">.</span><span class="id">fillMissing</span> <span class="id">Direction</span><span class="pn">.</span><span class="id">Forward</span>
 </code></pre></td>
 </tr>
 </table>
@@ -2367,7 +2367,7 @@ for the nearest greater key.
 <ul>
 <li><code>series</code> - An input series that is to be filled</li>
 <li>
-<code>direction</code> - Specifies the direction used when searching for 
+<code>direction</code> - Specifies the direction used when searching for
 the nearest available value. <code>Backward</code> means that we want to
 look for the first value with a smaller key while <code>Forward</code> searches
 for the nearest greater key.
@@ -2510,7 +2510,7 @@ They use the type <code>tryval&lt;'T&gt;</code> which is defined as a discrimina
 <span class="l">2: </span>
 <span class="l">3: </span>
 </pre></td>
-<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">type</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="rt">tryval</span><span class="pn">&lt;</span><span class="ta">&#39;</span><span class="id">T</span><span class="pn">&gt;</span> <span class="o">=</span> 
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">type</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="rt">tryval</span><span class="pn">&lt;</span><span class="ta">&#39;</span><span class="id">T</span><span class="pn">&gt;</span> <span class="o">=</span>
   <span class="pn">|</span> <span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="uc">Success</span> <span class="k">of</span> <span class="ta">&#39;</span><span class="id">T</span>
   <span class="pn">|</span> <span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="uc">Error</span> <span class="k">of</span> <span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="rt">exn</span>
 </code></pre></td>
@@ -2698,7 +2698,7 @@ and then finds values close to such keys using the specified <code>lookup</code>
 <li><code>series</code> - An input series to be resampled</li>
 <li><code>interval</code> - The interval between the individual samples</li>
 <li>
-<code>dir</code> - Specifies how the keys should be generated. <code>Direction.Forward</code> means that the 
+<code>dir</code> - Specifies how the keys should be generated. <code>Direction.Forward</code> means that the
 key is the smallest value of each chunk (and so first key of the series is returned and
 the last is not, unless it matches exactly <em>start + k*interval</em>); <code>Direction.Backward</code>
 means that the first key is skipped and sample is generated at, or just before the end
@@ -2742,7 +2742,7 @@ and then finds values close to such keys using the specified <code>lookup</code>
 <li><code>start</code> - The initial time to be used for sampling</li>
 <li><code>interval</code> - The interval between the individual samples</li>
 <li>
-<code>dir</code> - Specifies how the keys should be generated. <code>Direction.Forward</code> means that the 
+<code>dir</code> - Specifies how the keys should be generated. <code>Direction.Forward</code> means that the
 key is the smallest value of each chunk (and so first key of the series is returned and
 the last is not, unless it matches exactly <em>start + k*interval</em>); <code>Direction.Backward</code>
 means that the first key is skipped and sample is generated at, or just before the end
@@ -2822,7 +2822,7 @@ as nested series.</p>
 <ul>
 <li><code>series</code> - An input series to be resampled</li>
 <li>
-<code>keyProj</code> - A function that transforms keys from original space to a new 
+<code>keyProj</code> - A function that transforms keys from original space to a new
 space (which is then used for grouping based on equivalence)
 </li>
 </ul>
@@ -2859,11 +2859,11 @@ to values using the provided function <code>f</code>.</p>
 <ul>
 <li><code>series</code> - An input series to be resampled</li>
 <li>
-<code>keyProj</code> - A function that transforms keys from original space to a new 
+<code>keyProj</code> - A function that transforms keys from original space to a new
 space (which is then used for grouping based on equivalence)
 </li>
 <li>
-<code>f</code> - A function that is used to collapse a generated chunk into a 
+<code>f</code> - A function that is used to collapse a generated chunk into a
 single value.
 </li>
 </ul>
@@ -2907,7 +2907,7 @@ used as the smallest key in a chunk; for <code>Direction.Backward</code>, the ke
 used as the greatest keys in a chunk.
 </li>
 <li>
-<code>f</code> - A function that is used to collapse a generated chunk into a 
+<code>f</code> - A function that is used to collapse a generated chunk into a
 single value. Note that this function may be called with empty series.
 </li>
 </ul>
@@ -2945,12 +2945,12 @@ next chunk, or it produces an empty series.</p>
 <ul>
 <li><code>series</code> - An input series to be resampled</li>
 <li>
-<code>fillMode</code> - When set to <code>Lookup.NearestSmaller</code> or <code>Lookup.NearestGreater</code>, 
+<code>fillMode</code> - When set to <code>Lookup.NearestSmaller</code> or <code>Lookup.NearestGreater</code>,
 the function searches for a nearest available observation in an neighboring chunk.
 Otherwise, the function <code>f</code> is called with an empty series as an argument.
 </li>
 <li>
-<code>keyProj</code> - A function that transforms keys from original space to a new 
+<code>keyProj</code> - A function that transforms keys from original space to a new
 space (which is then used for grouping based on equivalence)
 </li>
 <li><code>nextKey</code> - A function that gets the next key in the transformed space</li>
@@ -2989,18 +2989,18 @@ next chunk, or it produces an empty series.</p>
 <ul>
 <li><code>series</code> - An input series to be resampled</li>
 <li>
-<code>fillMode</code> - When set to <code>Lookup.ExactOrSmaller</code> or <code>Lookup.ExactOrGreater</code>, 
+<code>fillMode</code> - When set to <code>Lookup.ExactOrSmaller</code> or <code>Lookup.ExactOrGreater</code>,
 the function searches for a nearest available observation in an neighboring chunk.
 Otherwise, the function <code>f</code> is called with an empty series as an argument.
 Values <code>Lookup.Smaller</code> and <code>Lookup.Greater</code> are not supported.
 </li>
 <li>
-<code>keyProj</code> - A function that transforms keys from original space to a new 
+<code>keyProj</code> - A function that transforms keys from original space to a new
 space (which is then used for grouping based on equivalence)
 </li>
 <li><code>nextKey</code> - A function that gets the next key in the transformed space</li>
 <li>
-<code>f</code> - A function that is used to collapse a generated chunk into a 
+<code>f</code> - A function that is used to collapse a generated chunk into a
 single value. The function may be called on empty series when <code>fillMode</code> is
 <code>Lookup.Exact</code>.
 </li>
@@ -3027,7 +3027,7 @@ single value. The function may be called on empty series when <code>fillMode</co
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Performs sampling by time and returns chunks obtained by time-sampling as a nested<br />
+          <p>Performs sampling by time and returns chunks obtained by time-sampling as a nested
 series. The operation generates keys starting at the first key in the source series,
 using the specified <code>interval</code> and then obtains chunks based on these
 keys in a fashion similar to the <code>Series.resample</code> function.</p>
@@ -3063,7 +3063,7 @@ used as the greatest keys in a chunk.
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Performs sampling by time and returns chunks obtained by time-sampling as a nested<br />
+          <p>Performs sampling by time and returns chunks obtained by time-sampling as a nested
 series. The operation generates keys starting at the given <code>start</code> time, using the
 specified <code>interval</code> and then obtains chunks based on these
 keys in a fashion similar to the <code>Series.resample</code> function.</p>

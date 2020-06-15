@@ -83,10 +83,10 @@ as an input, apply necessary transformations to it and return a new <a href="dee
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1278', 1278)" onmouseover="showTip(event, '1278', 1278)">
+          <code onmouseout="hideTip(event, '1293', 1293)" onmouseover="showTip(event, '1293', 1293)">
             x.Aggregate(...)
           </code>
-          <div class="tip" id="1278">
+          <div class="tip" id="1293">
             <strong>Signature:</strong> (index:IIndex&lt;&#39;K&gt; * aggregation:Aggregation&lt;&#39;K&gt; * source:VectorConstruction * selector:(DataSegmentKind * SeriesConstruction&lt;&#39;K&gt; -&gt; &#39;TNewKey * OptionalValue&lt;&#39;R&gt;)) -&gt; IIndex&lt;&#39;TNewKey&gt; * IVector&lt;&#39;R&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'K, 'TNewKey, 'R                      </div>
@@ -101,12 +101,12 @@ as an input, apply necessary transformations to it and return a new <a href="dee
 <ul>
 <li><code>index</code> - Specifies the index to be aggregated</li>
 <li>
-<code>aggregation</code> - Defines the kind of aggregation to apply (the type 
+<code>aggregation</code> - Defines the kind of aggregation to apply (the type
 is a discriminated union with a couple of cases)
 </li>
 <li><code>source</code> - Source vector construction to be transformed</li>
 <li>
-<code>selector</code> - Given information about window/chunk (including 
+<code>selector</code> - Given information about window/chunk (including
 vector construction that can be used to build the data chunk), return
 a new key, together with a new value for the returned vector.
 </li>
@@ -118,10 +118,10 @@ a new key, together with a new value for the returned vector.
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1279', 1279)" onmouseover="showTip(event, '1279', 1279)">
+          <code onmouseout="hideTip(event, '1294', 1294)" onmouseover="showTip(event, '1294', 1294)">
             x.AsyncMaterialize(arg1)
           </code>
-          <div class="tip" id="1279">
+          <div class="tip" id="1294">
             <strong>Signature:</strong> SeriesConstruction&lt;&#39;K&gt; -&gt; AsyncSeriesConstruction&lt;&#39;K&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'K                      </div>
@@ -141,10 +141,10 @@ vectors can be applied asynchronously using <code>vectorBuilder.AsyncBuild</code
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1280', 1280)" onmouseover="showTip(event, '1280', 1280)">
+          <code onmouseout="hideTip(event, '1295', 1295)" onmouseover="showTip(event, '1295', 1295)">
             x.Create(arg1, arg2)
           </code>
-          <div class="tip" id="1280">
+          <div class="tip" id="1295">
             <strong>Signature:</strong> (ReadOnlyCollection&lt;&#39;K&gt; * Option&lt;bool&gt;) -&gt; IIndex&lt;&#39;K&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'K                      </div>
@@ -165,10 +165,10 @@ is not set, the construction should check and infer this from the data.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1281', 1281)" onmouseover="showTip(event, '1281', 1281)">
+          <code onmouseout="hideTip(event, '1296', 1296)" onmouseover="showTip(event, '1296', 1296)">
             x.Create(arg1, arg2)
           </code>
-          <div class="tip" id="1281">
+          <div class="tip" id="1296">
             <strong>Signature:</strong> (seq&lt;&#39;K&gt; * Option&lt;bool&gt;) -&gt; IIndex&lt;&#39;K&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'K                      </div>
@@ -188,10 +188,10 @@ should check and infer this from the data.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1282', 1282)" onmouseover="showTip(event, '1282', 1282)">
+          <code onmouseout="hideTip(event, '1297', 1297)" onmouseover="showTip(event, '1297', 1297)">
             x.DropItem(arg1, arg2)
           </code>
-          <div class="tip" id="1282">
+          <div class="tip" id="1297">
             <strong>Signature:</strong> (SeriesConstruction&lt;&#39;K&gt; * &#39;K) -&gt; SeriesConstruction&lt;&#39;K&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'K                      </div>
@@ -209,10 +209,10 @@ should check and infer this from the data.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1283', 1283)" onmouseover="showTip(event, '1283', 1283)">
+          <code onmouseout="hideTip(event, '1298', 1298)" onmouseover="showTip(event, '1298', 1298)">
             x.GetAddressRange(arg1, arg2)
           </code>
-          <div class="tip" id="1283">
+          <div class="tip" id="1298">
             <strong>Signature:</strong> (SeriesConstruction&lt;&#39;K&gt; * RangeRestriction&lt;Address&gt;) -&gt; SeriesConstruction&lt;&#39;K&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'K                      </div>
@@ -232,10 +232,10 @@ used by operations such as "series.Take(5)" (which do not rely on keys)</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1284', 1284)" onmouseover="showTip(event, '1284', 1284)">
+          <code onmouseout="hideTip(event, '1299', 1299)" onmouseover="showTip(event, '1299', 1299)">
             x.GetRange(arg1, arg2)
           </code>
-          <div class="tip" id="1284">
+          <div class="tip" id="1299">
             <strong>Signature:</strong> (SeriesConstruction&lt;&#39;K&gt; * ((&#39;K * BoundaryBehavior) option * (&#39;K * BoundaryBehavior) option)) -&gt; SeriesConstruction&lt;&#39;K&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'K                      </div>
@@ -255,10 +255,10 @@ that contain boundary behavior and the boundary key.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1285', 1285)" onmouseover="showTip(event, '1285', 1285)">
+          <code onmouseout="hideTip(event, '1300', 1300)" onmouseover="showTip(event, '1300', 1300)">
             x.GroupBy(index, keySelector, arg3)
           </code>
-          <div class="tip" id="1285">
+          <div class="tip" id="1300">
             <strong>Signature:</strong> (index:IIndex&lt;&#39;K&gt; * keySelector:(&#39;K -&gt; OptionalValue&lt;&#39;TNewKey&gt;) * VectorConstruction) -&gt; ReadOnlyCollection&lt;&#39;TNewKey * SeriesConstruction&lt;&#39;K&gt;&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'K, 'TNewKey                      </div>
@@ -278,10 +278,10 @@ series construction objects which can be applied to arbitrary vectors/columns.</
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1286', 1286)" onmouseover="showTip(event, '1286', 1286)">
+          <code onmouseout="hideTip(event, '1301', 1301)" onmouseover="showTip(event, '1301', 1301)">
             x.Intersect(arg1, arg2)
           </code>
-          <div class="tip" id="1286">
+          <div class="tip" id="1301">
             <strong>Signature:</strong> (SeriesConstruction&lt;&#39;K&gt; * SeriesConstruction&lt;&#39;K&gt;) -&gt; IIndex&lt;&#39;K&gt; * VectorConstruction * VectorConstruction<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'K                      </div>
@@ -300,10 +300,10 @@ for both vectors that match the left and the right index.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1287', 1287)" onmouseover="showTip(event, '1287', 1287)">
+          <code onmouseout="hideTip(event, '1302', 1302)" onmouseover="showTip(event, '1302', 1302)">
             x.LookupLevel(arg1, arg2)
           </code>
-          <div class="tip" id="1287">
+          <div class="tip" id="1302">
             <strong>Signature:</strong> (SeriesConstruction&lt;&#39;K&gt; * ICustomLookup&lt;&#39;K&gt;) -&gt; SeriesConstruction&lt;&#39;K&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'K                      </div>
@@ -323,10 +323,10 @@ is used for custom equality testing (for example, when getting a level of a hier
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1288', 1288)" onmouseover="showTip(event, '1288', 1288)">
+          <code onmouseout="hideTip(event, '1303', 1303)" onmouseover="showTip(event, '1303', 1303)">
             x.Merge(arg1, arg2, arg3)
           </code>
-          <div class="tip" id="1288">
+          <div class="tip" id="1303">
             <strong>Signature:</strong> (SeriesConstruction&lt;&#39;K&gt; list * VectorListTransform * bool) -&gt; IIndex&lt;&#39;K&gt; * VectorConstruction<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'K                      </div>
@@ -348,10 +348,10 @@ a key is defined in both indices (i.e. which value should be in the new vector).
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1289', 1289)" onmouseover="showTip(event, '1289', 1289)">
+          <code onmouseout="hideTip(event, '1304', 1304)" onmouseover="showTip(event, '1304', 1304)">
             x.OrderIndex(arg1)
           </code>
-          <div class="tip" id="1289">
+          <div class="tip" id="1304">
             <strong>Signature:</strong> SeriesConstruction&lt;&#39;K&gt; -&gt; SeriesConstruction&lt;&#39;K&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'K                      </div>
@@ -369,10 +369,10 @@ a key is defined in both indices (i.e. which value should be in the new vector).
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1290', 1290)" onmouseover="showTip(event, '1290', 1290)">
+          <code onmouseout="hideTip(event, '1305', 1305)" onmouseover="showTip(event, '1305', 1305)">
             x.Project(arg1)
           </code>
-          <div class="tip" id="1290">
+          <div class="tip" id="1305">
             <strong>Signature:</strong> IIndex&lt;&#39;K&gt; -&gt; IIndex&lt;&#39;K&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'K                      </div>
@@ -393,10 +393,10 @@ same (e.g. evaluate) on the index.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1291', 1291)" onmouseover="showTip(event, '1291', 1291)">
+          <code onmouseout="hideTip(event, '1306', 1306)" onmouseover="showTip(event, '1306', 1306)">
             x.Recreate(arg1)
           </code>
-          <div class="tip" id="1291">
+          <div class="tip" id="1306">
             <strong>Signature:</strong> IIndex&lt;&#39;K&gt; -&gt; IIndex&lt;&#39;K&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'K                      </div>
@@ -416,10 +416,10 @@ to <code>Project</code>, but used in different scenarios.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1292', 1292)" onmouseover="showTip(event, '1292', 1292)">
+          <code onmouseout="hideTip(event, '1307', 1307)" onmouseover="showTip(event, '1307', 1307)">
             x.Reindex(arg1, arg2, arg3, arg4, arg5)
           </code>
-          <div class="tip" id="1292">
+          <div class="tip" id="1307">
             <strong>Signature:</strong> (IIndex&lt;&#39;K&gt; * IIndex&lt;&#39;K&gt; * Lookup * VectorConstruction * (Address -&gt; bool)) -&gt; VectorConstruction<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'K                      </div>
@@ -444,10 +444,10 @@ appropriate value (e.g. when we need to skip over missing values).</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1293', 1293)" onmouseover="showTip(event, '1293', 1293)">
+          <code onmouseout="hideTip(event, '1308', 1308)" onmouseover="showTip(event, '1308', 1308)">
             x.Resample(...)
           </code>
-          <div class="tip" id="1293">
+          <div class="tip" id="1308">
             <strong>Signature:</strong> (IIndexBuilder * IIndex&lt;&#39;K&gt; * seq&lt;&#39;K&gt; * Direction * source:VectorConstruction * selector:(&#39;K * SeriesConstruction&lt;&#39;K&gt; -&gt; &#39;TNewKey * OptionalValue&lt;&#39;R&gt;)) -&gt; IIndex&lt;&#39;TNewKey&gt; * IVector&lt;&#39;R&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'K, 'TNewKey, 'R                      </div>
@@ -469,10 +469,10 @@ hold at the boundaries where values before/after the key may also be included)</
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1294', 1294)" onmouseover="showTip(event, '1294', 1294)">
+          <code onmouseout="hideTip(event, '1309', 1309)" onmouseover="showTip(event, '1309', 1309)">
             x.Search(arg1, arg2, arg3)
           </code>
-          <div class="tip" id="1294">
+          <div class="tip" id="1309">
             <strong>Signature:</strong> (SeriesConstruction&lt;&#39;K&gt; * IVector&lt;&#39;V&gt; * &#39;V) -&gt; SeriesConstruction&lt;&#39;K&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'K, 'V                      </div>
@@ -492,10 +492,10 @@ locations where the specified vector contains the specified value.
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1295', 1295)" onmouseover="showTip(event, '1295', 1295)">
+          <code onmouseout="hideTip(event, '1310', 1310)" onmouseover="showTip(event, '1310', 1310)">
             x.Shift(arg1, arg2)
           </code>
-          <div class="tip" id="1295">
+          <div class="tip" id="1310">
             <strong>Signature:</strong> (SeriesConstruction&lt;&#39;K&gt; * int) -&gt; SeriesConstruction&lt;&#39;K&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'K                      </div>
@@ -525,10 +525,10 @@ value should be dropped. For example:</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1296', 1296)" onmouseover="showTip(event, '1296', 1296)">
+          <code onmouseout="hideTip(event, '1311', 1311)" onmouseover="showTip(event, '1311', 1311)">
             x.Union(arg1, arg2)
           </code>
-          <div class="tip" id="1296">
+          <div class="tip" id="1311">
             <strong>Signature:</strong> (SeriesConstruction&lt;&#39;K&gt; * SeriesConstruction&lt;&#39;K&gt;) -&gt; IIndex&lt;&#39;K&gt; * VectorConstruction * VectorConstruction<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'K                      </div>
@@ -547,10 +547,10 @@ for both vectors that match the left and the right index.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1297', 1297)" onmouseover="showTip(event, '1297', 1297)">
+          <code onmouseout="hideTip(event, '1312', 1312)" onmouseover="showTip(event, '1312', 1312)">
             x.WithIndex(arg1, arg2, arg3)
           </code>
-          <div class="tip" id="1297">
+          <div class="tip" id="1312">
             <strong>Signature:</strong> (IIndex&lt;&#39;K&gt; * IVector&lt;&#39;TNewKey&gt; * VectorConstruction) -&gt; SeriesConstruction&lt;&#39;TNewKey&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'K, 'TNewKey                      </div>

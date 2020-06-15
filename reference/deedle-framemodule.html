@@ -2188,7 +2188,7 @@ For more alignment options on ordered frames, see <code>joinAlign</code>.</p>
 <li><code>frame1</code> - First data frame (left) to be used in the joining</li>
 <li><code>frame2</code> - Other frame (right) to be joined with <code>frame1</code></li>
 <li>
-<code>kind</code> - Specifies the joining behavior on row indices. Use <code>JoinKind.Outer</code> and 
+<code>kind</code> - Specifies the joining behavior on row indices. Use <code>JoinKind.Outer</code> and
 <code>JoinKind.Inner</code> to get the union and intersection of the row keys, respectively.
 Use <code>JoinKind.Left</code> and <code>JoinKind.Right</code> to use the current key of the left/right
 data frame.
@@ -2228,7 +2228,7 @@ in order to align indices from other frame to the indices of the main frame
 <li><code>frame1</code> - First data frame (left) to be used in the joining</li>
 <li><code>frame2</code> - Other frame (right) to be joined with <code>frame1</code></li>
 <li>
-<code>kind</code> - Specifies the joining behavior on row indices. Use <code>JoinKind.Outer</code> and 
+<code>kind</code> - Specifies the joining behavior on row indices. Use <code>JoinKind.Outer</code> and
 <code>JoinKind.Inner</code> to get the union and intersection of the row keys, respectively.
 Use <code>JoinKind.Left</code> and <code>JoinKind.Right</code> to use the current key of the left/right
 data frame.
@@ -2616,7 +2616,7 @@ used on ordered frames.</p>
 <ul>
 <li><code>frame</code> - An input data frame that is to be filled</li>
 <li>
-<code>direction</code> - Specifies the direction used when searching for 
+<code>direction</code> - Specifies the direction used when searching for
 the nearest available value. <code>Backward</code> means that we want to
 look for the first value with a smaller key while <code>Forward</code> searches
 for the nearest greater key.
@@ -2657,7 +2657,7 @@ does not attempt to convert between numeric values (so a series containing
 <ul>
 <li><code>frame</code> - An input data frame that is to be filled</li>
 <li>
-<code>f</code> - A function that takes a series <code>Series&lt;R, T&gt;</code> together with a key <code>K</code> 
+<code>f</code> - A function that takes a series <code>Series&lt;R, T&gt;</code> together with a key <code>K</code>
 in the series and generates a value to be used in a place where the original
 series contains a missing value.
 </li>
@@ -2711,7 +2711,7 @@ They use the type <code>tryval&lt;'T&gt;</code> which is defined as a discrimina
 <span class="l">2: </span>
 <span class="l">3: </span>
 </pre></td>
-<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">type</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="rt">tryval</span><span class="pn">&lt;</span><span class="ta">&#39;</span><span class="id">T</span><span class="pn">&gt;</span> <span class="o">=</span> 
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">type</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="rt">tryval</span><span class="pn">&lt;</span><span class="ta">&#39;</span><span class="id">T</span><span class="pn">&gt;</span> <span class="o">=</span>
   <span class="pn">|</span> <span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="uc">Success</span> <span class="k">of</span> <span class="ta">&#39;</span><span class="id">T</span>
   <span class="pn">|</span> <span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="uc">Error</span> <span class="k">of</span> <span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="rt">exn</span>
 </code></pre></td>
@@ -2925,7 +2925,7 @@ tuple members and get a frame with columns <code>S.Item1</code> and <code>S.Item
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 </pre></td>
-<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="id">df</span> <span class="o">=</span> <span class="id">frame</span> <span class="pn">[</span> <span class="s">&quot;S&quot;</span> <span class="o">=&gt;</span> <span class="id">series</span> <span class="pn">[</span> <span class="n">1</span> <span class="o">=&gt;</span> <span class="pn">(</span><span class="n">1</span><span class="pn">,</span> <span class="s">&quot;One&quot;</span><span class="pn">)</span><span class="pn">;</span> <span class="n">2</span> <span class="o">=&gt;</span> <span class="pn">(</span><span class="n">2</span><span class="pn">,</span> <span class="s">&quot;Two&quot;</span><span class="pn">)</span> <span class="pn">]</span> <span class="pn">]</span>  
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="id">df</span> <span class="o">=</span> <span class="id">frame</span> <span class="pn">[</span> <span class="s">&quot;S&quot;</span> <span class="o">=&gt;</span> <span class="id">series</span> <span class="pn">[</span> <span class="n">1</span> <span class="o">=&gt;</span> <span class="pn">(</span><span class="n">1</span><span class="pn">,</span> <span class="s">&quot;One&quot;</span><span class="pn">)</span><span class="pn">;</span> <span class="n">2</span> <span class="o">=&gt;</span> <span class="pn">(</span><span class="n">2</span><span class="pn">,</span> <span class="s">&quot;Two&quot;</span><span class="pn">)</span> <span class="pn">]</span> <span class="pn">]</span>
 <span onmouseout="hideTip(event, 'fs1', 2)" onmouseover="showTip(event, 'fs1', 2)" class="id">df</span> <span class="o">|&gt;</span> <span class="id">Frame</span><span class="pn">.</span><span class="id">expandCols</span> <span class="pn">[</span><span class="s">&quot;S&quot;</span><span class="pn">]</span>
 </code></pre></td>
 </tr>

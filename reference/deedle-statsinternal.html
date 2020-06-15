@@ -99,12 +99,14 @@ sum of values to the power of 3 and 3 (<code>sum3</code> and <code>sum4</code>)<
                           <strong>Type parameters:</strong> 'K, 'V                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L227-227" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L233-233" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Given a series, calculates expanding moments (using online <code>updateMoments</code>)
-The specified <code>proj</code> function is used to calculate the resulting value</p>
+The specified <code>proj</code> function is used to calculate the resulting value
+Throws a <code>FormatException</code> or an <code>InvalidCastException</code> if the value type of the series
+is not convertible to floating point number.</p>
 
 
         </td>
@@ -120,13 +122,15 @@ The specified <code>proj</code> function is used to calculate the resulting valu
                           <strong>Type parameters:</strong> 'K, 'V                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L111-111" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L115-115" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Apply moving window transformation based on <a href="deedle-statsinternal-sums.html" title="Sums"><code>Sums</code></a> calculation. The <code>proj</code> function
 calculates the statistics from <a href="deedle-statsinternal-sums.html" title="Sums"><code>Sums</code></a> value and the <code>moment</code> specifies which of the
-<a href="deedle-statsinternal-sums.html" title="Sums"><code>Sums</code></a> properties are calculated during the processing.</p>
+<a href="deedle-statsinternal-sums.html" title="Sums"><code>Sums</code></a> properties are calculated during the processing.
+Throws a <code>FormatException</code> or an <code>InvalidCastException</code> if the value type of the series
+is not convertible to floating point number.</p>
 
 
         </td>
@@ -164,7 +168,7 @@ The resulting sequence should have the same number of values as the input sequen
                           <strong>Type parameters:</strong> '?689731, '?689732, '?689733                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L185-185" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L189-189" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -209,12 +213,14 @@ The resulting sequence should have the same number of values as the input sequen
                           <strong>Type parameters:</strong> 'V                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L93-93" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L95-95" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Pick only available values from the input array and call <code>initSumsDense</code>
-(no need to handle <code>nan</code> values, because those are returned as Missing by Deedle)</p>
+(no need to handle <code>nan</code> values, because those are returned as Missing by Deedle)
+Throws a <code>FormatException</code> or an <code>InvalidCastException</code> if the value type
+is not convertible to floating point number.</p>
 
 
         </td>
@@ -230,7 +236,7 @@ The resulting sequence should have the same number of values as the input sequen
                                   </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L131-131" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L135-135" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -250,7 +256,7 @@ The resulting sequence should have the same number of values as the input sequen
                                   </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L154-154" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L158-158" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -286,7 +292,7 @@ is internal (and the only use in <code>applyMovingSumsTransform</code> is correc
 <li><code>winSize</code> - The size of the window to create</li>
 <li><code>finit</code> takes the first fully populated window array to an initial state</li>
 <li>
-<code>fupdate</code> takes the current state, incoming observation, 
+<code>fupdate</code> takes the current state, incoming observation,
 and out-going observation to the next state
 </li>
 <li><code>ftransf</code> takes the current state to the current output</li>
@@ -306,7 +312,7 @@ and out-going observation to the next state
                                   </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L264-264" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L270-270" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -327,7 +333,7 @@ and out-going observation to the next state
                                   </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L122-122" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L126-126" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -365,7 +371,7 @@ and out-going observation to the next state
                           <strong>Type parameters:</strong> 'V, 'K                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L253-253" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L259-259" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -386,7 +392,7 @@ Returns None when there are no values or Some.</p>
                                   </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L204-204" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L208-208" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -407,7 +413,7 @@ Returns None when there are no values or Some.</p>
                                   </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L220-220" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L224-224" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -449,7 +455,7 @@ an old outgoing element, update the sums value
                                   </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L101-101" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L103-103" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -470,7 +476,7 @@ when removing/adding value that is missing (<code>OptionalValue.Missing</code>)<
                           <strong>Type parameters:</strong> '?689751, '?689752                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L248-248" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L254-254" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -490,7 +496,7 @@ when removing/adding value that is missing (<code>OptionalValue.Missing</code>)<
                                   </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L117-117" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L121-121" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>

@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>VectorExtensions - Deedle</title>
+    <title>Fit - Deedle</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="BlueMountain Capital, FsLab.Org">
@@ -39,46 +39,74 @@
 
 
 
-<h1>VectorExtensions</h1>
+<h1>Fit</h1>
 <p>
-
-    <span>Namespace: Deedle.Math</span><br />
-            <span>
-            Attributes: <br />
-[&lt;Extension&gt;]<br />
-            
-        </span>
-</p>
+  <span>Namespace: Deedle.Math</span><br />
+  <span>Parent Module: <a href="deedle-math-linearregression.html">LinearRegression</a></span>
+  </p>
 <div class="xmldoc">
-<p>Extension of Vector<float></p>
-
 </div>
-  <h3>Static members</h3>
+
+<!-- Render nested types and modules, if there are any -->
+  <h2>Nested types and modules</h2>
+  <div>
+      <table class="table table-bordered type-list">
+    <thead>
+      <tr><td>Type</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td class="type-name">
+            <a href="deedle-math-linearregression-fit-t-1.html">t<'a></a>
+          </td>
+          <td class="xmldoc">
+          <p>Represents a linear model fitted to specific values in a data frame.</p>
+
+
+          </td>
+        </tr>
+    </tbody>
+  </table>
+  <table class="table table-bordered module-list">
+    <thead>
+      <tr><td>Module</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td class="module-name">
+            <a href="deedle-math-linearregression-fit-summary.html">Summary</a>
+          </td>
+          <td class="xmldoc">
+          
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+  <h3>Functions and values</h3>
   <table class="table table-bordered member-list">
     <thead>
-      <tr><td>Static member</td><td>Description</td></tr>
+      <tr><td>Function or value</td><td>Description</td></tr>
     </thead>
     <tbody>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1426', 1426)" onmouseover="showTip(event, '1426', 1426)">
-            VectorExtensions.Dot(v, m)
+          <code onmouseout="hideTip(event, '370', 370)" onmouseover="showTip(event, '370', 370)">
+            coefficients(fit)
           </code>
-          <div class="tip" id="1426">
-            <strong>Signature:</strong> (v:Vector&lt;float&gt; * m:Vector&lt;float&gt;) -&gt; float<br />
-                                    <span>
-            <strong>Attributes:</strong><br />
-[&lt;Extension&gt;]<br />
-          </span>
-          </div>
+          <div class="tip" id="370">
+            <strong>Signature:</strong> fit:t&lt;&#39;?694129&gt; -&gt; Series&lt;string,float&gt;<br />
+                          <strong>Type parameters:</strong> '?694129                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle.Math/Extensions.fs#L139-139" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle.Math/LinearRegression.fs#L71-71" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>vector multiply vector</p>
+          <p>The coefficients found by the linear regression.</p>
 
 
         </td>
@@ -86,23 +114,19 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1427', 1427)" onmouseover="showTip(event, '1427', 1427)">
-            VectorExtensions.Dot(v, m)
+          <code onmouseout="hideTip(event, '371', 371)" onmouseover="showTip(event, '371', 371)">
+            fitIntercept(fit)
           </code>
-          <div class="tip" id="1427">
-            <strong>Signature:</strong> (v:Vector&lt;float&gt; * m:Matrix&lt;float&gt;) -&gt; Vector&lt;float&gt;<br />
-                                    <span>
-            <strong>Attributes:</strong><br />
-[&lt;Extension&gt;]<br />
-          </span>
-          </div>
+          <div class="tip" id="371">
+            <strong>Signature:</strong> fit:t&lt;&#39;?694131&gt; -&gt; bool<br />
+                          <strong>Type parameters:</strong> '?694131                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle.Math/Extensions.fs#L133-133" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle.Math/LinearRegression.fs#L78-78" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>vector multiply matrix</p>
+          <p>Whether or not the fit includes an estimate of the intercept.</p>
 
 
         </td>
@@ -110,23 +134,19 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1428', 1428)" onmouseover="showTip(event, '1428', 1428)">
-            VectorExtensions.Dot(v, s)
+          <code onmouseout="hideTip(event, '372', 372)" onmouseover="showTip(event, '372', 372)">
+            fittedValues(fit)
           </code>
-          <div class="tip" id="1428">
-            <strong>Signature:</strong> (v:Vector&lt;float&gt; * s:Series&lt;&#39;C,float&gt;) -&gt; float<br />
-                          <strong>Type parameters:</strong> 'C                        <span>
-            <strong>Attributes:</strong><br />
-[&lt;Extension&gt;]<br />
-          </span>
-          </div>
+          <div class="tip" id="372">
+            <strong>Signature:</strong> fit:t&lt;&#39;?694133&gt; -&gt; Series&lt;&#39;?694133,float&gt;<br />
+                          <strong>Type parameters:</strong> '?694133                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle.Math/Extensions.fs#L127-127" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle.Math/LinearRegression.fs#L85-85" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>vector multiply series</p>
+          <p>Computes the fitted values from the linear model.</p>
 
 
         </td>
@@ -134,23 +154,19 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1429', 1429)" onmouseover="showTip(event, '1429', 1429)">
-            VectorExtensions.Dot(v, df)
+          <code onmouseout="hideTip(event, '373', 373)" onmouseover="showTip(event, '373', 373)">
+            input(fit)
           </code>
-          <div class="tip" id="1429">
-            <strong>Signature:</strong> (v:Vector&lt;float&gt; * df:Frame&lt;&#39;R,&#39;C&gt;) -&gt; Vector&lt;float&gt;<br />
-                          <strong>Type parameters:</strong> 'R, 'C                        <span>
-            <strong>Attributes:</strong><br />
-[&lt;Extension&gt;]<br />
-          </span>
-          </div>
+          <div class="tip" id="373">
+            <strong>Signature:</strong> fit:t&lt;&#39;?694127&gt; -&gt; Frame&lt;&#39;?694127,string&gt;<br />
+                          <strong>Type parameters:</strong> '?694127                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle.Math/Extensions.fs#L121-121" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle.Math/LinearRegression.fs#L64-64" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>vector multiply frame</p>
+          <p>The dataframe used for fitting the data.</p>
 
 
         </td>
@@ -158,25 +174,77 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1430', 1430)" onmouseover="showTip(event, '1430', 1430)">
-            VectorExtensions.ToSeries(v, keys)
+          <code onmouseout="hideTip(event, '374', 374)" onmouseover="showTip(event, '374', 374)">
+            make input coeffs yKey fitIntercept
           </code>
-          <div class="tip" id="1430">
-            <strong>Signature:</strong> (v:Vector&lt;float&gt; * keys:seq&lt;&#39;R&gt;) -&gt; Series&lt;&#39;R,float&gt;<br />
-                          <strong>Type parameters:</strong> 'R                        <span>
-            <strong>Attributes:</strong><br />
-[&lt;Extension&gt;]<br />
-          </span>
-          </div>
+          <div class="tip" id="374">
+            <strong>Signature:</strong> input:Frame&lt;&#39;?694123,string&gt; -&gt; coeffs:Series&lt;string,float&gt; -&gt; yKey:string -&gt; fitIntercept:bool -&gt; t&lt;&#39;?694123&gt;<br />
+                          <strong>Type parameters:</strong> '?694123                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle.Math/Extensions.fs#L145-145" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle.Math/LinearRegression.fs#L29-29" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Convert vector to series</p>
+          <p>Construct a new fit.</p>
 
 
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '375', 375)" onmouseover="showTip(event, '375', 375)">
+            residuals(fit)
+          </code>
+          <div class="tip" id="375">
+            <strong>Signature:</strong> fit:t&lt;&#39;?694135&gt; -&gt; Series&lt;&#39;?694135,float&gt;<br />
+                          <strong>Type parameters:</strong> '?694135                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle.Math/LinearRegression.fs#L107-107" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Computes the residuals of the regression (y - yHat)</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '376', 376)" onmouseover="showTip(event, '376', 376)">
+            summary(fit)
+          </code>
+          <div class="tip" id="376">
+            <strong>Signature:</strong> fit:t&lt;&#39;a&gt; -&gt; t<br />
+                          <strong>Type parameters:</strong> 'a                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle.Math/LinearRegression.fs#L165-165" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '377', 377)" onmouseover="showTip(event, '377', 377)">
+            yKey(fit)
+          </code>
+          <div class="tip" id="377">
+            <strong>Signature:</strong> fit:t&lt;&#39;?694137&gt; -&gt; string<br />
+                          <strong>Type parameters:</strong> '?694137                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle.Math/LinearRegression.fs#L111-111" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
         </td>
       </tr>
     </tbody>

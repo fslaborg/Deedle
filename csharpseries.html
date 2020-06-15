@@ -155,12 +155,10 @@ randNums.Print();</code></pre></td></tr></table>
 <span class="l">2: </span>
 <span class="l">3: </span>
 <span class="l">4: </span>
-<span class="l">5: </span>
 </pre></td>
-<td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="k">var</span> sin <span class="o">=</span> 
-  ( <span class="k">from</span> i <span class="k">in</span> Enumerable.Range(<span class="n">0</span>, <span class="n">1000</span>)
-    <span class="k">let</span> x <span class="o">=</span> i <span class="o">/</span> <span class="n">100.0</span>
-    <span class="k">select</span> KeyValue.Create(x, Math.Sin(x)) ).ToSeries();
+<td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="k">var</span> sin <span class="o">=</span> Enumerable.Range(<span class="n">0</span>, <span class="n">1000</span>)
+  .Select(x <span class="o">=</span><span class="o">&gt;</span> KeyValue.Create(x, Math.Sin(x <span class="o">/</span> <span class="n">100.0</span>)))
+  .ToSeries();
 sin.Print();</code></pre></td></tr></table>
 <p>To create a series where values are missing for some keys, you need to
 use the type <code>OptionalValue&lt;K&gt;</code>. You can use two C#-friendly methods - to create an empty
@@ -170,12 +168,10 @@ use <code>OptionalValue.Create(value)</code>. Alternatively, you can also use <c
 <span class="l">2: </span>
 <span class="l">3: </span>
 <span class="l">4: </span>
-<span class="l">5: </span>
 </pre></td>
-<td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="k">var</span> opts <span class="o">=</span>
-  (<span class="k">from</span> i <span class="k">in</span> Enumerable.Range(<span class="n">0</span>, <span class="n">10</span>)
-   <span class="k">let</span> v <span class="o">=</span> OptionalValue.OfNullable(LookupEven(i))
-   <span class="k">select</span> KeyValue.Create(i, v)).ToSparseSeries();
+<td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="k">var</span> opts <span class="o">=</span> Enumerable.Range(<span class="n">0</span>, <span class="n">10</span>) 
+  .Select(x <span class="o">=</span><span class="o">&gt;</span> KeyValue.Create(x, OptionalValue.OfNullable&lt;<span class="k">int</span>&gt;(x)))
+  .ToSparseSeries();
 opts.Print();</code></pre></td></tr></table>
 <p>Note that the sample uses extension method <code>ToSparseSeries</code> to indicate that we are creating
 series from a collection of key value pairs where the values may be missing. The resulting

@@ -59,8 +59,8 @@ see the <a href="../lazysource.html">lazy data loading tutorial</a>.</p>
 <span class="l">3: </span>
 <span class="l">4: </span>
 </pre></td>
-<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="id">ls</span> <span class="o">=</span> <span class="id">DelayedSeries</span><span class="pn">.</span><span class="id">Create</span><span class="pn">(</span><span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="id">min</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="id">max</span><span class="pn">,</span> <span class="k">fun</span> <span class="pn">(</span><span class="id">lo</span><span class="pn">,</span> <span class="id">lob</span><span class="pn">)</span> <span class="pn">(</span><span class="id">hi</span><span class="pn">,</span> <span class="id">hib</span><span class="pn">)</span> <span class="k">-&gt;</span> 
-  <span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="id">async</span> <span class="pn">{</span> 
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="id">ls</span> <span class="o">=</span> <span class="id">DelayedSeries</span><span class="pn">.</span><span class="id">Create</span><span class="pn">(</span><span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="id">min</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="id">max</span><span class="pn">,</span> <span class="k">fun</span> <span class="pn">(</span><span class="id">lo</span><span class="pn">,</span> <span class="id">lob</span><span class="pn">)</span> <span class="pn">(</span><span class="id">hi</span><span class="pn">,</span> <span class="id">hib</span><span class="pn">)</span> <span class="k">-&gt;</span>
+  <span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="id">async</span> <span class="pn">{</span>
     <span onmouseout="hideTip(event, 'fs5', 5)" onmouseover="showTip(event, 'fs5', 5)" class="id">printfn</span> <span class="s">&quot;Query: %A - %A&quot;</span> <span class="pn">(</span><span class="id">lo</span><span class="pn">,</span> <span class="id">lob</span><span class="pn">)</span> <span class="pn">(</span><span class="id">hi</span><span class="pn">,</span> <span class="id">hib</span><span class="pn">)</span>
     <span class="k">return</span> <span class="id">generate</span> <span class="id">lo</span> <span class="id">hi</span> <span class="pn">}</span><span class="pn">)</span>
 </code></pre></td>
@@ -85,10 +85,10 @@ function passed to <code>Create</code> is called with minimal and maximal requir
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '638', 638)" onmouseover="showTip(event, '638', 638)">
+          <code onmouseout="hideTip(event, '653', 653)" onmouseover="showTip(event, '653', 653)">
             DelayedSeries.Create(min, max, loader)
           </code>
-          <div class="tip" id="638">
+          <div class="tip" id="653">
             <strong>Signature:</strong> (min:&#39;?686272 * max:&#39;?686272 * loader:Func&lt;&#39;?686272,BoundaryBehavior,&#39;?686272,BoundaryBehavior,Task&lt;seq&lt;KeyValuePair&lt;&#39;?686272,&#39;?686273&gt;&gt;&gt;&gt;) -&gt; Series&lt;&#39;?686272,&#39;?686273&gt;<br />
                           <strong>Type parameters:</strong> '?686272, '?686273                        <span>
             <strong>Attributes:</strong><br />
@@ -111,10 +111,10 @@ function passed to <code>Create</code> is called with minimal and maximal requir
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '639', 639)" onmouseover="showTip(event, '639', 639)">
+          <code onmouseout="hideTip(event, '654', 654)" onmouseover="showTip(event, '654', 654)">
             DelayedSeries.Create(min, max, loader)
           </code>
-          <div class="tip" id="639">
+          <div class="tip" id="654">
             <strong>Signature:</strong> (min:&#39;?686269 * max:&#39;?686269 * loader:(&#39;?686269 * BoundaryBehavior -&gt; &#39;?686269 * BoundaryBehavior -&gt; Async&lt;seq&lt;KeyValuePair&lt;&#39;?686269,&#39;?686270&gt;&gt;&gt;)) -&gt; Series&lt;&#39;?686269,&#39;?686270&gt;<br />
                           <strong>Type parameters:</strong> '?686269, '?686270                        <span>
             <strong>Attributes:</strong><br />
@@ -137,10 +137,10 @@ function passed to <code>Create</code> is called with minimal and maximal requir
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '640', 640)" onmouseover="showTip(event, '640', 640)">
+          <code onmouseout="hideTip(event, '655', 655)" onmouseover="showTip(event, '655', 655)">
             DelayedSeries.FromIndexVectorLoader(...)
           </code>
-          <div class="tip" id="640">
+          <div class="tip" id="655">
             <strong>Signature:</strong> (scheme:IAddressingScheme * vectorBuilder:IVectorBuilder * indexBuilder:IIndexBuilder * min:&#39;K * max:&#39;K * loader:(&#39;K * BoundaryBehavior -&gt; &#39;K * BoundaryBehavior -&gt; Async&lt;IIndex&lt;&#39;K&gt; * IVector&lt;&#39;V&gt;&gt;)) -&gt; Series&lt;&#39;K,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V                      </div>
         </td>
@@ -155,10 +155,10 @@ function passed to <code>Create</code> is called with minimal and maximal requir
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '641', 641)" onmouseover="showTip(event, '641', 641)">
+          <code onmouseout="hideTip(event, '656', 656)" onmouseover="showTip(event, '656', 656)">
             DelayedSeries.FromIndexVectorLoader(...)
           </code>
-          <div class="tip" id="641">
+          <div class="tip" id="656">
             <strong>Signature:</strong> (scheme:IAddressingScheme * vectorBuilder:IVectorBuilder * indexBuilder:IIndexBuilder * min:&#39;K * max:&#39;K * loader:Func&lt;&#39;K,BoundaryBehavior,&#39;K,BoundaryBehavior,Task&lt;IIndex&lt;&#39;K&gt; * IVector&lt;&#39;V&gt;&gt;&gt;) -&gt; Series&lt;&#39;K,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V                      </div>
         </td>
@@ -173,10 +173,10 @@ function passed to <code>Create</code> is called with minimal and maximal requir
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '642', 642)" onmouseover="showTip(event, '642', 642)">
+          <code onmouseout="hideTip(event, '657', 657)" onmouseover="showTip(event, '657', 657)">
             DelayedSeries.FromValueLoader(...)
           </code>
-          <div class="tip" id="642">
+          <div class="tip" id="657">
             <strong>Signature:</strong> (min:&#39;K * max:&#39;K * loader:(&#39;K * BoundaryBehavior -&gt; &#39;K * BoundaryBehavior -&gt; Async&lt;seq&lt;KeyValuePair&lt;&#39;K,&#39;V&gt;&gt;&gt;)) -&gt; Series&lt;&#39;K,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V                      </div>
         </td>
@@ -194,7 +194,7 @@ boundary. It returns an asynchronous workflow that produces the data.</p>
 <li><code>min</code> - The smallest key that should be present in the created series.</li>
 <li><code>min</code> - The greatests key that should be present in the created series.</li>
 <li>
-<code>loader</code> - A function which returns an asynchronous workflow that loads the data in a 
+<code>loader</code> - A function which returns an asynchronous workflow that loads the data in a
 specified range. The function is called with two tuples consisting of key and
 <a href="deedle-indices-boundarybehavior.html" title="BoundaryBehavior"><code>BoundaryBehavior</code></a> values. The keys specify lower and upper boundary and
 <a href="deedle-indices-boundarybehavior.html" title="BoundaryBehavior"><code>BoundaryBehavior</code></a> values can be either <code>Inclusive</code> or <code>Exclusive</code>.
@@ -209,10 +209,10 @@ specified range. The function is called with two tuples consisting of key and
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '643', 643)" onmouseover="showTip(event, '643', 643)">
+          <code onmouseout="hideTip(event, '658', 658)" onmouseover="showTip(event, '658', 658)">
             DelayedSeries.FromValueLoader(...)
           </code>
-          <div class="tip" id="643">
+          <div class="tip" id="658">
             <strong>Signature:</strong> (min:&#39;K * max:&#39;K * loader:Func&lt;&#39;K,BoundaryBehavior,&#39;K,BoundaryBehavior,Task&lt;seq&lt;KeyValuePair&lt;&#39;K,&#39;V&gt;&gt;&gt;&gt;) -&gt; Series&lt;&#39;K,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V                      </div>
         </td>
@@ -230,7 +230,7 @@ information about the requested range and returning <code>Task&lt;T&gt;</code> t
 <li><code>min</code> - The smallest key that should be present in the created series.</li>
 <li><code>min</code> - The greatests key that should be present in the created series.</li>
 <li>
-<code>loader</code> - A delegate which returns a task that loads the data in a specified 
+<code>loader</code> - A delegate which returns a task that loads the data in a specified
 range. The delegate is called with four arguments specifying the minimal and
 maximal key and two <a href="deedle-indices-boundarybehavior.html" title="BoundaryBehavior"><code>BoundaryBehavior</code></a> values specifying whether the low and
 high ranges are inclusive or exclusive.

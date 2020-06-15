@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>KnownLocation - Deedle</title>
+    <title>LinearRegression - Deedle</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="BlueMountain Capital, FsLab.Org">
@@ -39,39 +39,98 @@
 
 
 
-<h1>KnownLocation</h1>
+<h1>LinearRegression</h1>
 <p>
-
-    <span>Namespace: Deedle.Vectors</span><br />
-    </p>
+  <span>Namespace: Deedle.Math</span><br />
+  </p>
 <div class="xmldoc">
-<p>An <a href="deedle-ivectorlocation.html" title="IVectorLocation"><code>IVectorLocation</code></a> created from a known address and offset
-(typically used in LinearIndex/ArrayVector where both are the same)</p>
-
 </div>
-  <h3>Constructors</h3>
+
+<!-- Render nested types and modules, if there are any -->
+  <h2>Nested types and modules</h2>
+  <div>
+      <table class="table table-bordered module-list">
+    <thead>
+      <tr><td>Module</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td class="module-name">
+            <a href="deedle-math-linearregression-fit.html">Fit</a>
+          </td>
+          <td class="xmldoc">
+          
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+  <h3>Functions and values</h3>
   <table class="table table-bordered member-list">
     <thead>
-      <tr><td>Constructor</td><td>Description</td></tr>
+      <tr><td>Function or value</td><td>Description</td></tr>
     </thead>
     <tbody>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1456', 1456)" onmouseover="showTip(event, '1456', 1456)">
-            new(addr, offset)
+          <code onmouseout="hideTip(event, '367', 367)" onmouseover="showTip(event, '367', 367)">
+            interceptKey
           </code>
-          <div class="tip" id="1456">
-            <strong>Signature:</strong> (addr:Address * offset:int64) -&gt; KnownLocation<br />
-                                  </div>
+          <div class="tip" id="367">
+            <strong>Signature:</strong> string<br />
+                                    <span>
+            <strong>Attributes:</strong><br />
+[&lt;Literal&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Vectors/Vector.fs#L148-148" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle.Math/LinearRegression.fs#L8-8" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           
-              <p>CompiledName: <code>.ctor</code></p>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '368', 368)" onmouseover="showTip(event, '368', 368)">
+            ols xCols yCol fitIntercept df
+          </code>
+          <div class="tip" id="368">
+            <strong>Signature:</strong> xCols:seq&lt;string&gt; -&gt; yCol:string -&gt; fitIntercept:bool -&gt; df:Frame&lt;&#39;a,string&gt; -&gt; t&lt;&#39;a&gt;<br />
+                          <strong>Type parameters:</strong> 'a                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle.Math/LinearRegression.fs#L238-238" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Performs linear regression on the values in a dataframe.</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '369', 369)" onmouseover="showTip(event, '369', 369)">
+            valuesToArray(s)
+          </code>
+          <div class="tip" id="369">
+            <strong>Signature:</strong> s:Series&lt;&#39;?694105,&#39;?694106&gt; -&gt; &#39;?694106 []<br />
+                          <strong>Type parameters:</strong> '?694105, '?694106                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle.Math/LinearRegression.fs#L197-197" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
         </td>
       </tr>
     </tbody>

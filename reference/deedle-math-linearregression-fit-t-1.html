@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>KnownLocation - Deedle</title>
+    <title>t<'a> - Deedle</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="BlueMountain Capital, FsLab.Org">
@@ -39,39 +39,92 @@
 
 
 
-<h1>KnownLocation</h1>
+<h1>t<'a></h1>
 <p>
 
-    <span>Namespace: Deedle.Vectors</span><br />
+    <span>Namespace: Deedle.Math</span><br />
+        <span>Parent Module: <a href="deedle-math-linearregression-fit.html">Fit</a></span><br />
     </p>
 <div class="xmldoc">
-<p>An <a href="deedle-ivectorlocation.html" title="IVectorLocation"><code>IVectorLocation</code></a> created from a known address and offset
-(typically used in LinearIndex/ArrayVector where both are the same)</p>
+<p>Represents a linear model fitted to specific values in a data frame.</p>
 
 </div>
-  <h3>Constructors</h3>
+  <h3>Record Fields</h3>
   <table class="table table-bordered member-list">
     <thead>
-      <tr><td>Constructor</td><td>Description</td></tr>
+      <tr><td>Record Field</td><td>Description</td></tr>
     </thead>
     <tbody>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1456', 1456)" onmouseover="showTip(event, '1456', 1456)">
-            new(addr, offset)
+          <code onmouseout="hideTip(event, '1331', 1331)" onmouseover="showTip(event, '1331', 1331)">
+            Coefficients
           </code>
-          <div class="tip" id="1456">
-            <strong>Signature:</strong> (addr:Address * offset:int64) -&gt; KnownLocation<br />
+          <div class="tip" id="1331">
+            <strong>Signature:</strong> Series&lt;string,float&gt;<br />
                                   </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Vectors/Vector.fs#L148-148" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle.Math/LinearRegression.fs#L17-17" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           
-              <p>CompiledName: <code>.ctor</code></p>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1332', 1332)" onmouseover="showTip(event, '1332', 1332)">
+            FitIntercept
+          </code>
+          <div class="tip" id="1332">
+            <strong>Signature:</strong> bool<br />
+                                  </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle.Math/LinearRegression.fs#L18-18" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1333', 1333)" onmouseover="showTip(event, '1333', 1333)">
+            InputFrame
+          </code>
+          <div class="tip" id="1333">
+            <strong>Signature:</strong> Frame&lt;&#39;a,string&gt;<br />
+                                  </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle.Math/LinearRegression.fs#L16-16" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1334', 1334)" onmouseover="showTip(event, '1334', 1334)">
+            yKey
+          </code>
+          <div class="tip" id="1334">
+            <strong>Signature:</strong> string<br />
+                                  </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle.Math/LinearRegression.fs#L19-19" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
         </td>
       </tr>
     </tbody>

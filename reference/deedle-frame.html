@@ -67,10 +67,10 @@ global configuration for reflection-based expansion.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '652', 652)" onmouseover="showTip(event, '652', 652)">
+          <code onmouseout="hideTip(event, '667', 667)" onmouseover="showTip(event, '667', 667)">
             Frame.CustomExpanders
           </code>
-          <div class="tip" id="652">
+          <div class="tip" id="667">
             <strong>Signature:</strong> Dictionary&lt;Type,Func&lt;obj,seq&lt;string * Type * obj&gt;&gt;&gt;<br />
                                   </div>
         </td>
@@ -92,9 +92,9 @@ inappropriate). You can register custom expander as:</p>
 <span class="l">3: </span>
 <span class="l">4: </span>
 </pre></td>
-<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="id">Frame</span><span class="pn">.</span><span class="id">CustomExpanders</span><span class="pn">.</span><span class="id">Add</span><span class="pn">(</span><span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="id">typeof</span><span class="pn">&lt;</span><span class="id">MyPair</span><span class="pn">&gt;</span><span class="pn">,</span> <span class="k">fun</span> <span class="id">v</span> <span class="k">-&gt;</span> 
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="id">Frame</span><span class="pn">.</span><span class="id">CustomExpanders</span><span class="pn">.</span><span class="id">Add</span><span class="pn">(</span><span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="id">typeof</span><span class="pn">&lt;</span><span class="id">MyPair</span><span class="pn">&gt;</span><span class="pn">,</span> <span class="k">fun</span> <span class="id">v</span> <span class="k">-&gt;</span>
   <span class="k">let</span> <span class="id">a</span> <span class="o">=</span> <span class="id">v</span> <span class="o">:?&gt;</span> <span class="id">MyPair</span>
-  <span class="pn">[</span> <span class="s">&quot;First&quot;</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs1', 2)" onmouseover="showTip(event, 'fs1', 2)" class="id">typeof</span><span class="pn">&lt;</span><span onmouseout="hideTip(event, 'fs2', 3)" onmouseover="showTip(event, 'fs2', 3)" class="id">int</span><span class="pn">&gt;</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs3', 4)" onmouseover="showTip(event, 'fs3', 4)" class="id">box</span> <span class="id">a</span><span class="pn">.</span><span class="id">Item1</span><span class="pn">;</span> 
+  <span class="pn">[</span> <span class="s">&quot;First&quot;</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs1', 2)" onmouseover="showTip(event, 'fs1', 2)" class="id">typeof</span><span class="pn">&lt;</span><span onmouseout="hideTip(event, 'fs2', 3)" onmouseover="showTip(event, 'fs2', 3)" class="id">int</span><span class="pn">&gt;</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs3', 4)" onmouseover="showTip(event, 'fs3', 4)" class="id">box</span> <span class="id">a</span><span class="pn">.</span><span class="id">Item1</span><span class="pn">;</span>
     <span class="s">&quot;Second&quot;</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs1', 5)" onmouseover="showTip(event, 'fs1', 5)" class="id">typeof</span><span class="pn">&lt;</span><span onmouseout="hideTip(event, 'fs4', 6)" onmouseover="showTip(event, 'fs4', 6)" class="id">string</span><span class="pn">&gt;</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs3', 7)" onmouseover="showTip(event, 'fs3', 7)" class="id">box</span> <span class="id">a</span><span class="pn">.</span><span class="id">Item2</span> <span class="pn">]</span> <span class="o">:&gt;</span> <span onmouseout="hideTip(event, 'fs5', 8)" onmouseover="showTip(event, 'fs5', 8)" class="id">seq</span><span class="pn">&lt;</span><span class="id">_</span><span class="pn">&gt;</span> <span class="pn">)</span>
 </code></pre></td>
 </tr>
@@ -112,10 +112,10 @@ inappropriate). You can register custom expander as:</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '653', 653)" onmouseover="showTip(event, '653', 653)">
+          <code onmouseout="hideTip(event, '668', 668)" onmouseover="showTip(event, '668', 668)">
             Frame.NonExpandableInterfaces
           </code>
-          <div class="tip" id="653">
+          <div class="tip" id="668">
             <strong>Signature:</strong> ResizeArray&lt;Type&gt;<br />
                                   </div>
         </td>
@@ -135,10 +135,10 @@ should not be expanded. By default, this includes collections such as IList.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '654', 654)" onmouseover="showTip(event, '654', 654)">
+          <code onmouseout="hideTip(event, '669', 669)" onmouseover="showTip(event, '669', 669)">
             Frame.NonExpandableTypes
           </code>
-          <div class="tip" id="654">
+          <div class="tip" id="669">
             <strong>Signature:</strong> HashSet&lt;Type&gt;<br />
                                   </div>
         </td>
@@ -167,10 +167,10 @@ types that should not be expaneded. By default, this includes DateTime, string, 
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '655', 655)" onmouseover="showTip(event, '655', 655)">
+          <code onmouseout="hideTip(event, '670', 670)" onmouseover="showTip(event, '670', 670)">
             Frame.ReadCsv(...)
           </code>
-          <div class="tip" id="655">
+          <div class="tip" id="670">
             <strong>Signature:</strong> (stream:Stream * hasHeaders:Nullable&lt;bool&gt; * inferTypes:Nullable&lt;bool&gt; * inferRows:Nullable&lt;int&gt; * schema:string * separators:string * culture:string * maxRows:Nullable&lt;int&gt; * missingValues:string [] * preferOptions:Nullable&lt;bool&gt;) -&gt; Frame&lt;int,string&gt;<br />
                                   </div>
         </td>
@@ -199,7 +199,7 @@ of columns automatically (set this to <code>false</code> if you want to specify 
 rows to use for type inference. The default value is 100.
 </li>
 <li>
-<code>schema</code> - A string that specifies CSV schema. See the documentation for 
+<code>schema</code> - A string that specifies CSV schema. See the documentation for
 information about the schema format.
 </li>
 <li>
@@ -208,7 +208,7 @@ that are used to separate columns in the CSV file. Use for example <code>";"</co
 parse semicolon separated files.
 </li>
 <li>
-<code>culture</code> - Specifies the name of the culture that is used when parsing 
+<code>culture</code> - Specifies the name of the culture that is used when parsing
 values in the CSV file (such as <code>"en-US"</code>). The default is invariant culture.
 </li>
 <li><code>maxRows</code> - The maximal number of rows that should be read from the CSV file.</li>
@@ -224,10 +224,10 @@ as missing when reading the file. The default value is: "NaN"; "NA"; "#N/A"; ":"
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '656', 656)" onmouseover="showTip(event, '656', 656)">
+          <code onmouseout="hideTip(event, '671', 671)" onmouseover="showTip(event, '671', 671)">
             Frame.ReadCsv(...)
           </code>
-          <div class="tip" id="656">
+          <div class="tip" id="671">
             <strong>Signature:</strong> (location:string * hasHeaders:Nullable&lt;bool&gt; * inferTypes:Nullable&lt;bool&gt; * inferRows:Nullable&lt;int&gt; * schema:string * separators:string * culture:string * maxRows:Nullable&lt;int&gt; * missingValues:string [] * preferOptions:bool) -&gt; Frame&lt;int,string&gt;<br />
                                   </div>
         </td>
@@ -256,7 +256,7 @@ of columns automatically (set this to <code>false</code> if you want to specify 
 rows to use for type inference. The default value is 100.
 </li>
 <li>
-<code>schema</code> - A string that specifies CSV schema. See the documentation for 
+<code>schema</code> - A string that specifies CSV schema. See the documentation for
 information about the schema format.
 </li>
 <li>
@@ -265,7 +265,7 @@ that are used to separate columns in the CSV file. Use for example <code>";"</co
 parse semicolon separated files.
 </li>
 <li>
-<code>culture</code> - Specifies the name of the culture that is used when parsing 
+<code>culture</code> - Specifies the name of the culture that is used when parsing
 values in the CSV file (such as <code>"en-US"</code>). The default is invariant culture.
 </li>
 <li><code>maxRows</code> - Specifies the maximum number of rows that will be read from the CSV file</li>
@@ -277,10 +277,10 @@ values in the CSV file (such as <code>"en-US"</code>). The default is invariant 
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '657', 657)" onmouseover="showTip(event, '657', 657)">
+          <code onmouseout="hideTip(event, '672', 672)" onmouseover="showTip(event, '672', 672)">
             Frame.ReadReader(reader)
           </code>
-          <div class="tip" id="657">
+          <div class="tip" id="672">
             <strong>Signature:</strong> reader:IDataReader -&gt; Frame&lt;int,string&gt;<br />
                                   </div>
         </td>
@@ -309,10 +309,10 @@ by the data reader.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '658', 658)" onmouseover="showTip(event, '658', 658)">
+          <code onmouseout="hideTip(event, '673', 673)" onmouseover="showTip(event, '673', 673)">
             Frame.CreateEmpty()
           </code>
-          <div class="tip" id="658">
+          <div class="tip" id="673">
             <strong>Signature:</strong> unit -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C                        <span>
             <strong>Attributes:</strong><br />
@@ -331,10 +331,10 @@ by the data reader.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '659', 659)" onmouseover="showTip(event, '659', 659)">
+          <code onmouseout="hideTip(event, '674', 674)" onmouseover="showTip(event, '674', 674)">
             Frame.FromArray2D(array)
           </code>
-          <div class="tip" id="659">
+          <div class="tip" id="674">
             <strong>Signature:</strong> (array:&#39;T [,]) -&gt; Frame&lt;int,int&gt;<br />
                           <strong>Type parameters:</strong> 'T                        <span>
             <strong>Attributes:</strong><br />
@@ -361,10 +361,10 @@ of the returned frame are indexed with the element's offset in the array.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '660', 660)" onmouseover="showTip(event, '660', 660)">
+          <code onmouseout="hideTip(event, '675', 675)" onmouseover="showTip(event, '675', 675)">
             Frame.FromColumns(cols)
           </code>
-          <div class="tip" id="660">
+          <div class="tip" id="675">
             <strong>Signature:</strong> cols:Series&lt;&#39;TColKey,Series&lt;&#39;TRowKey,&#39;V&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColKey&gt;<br />
                           <strong>Type parameters:</strong> 'TColKey, 'TRowKey, 'V                        <span>
             <strong>Attributes:</strong><br />
@@ -383,10 +383,10 @@ of the returned frame are indexed with the element's offset in the array.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '661', 661)" onmouseover="showTip(event, '661', 661)">
+          <code onmouseout="hideTip(event, '676', 676)" onmouseover="showTip(event, '676', 676)">
             Frame.FromColumns(cols)
           </code>
-          <div class="tip" id="661">
+          <div class="tip" id="676">
             <strong>Signature:</strong> cols:Series&lt;&#39;TColKey,ObjectSeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColKey&gt;<br />
                           <strong>Type parameters:</strong> 'TColKey, 'TRowKey                        <span>
             <strong>Attributes:</strong><br />
@@ -405,10 +405,10 @@ of the returned frame are indexed with the element's offset in the array.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '662', 662)" onmouseover="showTip(event, '662', 662)">
+          <code onmouseout="hideTip(event, '677', 677)" onmouseover="showTip(event, '677', 677)">
             Frame.FromColumns(columns)
           </code>
-          <div class="tip" id="662">
+          <div class="tip" id="677">
             <strong>Signature:</strong> columns:seq&lt;KeyValuePair&lt;&#39;ColKey,ObjectSeries&lt;&#39;RowKey&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt;<br />
                           <strong>Type parameters:</strong> 'ColKey, 'RowKey                        <span>
             <strong>Attributes:</strong><br />
@@ -427,10 +427,10 @@ of the returned frame are indexed with the element's offset in the array.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '663', 663)" onmouseover="showTip(event, '663', 663)">
+          <code onmouseout="hideTip(event, '678', 678)" onmouseover="showTip(event, '678', 678)">
             Frame.FromColumns(columns)
           </code>
-          <div class="tip" id="663">
+          <div class="tip" id="678">
             <strong>Signature:</strong> columns:seq&lt;KeyValuePair&lt;&#39;ColKey,Series&lt;&#39;RowKey,&#39;V&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt;<br />
                           <strong>Type parameters:</strong> 'ColKey, 'RowKey, 'V                        <span>
             <strong>Attributes:</strong><br />
@@ -449,10 +449,10 @@ of the returned frame are indexed with the element's offset in the array.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '664', 664)" onmouseover="showTip(event, '664', 664)">
+          <code onmouseout="hideTip(event, '679', 679)" onmouseover="showTip(event, '679', 679)">
             Frame.FromColumns(cols)
           </code>
-          <div class="tip" id="664">
+          <div class="tip" id="679">
             <strong>Signature:</strong> cols:seq&lt;Series&lt;&#39;ColKey,&#39;V&gt;&gt; -&gt; Frame&lt;&#39;ColKey,int&gt;<br />
                           <strong>Type parameters:</strong> 'ColKey, 'V                        <span>
             <strong>Attributes:</strong><br />
@@ -471,10 +471,10 @@ of the returned frame are indexed with the element's offset in the array.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '665', 665)" onmouseover="showTip(event, '665', 665)">
+          <code onmouseout="hideTip(event, '680', 680)" onmouseover="showTip(event, '680', 680)">
             Frame.FromRecords(values)
           </code>
-          <div class="tip" id="665">
+          <div class="tip" id="680">
             <strong>Signature:</strong> values:seq&lt;&#39;T&gt; -&gt; Frame&lt;int,string&gt;<br />
                           <strong>Type parameters:</strong> 'T                        <span>
             <strong>Attributes:</strong><br />
@@ -505,10 +505,10 @@ new { A = 2, B = "Another"}
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '666', 666)" onmouseover="showTip(event, '666', 666)">
+          <code onmouseout="hideTip(event, '681', 681)" onmouseover="showTip(event, '681', 681)">
             Frame.FromRecords(series)
           </code>
-          <div class="tip" id="666">
+          <div class="tip" id="681">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;R&gt; -&gt; Frame&lt;&#39;K,string&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'R                        <span>
             <strong>Attributes:</strong><br />
@@ -530,10 +530,10 @@ over the specified type parameter <code>'T</code> and turns its properties to co
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '667', 667)" onmouseover="showTip(event, '667', 667)">
+          <code onmouseout="hideTip(event, '682', 682)" onmouseover="showTip(event, '682', 682)">
             Frame.FromRowKeys(keys)
           </code>
-          <div class="tip" id="667">
+          <div class="tip" id="682">
             <strong>Signature:</strong> keys:seq&lt;&#39;K&gt; -&gt; Frame&lt;&#39;K,string&gt;<br />
                           <strong>Type parameters:</strong> 'K                        <span>
             <strong>Attributes:</strong><br />
@@ -552,10 +552,10 @@ over the specified type parameter <code>'T</code> and turns its properties to co
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '668', 668)" onmouseover="showTip(event, '668', 668)">
+          <code onmouseout="hideTip(event, '683', 683)" onmouseover="showTip(event, '683', 683)">
             Frame.FromRows(rows)
           </code>
-          <div class="tip" id="668">
+          <div class="tip" id="683">
             <strong>Signature:</strong> rows:Series&lt;&#39;TColKey,Series&lt;&#39;TRowKey,&#39;V&gt;&gt; -&gt; Frame&lt;&#39;TColKey,&#39;TRowKey&gt;<br />
                           <strong>Type parameters:</strong> 'TColKey, 'TRowKey, 'V                        <span>
             <strong>Attributes:</strong><br />
@@ -574,10 +574,10 @@ over the specified type parameter <code>'T</code> and turns its properties to co
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '669', 669)" onmouseover="showTip(event, '669', 669)">
+          <code onmouseout="hideTip(event, '684', 684)" onmouseover="showTip(event, '684', 684)">
             Frame.FromRows(rows)
           </code>
-          <div class="tip" id="669">
+          <div class="tip" id="684">
             <strong>Signature:</strong> rows:Series&lt;&#39;TColKey,ObjectSeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TColKey,&#39;TRowKey&gt;<br />
                           <strong>Type parameters:</strong> 'TColKey, 'TRowKey                        <span>
             <strong>Attributes:</strong><br />
@@ -596,10 +596,10 @@ over the specified type parameter <code>'T</code> and turns its properties to co
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '670', 670)" onmouseover="showTip(event, '670', 670)">
+          <code onmouseout="hideTip(event, '685', 685)" onmouseover="showTip(event, '685', 685)">
             Frame.FromRows(rows)
           </code>
-          <div class="tip" id="670">
+          <div class="tip" id="685">
             <strong>Signature:</strong> rows:seq&lt;KeyValuePair&lt;&#39;RowKey,ObjectSeries&lt;&#39;ColKey&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt;<br />
                           <strong>Type parameters:</strong> 'RowKey, 'ColKey                        <span>
             <strong>Attributes:</strong><br />
@@ -618,10 +618,10 @@ over the specified type parameter <code>'T</code> and turns its properties to co
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '671', 671)" onmouseover="showTip(event, '671', 671)">
+          <code onmouseout="hideTip(event, '686', 686)" onmouseover="showTip(event, '686', 686)">
             Frame.FromRows(rows)
           </code>
-          <div class="tip" id="671">
+          <div class="tip" id="686">
             <strong>Signature:</strong> rows:seq&lt;KeyValuePair&lt;&#39;RowKey,Series&lt;&#39;ColKey,&#39;V&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt;<br />
                           <strong>Type parameters:</strong> 'RowKey, 'ColKey, 'V                        <span>
             <strong>Attributes:</strong><br />
@@ -640,10 +640,10 @@ over the specified type parameter <code>'T</code> and turns its properties to co
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '672', 672)" onmouseover="showTip(event, '672', 672)">
+          <code onmouseout="hideTip(event, '687', 687)" onmouseover="showTip(event, '687', 687)">
             Frame.FromRows(rows)
           </code>
-          <div class="tip" id="672">
+          <div class="tip" id="687">
             <strong>Signature:</strong> rows:seq&lt;Series&lt;&#39;ColKey,&#39;V&gt;&gt; -&gt; Frame&lt;int,&#39;ColKey&gt;<br />
                           <strong>Type parameters:</strong> 'ColKey, 'V                        <span>
             <strong>Attributes:</strong><br />
@@ -662,10 +662,10 @@ over the specified type parameter <code>'T</code> and turns its properties to co
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '673', 673)" onmouseover="showTip(event, '673', 673)">
+          <code onmouseout="hideTip(event, '688', 688)" onmouseover="showTip(event, '688', 688)">
             Frame.FromValues(values)
           </code>
-          <div class="tip" id="673">
+          <div class="tip" id="688">
             <strong>Signature:</strong> (values:seq&lt;&#39;?686407 * &#39;?686408 * &#39;?686409&gt;) -&gt; Frame&lt;&#39;?686407,&#39;?686408&gt;<br />
                           <strong>Type parameters:</strong> '?686407, '?686408, '?686409                        <span>
             <strong>Attributes:</strong><br />
@@ -686,10 +686,10 @@ over the specified type parameter <code>'T</code> and turns its properties to co
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '674', 674)" onmouseover="showTip(event, '674', 674)">
+          <code onmouseout="hideTip(event, '689', 689)" onmouseover="showTip(event, '689', 689)">
             Frame.FromValues(...)
           </code>
-          <div class="tip" id="674">
+          <div class="tip" id="689">
             <strong>Signature:</strong> (values:seq&lt;&#39;T&gt; * colSel:Func&lt;&#39;T,&#39;C&gt; * rowSel:Func&lt;&#39;T,&#39;R&gt; * valSel:Func&lt;&#39;T,&#39;V&gt;) -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'T, 'C, 'R, 'V                        <span>
             <strong>Attributes:</strong><br />

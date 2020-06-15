@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>KnownLocation - Deedle</title>
+    <title>PCA - Deedle</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="BlueMountain Capital, FsLab.Org">
@@ -39,39 +39,121 @@
 
 
 
-<h1>KnownLocation</h1>
+<h1>PCA</h1>
 <p>
-
-    <span>Namespace: Deedle.Vectors</span><br />
-    </p>
+  <span>Namespace: Deedle.Math</span><br />
+  </p>
 <div class="xmldoc">
-<p>An <a href="deedle-ivectorlocation.html" title="IVectorLocation"><code>IVectorLocation</code></a> created from a known address and offset
-(typically used in LinearIndex/ArrayVector where both are the same)</p>
-
 </div>
-  <h3>Constructors</h3>
+
+<!-- Render nested types and modules, if there are any -->
+  <h2>Nested types and modules</h2>
+  <div>
+      <table class="table table-bordered type-list">
+    <thead>
+      <tr><td>Type</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td class="type-name">
+            <a href="deedle-math-pca-t-1.html">t<'a></a>
+          </td>
+          <td class="xmldoc">
+          
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+  <h3>Functions and values</h3>
   <table class="table table-bordered member-list">
     <thead>
-      <tr><td>Constructor</td><td>Description</td></tr>
+      <tr><td>Function or value</td><td>Description</td></tr>
     </thead>
     <tbody>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1456', 1456)" onmouseover="showTip(event, '1456', 1456)">
-            new(addr, offset)
+          <code onmouseout="hideTip(event, '378', 378)" onmouseover="showTip(event, '378', 378)">
+            eigenValues(pca)
           </code>
-          <div class="tip" id="1456">
-            <strong>Signature:</strong> (addr:Address * offset:int64) -&gt; KnownLocation<br />
-                                  </div>
+          <div class="tip" id="378">
+            <strong>Signature:</strong> pca:t&lt;&#39;?694182&gt; -&gt; Series&lt;string,float&gt;<br />
+                          <strong>Type parameters:</strong> '?694182                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Vectors/Vector.fs#L148-148" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle.Math/PCA.fs#L18-18" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          
-              <p>CompiledName: <code>.ctor</code></p>
+          <p>The eigen values of the PCA transformation.</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '379', 379)" onmouseover="showTip(event, '379', 379)">
+            eigenVectors(pca)
+          </code>
+          <div class="tip" id="379">
+            <strong>Signature:</strong> pca:t&lt;&#39;?694184&gt; -&gt; Frame&lt;&#39;?694184,string&gt;<br />
+                          <strong>Type parameters:</strong> '?694184                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle.Math/PCA.fs#L25-25" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>The eigen vectors of the PCA transformation.</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '380', 380)" onmouseover="showTip(event, '380', 380)">
+            normalizeColumns(df)
+          </code>
+          <div class="tip" id="380">
+            <strong>Signature:</strong> df:Frame&lt;&#39;a,&#39;b&gt; -&gt; Frame&lt;&#39;a,&#39;b&gt;<br />
+                          <strong>Type parameters:</strong> 'a, 'b                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle.Math/PCA.fs#L44-44" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Normalizes the columns in the dataframe using a z-score.
+That is (X - mean) / (std. dev)</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '381', 381)" onmouseover="showTip(event, '381', 381)">
+            pca(dataFrame)
+          </code>
+          <div class="tip" id="381">
+            <strong>Signature:</strong> dataFrame:Frame&lt;&#39;?694193,&#39;?694194&gt; -&gt; t&lt;&#39;?694194&gt;<br />
+                          <strong>Type parameters:</strong> '?694193, '?694194                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle.Math/PCA.fs#L58-58" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Computes the principal components from the data frame.
+The principal components are listed from PC1 .. PCn
+Where PC1 explains most of the variance.</p>
+
+
         </td>
       </tr>
     </tbody>
