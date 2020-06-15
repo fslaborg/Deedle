@@ -1,5 +1,9 @@
 # Release Notes
 
+## 2.2.0 - 2020-06-15
+* Add linear regression and PCA functions in Deedle.Math thanks to @Ildhesten [496](https://github.com/fslaborg/Deedle/pull/496)
+* Add descriptions to Stats functions to clarify valid input types by @Arlofin [501](https://github.com/fslaborg/Deedle/pull/501)
+
 ## 2.1.2 - 2020-02-25
 * Fix parsing csv of multi-line column headers [#479](https://github.com/fslaborg/Deedle/issues/479)
 * Fix type inference of empty cell [#441](https://github.com/fslaborg/Deedle/issues/441)
@@ -28,7 +32,7 @@
 * Fix FillMissingWith with nan [#461](https://github.com/fslaborg/Deedle/pull/461)
 * Fix InvalidOperationException from ValuesAll [#462](https://github.com/fslaborg/Deedle/pull/462)
 * Fix iterating seq multiple times in Frame.ofRecords [#406](https://github.com/fslaborg/Deedle/pull/406)
-   
+
 ## 2.0.0 - 2019-03-13
 * Breaking changes of Stats.min and Stats.max [#422](https://github.com/fslaborg/Deedle/pull/422)
 * Inline stats functions [#418](https://github.com/fslaborg/Deedle/pull/418)

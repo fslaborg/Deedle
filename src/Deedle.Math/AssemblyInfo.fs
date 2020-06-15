@@ -5,15 +5,15 @@ open System.Reflection
 [<assembly: AssemblyTitleAttribute("Deedle.Math")>]
 [<assembly: AssemblyProductAttribute("Deedle.Math")>]
 [<assembly: AssemblyDescriptionAttribute("Deedle interop with Math.Net")>]
-[<assembly: AssemblyVersionAttribute("2.1.2")>]
-[<assembly: AssemblyInformationalVersionAttribute("2.1.2")>]
-[<assembly: AssemblyFileVersionAttribute("2.1.2")>]
+[<assembly: AssemblyVersionAttribute("2.2.0")>]
+[<assembly: AssemblyInformationalVersionAttribute("2.2.0")>]
+[<assembly: AssemblyFileVersionAttribute("2.2.0")>]
 do ()
 
 module internal AssemblyVersionInformation =
     let [<Literal>] AssemblyTitle = "Deedle.Math"
     let [<Literal>] AssemblyProduct = "Deedle.Math"
     let [<Literal>] AssemblyDescription = "Deedle interop with Math.Net"
-    let [<Literal>] AssemblyVersion = "2.1.2"
-    let [<Literal>] AssemblyInformationalVersion = "2.1.2"
-    let [<Literal>] AssemblyFileVersion = "2.1.2"
+    let [<Literal>] AssemblyVersion = "2.2.0"
+    let [<Literal>] AssemblyInformationalVersion = "2.2.0"
+    let [<Literal>] AssemblyFileVersion = "2.2.0"
