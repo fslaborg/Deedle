@@ -240,7 +240,7 @@ module HttpResponseHeaders =
     let [<Literal>] WWWAuthenticate = "WWW-Authenticate"
 
 /// Status codes that can be received in an HTTP response
-module HttpStatusCodes = 
+module HttpStatusCodes =
     /// The server has received the request headers and the client should proceed to send the request body.
     let [<Literal>] Continue = 100
     /// The requester has asked the server to switch protocols and the server has agreed to do so.
@@ -275,26 +275,26 @@ module HttpStatusCodes =
     let [<Literal>] MultipleChoices = 300
     /// This and all future requests should be directed to the given URI.
     let [<Literal>] MovedPermanently = 301
-    /// Tells the client to look at (browse to) another url. 302 has been superseded by 303 and 307. 
+    /// Tells the client to look at (browse to) another url. 302 has been superseded by 303 and 307.
     let [<Literal>] Found = 302
     /// The response to the request can be found under another URI using the GET method.
     let [<Literal>] SeeOther = 303
     /// Indicates that the resource has not been modified since the version specified by the request headers If-Modified-Since or If-None-Match.
     let [<Literal>] NotModified = 304
-    /// The requested resource is available only through a proxy, the address for which is provided in the response. 
+    /// The requested resource is available only through a proxy, the address for which is provided in the response.
     let [<Literal>] UseProxy = 305
     /// No longer used. Originally meant "Subsequent requests should use the specified proxy."
     let [<Literal>] SwitchProxy = 306
     /// In this case, the request should be repeated with another URI; however, future requests should still use the original URI.
     let [<Literal>] TemporaryRedirect = 307
-    /// The request and all future requests should be repeated using another URI. 
+    /// The request and all future requests should be repeated using another URI.
     let [<Literal>] PermanentRedirect = 308
 
     /// The server cannot or will not process the request due to an apparent client error.
     let [<Literal>] BadRequest = 400
     /// Similar to 403 Forbidden, but specifically for use when authentication is required and has failed or has not yet been provided.
     let [<Literal>] Unauthorized = 401
-    /// Reserved for future use. 
+    /// Reserved for future use.
     let [<Literal>] PaymentRequired = 402
     /// The request was valid, but the server is refusing action. The user might not have the necessary permissions for a resource, or may need an account of some sort.
     let [<Literal>] Forbidden = 403
@@ -346,8 +346,8 @@ module HttpStatusCodes =
     let [<Literal>] UnavailableForLegalReasons = 451
 
     /// A generic error message, given when an unexpected condition was encountered and no more specific message is suitable.
-    let [<Literal>] InternalServerError = 500 
-    /// The server either does not recognize the request method, or it lacks the ability to fulfil the request. 
+    let [<Literal>] InternalServerError = 500
+    /// The server either does not recognize the request method, or it lacks the ability to fulfil the request.
     let [<Literal>] NotImplemented = 501
     /// The server was acting as a gateway or proxy and received an invalid response from the upstream server.
     let [<Literal>] BadGateway = 502
@@ -356,7 +356,7 @@ module HttpStatusCodes =
     /// The server was acting as a gateway or proxy and did not receive a timely response from the upstream server.
     let [<Literal>] GatewayTimeout = 504
     /// The server does not support the HTTP protocol version used in the request.
-    let [<Literal>] HTTPVersionNotSupported = 505 
+    let [<Literal>] HTTPVersionNotSupported = 505
     /// Transparent content negotiation for the request results in a circular reference.
     let [<Literal>] VariantAlsoNegotiates = 506
     /// The server is unable to store the representation needed to complete the request.
@@ -437,7 +437,7 @@ module HttpContentTypes =
     /// text/csv
     let [<Literal>] Csv = "text/csv"
     /// application/json-rpc
-    let [<Literal>] JsonRpc = "application/json-rpc"    
+    let [<Literal>] JsonRpc = "application/json-rpc"
     /// multipart/form-data
     let Multipart boundary = sprintf "multipart/form-data; boundary=%s" boundary
 
@@ -1046,7 +1046,7 @@ module MimeTypes =
             (".zip", "application/zip") |]
 
     let private map = Map.ofArray pairs
-        
+
     let tryFind (ext: string) = Map.tryFind (ext.ToLowerInvariant()) map
 
 /// Constants for common HTTP encodings
@@ -1163,7 +1163,7 @@ module private HttpHelpers =
         let newlineStream () = new MemoryStream(e.GetBytes "\r\n") :> Stream
         let prefixedBoundary = sprintf "--%s" boundary
         let segments = parts |> Seq.map (fun (MultipartItem(formField, fileName, fileStream)) ->
-            let fileExt = Path.GetExtension fileName    
+            let fileExt = Path.GetExtension fileName
             let contentType = defaultArg (MimeTypes.tryFind fileExt) "application/octet-stream"
             let printHeader (header, value) = sprintf "%s: %s" header value
             let headerpart =
@@ -1199,7 +1199,7 @@ module private HttpHelpers =
             source.Dispose ()
         }
 
-    let runningOnMono = try System.Type.GetType("Mono.Runtime") <> null with e -> false 
+    let runningOnMono = try System.Type.GetType("Mono.Runtime") <> null with e -> false
 
     let writeBody (req:HttpWebRequest) (data: Stream) =
         async {
@@ -1422,7 +1422,7 @@ module internal CookieHandling =
                         cookie.Name <- cookiePart.Substring(0, firstEqual)
                         cookie.Value <- cookiePart.Substring(firstEqual + 1)
                     else
-                        cookie.Name <- cookiePart                    
+                        cookie.Name <- cookiePart
                 elif cookiePart |> startsWithIgnoreCase "path" then
                     let kvp = cookiePart.Split '='
                     if kvp.Length > 1 && kvp.[1] <> "" && kvp.[1] <> "/" then
@@ -1430,8 +1430,8 @@ module internal CookieHandling =
                 elif cookiePart |> startsWithIgnoreCase "domain" then
                     let kvp = cookiePart.Split '='
                     if kvp.Length > 1 then
-                        let domain = 
-                            kvp.[1] 
+                        let domain =
+                            kvp.[1]
                             // remove spurious domain prefixes
                             |> stripPrefix "http://"
                             |> stripPrefix "https://"
@@ -1481,7 +1481,7 @@ module internal CookieHandling =
 type Http private() =
 
     static let charsetRegex = Regex("charset=([^;\s]*)", RegexOptions.Compiled)
-    
+
     /// Correctly encodes large form data values.
     /// See https://blogs.msdn.microsoft.com/yangxind/2006/11/08/dont-use-net-system-uri-unescapedatastring-in-url-decoding/
     /// and https://msdn.microsoft.com/en-us/library/system.uri.escapedatastring(v=vs.110).aspx
@@ -1490,7 +1490,7 @@ type Http private() =
 
     // EscapeUriString doesn't encode the & and # characters which cause issues, but EscapeDataString encodes too much making the url hard to read
     // So we use EscapeUriString and manually replace the two problematic characters
-    static member private EncodeUrlParam (param: string) = 
+    static member private EncodeUrlParam (param: string) =
         (Uri.EscapeUriString param).Replace("&", "%26").Replace("#", "%23")
 
     /// Appends the query parameters to the url, taking care of proper escaping
@@ -1543,7 +1543,7 @@ type Http private() =
         | None -> ()
         | Some cookies -> cookies |> List.ofSeq |> List.iter (fun (name, value) -> cookieContainer.Add(req.RequestUri, Cookie(name, value)))
 
-        req.CookieContainer <- cookieContainer        
+        req.CookieContainer <- cookieContainer
 
         let getEncoding contentType =
             let charset = charsetRegex.Match(contentType)

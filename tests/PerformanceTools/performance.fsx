@@ -14,19 +14,19 @@ open Deedle
 let baseline = "1.0.0"
 let builds = __SOURCE_DIRECTORY__ @@ "../Performance/builds/"
 let outFile = __SOURCE_DIRECTORY__ @@ "../Performance/output.csv"
-let sources = 
+let sources =
   [ __SOURCE_DIRECTORY__ @@ "../Common/FsUnit.fs"
     __SOURCE_DIRECTORY__ @@ "../Deedle.PerfTests/Performance.fs" ]
 
 
-Target "RunTests" (fun _ -> 
+Target "RunTests" (fun _ ->
   PerfTests.Run(builds, sources, outFile)
 )
 
-Target "GenerateAbsChart" (fun _ -> 
+Target "GenerateAbsChart" (fun _ ->
   let tests = Frame.ReadCsv(outFile)
 
-  let aggregated = 
+  let aggregated =
     tests
     |> Frame.groupRowsByString "Test"
     |> Frame.groupRowsByString "Version"
@@ -45,11 +45,11 @@ Target "GenerateAbsChart" (fun _ ->
   File.WriteAllText(outHtml, File.ReadAllText(templ).Replace("***DATA***", chartData))
 )
 
-Target "GenerateRelChart" (fun _ -> 
+Target "GenerateRelChart" (fun _ ->
   let tests = Frame.ReadCsv(outFile)
 
-  let aggregated : Series<_, float> = 
-    let avgs = tests.PivotTable<string, string, _>("Version", "Test", fun df -> df.GetColumn("Time") |> Stats.mean)  
+  let aggregated : Series<_, float> =
+    let avgs = tests.PivotTable<string, string, _>("Version", "Test", fun df -> df.GetColumn("Time") |> Stats.mean)
     let baseline = avgs.Rows.[baseline].As<float>()
     avgs.Rows
     |> Series.mapValues (fun row -> row.As<float>() / baseline * 100.0)

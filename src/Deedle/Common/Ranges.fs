@@ -1,7 +1,7 @@
 ﻿// ------------------------------------------------------------------------------------------------
 // Ranges - represents a sub-range as a list of pairs of indices
 //
-// This is typically used when we need to keep ranges of some data source that 
+// This is typically used when we need to keep ranges of some data source that
 // are created by slicing and merging (as you can do with Deedle series). This
 // module hides most of the complexity behind manipulation with ranges.
 // ------------------------------------------------------------------------------------------------
@@ -17,27 +17,27 @@ open Deedle.Addressing
 /// `Ranges<'TKey>` type. The `'TKey` type is typically the key of a BigDeedle
 /// series. It can represent different things, such as:
 ///
-///  - `int64` - if you have ordinally indexed series 
+///  - `int64` - if you have ordinally indexed series
 ///  - `Date` (of some sort) - if you have daily time series
 ///  - `DateTimeOffset` - if you have time series with DTO keys
 ///
 /// The operations need to implement the *right* thing based on the logic of the
 /// keys. So for example if you have one data point every hour, `IncrementBy` should
 /// add the appropriate number of hours. Or if you have keys as business days, the
-/// `IncrementBy` operation should add a number of business days (that is, the 
+/// `IncrementBy` operation should add a number of business days (that is, the
 /// operations may be simple numerical addition, but may contain more logic).
 ///
 type IRangeKeyOperations<'TKey> =
   /// Compare two keys. Return +1 if first is larger, -1 if second is larger, 0 otherwise
   abstract Compare : 'TKey * 'TKey -> int
-  
+
   /// Get the n-th next key after the specified key (n is always non-negative)
   abstract IncrementBy : 'TKey * int64 -> 'TKey
-  
-  /// Return distance between two keys - return 0 if the keys are the same 
+
+  /// Return distance between two keys - return 0 if the keys are the same
   /// (the second key is always larger than the first)
   abstract Distance : 'TKey * 'TKey -> int64
-  
+
   /// Generate keys within the specific range (inclusively). Here, the second
   /// key _can_ be smaller (in which case the range should be from larger to smaller)
   abstract Range : 'TKey * 'TKey -> seq<'TKey>
@@ -52,45 +52,45 @@ type IRangeKeyOperations<'TKey> =
   abstract ValidateKey : 'TKey * Lookup -> OptionalValue<'TKey>
 
 
-/// Represents a sub-range of an ordinal index. The range can consist of 
+/// Represents a sub-range of an ordinal index. The range can consist of
 /// multiple blocks, i.e. [ 0..9; 20..29 ]. The pairs represent indices
 /// of first and last element (inclusively) and we also keep size so that
 /// we do not have to recalculate it.
 ///
 /// For more information, see also the documentation for the `Ranges` module.
-type Ranges<'T when 'T : equality>(ranges:seq<'T * 'T>, ops:IRangeKeyOperations<'T>) = 
-  let ranges = Array.ofSeq ranges 
+type Ranges<'T when 'T : equality>(ranges:seq<'T * 'T>, ops:IRangeKeyOperations<'T>) =
+  let ranges = Array.ofSeq ranges
   do
-    for l, h in ranges do 
-      if ops.Compare(l, h) > 0 then 
+    for l, h in ranges do
+      if ops.Compare(l, h) > 0 then
         invalidArg "ranges" "Invalid range (first offset is greater than second)"
   member x.Ranges = ranges
   member x.Operations = ops
 
-/// Provides F# functions for working with the `Ranges<'T>` type. Note that 
+/// Provides F# functions for working with the `Ranges<'T>` type. Note that
 /// most of the functions are also exposed as members. The terminology in the
 /// functions below is:
 ///
 ///  - **offset** refers to an absolute `int64` offset of a key in the range
 ///  - **key** refers to a key value of type `'T`
-/// 
+///
 /// Say, you have daily range `[ (2015-01-01, 2015-01-10); (2015-02-01, 2015-02-10) ]`.
 /// Then, the keys are the dates and the offsets are 0 .. 9 for the first part and
 /// 10 .. 19 for the second part.
-module Ranges =  
+module Ranges =
 
   /// Create a range from a sequence of low-high pairs
   /// (range key operations used standard arithmetic)
   let inline inlineCreate succ (ranges:seq< ^T * ^T >) =
-    let ranges = Array.ofSeq ranges 
+    let ranges = Array.ofSeq ranges
     for l, h in ranges do if l > h then invalidArg "ranges" "Invalid range (first offset is greater than second)"
     let one = LanguagePrimitives.GenericOne
-    let ops = 
+    let ops =
       { new IRangeKeyOperations< ^T > with
-          member x.Compare(a, b) = compare a b 
+          member x.Compare(a, b) = compare a b
           member x.IncrementBy(a, i) = succ a i
           member x.Distance(l, h) = int64 (h - l)
-          member x.Range(a, b) = if a <= b then Seq.range a b else Seq.rangeStep a (-one) b 
+          member x.Range(a, b) = if a <= b then Seq.range a b else Seq.rangeStep a (-one) b
           member x.ValidateKey(k, _) = OptionalValue(k) }
     Ranges(ranges, ops)
 
@@ -104,15 +104,15 @@ module Ranges =
   let inline combine(ranges:seq<Ranges<'T>>) : Ranges<'T> =
     if Seq.isEmpty ranges then invalidArg "ranges" "Range cannot be empty"
     let ops = (Seq.head ranges).Operations
-    let blocks = 
-      [ for r in ranges do yield! r.Ranges ] 
+    let blocks =
+      [ for r in ranges do yield! r.Ranges ]
       |> List.sortWith (fun (l1, _) (l2, _) -> ops.Compare(l1, l2))
     let rec loop (startl, endl) blocks = seq {
-      match blocks with 
+      match blocks with
       | [] -> yield startl, endl
       | (s, e)::blocks when ops.Compare(s, endl) <= 0 -> invalidOp "Cannot combine overlapping ranges"
       | (s, e)::blocks when s = ops.IncrementBy(endl, 1L) -> yield! loop (startl, e) blocks
-      | (s, e)::blocks -> 
+      | (s, e)::blocks ->
           yield startl, endl
           yield! loop (s, e) blocks }
     create ops (loop (List.head blocks) (List.tail blocks))
@@ -127,7 +127,7 @@ module Ranges =
   ///
   /// When the offset is wrong, throws `IndexOutOfRangeException`
   let keyAtOffset offs (ranges:Ranges<'T>) =
-    let rec loop sum idx = 
+    let rec loop sum idx =
       if idx >= ranges.Ranges.Length then raise <| IndexOutOfRangeException() else
       let l, h = ranges.Ranges.[idx]
 
@@ -137,12 +137,12 @@ module Ranges =
       //  if addr < sum + size then ranges.Operations.IncrementBy(l, addr - sum)
       //
       // But this is not good, because calculating distance may be expensive
-      // (in BMC case, it iterates over all partitions). So instead, 
+      // (in BMC case, it iterates over all partitions). So instead,
       // we use the following, which avoids getting the full size if it's not needed.
 
       let incremented = ranges.Operations.IncrementBy(l, offs - sum)
       if ranges.Operations.Compare(incremented, h) <= 0 then incremented
-      else 
+      else
         let size = ranges.Operations.Distance(l, h)+1L
         loop (sum + size) (idx + 1)
 
@@ -152,7 +152,7 @@ module Ranges =
   /// Returns the offset of a given key. For example, given
   /// ranges [10..12; 30..32], the function defines a mapping:
   ///
-  ///   10->0, 11->1, 12->2, 30->3, 31->4, 32->5  
+  ///   10->0, 11->1, 12->2, 30->3, 31->4, 32->5
   ///
   /// When the key is wrong, returns `Ranges.invalid`
   let offsetOfKey key (ranges:Ranges<'T>) =
@@ -160,13 +160,13 @@ module Ranges =
     let inline (>=.) a b = ranges.Operations.Compare(a, b) >= 0
     let inline (<=.) a b = ranges.Operations.Compare(a, b) <= 0
 
-    let rec loop offs idx = 
+    let rec loop offs idx =
       if idx >= ranges.Ranges.Length then invalid else
       let l, h = ranges.Ranges.[idx]
       if key <. l then invalid
       elif key >=. l && key <=. h then offs + ranges.Operations.Distance(l, key)
       else loop (offs + ranges.Operations.Distance(l, h) + 1L) (idx + 1)
-    
+
     if ranges.Operations.ValidateKey(key, Lookup.Exact).HasValue
     then loop 0L 0 else invalid
 
@@ -182,16 +182,16 @@ module Ranges =
     match restriction with
     | RangeRestriction.Fixed(loRestr, hiRestr) ->
         // Restrict the current ranges to a range specified by lower and higher keys
-        let newRanges = 
+        let newRanges =
           [| for lo, hi in ranges.Ranges do
-               if lo >=. loRestr && hi <=. hiRestr then yield lo, hi       
+               if lo >=. loRestr && hi <=. hiRestr then yield lo, hi
                elif hi <. loRestr || lo >. hiRestr then ()
-               else 
-                 let newLo, newHi = max lo loRestr, min hi hiRestr 
+               else
+                 let newLo, newHi = max lo loRestr, min hi hiRestr
                  if newLo <=. newHi then yield newLo, newHi |]
         Ranges(newRanges, ranges.Operations)
-    
-    | Let (true, +1) ((isStart, step), RangeRestriction.Start(desiredCount)) 
+
+    | Let (true, +1) ((isStart, step), RangeRestriction.Start(desiredCount))
     | Let (false,-1) ((isStart, step), RangeRestriction.End(desiredCount)) ->
         let rec loop rangeIdx desiredCount = seq {
           if desiredCount > 0 then
@@ -202,12 +202,12 @@ module Ranges =
             let last, length = range |> Seq.truncate desiredCount |> Seq.lastAndLength
             yield if isStart then lo, last else last, hi
             yield! loop (rangeIdx + step) (desiredCount - length) }
-        
+
         if isStart then Ranges(loop 0 (int desiredCount) |> Array.ofSeq, ranges.Operations)
         else Ranges(loop (ranges.Ranges.Length-1) (int desiredCount) |> Array.ofSeq |> Array.rev, ranges.Operations)
 
     | _ -> failwith "restrictRanges: Custom ranges are not supported"
-      
+
   /// Returns the smallest & greatest overall key
   let inline keyRange (ranges:Ranges<'T>) =
     fst ranges.Ranges.[0], snd ranges.Ranges.[ranges.Ranges.Length-1]
@@ -218,7 +218,7 @@ module Ranges =
 
   /// Returns the length of the ranges
   let inline length (ranges:Ranges<'T>) =
-    ranges.Ranges |> Array.sumBy (fun (l, h) -> 
+    ranges.Ranges |> Array.sumBy (fun (l, h) ->
       ranges.Operations.Distance(l, h)+1L)
 
   /// Implements a lookup using the specified semantics & check function.
@@ -240,22 +240,22 @@ module Ranges =
         OptionalValue( (key, offs) )
       else OptionalValue.Missing
     else
-      // Validate the key - returns key that is valid value 
-      let keyOpt = ranges.Operations.ValidateKey(key, semantics) 
-      if keyOpt = OptionalValue.Missing then OptionalValue.Missing else 
+      // Validate the key - returns key that is valid value
+      let keyOpt = ranges.Operations.ValidateKey(key, semantics)
+      if keyOpt = OptionalValue.Missing then OptionalValue.Missing else
       let validKey = keyOpt.Value
 
       // Otherwise, we scan next keys in the required direction
-      let step = 
+      let step =
         if semantics &&& Lookup.Greater = Lookup.Greater then (+) 1L
         elif semantics &&& Lookup.Smaller = Lookup.Smaller then (+) -1L
         else invalidArg "semantics" "Invalid lookup semantics (1)"
 
       // Find start
       let start, rangeIdx =
-        let rec loop offs idx = 
+        let rec loop offs idx =
           if idx >= ranges.Ranges.Length && (semantics &&& Lookup.Greater = Lookup.Greater) then invalid, -1
-          elif idx >= ranges.Ranges.Length && (semantics &&& Lookup.Smaller = Lookup.Smaller) then offs-1L, ranges.Ranges.Length-1 
+          elif idx >= ranges.Ranges.Length && (semantics &&& Lookup.Smaller = Lookup.Smaller) then offs-1L, ranges.Ranges.Length-1
           else
             let l, h = ranges.Ranges.[idx]
             if validKey >=. l && validKey <=. h then offs + ranges.Operations.Distance(l, validKey), idx
@@ -268,7 +268,7 @@ module Ranges =
       let keyStart = keyAtOffset start ranges
 
       // Scan until 'check' returns true, or until we reach invalid key
-      let keysToScan = 
+      let keysToScan =
         if semantics = Lookup.Exact then seq { yield keyStart }
         elif semantics &&& Lookup.Greater = Lookup.Greater then
           seq { yield! ranges.Operations.Range(keyStart, snd ranges.Ranges.[rangeIdx])
@@ -282,7 +282,7 @@ module Ranges =
 
       // Skip one if needed
       Seq.zip keysToScan (Seq.unreduce step start)
-      |>  ( if keyStart = key && (semantics = Lookup.Greater || semantics = Lookup.Smaller) 
+      |>  ( if keyStart = key && (semantics = Lookup.Greater || semantics = Lookup.Smaller)
             then Seq.skip 1 else id )
       |> Seq.tryFind (fun (k, a) -> check k a)
       |> OptionalValue.ofOption
@@ -300,7 +300,7 @@ type Ranges<'T> with
   /// Returns the key at the specified offset
   member x.KeyAtOffset(offset) = Ranges.keyAtOffset offset x
   /// Returns the absolute offset of the key in the ranges
-  member x.OffsetOfKey(key) = 
+  member x.OffsetOfKey(key) =
     let res = Ranges.offsetOfKey key x
     if res = Ranges.invalid then raise <| IndexOutOfRangeException()
     else res
@@ -309,11 +309,11 @@ type Ranges<'T> with
   /// Returns the length of the ranges
   member x.Length = Ranges.length x
   /// Searches for a key in the range (see `Ranges.lookup` for more info)
-  member x.Lookup(key, semantics, check:Func<_, _, _>) = 
+  member x.Lookup(key, semantics, check:Func<_, _, _>) =
     Ranges.lookup key semantics (fun a b -> check.Invoke(a, b)) x
   /// Merge the current range with other specified ranges
-  member x.MergeWith(ranges) = 
+  member x.MergeWith(ranges) =
     Ranges.combine [yield x; yield! ranges]
   /// Restricts the ranges according to the specified range restriction
-  member x.Restrict(restriction) = 
+  member x.Restrict(restriction) =
     Ranges.restrictRanges restriction x

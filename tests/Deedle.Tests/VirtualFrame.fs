@@ -34,19 +34,19 @@ type LinearSubRange =
 
 module Address = LinearAddress
 
-type TrackingSource<'T>(ranges:(int64*int64) list, valueAt:int64 -> 'T, ?asLong:'T -> int64, ?search) = 
+type TrackingSource<'T>(ranges:(int64*int64) list, valueAt:int64 -> 'T, ?asLong:'T -> int64, ?search) =
   member val AccessListCell : int64 list ref = ref [] with get, set
   member val LookupListCell = ref [] with get, set
   member val IsTracking = true with get, set
   member val HasMissing = true with get, set
   member x.AccessList = List.rev x.AccessListCell.Value
   member x.LookupList = List.rev x.LookupListCell.Value
-  member x.Ranges = ranges 
+  member x.Ranges = ranges
   member x.Length = ranges |> Seq.sumBy (fun (lo, hi) -> hi - lo + 1L)
-  member x.AddressAt(index) = 
+  member x.AddressAt(index) =
     let res = Address.ofInt64 index
     res
-  member x.IndexAt(address) = 
+  member x.IndexAt(address) =
     let res = Address.asInt64 address
     res
 
@@ -58,37 +58,37 @@ type TrackingSource<'T>(ranges:(int64*int64) list, valueAt:int64 -> 'T, ?asLong:
     member x.Invoke(op) = op.Invoke(x)
 
   interface IVirtualVectorSource<'T> with
-    member x.MergeWith(sources) = 
+    member x.MergeWith(sources) =
       let ranges = [ yield! x.Ranges; for x in sources do yield! (x :?> TrackingSource<'T>).Ranges ]
       TrackingSource
-        ( ranges, valueAt, ?asLong=asLong, HasMissing = x.HasMissing, IsTracking = x.IsTracking, 
+        ( ranges, valueAt, ?asLong=asLong, HasMissing = x.HasMissing, IsTracking = x.IsTracking,
           LookupListCell = x.LookupListCell, AccessListCell = x.AccessListCell ) :> _
 
-    member x.LookupRange(v) = 
+    member x.LookupRange(v) =
       match search with
       | Some f -> let o, s = f v in RangeRestriction.Custom { Offset = o; Step = s }
       | None -> failwith "Search not supported"
 
-    member x.LookupValue(k, l, c) = 
+    member x.LookupValue(k, l, c) =
       let c = Func<int64,bool>(fun i -> c.Invoke(Address.ofInt64 i))
       if x.IsTracking then x.LookupListCell := (k, l) :: !x.LookupListCell
       let asLong = match asLong with None -> failwith "Lookup not supported" | Some g -> g
       let found = ranges |> Seq.fold (fun state (lo, hi) ->
           match state with
           | Choice1Of2(offset) ->
-              let res = 
+              let res =
                 IndexUtilsModule.binarySearch (hi - lo + 1L) (Func<_, _>(fun i -> asLong (valueAt (lo + i)))) (asLong k) l c
                 |> OptionalValue.map (fun i -> valueAt (lo + i), (offset + i) )
               if res.HasValue then Choice2Of2(res)
               else Choice1Of2(offset + hi - lo + 1L)
           | res -> res ) (Choice1Of2 0L)
-      match found with 
+      match found with
       | Choice2Of2 r -> OptionalValue((fst r.Value, Address.ofInt64(snd r.Value)))
       | _ -> OptionalValue.Missing
 
-    member x.ValueAt loc = 
+    member x.ValueAt loc =
       let r = ranges
-      let res = 
+      let res =
         r |> List.fold (fun (state:Choice<int64,int64>) (lo, hi) ->
           match state with
           | Choice1Of2 offset ->
@@ -103,7 +103,7 @@ type TrackingSource<'T>(ranges:(int64*int64) list, valueAt:int64 -> 'T, ?asLong:
           else OptionalValue(valueAt absAddr )
       | Choice1Of2 oor -> failwith <| "ValueAt: out of range: " + oor.ToString()
 
-    member x.GetSubVector(range) = 
+    member x.GetSubVector(range) =
       match range.AsAbsolute(x.Length) with
       | Choice1Of2(nlo, nhi) ->
           if nhi < nlo then invalidOp "hi < lo"
@@ -111,50 +111,50 @@ type TrackingSource<'T>(ranges:(int64*int64) list, valueAt:int64 -> 'T, ?asLong:
           elif nhi > x.AddressAt(x.Length-1L) then invalidOp "hi > max" // TODO -1
 
           // This is not entirely correct, but it works well enough for tests..
-          let _, ranges = 
+          let _, ranges =
             ranges |> List.fold (fun (offset, ranges) (lo, hi) ->
               let ranges = ((offset, offset+hi-lo), (lo, hi)) :: ranges
               (offset + hi - lo + 1L), ranges ) (0L, [])
           let ranges = List.rev ranges
 
-          let subRange = 
+          let subRange =
             ranges |> List.tryPick (fun ((lo, hi), (absLo, absHi)) ->
               if nlo >= x.AddressAt lo && nhi <= x.AddressAt hi then
                 Some(absLo + (x.IndexAt(nlo) - lo), absHi + (x.IndexAt(nhi) - hi))
               else None)
-          
-          let absLo, absHi = 
-            match subRange with Some(r) -> r | _ -> failwith "GetSubVector: TODO - get sub range not handled" 
+
+          let absLo, absHi =
+            match subRange with Some(r) -> r | _ -> failwith "GetSubVector: TODO - get sub range not handled"
 
           TrackingSource
-            ( [absLo, absHi], valueAt, ?asLong=asLong, HasMissing = x.HasMissing, IsTracking = x.IsTracking, 
+            ( [absLo, absHi], valueAt, ?asLong=asLong, HasMissing = x.HasMissing, IsTracking = x.IsTracking,
 
               LookupListCell = x.LookupListCell, AccessListCell = x.AccessListCell ) :> _
       | Choice2Of2(:? LinearSubRange as lr) ->
-          let lo, hi = 
+          let lo, hi =
             match ranges with
             | [lo, hi] -> lo, hi
             | _ -> failwith "Getting linear subrange is not implemented on merged sources"
           let valueAt i = valueAt(lo + int64 lr.Offset + (int64 lr.Step * i))
-          let count = (hi + lo + 1L) / int64 lr.Step 
+          let count = (hi + lo + 1L) / int64 lr.Step
           let count = if (hi + lo + 1L) % int64 lr.Step > int64 lr.Offset then count+1L else count
           TrackingSource
-            ( [0L, count-1L], valueAt, ?asLong=asLong, HasMissing = x.HasMissing, IsTracking = x.IsTracking, 
+            ( [0L, count-1L], valueAt, ?asLong=asLong, HasMissing = x.HasMissing, IsTracking = x.IsTracking,
               LookupListCell = x.LookupListCell, AccessListCell = x.AccessListCell ) :> _
       | _ -> failwith "unexpected custom range!"
 
 type TrackingSource =
   static member CreateLongs(lo, hi) = TrackingSource<int64>([lo, hi], id, id)
   static member CreateFloats(lo, hi) = TrackingSource<float>([lo, hi], float)
-  static member CreateStrings(lo, hi) = 
+  static member CreateStrings(lo, hi) =
     let strings = "lorem ipsum dolor sit amet consectetur adipiscing elit".Split(' ')
     let search v = strings |> Seq.findIndex ((=) v), strings.Length
     TrackingSource<string>([lo, hi], (fun i -> strings.[int i % strings.Length]), search=search)
-  static member CreateTicks(lo, hi) = 
+  static member CreateTicks(lo, hi) =
     let start = DateTimeOffset(DateTime(2000, 1, 1), TimeSpan.FromHours(-1.0))
     let asTicks ticks = start.Ticks + ticks * 987654321L
     TrackingSource<int64>([lo, hi], asTicks, id, HasMissing=false)
-  static member CreateTimes(lo, hi) = 
+  static member CreateTimes(lo, hi) =
     let start = DateTimeOffset(DateTime(2000, 1, 1), TimeSpan.FromHours(-1.0))
     let asDto ticks = start.AddTicks(ticks * 123456789L)
     TrackingSource<DateTimeOffset>([lo, hi], asDto, (fun dto -> dto.UtcTicks), HasMissing=false)
@@ -220,7 +220,7 @@ let ``Can take skip etc. without evaluating the series`` () =
   src.AccessList |> Seq.length |> shouldEqual 40
 
 [<Test>]
-let ``Sliced series contains same values as original series`` () = 
+let ``Sliced series contains same values as original series`` () =
   let src = TrackingSource.CreateFloats(0L, 10000000L)
   let s1 = Virtual.CreateOrdinalSeries(src)
   let s2 = s1.[5123457L .. 5123557L]
@@ -228,7 +228,7 @@ let ``Sliced series contains same values as original series`` () =
     s1.TryGet(i) |> shouldEqual <| s2.TryGet(i)
 
 [<Test>]
-let ``Can perform slicing without evaluating the series`` () = 
+let ``Can perform slicing without evaluating the series`` () =
   let src = TrackingSource.CreateFloats(0L, 10000000L)
   let s1 = Virtual.CreateOrdinalSeries(src)
   let s2 = s1.[10000000L-9L ..]
@@ -277,7 +277,7 @@ let ``Can access elements in an ordered time series without evaluating it`` () =
   vsrc.AccessList |> shouldEqual [5000000L; 5000001L]
 
 [<Test>]
-let ``Can use different lookup behaviours when accessing time series values`` () = 
+let ``Can use different lookup behaviours when accessing time series values`` () =
   let isrc, vsrc, s = createTimeSeries()
   s.Get(ith 5000001L, Lookup.ExactOrGreater) |> shouldEqual 5000002.0
   s.Get(ith 5000001L, Lookup.ExactOrSmaller) |> shouldEqual 5000000.0
@@ -290,7 +290,7 @@ let ``Can use different lookup behaviours when accessing time series values`` ()
 [<Test>]
 let ``Can perform slicing on time series without evaluating it`` () =
   let isrc, vsrc, s1 = createTimeSeries()
-  
+
   // TODO: s1.[x] = s2.[x]
   // s1.[ith 2778364L]
 
@@ -337,20 +337,20 @@ let createTicksFrame() =
 // ------------------------------------------------------------------------------------------------
 
 [<Test>]
-let ``Can format virtual frame without evaluating it`` () = 
+let ``Can format virtual frame without evaluating it`` () =
   let s1, s2, frame = createSimpleFrame()
   frame.Format(2, 2) |> ignore
   s1.AccessList |> shouldEqual [0L; 1L; 9999999L; 10000000L]
   s2.AccessList |> shouldEqual [0L; 1L; 9999999L; 10000000L]
 
 [<Test>]
-let ``Accessing row evaluates only the required values`` () = 
+let ``Accessing row evaluates only the required values`` () =
   let s1, s2, frame = createSimpleFrame()
   frame.GetRow<obj>(5000000L).["S1"] |> shouldEqual <| box 5000000L
   frame.["S2", 5000000L] |> shouldEqual <| box "lorem"
   s1.AccessList |> shouldEqual [5000000L]
   s2.AccessList |> shouldEqual [5000000L]
- 
+
 [<Test>]
 let ``Accessing series of rows accesses only required values`` () =
   let s1, s2, frame = createSimpleFrame()
@@ -370,7 +370,7 @@ let ``Can use ColumnsApply and 'sin' witout evaluating a frame`` () =
   s2.AccessList |> shouldEqual [3141592654L]
 
 [<Test>]
-let ``Can map over frame rows without evaluating it`` () = 
+let ``Can map over frame rows without evaluating it`` () =
   let s1, s2, frame = createSimpleFrame()
   let mapped = frame |> Frame.mapRows (fun k row -> sqrt row?S1)
   mapped.[10000L] |> shouldEqual 100.0
@@ -387,11 +387,11 @@ let ``Can perform slicing on frame using the Rows property`` () =
   f4.RowIndex.KeyRange
   |> shouldEqual (500000L, 500005L)
 
-  let expected = 
-    [ for i in 500000L .. 500005L -> 
+  let expected =
+    [ for i in 500000L .. 500005L ->
         f1.GetColumn<string>("S2").TryGet(i) |> OptionalValue.asOption ]
 
-  f4.GetColumn<string>("S2") 
+  f4.GetColumn<string>("S2")
   |> Series.valuesAll
   |> List.ofSeq
   |> shouldEqual expected
@@ -407,9 +407,9 @@ let ``Can access Columns of a virtual frame without evaluating the data`` () =
 
 // TODO: Fix the following test case which creates ObjectSeries with 3 keys and 2 values (issue 330)
 [<Test>]
-let ``Can add computed series as a new column to a frame with the same index``() = 
+let ``Can add computed series as a new column to a frame with the same index``() =
   let s1, s2, f = createNumericFrame()
-  let times = f |> Frame.mapRows (fun _ row -> 
+  let times = f |> Frame.mapRows (fun _ row ->
     let t = row.GetAs<int64>("Dense")
     DateTimeOffset(DateTime(2000,1,1).AddTicks(t * 1233456789L), TimeSpan.FromHours(1.0)) )
   f.AddColumn("Times", times)
@@ -440,7 +440,7 @@ let ``Can replace column in a frame with a computed column (with the same index)
   byDense.ReplaceColumn("Sparse", sparseAsString)
   // The 'Sparse' column is represented as vector of strings
   f.Format(true).Contains("(string)") |> shouldEqual false
-  byDense.Format(true).Contains("(string)") |> shouldEqual true 
+  byDense.Format(true).Contains("(string)") |> shouldEqual true
 
 [<Test>]
 let ``Sorting a virtual frame that is already sorted does not throw an exception`` () =
@@ -450,7 +450,7 @@ let ``Sorting a virtual frame that is already sorted does not throw an exception
   f2.RowIndex.IsOrdered |> shouldEqual true
 
 [<Test>]
-let ``Can merge ordinally-indexed virtual frames`` () = 
+let ``Can merge ordinally-indexed virtual frames`` () =
   let s1, s2, f = createSimpleFrame()
   let fs = f.Rows.[1000000L .. 2000000L]
   let fe = f.Rows.[5000001L .. 6000001L]
@@ -459,9 +459,9 @@ let ``Can merge ordinally-indexed virtual frames`` () =
   for idx, fpart in [ 1000000L,fs; 1500000L,fs; 2000000L,fs; 5000001L,fe; 5500001L,fe; 6000001L,fe ] do
     m.Rows.[idx] |> shouldEqual f.Rows.[idx]
     m.Rows.[idx] |> shouldEqual fpart.Rows.[idx]
-  
+
 [<Test>]
-let ``Can merge ordinally-indexed virtual series of rows`` () = 
+let ``Can merge ordinally-indexed virtual series of rows`` () =
   let s1, s2, f = createSimpleFrame()
   let fsr = f.Rows.[1000000L .. 2000000L].Rows
   let fer = f.Rows.[5000001L .. 6000001L].Rows
@@ -473,7 +473,7 @@ let ``Can merge ordinally-indexed virtual series of rows`` () =
     fmr.[idx] |> shouldEqual fpart.[idx]
 
 [<Test>]
-let ``Merging overlapping ordinally-indexed virtual frames fails`` () = 
+let ``Merging overlapping ordinally-indexed virtual frames fails`` () =
   let s1, s2, f = createSimpleFrame()
   let f0 = f.Rows.[1000000L .. 2000000L]
   (fun _ -> f0.Merge(f.Rows.[2000000L .. 3000000L]) |> ignore) |> shouldThrow<InvalidOperationException>
@@ -484,8 +484,8 @@ let ``Merging overlapping ordinally-indexed virtual frames fails`` () =
 // ------------------------------------------------------------------------------------------------
 
 [<Test>]
-let ``Can filter virtual frame by a value in a non-index column`` () = 
-  let idx, s1, s2, f = createSimpleTimeFrame() 
+let ``Can filter virtual frame by a value in a non-index column`` () =
+  let idx, s1, s2, f = createSimpleTimeFrame()
   let partsLength =
     "lorem ipsum dolor sit amet consectetur adipiscing elit".Split(' ')
     |> Seq.map (fun s -> f |> Frame.filterRowsBy "S2" s)
@@ -503,24 +503,24 @@ let ``Can access items of a virtual filtered frame without evaluating it`` () =
   lorem.Rows.[ith 5000000L].["S2"] |> unbox |> shouldEqual "lorem"
   lorem.Rows.TryGet(ith 5000001L) |> shouldEqual OptionalValue.Missing
   lorem.Rows.Get(date 2001 1 1, Lookup.ExactOrSmaller).["S2"] |> unbox |> shouldEqual "lorem"
-  lorem.Rows.Get(date 2001 1 1, Lookup.ExactOrGreater).["S2"] |> unbox |> shouldEqual "lorem"  
+  lorem.Rows.Get(date 2001 1 1, Lookup.ExactOrGreater).["S2"] |> unbox |> shouldEqual "lorem"
   lorem.Rows.Get(date 2001 1 1, Lookup.ExactOrGreater)?S1 - lorem.Rows.Get(date 2001 1 1, Lookup.ExactOrSmaller)?S1 |> shouldEqual 8.0
   set s1.AccessList |> shouldEqual <| set [320176L; 320177L]
   set s2.AccessList |> shouldEqual <| set [320176L; 320177L; 625000L]
 
 [<Test>]
-let ``Filtering items by value behaves correctly at the beginning & end`` () = 
+let ``Filtering items by value behaves correctly at the beginning & end`` () =
   let idx, s1, s2, f = createSimpleTimeFrame()
-  let lastValues = 
+  let lastValues =
     "lorem ipsum dolor sit amet consectetur adipiscing elit".Split(' ')
     |> Seq.map (fun s -> f |> Frame.filterRowsBy "S2" s)
     |> Seq.map (fun f -> int (f?S1.GetAt(int (f.RowIndex.KeyCount - 1L))))
     |> set
   lastValues |> shouldEqual <| set [9999993; 9999994; 9999995; 9999996; 9999997; 9999998; 9999999; 10000000]
- 
+
 
 [<Test>]
-let ``Can merge virtual frames indexed by time`` () = 
+let ``Can merge virtual frames indexed by time`` () =
   let idx, s1, s2, f = createSimpleTimeFrame()
   let fs = f.Rows.[date 2000 1 1 .. date 2001 1 1]
   let fe = f.Rows.[date 2002 1 1 .. date 2003 1 1]
@@ -533,7 +533,7 @@ let ``Can merge virtual frames indexed by time`` () =
 
 
 [<Test>]
-let ``Can merge virtual series of rows indexed by time`` () = 
+let ``Can merge virtual series of rows indexed by time`` () =
   let idx, s1, s2, f = createSimpleTimeFrame()
   let fsr = f.Rows.[date 2000 1 1 .. date 2001 1 1].Rows
   let fer = f.Rows.[date 2002 1 1 .. date 2003 1 1].Rows
@@ -591,10 +591,10 @@ open Deedle.Indices
 open Deedle.Indices.Virtual
 open Deedle.Vectors.Virtual
 
-/// Given a range, returns a virtual index * vector pair 
+/// Given a range, returns a virtual index * vector pair
 /// representing data in the specified range
-let dataLoader 
-      spy (lo:DateTimeOffset, lob:BoundaryBehavior) 
+let dataLoader
+      spy (lo:DateTimeOffset, lob:BoundaryBehavior)
       (hi:DateTimeOffset, hib:BoundaryBehavior) : Async<IIndex<_> * IVector<_>> = async {
   // TODO: Handle boundary conditions properly
   let asIndex (dt:DateTimeOffset) = (dt - date 2000 1 1).Ticks / 123456789L
@@ -606,16 +606,16 @@ let dataLoader
   return VirtualOrderedIndex(idxSrc) :> _, VirtualVector(valSrc) :> _ }
 
 [<Test>]
-let ``Can materialize a delayed series into a virtual series`` () = 
+let ``Can materialize a delayed series into a virtual series`` () =
   // Delayed series from 1 Jan 2000 to 1 Jan 2100
   let r = Recorder()
-  let delayed = 
+  let delayed =
     DelayedSeries.FromIndexVectorLoader
       ( VirtualAddressingScheme("it"),
-        VirtualVectorBuilder.Instance, VirtualIndexBuilder.Instance, 
+        VirtualVectorBuilder.Instance, VirtualIndexBuilder.Instance,
         date 2000 1 1, date 2100 1 1, dataLoader (spy1 r ignore) )
 
-  // Materialize as virtual series for 5 years          
+  // Materialize as virtual series for 5 years
   let limited = delayed.Between(date 2013 1 1, date 2018 1 1)
   let series = limited.Materialize()
 

@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------------
-// FAKE build script 
+// FAKE build script
 // --------------------------------------------------------------------------------------
 
 #load ".fake/build.fsx/intellisense.fsx"
@@ -28,17 +28,17 @@ let project = "Deedle"
 let authors = ["BlueMountain Capital";"FsLab"]
 let summary = "Easy to use .NET library for data manipulation and scientific programming"
 let description = """
-  Deedle implements an efficient and robust frame and series data structures for 
-  manipulating with structured data. It supports handling of missing values, 
-  aggregations, grouping, joining, statistical functions and more. For frames and 
-  series with ordered indices (such as time series), automatic alignment is also 
+  Deedle implements an efficient and robust frame and series data structures for
+  manipulating with structured data. It supports handling of missing values,
+  aggregations, grouping, joining, statistical functions and more. For frames and
+  series with ordered indices (such as time series), automatic alignment is also
   available. """
 let tags = "F# fsharp deedle dataframe series statistics data science"
 
 let rpluginProject = "Deedle.RPlugin"
 let rpluginSummary = "Easy to use .NET library for data manipulation with R project integration"
 let rpluginDescription = """
-  This package installs core Deedle package, together with an R type provider plugin 
+  This package installs core Deedle package, together with an R type provider plugin
   which makes it possible to pass data frames and time series between R and Deedle"""
 let rpluginTags = "R RProvider"
 
@@ -72,7 +72,7 @@ BuildServer.install [
 ]
 
 // Read release notes & version info from RELEASE_NOTES.md
-let release = ReleaseNotes.load "RELEASE_NOTES.md" 
+let release = ReleaseNotes.load "RELEASE_NOTES.md"
 
 // Generate assembly info files with the right version & up-to-date information
 Target.create "AssemblyInfo" (fun _ ->
@@ -82,7 +82,7 @@ Target.create "AssemblyInfo" (fun _ ->
         AssemblyInfo.Description summary
         AssemblyInfo.Version release.AssemblyVersion
         AssemblyInfo.InformationalVersion release.NugetVersion
-        AssemblyInfo.FileVersion release.AssemblyVersion] 
+        AssemblyInfo.FileVersion release.AssemblyVersion]
 
   AssemblyInfoFile.createFSharp "src/Deedle.RProvider.Plugin/AssemblyInfo.fs"
       [ AssemblyInfo.Title rpluginProject
@@ -129,21 +129,21 @@ Target.create "CleanDocs" (fun _ ->
 // --------------------------------------------------------------------------------------
 // Build library & test project
 
-let testProjs = 
+let testProjs =
     [
-      "tests/Deedle.Tests/Deedle.Tests.fsproj" 
-      "tests/Deedle.Math.Tests/Deedle.Math.Tests.fsproj"
-      "tests/Deedle.CSharp.Tests/Deedle.CSharp.Tests.csproj" 
-      "tests/Deedle.Documentation.Tests/Deedle.Documentation.Tests.fsproj"
-      "tests/Deedle.PerfTests/Deedle.PerfTests.fsproj"
-      // "tests/Deedle.RPlugin.Tests/Deedle.RPlugin.Tests.fsproj"  
-    ]
-
-let testCoreProjs = 
-    [ 
       "tests/Deedle.Tests/Deedle.Tests.fsproj"
       "tests/Deedle.Math.Tests/Deedle.Math.Tests.fsproj"
-      "tests/Deedle.CSharp.Tests/Deedle.CSharp.Tests.csproj" 
+      "tests/Deedle.CSharp.Tests/Deedle.CSharp.Tests.csproj"
+      "tests/Deedle.Documentation.Tests/Deedle.Documentation.Tests.fsproj"
+      "tests/Deedle.PerfTests/Deedle.PerfTests.fsproj"
+      // "tests/Deedle.RPlugin.Tests/Deedle.RPlugin.Tests.fsproj"
+    ]
+
+let testCoreProjs =
+    [
+      "tests/Deedle.Tests/Deedle.Tests.fsproj"
+      "tests/Deedle.Math.Tests/Deedle.Math.Tests.fsproj"
+      "tests/Deedle.CSharp.Tests/Deedle.CSharp.Tests.csproj"
       "tests/Deedle.Documentation.Tests/Deedle.Documentation.Tests.fsproj"
       "tests/Deedle.PerfTests/Deedle.PerfTests.fsproj"
     ]
@@ -161,7 +161,7 @@ let buildCoreProjs =
 
 Target.create "Build" ( fun _ ->
   Environment.setEnvironVar "GenerateDocumentationFile" "true"
-  for proj in buildProjs do  
+  for proj in buildProjs do
     DotNet.build (fun opts -> { opts with Common = { opts.Common with
                                                                       CustomParams = Some "/v:n /p:SourceLinkCreate=true" }
                                           Configuration = DotNet.BuildConfiguration.Release }) proj )
@@ -169,7 +169,7 @@ Target.create "Build" ( fun _ ->
 
 Target.create "BuildCore" ( fun _ ->
   Environment.setEnvironVar "GenerateDocumentationFile" "true"
-  for proj in buildCoreProjs do  
+  for proj in buildCoreProjs do
     DotNet.build (fun opts -> { opts with Common = { opts.Common with CustomParams = Some "/v:n /p:SourceLinkCreate=true" }
                                           Configuration = DotNet.BuildConfiguration.Release }) proj )
 
@@ -181,7 +181,7 @@ Target.create "BuildTests" (fun _ ->
     DotNet.build (fun opts -> { opts with Configuration = DotNet.BuildConfiguration.Release }) proj )
 
 Target.create "RunTests" (fun _ ->
-  for proj in testProjs do     
+  for proj in testProjs do
     DotNet.test (fun opts -> { opts with Configuration = DotNet.BuildConfiguration.Release }) proj )
 
 Target.create "BuildCoreTests" (fun _ ->
@@ -189,7 +189,7 @@ Target.create "BuildCoreTests" (fun _ ->
     DotNet.build (fun opts -> { opts with Configuration = DotNet.BuildConfiguration.Release }) proj )
 
 Target.create "RunCoreTests" (fun _ ->
-  for proj in testProjs do     
+  for proj in testProjs do
     DotNet.test (fun opts -> { opts with  Configuration = DotNet.BuildConfiguration.Release }) proj )
 
 // --------------------------------------------------------------------------------------
@@ -202,8 +202,8 @@ Target.create "NuGet" (fun _ ->
     let releaseNotes = release.Notes |> String.concat "\n"
     let nugetExe = "packages" </> "build" </> "NuGet.CommandLine" </> "tools" </> "NuGet.exe"
 
-    NuGet.NuGetPack (fun p -> 
-        { p with   
+    NuGet.NuGetPack (fun p ->
+        { p with
             ToolPath = nugetExe
             Authors = authors
             Project = project
@@ -213,12 +213,12 @@ Target.create "NuGet" (fun _ ->
             ReleaseNotes = releaseNotes
             Tags = tags
             OutputPath = "bin"
-            Dependencies = [ "FSharp.Core", NuGet.GetPackageVersion "packages" "FSharp.Core" ]            
+            Dependencies = [ "FSharp.Core", NuGet.GetPackageVersion "packages" "FSharp.Core" ]
             AccessKey = Environment.environVarOrDefault "nugetkey" ""
             Publish = Environment.hasEnvironVar "nugetkey" })
         ("nuget/Deedle.nuspec")
-    NuGet.NuGetPack (fun p -> 
-        { p with   
+    NuGet.NuGetPack (fun p ->
+        { p with
             ToolPath = nugetExe
             Authors = authors
             Project = rpluginProject
@@ -228,7 +228,7 @@ Target.create "NuGet" (fun _ ->
             ReleaseNotes = releaseNotes
             Tags = tags + " " + rpluginTags
             OutputPath = "bin"
-            Dependencies = 
+            Dependencies =
               [ "Deedle", release.NugetVersion
                 "R.NET.Community", NuGet.GetPackageVersion "packages" "R.NET.Community"
                 "R.NET.Community.FSharp", NuGet.GetPackageVersion "packages" "R.NET.Community.FSharp"
@@ -236,8 +236,8 @@ Target.create "NuGet" (fun _ ->
             AccessKey = Environment.environVarOrDefault "nugetkey" ""
             Publish = Environment.hasEnvironVar "nugetkey" })
         ("nuget/Deedle.RPlugin.nuspec")
-    NuGet.NuGetPack (fun p -> 
-        { p with   
+    NuGet.NuGetPack (fun p ->
+        { p with
             ToolPath = nugetExe
             Authors = authors
             Project = deedleMathProject
@@ -247,15 +247,15 @@ Target.create "NuGet" (fun _ ->
             ReleaseNotes = releaseNotes
             Tags = tags + " " + deedleMathTags
             OutputPath = "bin"
-            Dependencies = 
+            Dependencies =
               [ "Deedle", release.NugetVersion
                 "MathNet.Numerics", NuGet.GetPackageVersion "packages" "MathNet.Numerics"
                 "MathNet.Numerics.FSharp", NuGet.GetPackageVersion "packages" "MathNet.Numerics.FSharp" ]
             AccessKey = Environment.environVarOrDefault "nugetkey" ""
             Publish = Environment.hasEnvironVar "nugetkey" })
-        ("nuget/Deedle.Math.nuspec")   
-    NuGet.NuGetPack (fun p -> 
-        { p with   
+        ("nuget/Deedle.Math.nuspec")
+    NuGet.NuGetPack (fun p ->
+        { p with
             Authors = authors
             Project = deedleExcelProject
             Summary = deedleExcelSummary
@@ -263,11 +263,11 @@ Target.create "NuGet" (fun _ ->
             Version = release.NugetVersion
             ReleaseNotes = releaseNotes
             Tags = tags + " " + deedleExcelTags
-            OutputPath = "bin"    
-            Dependencies = 
+            OutputPath = "bin"
+            Dependencies =
               [ "Deedle", release.NugetVersion
                 "NetOffice.Core", NuGet.GetPackageVersion "packages" "NetOffice.Core"
-                "NetOffice.Excel", NuGet.GetPackageVersion "packages" "NetOffice.Core" ]                    
+                "NetOffice.Excel", NuGet.GetPackageVersion "packages" "NetOffice.Core" ]
             AccessKey = Environment.environVarOrDefault "nugetkey" ""
             Publish = Environment.hasEnvironVar "nugetkey" })
         ("nuget/Deedle.Excel.nuspec")
@@ -278,7 +278,7 @@ Target.create "NuGet" (fun _ ->
 
 Target.create "GenerateDocs" (fun _ ->
   let (exitCode, messages) = Fsi.exec (fun p -> { p with WorkingDirectory="docs/tools"; Define="RELEASE"; }) "generate.fsx" []
-  if exitCode = 0 then () else 
+  if exitCode = 0 then () else
     failwith (messages |> String.concat Environment.NewLine)
 )
 // --------------------------------------------------------------------------------------
@@ -297,7 +297,7 @@ Target.create "ReleaseDocs" (fun _ ->
 Target.create "ReleaseBinaries" (fun _ ->
     Git.Repository.clone "" (gitHome + "/" + gitName + ".git") "temp/release"
     Git.Branches.checkoutBranch "temp/release" "release"
-    
+
     // Delete old files and copy in new files
     !! "temp/release/*" |> File.deleteAll
     "temp/release/bin" |> Shell.cleanDir
@@ -338,7 +338,7 @@ Target.create "AllCore" ignore
 "Clean"
   ==> "AssemblyInfo"
   ==> "Build"
-  ==> "All" 
+  ==> "All"
 
 "AssemblyInfo"
   ==> "BuildCore"
@@ -350,7 +350,7 @@ Target.create "AllCore" ignore
 "RunCoreTests" ==> "AllCore"
 
 "All" ==> "NuGet" ==> "Release"
-"All" 
+"All"
   ==> "CleanDocs"
   ==> "GenerateDocs"
   ==> "ReleaseDocs"

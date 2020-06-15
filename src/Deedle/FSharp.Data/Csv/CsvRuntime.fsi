@@ -1,4 +1,4 @@
-﻿// This is an interface file for F# Data component referenced via Paket. We use this 
+﻿// This is an interface file for F# Data component referenced via Paket. We use this
 // to mark all F# Data types & modules as internal, so that they are private to Deedle.
 //
 // When updating to a new version of F# Data, this may need to be updated. The easiest way
@@ -8,7 +8,7 @@ namespace FSharp.Data.Runtime
 open System
 open System.IO
 
-module internal CsvReader = 
+module internal CsvReader =
   val readCsvFile : reader:TextReader -> separators:string -> quote:char -> seq<string [] * int>
 
 type internal CsvFile<'RowType> =

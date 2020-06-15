@@ -5,11 +5,11 @@
 // ------------------------------------------------------------------------------------------------
 
 /// Represents a special lookup. This can be used to support hierarchical or duplicate keys
-/// in an index. A key type `K` can come with associated `ICustomLookup<K>` to provide 
-/// customized pattern matching (equality testing) 
+/// in an index. A key type `K` can come with associated `ICustomLookup<K>` to provide
+/// customized pattern matching (equality testing)
 ///
 /// [category:Parameters and results of various operations]
-type ICustomLookup<'K> = 
+type ICustomLookup<'K> =
   /// Tests whether a specified key matches the current key (for example, in hierarchical indexing
   /// based on tuples, if the current key represents a pair (1, _) then the value (1, 42) would match).
   abstract Matches : 'K -> bool
@@ -23,13 +23,13 @@ namespace Deedle.Keys
 open Deedle
 open Microsoft.FSharp.Reflection
 
-/// Represents a special hierarchical key. This is mainly used in pretty printing (where we want to 
+/// Represents a special hierarchical key. This is mainly used in pretty printing (where we want to
 /// get parts of the keys based on levels. `CustomKey.Get` provides a way of getting `ICustomKey`.
 type ICustomKey =
   /// Returns the number of levels of a hierarchical key. For example, a tuple (1, 42) has 2 levels.
   /// This is used for pretty printing only.
   abstract Levels : int
-  /// Gets a value at the specified level (the levels are indexed from 1). 
+  /// Gets a value at the specified level (the levels are indexed from 1).
   /// This is used for pretty printing only. If `Levels=1` then this method is not
   /// called and the pretty printer invokes `ToString` on the whole object instead.
   abstract GetLevel : int -> obj
@@ -55,7 +55,7 @@ type CustomKey private() =
       /// and so it is probably slow.
       member x.Levels =
         let rec level (typ:System.Type) =
-          if FSharpType.IsTuple(typ) then 
+          if FSharpType.IsTuple(typ) then
             let elems = FSharpType.GetTupleElements(typ)
             elems.Length - 1 + (level elems.[elems.Length - 1])
           else 1
@@ -66,14 +66,14 @@ type CustomKey private() =
       member x.GetLevels() =
         let rec levels inp = seq {
           match inp with
-          | AnyTuple(vals, last) -> 
+          | AnyTuple(vals, last) ->
               yield! vals
-              yield! levels last 
+              yield! levels last
           | v -> yield v }
         levels tuple |> Array.ofSeq
 
       // Get specified level
-      member x.GetLevel(n) = 
+      member x.GetLevel(n) =
         let all = x.GetLevels()
         all.[n] }
 
@@ -83,23 +83,23 @@ type CustomKey private() =
   static member Get(key:obj) =
     if key :? ICustomKey then key :?> ICustomKey
     elif FSharpType.IsTuple(key.GetType()) then
-      CustomKey.GetForTuple(key) 
-    else 
-      { new ICustomKey with 
+      CustomKey.GetForTuple(key)
+    else
+      { new ICustomKey with
           member x.GetLevel(i) = if i > 0 then invalidOp "level" else key
           member x.GetLevels() = [| key |]
           member x.Levels = 1 }
 
 /// Implements a simple lookup that matches any multi-level key against a specified array of
 /// optional objects (that represent missing/set parts of a key)
-type SimpleLookup<'T>(patterns) = 
+type SimpleLookup<'T>(patterns) =
   interface ICustomLookup<'T> with
-    /// Dynamically tests whether this pattern matches with another key. 
-    /// For example, `[|None, Some 1|]` matches `(42, 1)`, but if the second 
+    /// Dynamically tests whether this pattern matches with another key.
+    /// For example, `[|None, Some 1|]` matches `(42, 1)`, but if the second
     /// values differed, then they would not match.
-    member x.Matches(value) = 
+    member x.Matches(value) =
       let cust = CustomKey.Get(value)
-      let keys = cust.GetLevels() 
+      let keys = cust.GetLevels()
       if keys.Length <> Array.length patterns then invalidOp "SimpleLookup.Matches: Key has invalid number of levels"
       (patterns, keys) ||> Seq.forall2 (fun pat key ->
           match pat with None -> true | Some k -> k = key)
@@ -117,49 +117,49 @@ open Deedle.Keys
 [<AutoOpen>]
 module MultiKeyExtensions =
 
-  /// Creates a hierarchical key lookup that allows matching on the 
+  /// Creates a hierarchical key lookup that allows matching on the
   /// first element of a two-level hierarchical key.
   let Lookup1Of2 k = SimpleLookup [| Some (box k); None |] :> ICustomLookup<_>
-  /// Creates a hierarchical key lookup that allows matching on the 
+  /// Creates a hierarchical key lookup that allows matching on the
   /// second element of a two-level hierarchical key.
   let Lookup2Of2 k = SimpleLookup [| None; Some (box k) |] :> ICustomLookup<_>
   /// Creates an arbitrary lookup key that allows matching on elements
   /// of a two-level hierarchical index. Specify `None` to ignore a level
   /// or `Some k` to require match on a given level.
-  let LookupAnyOf2 k1 k2 = 
+  let LookupAnyOf2 k1 k2 =
     SimpleLookup [| Option.map box k1; Option.map box k2 |] :> ICustomLookup<_>
 
-  /// Creates a hierarchical key lookup that allows matching on the 
+  /// Creates a hierarchical key lookup that allows matching on the
   /// first element of a three-level hierarchical key.
   let Lookup1Of3 k = SimpleLookup [| Some (box k); None; None |] :> ICustomLookup<_>
-  /// Creates a hierarchical key lookup that allows matching on the 
+  /// Creates a hierarchical key lookup that allows matching on the
   /// second element of a three-level hierarchical key.
   let Lookup2Of3 k = SimpleLookup [| None; Some (box k); None |] :> ICustomLookup<_>
-  /// Creates a hierarchical key lookup that allows matching on the 
+  /// Creates a hierarchical key lookup that allows matching on the
   /// third element of a three-level hierarchical key.
   let Lookup3Of3 k = SimpleLookup [| None; None; Some (box k) |] :> ICustomLookup<_>
   /// Creates an arbitrary lookup key that allows matching on elements
   /// of a three-level hierarchical index. Specify `None` to ignore a level
   /// or `Some k` to require match on a given level.
-  let LookupAnyOf3 k1 k2 k3 = 
+  let LookupAnyOf3 k1 k2 k3 =
     SimpleLookup [| Option.map box k1; Option.map box k2; Option.map box k3 |] :> ICustomLookup<_>
 
-  /// Creates a hierarchical key lookup that allows matching on the 
+  /// Creates a hierarchical key lookup that allows matching on the
   /// first element of a four-level hierarchical key.
   let Lookup1Of4 k = SimpleLookup [| Some (box k); None; None; None |] :> ICustomLookup<_>
-  /// Creates a hierarchical key lookup that allows matching on the 
+  /// Creates a hierarchical key lookup that allows matching on the
   /// second element of a four-level hierarchical key.
   let Lookup2Of4 k = SimpleLookup [| None; Some (box k); None; None |] :> ICustomLookup<_>
-  /// Creates a hierarchical key lookup that allows matching on the 
+  /// Creates a hierarchical key lookup that allows matching on the
   /// third element of a four-level hierarchical key.
   let Lookup3Of4 k = SimpleLookup [| None; None; Some (box k); None |] :> ICustomLookup<_>
-  /// Creates a hierarchical key lookup that allows matching on the 
+  /// Creates a hierarchical key lookup that allows matching on the
   /// fourth element of a four-level hierarchical key.
   let Lookup4Of4 k = SimpleLookup [| None; None; None; Some (box k) |] :> ICustomLookup<_>
   /// Creates an arbitrary lookup key that allows matching on elements
   /// of a four-level hierarchical index. Specify `None` to ignore a level
   /// or `Some k` to require match on a given level.
-  let LookupAnyOf4 k1 k2 k3 k4 = 
+  let LookupAnyOf4 k1 k2 k3 k4 =
     SimpleLookup [| Option.map box k1; Option.map box k2; Option.map box k3; Option.map box k4 |] :> ICustomLookup<_>
 
 

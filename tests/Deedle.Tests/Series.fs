@@ -42,32 +42,32 @@ let descendingMissing = series [ 0 => nan; 3 => 3.0; 2 => 2.0; 1 => 1.0 ]
 let randomOrderMissing = series [ 2 => 2.0; 3 => 3.0; 0 => nan; 1 => 1.0 ]
 let lastValueMissing = series [ 2 => 2.0; 3 => 3.0; 0 => 4.0; 1 => nan ]
 
-[<Test>]  
+[<Test>]
 let ``Can access elements in ordered and unordered series`` () =
   unordered.[3] |> shouldEqual "hi"
   ordered.[3] |> shouldEqual "ciao"
 
-[<Test>]  
+[<Test>]
 let ``Accessing missing value or using out of range key throws`` () =
   (fun () -> missing.[2] |> ignore) |> should throw typeof<MissingValueException>
   (fun () -> missing.[7] |> ignore) |> should throw typeof<KeyNotFoundException>
 
-[<Test>]  
+[<Test>]
 let ``Accessing empty series by index throws IndexOutOfRangeException`` () =
   (fun () -> empty.GetAt(0) |> ignore) |> should throw typeof<IndexOutOfRangeException>
 
-[<Test>]  
+[<Test>]
 let ``Can access elements by address`` () =
   unordered.GetAt(0) |> shouldEqual "hi"
   ordered.GetAt(0) |> shouldEqual "hi"
   missing.TryGetAt(1).HasValue |> shouldEqual false
 
-[<Test>]  
+[<Test>]
 let ``Can lookup previous and next elements (inclusively) in ordered series`` () =
   ordered.Get(4, Lookup.ExactOrGreater) |> shouldEqual "nazdar"
   ordered.Get(4, Lookup.ExactOrSmaller) |> shouldEqual "ciao"
 
-[<Test>]  
+[<Test>]
 let ``Can lookup previous and next elements (exclusively) in ordered series`` () =
   ordered.Get(3, Lookup.Greater) |> shouldEqual "nazdar"
   ordered.Get(3, Lookup.Smaller) |> shouldEqual "bye"
@@ -76,7 +76,7 @@ let ``Can lookup previous and next elements (exclusively) in ordered series`` ()
 let ``Can get first and last key of an ordered series`` () =
   ordered |> Series.firstKey |> shouldEqual 1
   ordered |> Series.lastKey |> shouldEqual 5
-  
+
 [<Test>]
 let ``Can get first and last key of an unordered series`` () =
   unordered |> Series.firstKey |> shouldEqual 3
@@ -88,17 +88,17 @@ let ``Can get key range of an ordered series`` () =
 
 [<Test>]
 let ``Series.tryLastValue works correclty on a series`` () =
-  ascendingMissing |> Series.tryLastValue |> shouldEqual (Some 3.0)  
+  ascendingMissing |> Series.tryLastValue |> shouldEqual (Some 3.0)
 
 [<Test>]
-let ``Series.tryLastValue works correclty on a series with last missing value`` () =  
+let ``Series.tryLastValue works correclty on a series with last missing value`` () =
   lastValueMissing |> Series.tryLastValue |> shouldEqual None
 
 [<Test>]
 let ``Series.valuesAll works correclty on a series with missing value`` () =
   let floatSeries = [ 1.; nan; 2. ] |> Series.ofValues
   let stringSeries = [ "1"; null; "2" ] |> Series.ofValues
-  let expected1 = seq [ 1.; 0.; 2. ]  
+  let expected1 = seq [ 1.; 0.; 2. ]
   let expected2 = seq [ "1"; null; "2"]
   floatSeries.ValuesAll |> shouldEqual expected1
   stringSeries.ValuesAll |> shouldEqual expected2
@@ -107,8 +107,8 @@ let ``Series.valuesAll works correclty on a series with missing value`` () =
 // Value conversions
 // ------------------------------------------------------------------------------------------------
 
-[<Test>]  
-let ``Should be able to convert bool to nullable bool``() = 
+[<Test>]
+let ``Should be able to convert bool to nullable bool``() =
   let s = (frame ["A" => series [ 1 => true]]).Rows.[1]
   s.GetAs<Nullable<bool>>("A") |> shouldEqual (Nullable true)
 
@@ -123,27 +123,27 @@ let ``Can create series with incomparable keys``() =
   let s = series [rnd1 => 1; rnd2 => 2]
   s.[rnd1] |> shouldEqual 1
 
-[<Test>] 
-let ``Series with the same data are considered equal``() = 
+[<Test>]
+let ``Series with the same data are considered equal``() =
   let input = series [ 'a' => 1; 'b' => 2; 'c' => 3 ]
   input |> shouldEqual input
 
-[<Test>] 
-let ``Series with different data are not considered equal``() = 
+[<Test>]
+let ``Series with different data are not considered equal``() =
   let input1 = series [ 'a' => 1; 'b' => 2; 'c' => 3 ]
   let input2 = series [ 'a' => 1; 'b' => 2; 'c' => 4 ]
   let input3 = series [ 'a' => 1; 'b' => 2  ]
   input1 |> should notEqual input2
   input1 |> should notEqual input3
 
-[<Test>] 
+[<Test>]
 let ``Should throw when there are duplicate keys (on access)`` () =
   let actual =
     try let s = series [ 42 => "A"; 42 => "B" ] in ignore(s.Get(42)); ""
     with e -> e.Message
   actual |> should contain "42"
 
-[<Test>] 
+[<Test>]
 let ``Should throw when there are duplicate keys (on formatting)`` () =
   let actual =
     try let s = series [ 42 => "A"; 42 => "B" ] in ignore(s.Format()); ""
@@ -219,14 +219,14 @@ let ``Series.chunkSizeInto with AtEnding & Skip boundary works correctly on samp
 
 [<Test>]
 let ``Series.chunkWhileInto works on sample input`` () =
-  let s = series [ 01 => 01; 10 => 10; 11 => 11; 14 => 14; 21 => 21] 
+  let s = series [ 01 => 01; 10 => 10; 11 => 11; 14 => 14; 21 => 21]
   let actual = s |> Series.chunkWhileInto (fun k1 k2 -> k1/10 = k2/10) (Series.values >> List.ofSeq)
   let expected = series [ 1 => [1]; 10 => [10;11;14]; 21 => [21]]
   actual |> shouldEqual expected
 
 [<Test>]
 let ``Series.windowWhileInto works on sample input`` () =
-  let s = series [ 01 => 01; 10 => 10; 11 => 11; 14 => 14; 21 => 21] 
+  let s = series [ 01 => 01; 10 => 10; 11 => 11; 14 => 14; 21 => 21]
   let actual = s |> Series.windowWhileInto (fun k1 k2 -> k1/10 = k2/10) (Series.values >> List.ofSeq)
   let expected = series [ 1 => [1]; 10 => [10;11;14]; 11 => [11;14]; 14 => [14]; 21 => [21]]
   actual |> shouldEqual expected
@@ -286,24 +286,24 @@ let ``Series.diff and SeriesExtensions.Diff work on sample input``() =
   let expectedForward = series [ 'c' => 2 ]
   let expectedBackward = series [ 'a' => -2 ]
   input |> Series.diff -2 |> shouldEqual expectedBackward
-  input |> Series.diff 2 |> shouldEqual expectedForward 
+  input |> Series.diff 2 |> shouldEqual expectedForward
   SeriesExtensions.Diff(input, -2) |> shouldEqual expectedBackward
   SeriesExtensions.Diff(input, 2) |> shouldEqual expectedForward
 
 [<Test>]
 let ``Series.diff and Series.shift correctly return empty series`` () =
-  let empty : Series<int, float> = series [] 
+  let empty : Series<int, float> = series []
   empty |> Series.diff 1 |> shouldEqual <| series []
   empty |> Series.shift 1 |> Series.countKeys |> shouldEqual 0
   empty |> Series.shift -1 |> Series.countKeys |> shouldEqual 0
-  
+
   let single = series [ 1 => 1.0 ]
   single |> Series.shift 2 |> Series.countKeys |> shouldEqual 0
   single |> Series.shift -2 |> Series.countKeys |> shouldEqual 0
   single |> Series.diff -2 |> shouldEqual <| series []
 
 [<Test>]
-let ``Series.diff correctly handles missing values``() =  
+let ``Series.diff correctly handles missing values``() =
   let s = Series.ofValues [ 0.0; Double.NaN; Double.NaN; 0.0; 2.0 ]
   let actual1 = s |> Series.diff -1 |> Series.observationsAll |> List.ofSeq
   actual1 |> shouldEqual [(0, None); (1, None); (2, None); (3, Some -2.0)]
@@ -318,37 +318,37 @@ let ``Series.shift works correctnly on sample input``() =
   let actual2 = input |> Series.shift -1
   actual2 |> shouldEqual <| series [ 'a' => 2.0; 'b' => nan; 'c' => 3.0 ]
 
-[<Test>] 
-let ``Union correctly unions series, prefering left or right values``() = 
+[<Test>]
+let ``Union correctly unions series, prefering left or right values``() =
   let input1 = series [ 'a' => 1; 'b' => 2; 'c' => 3 ]
   let input2 = series [ 'c' => 1; 'd' => 4  ]
   let expectedL = series [ 'a' => 1; 'b' => 2; 'c' => 3; 'd' => 4 ]
   let expectedR = series [ 'a' => 1; 'b' => 2; 'c' => 1; 'd' => 4 ]
   input1.Merge(input2, UnionBehavior.PreferLeft) |> shouldEqual expectedL
   input1.Merge(input2, UnionBehavior.PreferRight) |> shouldEqual expectedR
-  
+
   let s1 = series [ 1 => nan; 2 => 1.0]
-  let s2 = series [ 1 => 1.0 ]  
+  let s2 = series [ 1 => 1.0 ]
   s1.Merge(s2) |> shouldEqual (series [ 1 => 1.0; 2 => 1.0] )
 
-[<Test>] 
-let ``Union throws exception when behavior is exclusive and series overlap``() = 
+[<Test>]
+let ``Union throws exception when behavior is exclusive and series overlap``() =
   let input1 = series [ 'a' => 1; 'b' => 2; 'c' => 3 ]
   let input2 = series [ 'c' => 1; 'd' => 4  ]
-  (fun () -> input1.Merge(input2, UnionBehavior.Exclusive) |> ignore) 
+  (fun () -> input1.Merge(input2, UnionBehavior.Exclusive) |> ignore)
   |> should throw typeof<System.InvalidOperationException>
 
-[<Test>] 
-let ``Union combines series when behavior is exclusive and series do not overlap``() = 
+[<Test>]
+let ``Union combines series when behavior is exclusive and series do not overlap``() =
   let input1 = series [ 'a' => 1; 'b' => 2; 'c' => 3 ]
   let input2 = series [ 'd' => 4  ]
   let expected = series [ 'a' => 1; 'b' => 2; 'c' => 3; 'd' => 4 ]
   input1.Merge(input2, UnionBehavior.Exclusive) |> shouldEqual expected
 
-[<Test>] 
+[<Test>]
 let ``Grouping series with missing values works on sample input``() =
   let n = Series.ofNullables [Nullable(); Nullable(1); Nullable(); Nullable(2)]
-  let actual = n |> Series.groupBy (fun k _ -> k % 2) 
+  let actual = n |> Series.groupBy (fun k _ -> k % 2)
   let expected = series [ 1 => series [1 => 1; 3 => 2]]
   actual |> shouldEqual expected
 
@@ -403,7 +403,7 @@ let ``Fill inside corner cases work``() =
 
   let s = series [ 2.0 => Double.NaN; 1.0 => 1.0 ]
   (fun () -> s |> Series.fillMissingInside Direction.Forward |> ignore) |> should throw typeof<System.InvalidOperationException>
-  
+
 [<Test>]
 let ``Can fill missing values in a specified range``() =
   let ts = generate DateTime.Today (TimeSpan.FromDays(1.0)) 20
@@ -432,7 +432,7 @@ let ``FillMissingUsing nan shall still return series with missing value``() =
   let s = Series.ofValues [ Double.NaN; 1.0; Double.NaN]
   let actual = s |> Series.fillMissingUsing(fun _ -> nan)
   actual |> shouldEqual s
-  
+
 // ------------------------------------------------------------------------------------------------
 // Sorting and reindexing
 // ------------------------------------------------------------------------------------------------
@@ -450,17 +450,17 @@ let ``Can sort series``() =
   let ord2 = randomOrder |> Series.sortBy (fun v -> -v)
   ord2 |> shouldEqual descending
 
-  let ord3 = randomOrder |> Series.sortWith (fun a b -> 
+  let ord3 = randomOrder |> Series.sortWith (fun a b ->
     if a < b then -1 else if a = b then 0 else 1)
   ord3 |> shouldEqual ascending
 
   let ord4 = randomOrderMissing |> Series.sort
   ord4 |> shouldEqual ascendingMissing
-  
+
   let ord5 = randomOrderMissing |> Series.sortBy (fun v -> -v)
   ord5 |> shouldEqual descendingMissing
 
-  let ord6 = randomOrderMissing |> Series.sortWith (fun a b -> 
+  let ord6 = randomOrderMissing |> Series.sortWith (fun a b ->
     if a < b then -1 else if a = b then 0 else 1)
   ord6 |> shouldEqual ascendingMissing
 
@@ -480,13 +480,13 @@ let ``Series.indexWith returns series that can be correctly tested for equality`
 // ------------------------------------------------------------------------------------------------
 
 [<Test>]
-let ``Sample by time - get value at or just before specified time`` () = 
+let ``Sample by time - get value at or just before specified time`` () =
   let input = (generate (DateTime(2011, 12, 27)) (TimeSpan.FromHours(11.23)) 20) + 1
-  let expected = 
+  let expected =
     [ "12/27/2011 3:00:00 PM" => 2; "12/28/2011 3:00:00 PM" => 4;  "12/29/2011 3:00:00 PM" => 6;
       "12/30/2011 3:00:00 PM" => 8; "12/31/2011 3:00:00 PM" => 10; "1/1/2012 3:00:00 PM" => 13;
       "1/2/2012 3:00:00 PM" => 15;  "1/3/2012 3:00:00 PM" => 17;   "1/4/2012 3:00:00 PM" => 19
-      "1/5/2012 3:00:00 PM" => 20 ] 
+      "1/5/2012 3:00:00 PM" => 20 ]
     |> series |> Series.mapKeys parseDateUSA
 
   let start = DateTime(2011, 12, 27).AddHours(15.0)
@@ -494,17 +494,17 @@ let ``Sample by time - get value at or just before specified time`` () =
   actual |> shouldEqual expected
 
 [<Test>]
-let ``Resample uniform - get the latest available value for each date (TestDaySampling)`` () = 
+let ``Resample uniform - get the latest available value for each date (TestDaySampling)`` () =
   let input = (generate (DateTime(2011, 12, 2)) (TimeSpan.FromHours(5.23)) 20)
-  let expected = 
+  let expected =
     [ "12/2/2011" => 4;  "12/3/2011" => 9; "12/4/2011" => 13;
-      "12/5/2011" => 18; "12/6/2011" => 19 ] 
+      "12/5/2011" => 18; "12/6/2011" => 19 ]
     |> series |> Series.mapKeys parseDateUSA
   let actual = SeriesExtensions.ResampleUniform(input, (fun (dt:DateTime) -> dt.Date), (fun dt -> dt.AddDays(1.0)))
   actual |> shouldEqual expected
 
 [<Test>]
-let ``Resample uniform with exact lookup`` () = 
+let ``Resample uniform with exact lookup`` () =
   let input = series [ 0 => 1.0; 1 => 2.0; 4 => 5.0; 5 => 6.0 ]
   let expected = series [ 0 => 1.0; 1 => 2.0; 2 => nan; 3 => nan; 4 => 5.0; 5 => 6.0 ]
   let actual = SeriesExtensions.ResampleUniform(input, Func<_,_>(id), (fun x -> x + 1), Lookup.Exact)
@@ -513,8 +513,8 @@ let ``Resample uniform with exact lookup`` () =
 [<Test>]
 let ``Sample by time span - get the first available sample for each minute (TestMinuteSampling)`` () =
   let input = (generate (DateTime(2011, 12, 2)) (TimeSpan.FromSeconds(2.5)) 50)
-  let expected = 
-    [ "12/2/2011 12:00:00 AM" => 0; "12/2/2011 12:01:00 AM" => 24; 
+  let expected =
+    [ "12/2/2011 12:00:00 AM" => 0; "12/2/2011 12:01:00 AM" => 24;
       "12/2/2011 12:02:00 AM" => 48; "12/2/2011 12:03:00 AM" => 49 ]
     |> series |> Series.mapKeys parseDateUSA
 
@@ -524,13 +524,13 @@ let ``Sample by time span - get the first available sample for each minute (Test
 [<Test>]
 let ``Sample by time span - get the last available previous value for every hour (TestDownSampling)`` () =
   let input = generate (DateTime(2012, 2, 12)) (TimeSpan.FromMinutes(5.37)) 50
-  let expected = 
+  let expected =
     [ "2/12/2012 12:00:00 AM" => 0;  "2/12/2012 1:00:00 AM" => 11
       "2/12/2012 2:00:00 AM" => 22; "2/12/2012 3:00:00 AM" => 33
       "2/12/2012 4:00:00 AM" => 44; "2/12/2012 5:00:00 AM" => 49 ]
     |> series |> Series.mapKeys parseDateUSA
   let actual = input |> Series.sampleTimeInto (TimeSpan(1,0,0)) Direction.Backward Series.lastValue
-  actual |> shouldEqual expected        
+  actual |> shouldEqual expected
 
 [<Test>]
 let ``Sample by time span does not crash on empty series`` () =
@@ -541,10 +541,10 @@ let ``Sample by time span does not crash on empty series`` () =
 [<Test>]
 let ``Sample by keys - get the nearest previous key or <missing> (TestExplicitTimeSamples)`` () =
   let input = (generate (DateTime(2012, 01, 01)) (TimeSpan.FromDays(3.0)) 15) + 1
-  let dateSampels = 
+  let dateSampels =
     [ DateTime(2011, 12, 20); DateTime(2012, 01, 05); DateTime(2012, 01, 08);
       DateTime(2012, 01, 19); DateTime(2012, 01, 29) ]
-  let expected = 
+  let expected =
     [ "12/20/2011" => Double.NaN; "1/5/2012" => 2.0;
       "1/8/2012" => 3.0; "1/19/2012" => 7.0; "1/29/2012" => 10.0 ]
     |> series |> Series.mapKeys parseDateUSA |> Series.mapValues int
@@ -553,13 +553,13 @@ let ``Sample by keys - get the nearest previous key or <missing> (TestExplicitTi
 
 [<Test>]
 let ``Resample uniform - select value of nearest previous key or fill with earlier (TestForwardFillSampling)`` () =
-  let input = 
+  let input =
     [ "5/25/2012", 1.0; "5/26/2012", 2.0; "5/29/2012", 5.0; "5/30/2012", 6.0 ]
-    |> series |> Series.mapKeys parseDateUSA 
-  let expected = 
+    |> series |> Series.mapKeys parseDateUSA
+  let expected =
     [ "5/25/2012", 1.0; "5/26/2012", 2.0; "5/27/2012", 2.0;
       "5/28/2012", 2.0; "5/29/2012", 5.0; "5/30/2012", 6.0 ]
-    |> series |> Series.mapKeys parseDateUSA 
+    |> series |> Series.mapKeys parseDateUSA
   let actual = SeriesExtensions.ResampleUniform(input, (fun (dt:DateTime) -> dt.Date), (fun dt -> dt.AddDays(1.0)))
   actual |> shouldEqual expected
 
@@ -584,20 +584,20 @@ let ``Resample uniform - select value of nearest previous key or fill with earli
 let ``Series.sampleTime works when using forward direction`` () =
   let start = DateTime(2012, 2, 12)
   let input = generate start (TimeSpan.FromMinutes(5.37)) 50
-  let expected = 
+  let expected =
     series
       [ start.AddHours(0.0) => 0;  start.AddHours(1.0) => 12
         start.AddHours(2.0) => 23; start.AddHours(3.0) => 34
         start.AddHours(4.0) => 45 ]
   let actual = input |> Series.sampleTimeInto (TimeSpan(1,0,0)) Direction.Forward Series.firstValue
-  actual |> shouldEqual expected        
+  actual |> shouldEqual expected
 
 [<Test>]
 let ``Series.resampleInto works when using forward direction`` () =
   let start = DateTime(2012, 2, 12)
   let input = generate start (TimeSpan.FromHours(5.37)) 20
-  let actual = 
-    input 
+  let actual =
+    input
     |> Series.resampleInto [ DateTime(2012, 2, 13); DateTime(2012, 2, 15) ] Direction.Forward (fun _ -> Series.firstValue)
   let expected = series [ DateTime(2012, 2, 13) => 0; DateTime(2012, 2, 15) => 14 ]
   actual |> shouldEqual expected
@@ -670,12 +670,12 @@ let ``Series.resample works in backward direction with keys mapping to empty gro
 
 [<Test>]
 let ``Series.resample works for very large number of keys`` () =
-  let input = series [for m in 1 .. 12 -> DateTime.Today.AddMonths(m) => float m ] 
+  let input = series [for m in 1 .. 12 -> DateTime.Today.AddMonths(m) => float m ]
   let keys = [for m in 0.0 .. 100000.0 -> DateTime.Today.AddMinutes(m) ]
 
-  let actual = input |> Series.resample keys Direction.Forward 
+  let actual = input |> Series.resample keys Direction.Forward
   actual.KeyCount |> shouldEqual 100001
-  let actual = input |> Series.resample keys Direction.Backward 
+  let actual = input |> Series.resample keys Direction.Backward
   actual.KeyCount |> shouldEqual 100001
 
 // ------------------------------------------------------------------------------------------------
@@ -724,7 +724,7 @@ let ``Slicing of ordered series works when keys are out of series key range``() 
 // ------------------------------------------------------------------------------------------------
 // Ziping
 // ------------------------------------------------------------------------------------------------
-  
+
 let a =
   [ DateTime(2013,9,9) => 1.0; // no matching point in b
     DateTime(2013,9,10) => 2.0; // no matching point in b
@@ -732,12 +732,12 @@ let a =
     DateTime(2013,9,12) => 4.0; ]  // no matching point in b
     |> series
 
-let b = 
+let b =
   [ DateTime(2013,9,8) => 8.0; // no matching point in a
     DateTime(2013,9,11) => 11.0 ] |> series
 
 
-let lift2 f a b = 
+let lift2 f a b =
     match a, b with
     | Some x, Some y -> Some(f x y)
     | _              -> None
@@ -766,7 +766,7 @@ let ``ZipAlignInto correctly left-aligns and zips series with nearest greater op
 
 [<Test>]
 let ``ZipAlignInto correctly right-aligns and zips series with nearest smaller option``() =
-  let res = (b, a) ||> Series.zipAlignInto JoinKind.Right Lookup.ExactOrSmaller (lift2 (fun l r -> (l**2.0) * r)) 
+  let res = (b, a) ||> Series.zipAlignInto JoinKind.Right Lookup.ExactOrSmaller (lift2 (fun l r -> (l**2.0) * r))
   res.GetAt(0) |> shouldEqual ((8.0 ** 2.0) * 1.0)
   res.GetAt(1) |> shouldEqual ((8.0 ** 2.0) * 2.0)
   res.GetAt(2) |> shouldEqual ((11.0 ** 2.0) * 3.0)
@@ -808,12 +808,12 @@ let ``Can left-zip two empty series`` () =
   s2 |> shouldEqual (series [])
 
 [<Test>]
-let ``zipInner should not break alignment of the index (#233)``() = 
-  let x = series [ 0 => nan; 1 => nan; 2 => 1.0; 3 => 2.0 ] 
+let ``zipInner should not break alignment of the index (#233)``() =
+  let x = series [ 0 => nan; 1 => nan; 2 => 1.0; 3 => 2.0 ]
   let y = series [ 0 => nan; 1 => nan; 2 => 3.0; 3 => 4.0 ]
-  let expected = 
+  let expected =
     [ 0 => None; 1 => None; 2 => Some(1.0, 3.0); 3 => Some(2.0, 4.0) ]
-    |> Series.ofOptionalObservations 
+    |> Series.ofOptionalObservations
   Series.zipInner x y |> shouldEqual expected
 
 // ------------------------------------------------------------------------------------------------
@@ -824,7 +824,7 @@ let ``zipInner should not break alignment of the index (#233)``() =
 let ``Can append two sample series`` () =
   let inputs = Array.init 1000 (fun i -> i => int (10.0 * sin (float i)))
   let ar1, ar2 = Array.partition (fun (_, v) -> v%2 = 0) inputs
-  let actual = (series ar1).Merge(series ar2) 
+  let actual = (series ar1).Merge(series ar2)
   actual.Index.IsOrdered |> shouldEqual true
   actual |> shouldEqual (series inputs)
 
@@ -839,7 +839,7 @@ let ``Can append 10 sample ordered series (by appending them one by one)`` () =
 [<Test>]
 let ``Can append 10 sample unordered series (by appending them one by one)`` () =
   let samples = [ for i in 0 .. 9 -> series [ for j in 99 .. -1 .. 0 -> 10*j + i => i * j ] ]
-  let expected = series [ for i in 0 .. 9 do for j in 99 .. -1 .. 0 -> 10*j + i => i * j ] 
+  let expected = series [ for i in 0 .. 9 do for j in 99 .. -1 .. 0 -> 10*j + i => i * j ]
   let actual = samples |> Seq.reduce Series.merge
   actual.Index.IsOrdered |> shouldEqual false
   actual |> shouldEqual expected
@@ -855,7 +855,7 @@ let ``Can append 10 sample ordered series`` () =
 [<Test>]
 let ``Can append 10 sample unordered series`` () =
   let samples = [ for i in 0 .. 9 -> series [ for j in 99 .. -1 .. 0 -> 10*j + i => i * j ] ]
-  let expected = series [ for i in 0 .. 9 do for j in 99 .. -1 .. 0 -> 10*j + i => i * j ] 
+  let expected = series [ for i in 0 .. 9 do for j in 99 .. -1 .. 0 -> 10*j + i => i * j ]
   let actual = samples.Head.Merge(Array.ofSeq samples.Tail)
   actual.Index.IsOrdered |> shouldEqual false
   actual |> shouldEqual expected
@@ -867,8 +867,8 @@ let ``Can correctly append over 150 series`` () =
   for i in 0 .. 10000 do values.[rnd.Next(300)].Add( (i, float i) )
 
   let ss = values |> Array.map series
-  let actual = ss.[0].Merge(ss.[1 ..]) 
-  actual |> shouldEqual <| series [ for i in 0 .. 10000 -> i => float i ] 
+  let actual = ss.[0].Merge(ss.[1 ..])
+  actual |> shouldEqual <| series [ for i in 0 .. 10000 -> i => float i ]
 
 [<Test>]
 let ``Can intersect series``() =
@@ -936,10 +936,10 @@ let ``Can restrict series range using a custom range restriction`` () =
   let rangeRestr =
     { new IRangeRestriction<Addressing.Address> with
         member x.Count = int64 (Seq.length indices)
-      interface seq<Addressing.Address> with 
-        member x.GetEnumerator() = (indices :> seq<_>).GetEnumerator() 
+      interface seq<Addressing.Address> with
+        member x.GetEnumerator() = (indices :> seq<_>).GetEnumerator()
       interface System.Collections.IEnumerable with
-        member x.GetEnumerator() = (indices :> seq<_>).GetEnumerator() :> _ } 
+        member x.GetEnumerator() = (indices :> seq<_>).GetEnumerator() :> _ }
 
   let rs = s.GetAddressRange(RangeRestriction.Custom(rangeRestr))
   rs.KeyCount |> shouldEqual 34
@@ -951,8 +951,8 @@ let ``Can restrict series range using a custom range restriction`` () =
 
 [<Test>]
 let ``TryMap can catch errors`` () =
-  let res = series ["a" => 0; "b" => 2; "c" => 3] 
-            |> Series.tryMap (fun _ x -> 1 / x) 
+  let res = series ["a" => 0; "b" => 2; "c" => 3]
+            |> Series.tryMap (fun _ x -> 1 / x)
   res |> Series.tryErrors |> Series.countKeys |> shouldEqual 1
   res |> Series.trySuccesses |> Series.countKeys |> shouldEqual 2
 

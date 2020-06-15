@@ -38,14 +38,14 @@ let ``Restricting ranges using fixed restriction`` () =
   res.Ranges |> shouldEqual [| (35L, 39L); (50L, 59L) |]
 
 [<Test>]
-let ``Merging ranges joins ranges`` () = 
+let ``Merging ranges joins ranges`` () =
   let rng1 = Ranges.inlineCreate (+) [| (10L, 19L); (30L, 39L); (50L, 59L) |]
   let rng2 = Ranges.inlineCreate (+) [| (20L, 29L); (60L, 69L) |]
   let res = Ranges.combine [rng1; rng2]
   res.Ranges |> shouldEqual [| (10L, 39L); (50L, 69L) |]
 
 [<Test>]
-let ``Merging overlapping ranges fails`` () = 
+let ``Merging overlapping ranges fails`` () =
   let rng1 = Ranges.inlineCreate (+) [| (10L, 19L); (30L, 39L); (50L, 59L) |]
   let rng2 = Ranges.inlineCreate (+) [| (20L, 29L); (45L, 69L) |]
   let rng3 = Ranges.inlineCreate (+) [| (19L, 20L) |]
@@ -56,9 +56,9 @@ let ``Merging overlapping ranges fails`` () =
 
 [<Test>]
 let ``Lookup around element inside the range works as expected`` () =
-  rng |> Ranges.lookup 35L Lookup.Exact (fun _ _ -> true) 
+  rng |> Ranges.lookup 35L Lookup.Exact (fun _ _ -> true)
   |> shouldEqual <| OptionalValue( (35L, 15L) )
-  rng |> Ranges.lookup 35L Lookup.Greater (fun _ _ -> true) 
+  rng |> Ranges.lookup 35L Lookup.Greater (fun _ _ -> true)
   |> shouldEqual <| OptionalValue( (36L, 16L) )
   rng |> Ranges.lookup 35L Lookup.Smaller (fun _ _ -> true)
   |> shouldEqual <| OptionalValue( (34L, 14L) )
@@ -86,7 +86,7 @@ let ``Lookup using key that is between two parts of a range works as expected`` 
   |> shouldEqual <| OptionalValue( (19L, 9L) )
   rng |> Ranges.lookup 25L Lookup.Exact (fun _ _ -> true)
   |> shouldEqual <| OptionalValue.Missing
-        
+
 [<Test>]
 let ``Getting key range works on sample input`` () =
   Ranges.keyRange rng |> shouldEqual (10L, 59L)
@@ -102,9 +102,9 @@ let ``Key at offset & offset of key works on sample inputs`` () =
 
 [<Test>]
 let ``Key of offset & offset of key fail as expected on sample inputs`` () =
-  (fun () -> Ranges.keyAtOffset -1L rng |> ignore) 
+  (fun () -> Ranges.keyAtOffset -1L rng |> ignore)
   |> should throw typeof<System.IndexOutOfRangeException>
-  (fun () -> Ranges.keyAtOffset 30L rng |> ignore) 
+  (fun () -> Ranges.keyAtOffset 30L rng |> ignore)
   |> should throw typeof<System.IndexOutOfRangeException>
   Ranges.offsetOfKey 9L rng |> shouldEqual Ranges.invalid
   Ranges.offsetOfKey 20L rng |> shouldEqual Ranges.invalid

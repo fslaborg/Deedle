@@ -4,11 +4,11 @@
 // Helpers that can be used when implementing Lookup in your own Deedle sources
 // ------------------------------------------------------------------------------------------------
 
-module IndexUtilsModule = 
+module IndexUtilsModule =
   open Deedle
   open System
 
-  /// Binary search in range [ 0L .. count ]. The function is generic in ^T and 
+  /// Binary search in range [ 0L .. count ]. The function is generic in ^T and
   /// is 'inline' so that the comparison on ^T is optimized.
   ///
   ///  - `count` specifies the upper bound for the binary search
@@ -18,12 +18,12 @@ module IndexUtilsModule =
   ///  - `check` is a function that tests whether we want a given location
   ///    (if no, we scan - this can be used to find the first available value in a series)
   ///
-  let inline binarySearch count (valueAt:Func<int64, ^T>) value (lookup:Lookup) (check:Func<_, _>) = 
-  
-    /// Binary search the 'asOfTicks' series, looking for the 
+  let inline binarySearch count (valueAt:Func<int64, ^T>) value (lookup:Lookup) (check:Func<_, _>) =
+
+    /// Binary search the 'asOfTicks' series, looking for the
     /// specified 'asOf' (the invariant is that: lo <= res < hi)
     /// The result is index 'idx' such that: 'asOfAt idx <= asOf && asOf (idx+1) > asOf'
-    let rec binarySearch lo hi = 
+    let rec binarySearch lo hi =
       let mid = (lo + hi) / 2L
       if lo + 1L = hi then lo
       else
@@ -31,7 +31,7 @@ module IndexUtilsModule =
         else binarySearch mid hi
 
     /// Scan the series, looking for first value that passes 'check'
-    let rec scan next idx = 
+    let rec scan next idx =
       if idx < 0L || idx >= count then OptionalValue.Missing
       elif check.Invoke idx then OptionalValue(idx)
       else scan next (next idx)
@@ -40,7 +40,7 @@ module IndexUtilsModule =
     else
       let found = binarySearch 0L count
       match lookup with
-      | Lookup.Exact -> 
+      | Lookup.Exact ->
           // We're looking for an exact value, if it's not the one at 'idx' then Nothing
           if valueAt.Invoke found = value && check.Invoke found then OptionalValue(found)
           else OptionalValue.Missing
@@ -57,7 +57,7 @@ module IndexUtilsModule =
 /// Helpers that can be used when implementing Lookup
 type IndexUtils =
   /// See the comment for `IndexUtilsModule.binarySearch`
-  static member BinarySearch(count, valueAt, (value:int64), lookup, check) = 
+  static member BinarySearch(count, valueAt, (value:int64), lookup, check) =
     IndexUtilsModule.binarySearch count valueAt value lookup check
 
 
@@ -75,7 +75,7 @@ open Deedle.Indices.Virtual
 ///
 /// Helper that is invoked via Reflection to create generic virtual vectors.
 type VirtualVectorHelper =
-  static member Create<'T>(source:IVirtualVectorSource<'T>) = 
+  static member Create<'T>(source:IVirtualVectorSource<'T>) =
     VirtualVector<'T>(source)
 
 /// Provides static methods for creating virtual series and virtual frames.
@@ -83,10 +83,10 @@ type VirtualVectorHelper =
 type Virtual private () =
   static let createMi = typeof<VirtualVectorHelper>.GetMethod("Create")
 
-  static let createFrame rowIndex columnIndex (sources:seq<IVirtualVectorSource>) = 
-    let data = 
-      sources 
-      |> Seq.map (fun source -> 
+  static let createFrame rowIndex columnIndex (sources:seq<IVirtualVectorSource>) =
+    let data =
+      sources
+      |> Seq.map (fun source ->
           createMi.MakeGenericMethod(source.ElementType).Invoke(null, [| source |]) :?> IVector)
       |> Vector.ofValues
     Frame<_, _>(rowIndex, columnIndex, data, VirtualIndexBuilder.Instance, VirtualVectorBuilder.Instance)
@@ -109,10 +109,10 @@ type Virtual private () =
     Series(index, vector, VirtualVectorBuilder.Instance, VirtualIndexBuilder.Instance)
 
   /// Create a frame with ordinal index, containing the specified sources as columns.
-  static member CreateOrdinalFrame(keys:seq<_>, sources:seq<IVirtualVectorSource>) = 
+  static member CreateOrdinalFrame(keys:seq<_>, sources:seq<IVirtualVectorSource>) =
     let count = sources |> Seq.fold (fun st src ->
-      match st with 
-      | None -> Some(src.Length) 
+      match st with
+      | None -> Some(src.Length)
       | Some n when n = src.Length -> Some(n)
       | _ -> invalidArg "sources" "Sources should have the same length!" ) None
     if count = None then invalidArg "sources" "At least one column is required"
@@ -123,5 +123,5 @@ type Virtual private () =
   /// Create a frame with ordinal index, containing the specified sources as columns.
   /// The index source should support lookup (which is used for series lookup, slicing etc.)
   /// The value source does not need to implement lookup - mainly `ValueAt`, merging and getting sub-source
-  static member CreateFrame(indexSource:IVirtualVectorSource<_>, keys, sources:seq<IVirtualVectorSource>) = 
+  static member CreateFrame(indexSource:IVirtualVectorSource<_>, keys, sources:seq<IVirtualVectorSource>) =
     createFrame (VirtualOrderedIndex indexSource) (Index.ofKeys (ReadOnlyCollection.ofSeq keys)) sources

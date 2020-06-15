@@ -20,13 +20,13 @@ type DataFrameToR() =
     member x.Convert(engine, input) =
       { new IFrameOperation<_> with
           member x.Invoke(frame) =
-            let args = 
+            let args =
               [| for KeyValue(r, addr) in frame.ColumnIndex.Mappings do
                   let c = frame.Data.GetValue(addr)
-                  if c.HasValue then 
+                  if c.HasValue then
                     let data = convertVector c.Value
-                    yield data |] 
-            
+                    yield data |]
+
             let df = R.data_frame(paramArray=args)
             df.SetAttribute("names", frame.ColumnKeys |> Seq.map convertKey |> engine.CreateCharacterVector)
             df.SetAttribute("row.names", frame.RowKeys |> Seq.map convertKey |> engine.CreateCharacterVector)
@@ -64,12 +64,12 @@ type StringSeriesToR() =
 // ------------------------------------------------------------------------------------------------
 
 [<Export(typeof<IDefaultConvertFromR>)>]
-type DataFrameDefaultFromR() = 
+type DataFrameDefaultFromR() =
   interface IDefaultConvertFromR with
     member x.Convert(symExpr) = createDefaultFrame symExpr
 
 [<Export(typeof<IDefaultConvertFromR>)>]
-type SeriesDefaultFromR() = 
+type SeriesDefaultFromR() =
   interface IDefaultConvertFromR with
     member x.Convert(symExpr) = createDefaultSeries symExpr
 
@@ -244,30 +244,30 @@ type DataFrameBoolBoolFromR() =
   interface IConvertFromR<Frame<bool, bool>> with member x.Convert(symExpr) = tryCreateFrame symExpr
 
 // ------------------------------------------------------------------------------------------------
-// Conversions for other primitive types 
+// Conversions for other primitive types
 // ------------------------------------------------------------------------------------------------
 
 [<Export(typeof<IConvertToR<DateTime>>)>]
 type DateTimeConverter() =
-  interface IConvertToR<DateTime> with        
-    member this.Convert(engine: REngine, x: DateTime) =            
+  interface IConvertToR<DateTime> with
+    member this.Convert(engine: REngine, x: DateTime) =
       R.as_POSIXct(String.Format("{0:u}", x.ToUniversalTime(), "UTC"))
 
 [<Export(typeof<IConvertToR<seq<DateTime>>>)>]
 type DateTimeSeqConverter() =
-  interface IConvertToR<seq<DateTime>> with        
-    member this.Convert(engine: REngine, xs: seq<DateTime>) =            
+  interface IConvertToR<seq<DateTime>> with
+    member this.Convert(engine: REngine, xs: seq<DateTime>) =
       let dts = xs |> Seq.map (fun dt -> String.Format("{0:u}", dt.ToUniversalTime()))
       R.as_POSIXct(dts, "UTC")
 
 [<Export(typeof<IConvertToR<Decimal>>)>]
 type DecimalConverter() =
-  interface IConvertToR<Decimal> with        
-    member this.Convert(engine: REngine, x: Decimal) =            
-      upcast engine.CreateNumericVector [float x] 
+  interface IConvertToR<Decimal> with
+    member this.Convert(engine: REngine, x: Decimal) =
+      upcast engine.CreateNumericVector [float x]
 
 [<Export(typeof<IConvertToR<seq<Decimal>>>)>]
 type DecimalSeqConverter() =
-  interface IConvertToR<seq<Decimal>> with        
-    member this.Convert(engine: REngine, x: seq<Decimal>) =            
+  interface IConvertToR<seq<Decimal>> with
+    member this.Convert(engine: REngine, x: seq<Decimal>) =
       upcast engine.CreateNumericVector (Seq.map float x)

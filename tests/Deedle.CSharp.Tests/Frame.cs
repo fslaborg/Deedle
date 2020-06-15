@@ -58,7 +58,7 @@ namespace Deedle.CSharp.Tests
     public readonly string B;
     public PublicFields(int a, string b)
     {
-      this.A = a; 
+      this.A = a;
       this.B = b;
     }
   }
@@ -155,7 +155,7 @@ namespace Deedle.CSharp.Tests
   }
 
 	/* ----------------------------------------------------------------------------------
-	 * Test data frame dynamic 
+	 * Test data frame dynamic
 	 * --------------------------------------------------------------------------------*/
 	public class DynamicFrameTests
 	{

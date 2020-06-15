@@ -99,7 +99,7 @@ let ``describe works`` ()=
   desc.Get("0.75")  |> should beWithin  (3.0 +/- 1e-9)
 
 [<Test>]
-let ``quantile works`` () = 
+let ``quantile works`` () =
   let s1 = Series.ofValues [ 1.0; 2.0; 3.0; 4.0 ]
   let quantile = Stats.quantile ([|0.25; 0.5; 0.75|], s1)
 
@@ -256,9 +256,9 @@ let ``Expanding max works`` () =
   s3 |> Stats.expandingMax |> Stats.sum |> should beWithin (e3 +/- 1e-9)
 
 [<Test>]
-let ``Basic level statistics works on sample input`` () = 
-  let s1 = series [(1,0) => nan; (1,1) => 2.0; (2,0) => 3.0; (2,1) => 4.0 ]  
-  let s2 = series [(1,1) => 2; (2,0) => 3; (2,1) => 4 ]  
+let ``Basic level statistics works on sample input`` () =
+  let s1 = series [(1,0) => nan; (1,1) => 2.0; (2,0) => 3.0; (2,1) => 4.0 ]
+  let s2 = series [(1,1) => 2; (2,0) => 3; (2,1) => 4 ]
 
   s1 |> Stats.levelCount fst |> shouldEqual <| series [ 1 => 1; 2 => 2 ]
   s1 |> Stats.levelSum fst |> shouldEqual <| series [ 1 => 2.0; 2 => 7.0 ]
@@ -268,9 +268,9 @@ let ``Basic level statistics works on sample input`` () =
   s2 |> Stats.levelMean fst |> shouldEqual <| series [ 1 => 2.0; 2 => 3.5 ]
 
 [<Test>]
-let ``Advanced level statistics works on sample input`` () = 
-  let s1 = series [(1,0) => 1.0; (1,1) => 2.0; (1,2) => 3.0; (1,4) => 4.0; (2,0) => 3.0; (2,1) => 4.0 ]  
-  let s2 = series [(1,0) => 1; (1,1) => 2; (1,2) => 3; (1,4) => 4; (2,0) => 3; (2,1) => 4 ]  
+let ``Advanced level statistics works on sample input`` () =
+  let s1 = series [(1,0) => 1.0; (1,1) => 2.0; (1,2) => 3.0; (1,4) => 4.0; (2,0) => 3.0; (2,1) => 4.0 ]
+  let s2 = series [(1,0) => 1; (1,1) => 2; (1,2) => 3; (1,4) => 4; (2,0) => 3; (2,1) => 4 ]
 
   s1 |> Stats.levelKurt fst |> Stats.sum |> should beWithin (-1.2 +/- 1e-9)
   s1 |> Stats.levelSkew fst |> Stats.sum |> should beWithin (0.0 +/- 1e-9)
@@ -298,30 +298,30 @@ let ``maxBy and minBy work`` () =
   s2 |> Stats.minBy (fun x -> -x) |> shouldEqual (Some (2, 5))
 
 [<Test>]
-let ``sum returns NaN for empty series`` () = 
+let ``sum returns NaN for empty series`` () =
   series [ ] |> Stats.sum |> should be NaN
 
 [<Test>]
-let ``sum does not return NaN for series with missing values`` () = 
+let ``sum does not return NaN for series with missing values`` () =
   series [ 1 => nan; 2 => 1.0; 3 => 2.0 ] |> Stats.sum |> shouldEqual 3.0
 
 [<Test>]
-let ``unique count work``() = 
+let ``unique count work``() =
   series [1 => 1; 2 => 2; 3 => 1] |> Stats.uniqueCount |> shouldEqual 2
 
 // ------------------------------------------------------------------------------------------------
 // Statistics on frames
 // ------------------------------------------------------------------------------------------------
 
-let sampleFrame() = 
-  frame 
+let sampleFrame() =
+  frame
     [ "A" =?> Series.ofValues [ 1.0; nan; 2.0; 3.0 ]
       "B" =?> Series.ofValues [ "hi"; "there"; "!"; "?" ]
       "C" =?> Series.ofValues [ 3.3; 4.4; 5.5; 6.6 ] ]
 
 [<Test>]
 let ``Can calulate minimum and maximum of numeric series in a frame`` () =
-  let df = sampleFrame()   
+  let df = sampleFrame()
   df |> Stats.min |> shouldEqual <| series [ "A" => 1.0; "B" => nan; "C" => 3.3 ]
   df |> Stats.max |> shouldEqual <| series [ "A" => 3.0; "B" => nan; "C" => 6.6 ]
 
@@ -338,22 +338,22 @@ let ``Can calulate minimum and maximum of numeric series in a frame using extens
 open FsCheck
 
 [<Test>]
-let ``Moving minimum using Stats.movingMin is equal to using Series.window`` () = 
+let ``Moving minimum using Stats.movingMin is equal to using Series.window`` () =
   Check.QuickThrowOnFailure(fun (input:float[]) ->
     let s = Series.ofValues input
     for i in 1 .. s.KeyCount - 1 do
       let actual = s |> Stats.movingMin i
-      let expected = s |> Series.windowSizeInto (i, Boundary.AtBeginning) (fun s -> 
+      let expected = s |> Series.windowSizeInto (i, Boundary.AtBeginning) (fun s ->
         if s.Data.ValueCount = 0 then nan else Seq.min s.Data.Values)
       actual |> shouldEqual expected )
 
 [<Test>]
-let ``Moving maximum using Stats.movingMax is equal to using Series.window`` () = 
+let ``Moving maximum using Stats.movingMax is equal to using Series.window`` () =
   Check.QuickThrowOnFailure(fun (input:float[]) ->
     let s = Series.ofValues input
     for i in 1 .. s.KeyCount - 1 do
       let actual = s |> Stats.movingMax i
-      let expected = s |> Series.windowSizeInto (i, Boundary.AtBeginning) (fun s -> 
+      let expected = s |> Series.windowSizeInto (i, Boundary.AtBeginning) (fun s ->
         if s.Data.ValueCount = 0 then nan else Seq.max s.Data.Values)
       actual |> shouldEqual expected )
 
@@ -365,49 +365,49 @@ open MathNet.Numerics.Statistics
 
 [<Test>]
 let ``Mean is the same as in Math.NET``() =
-  Check.QuickThrowOnFailure(fun (input:int[]) -> 
+  Check.QuickThrowOnFailure(fun (input:int[]) ->
     let expected = Statistics.Mean(Array.map float input)
     let s = Series.ofValues (Array.map float input)
-    if s.ValueCount < 1 then 
+    if s.ValueCount < 1 then
       Double.IsNaN(Stats.mean s) |> shouldEqual true
-    else 
+    else
       Stats.mean s |> should beWithin (expected +/- 1e-9) )
 
 [<Test>]
 let ``StdDev and Variance is the same as in Math.NET``() =
-  Check.QuickThrowOnFailure(fun (input:int[]) -> 
+  Check.QuickThrowOnFailure(fun (input:int[]) ->
     let d = DescriptiveStatistics(Array.map float input)
     let s = Series.ofValues (Array.map float input)
-    if s.ValueCount < 2 then 
+    if s.ValueCount < 2 then
       Double.IsNaN(Stats.variance s) |> shouldEqual true
       Double.IsNaN(Stats.stdDev s) |> shouldEqual true
-    else 
-      Stats.variance s |> should beWithin (d.Variance +/- 1e-9) 
+    else
+      Stats.variance s |> should beWithin (d.Variance +/- 1e-9)
       Stats.stdDev s |> should beWithin (d.StandardDeviation +/- 1e-9) )
 
 [<Test>]
 let ``Skewness is the same as in Math.NET``() =
-  Check.QuickThrowOnFailure(fun (input:int[]) -> 
+  Check.QuickThrowOnFailure(fun (input:int[]) ->
     let expected = Statistics.Skewness(Array.map float input)
     let s = Series.ofValues (Array.map float input)
-    if s.ValueCount < 3 then 
+    if s.ValueCount < 3 then
       Double.IsNaN(Stats.skew s) |> shouldEqual true
-    else 
+    else
       Stats.skew s |> should beWithin (expected +/- 1e-9) )
 
 [<Test>]
 let ``Kurtosis is the same as in Math.NET``() =
-  Check.QuickThrowOnFailure(fun (input:int[]) -> 
+  Check.QuickThrowOnFailure(fun (input:int[]) ->
     let expected = Statistics.Kurtosis(Array.map float input)
     let s = Series.ofValues (Array.map float input)
-    if s.ValueCount < 4 then 
+    if s.ValueCount < 4 then
       Double.IsNaN(Stats.kurt s) |> shouldEqual true
-    else 
+    else
       Stats.kurt s |> should beWithin (expected +/- 1e-9) )
 
 [<Test>]
 let ``Median is the same as in Math.NET``() =
-  Check.QuickThrowOnFailure(fun (input:float[]) -> 
+  Check.QuickThrowOnFailure(fun (input:float[]) ->
     let input = Array.filter (Double.IsNaN >> not) input
     let expected = Statistics.Median(input)
     let actual = Series.ofValues input |> Stats.median
@@ -415,7 +415,7 @@ let ``Median is the same as in Math.NET``() =
 
 [<Test>]
 let ``Quantile is the same as in Math.NET``() =
-  Check.QuickThrowOnFailure(fun (input:float[]) -> 
+  Check.QuickThrowOnFailure(fun (input:float[]) ->
     let tau = 0.5
     let input = Array.filter (Double.IsNaN >> not) input
     let expected = ArrayStatistics.QuantileCustomInplace (input, tau, QuantileDefinition.R7)

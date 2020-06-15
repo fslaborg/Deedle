@@ -31,13 +31,13 @@ let ``NaN is recognized as a missing values, other floating point values are not
   testFloat32 42.0f |> shouldEqual false
 
 [<Test>]
-let ``null is recognized as a missing value, non-null references are not`` () = 
+let ``null is recognized as a missing value, non-null references are not`` () =
   let testRand = MissingValues.isNA<Random>()
   testRand (Random()) |> shouldEqual false
   testRand null |> shouldEqual true
 
 [<Test>]
-let ``Nullable value is recognized as missing, if it has no value`` () = 
+let ``Nullable value is recognized as missing, if it has no value`` () =
   let testNullable = MissingValues.isNA<Nullable<int>>()
   testNullable (Nullable(10)) |> shouldEqual false
   testNullable (Nullable()) |> shouldEqual true
@@ -50,9 +50,9 @@ let ``Equality on OptionalValue type works as expected`` () =
   OptionalValue.Missing = OptionalValue(1.0) |> shouldEqual false
 
 [<Test>]
-let ``Array.dropRange drops inclusive range from an array`` () = 
+let ``Array.dropRange drops inclusive range from an array`` () =
   [| 1 .. 10 |] |> Array.dropRange 0 9 |> shouldEqual [| |]
-  [| 1 .. 10 |] |> Array.dropRange 1 8 |> shouldEqual [| 1; 10 |]    
+  [| 1 .. 10 |] |> Array.dropRange 1 8 |> shouldEqual [| 1; 10 |]
 
 [<Test>]
 let ``Binary searching for exact or greater value works`` () =
@@ -65,7 +65,7 @@ let ``Binary searching for exact or greater value works`` () =
   |> Array.binarySearchNearestGreater 7 comparer true |> shouldEqual None
   new ReadOnlyCollection<_> [| |]
   |> Array.binarySearchNearestGreater 5 comparer true |> shouldEqual None
-    
+
 [<Test>]
 let ``Binary searching for exact or smaller value works`` () =
   let comparer = System.Collections.Generic.Comparer<int>.Default
@@ -89,7 +89,7 @@ let ``Binary searching for greater value works`` () =
   |> Array.binarySearchNearestGreater 6 comparer false |> shouldEqual None
   new ReadOnlyCollection<_> [| |]
   |> Array.binarySearchNearestGreater 5 comparer false |> shouldEqual None
-    
+
 [<Test>]
 let ``Binary searching for smaller value works`` () =
   let comparer = System.Collections.Generic.Comparer<int>.Default
@@ -101,11 +101,11 @@ let ``Binary searching for smaller value works`` () =
   |> Array.binarySearchNearestSmaller 0 comparer false |> shouldEqual None
   new ReadOnlyCollection<_> [| |]
   |> Array.binarySearchNearestSmaller 5 comparer false |> shouldEqual None
-    
+
 [<Test>]
 let ``Binary searching for exact or greater value satisfies laws`` () =
   let comparer = System.Collections.Generic.Comparer<int>.Default
-  Check.QuickThrowOnFailure(fun (input:int[]) (key:int) -> 
+  Check.QuickThrowOnFailure(fun (input:int[]) (key:int) ->
     let input = new ReadOnlyCollection<_>(Array.sort input)
     match Array.binarySearchNearestGreater key comparer true input with
     | Some idx -> input.[idx] >= key
@@ -114,7 +114,7 @@ let ``Binary searching for exact or greater value satisfies laws`` () =
 [<Test>]
 let ``Binary searching for exact or smaller value satisfies laws`` () =
   let comparer = System.Collections.Generic.Comparer<int>.Default
-  Check.QuickThrowOnFailure(fun (input:int[]) (key:int) -> 
+  Check.QuickThrowOnFailure(fun (input:int[]) (key:int) ->
     let input = new ReadOnlyCollection<_>(Array.sort input)
     match Array.binarySearchNearestSmaller key comparer true input with
     | Some idx -> input.[idx] <= key
@@ -123,7 +123,7 @@ let ``Binary searching for exact or smaller value satisfies laws`` () =
 [<Test>]
 let ``Binary searching for greater value satisfies laws`` () =
   let comparer = System.Collections.Generic.Comparer<int>.Default
-  Check.QuickThrowOnFailure(fun (input:int[]) (key:int) -> 
+  Check.QuickThrowOnFailure(fun (input:int[]) (key:int) ->
     let input = new ReadOnlyCollection<_>(input |> Seq.distinct |> Seq.sort |> Array.ofSeq)
     match Array.binarySearchNearestGreater key comparer false input with
     | Some idx -> input.[idx] > key
@@ -132,22 +132,22 @@ let ``Binary searching for greater value satisfies laws`` () =
 [<Test>]
 let ``Binary searching for smaller value satisfies laws`` () =
   let comparer = System.Collections.Generic.Comparer<int>.Default
-  Check.QuickThrowOnFailure(fun (input:int[]) (key:int) -> 
+  Check.QuickThrowOnFailure(fun (input:int[]) (key:int) ->
     let input = new ReadOnlyCollection<_>(input |> Seq.distinct |> Seq.sort |> Array.ofSeq)
     match Array.binarySearchNearestSmaller key comparer false input with
     | Some idx -> input.[idx] < key
     | None -> Seq.forall (fun v -> v >= key) input )
 
 [<Test>]
-let ``Seq.lastFew works on empty lists`` () = 
+let ``Seq.lastFew works on empty lists`` () =
   Seq.lastFew 3 List.empty<int> |> List.ofSeq |> shouldEqual []
 
 [<Test>]
-let ``Seq.lastFew works on non-empty lists`` () = 
+let ``Seq.lastFew works on non-empty lists`` () =
   Seq.lastFew 3 [ 1 .. 10 ]  |> List.ofSeq |> shouldEqual [ 8; 9; 10]
 
 [<Test>]
-let ``Seq.lastFew works on list with insufficient number of elements`` () = 
+let ``Seq.lastFew works on list with insufficient number of elements`` () =
   Seq.lastFew 3 [ 9; 10 ]  |> List.ofSeq |> shouldEqual [ 9; 10]
 
 [<Test>]
@@ -205,49 +205,49 @@ let ``Seq.windowedWithBounds can skip boundaries`` () =
 let ``Seq.windowedWithBounds can generate boundary at the ending`` () =
   Seq.windowedWithBounds 3 Boundary.AtEnding [ 1; 2; 3; 4 ] |> Array.ofSeq
   |> shouldEqual
-    [| DataSegment(Complete, [| 1; 2; 3 |]); DataSegment(Complete, [| 2; 3; 4 |]) 
+    [| DataSegment(Complete, [| 1; 2; 3 |]); DataSegment(Complete, [| 2; 3; 4 |])
        DataSegment(Incomplete, [| 3; 4 |]); DataSegment(Incomplete, [| 4 |]) |]
 
 [<Test>]
 let ``Seq.chunkedWithBounds works when length is multiple of chunk size`` () =
-  Seq.chunkedWithBounds 3 Boundary.AtBeginning [ 1 .. 9 ] |> Array.ofSeq 
+  Seq.chunkedWithBounds 3 Boundary.AtBeginning [ 1 .. 9 ] |> Array.ofSeq
   |> shouldEqual
-    [| DataSegment(Complete, [|1; 2; 3|]); DataSegment(Complete, [|4; 5; 6|]); 
+    [| DataSegment(Complete, [|1; 2; 3|]); DataSegment(Complete, [|4; 5; 6|]);
         DataSegment(Complete, [|7; 8; 9|]) |]
-  
+
 [<Test>]
 let ``Seq.chunkedWithBounds generates incomplete chunk at beginning`` () =
   Seq.chunkedWithBounds 3 Boundary.AtBeginning [ 1 .. 10 ] |> Array.ofSeq
   |> shouldEqual
-    [| DataSegment(Incomplete, [|1|]); DataSegment(Complete, [|2; 3; 4|]); 
+    [| DataSegment(Incomplete, [|1|]); DataSegment(Complete, [|2; 3; 4|]);
        DataSegment(Complete, [|5; 6; 7|]); DataSegment(Complete, [|8; 9; 10|]) |]
 
 [<Test>]
 let ``Seq.chunkedWithBounds can skip incomplete chunk at the beginning`` () =
   Seq.chunkedWithBounds 3 (Boundary.AtBeginning ||| Boundary.Skip) [ 1 .. 10 ] |> Array.ofSeq
   |> shouldEqual
-    [| DataSegment(Complete, [|2; 3; 4|]); DataSegment(Complete, [|5; 6; 7|]); 
+    [| DataSegment(Complete, [|2; 3; 4|]); DataSegment(Complete, [|5; 6; 7|]);
        DataSegment(Complete, [|8; 9; 10|]) |]
 
 [<Test>]
 let ``Seq.chunkedWithBounds works when length is multiple of chunk size (2)`` () =
   Seq.chunkedWithBounds 3 Boundary.AtEnding [ 1 .. 9 ] |> Array.ofSeq
   |> shouldEqual
-    [| DataSegment(Complete, [|1; 2; 3|]); DataSegment(Complete, [|4; 5; 6|]); 
+    [| DataSegment(Complete, [|1; 2; 3|]); DataSegment(Complete, [|4; 5; 6|]);
        DataSegment(Complete, [|7; 8; 9|]) |]
-  
+
 [<Test>]
 let ``Seq.chunkedWithBounds can generate incomplete chunk at the end`` () =
   Seq.chunkedWithBounds 3 Boundary.AtEnding [ 1 .. 10 ] |> Array.ofSeq
   |> shouldEqual
-    [| DataSegment(Complete, [|1; 2; 3|]); DataSegment(Complete, [|4; 5; 6|]); 
+    [| DataSegment(Complete, [|1; 2; 3|]); DataSegment(Complete, [|4; 5; 6|]);
        DataSegment(Complete, [|7; 8; 9|]); DataSegment(Incomplete, [| 10 |]) |]
 
 [<Test>]
 let ``Seq.chunkedWithBounds can skip incomplete chunk at the end`` () =
   Seq.chunkedWithBounds 3 (Boundary.AtEnding ||| Boundary.Skip) [ 1 .. 10 ] |> Array.ofSeq
   |> shouldEqual
-    [| DataSegment(Complete, [|1; 2; 3|]); DataSegment(Complete, [|4; 5; 6|]); 
+    [| DataSegment(Complete, [|1; 2; 3|]); DataSegment(Complete, [|4; 5; 6|]);
        DataSegment(Complete, [|7; 8; 9|]) |]
 
 [<Test>]
@@ -279,7 +279,7 @@ let ``Seq.alignOrdered (union) satisfies basic conditions`` () =
 [<Test>]
 let ``Seq.alignUnordered (union) satisfies basic conditions`` () =
   Check.QuickThrowOnFailure(fun (a1:int[]) (a2:int[]) ->
-    // Preprocess: we only want distinct values 
+    // Preprocess: we only want distinct values
     let a1 = ReadOnlyCollection.ofSeq (Seq.distinct a1)
     let a2 = ReadOnlyCollection.ofSeq (Seq.distinct a2)
     let keys, relocs = Seq.alignUnordered a1 a2 false
@@ -328,7 +328,7 @@ let ``Seq.alignOrdered (intersection) satisfies basic conditions`` () =
 [<Test>]
 let ``Seq.alignUnordered (intersection) satisfies basic conditions`` () =
   Check.QuickThrowOnFailure(fun (a1:int[]) (a2:int[]) ->
-    // Preprocess: we only want distinct values 
+    // Preprocess: we only want distinct values
     let a1 = ReadOnlyCollection.ofSeq (Seq.distinct a1)
     let a2 = ReadOnlyCollection.ofSeq (Seq.distinct a2)
     let keys, relocs = Seq.alignUnordered a1 a2 true
@@ -362,7 +362,7 @@ let ``Seq.alignAllOrdered behaves the same as Seq.alignOrdered`` () =
 [<Test>]
 let ``Seq.alignAllUnordered behaves the same as Seq.alignUnordered`` () =
   Check.QuickThrowOnFailure(fun (a1:int[]) (a2:int[]) ->
-    // Preprocess: we only want distinct values 
+    // Preprocess: we only want distinct values
     let a1 = ReadOnlyCollection.ofSeq (Seq.distinct a1)
     let a2 = ReadOnlyCollection.ofSeq (Seq.distinct a2)
     Seq.alignAllUnordered [| a1; a2 |] = Seq.alignUnordered a1 a2 false )
@@ -373,10 +373,10 @@ let ``Binomial heap can insert and remove minimum`` () =
   Check.QuickThrowOnFailure(fun (nums:int[]) ->
     let mutable h = BinomialHeap.empty
     // Check that we can insert all numbers and minimum works correctly
-    for i in 0 .. nums.Length - 1 do 
-      h <- BinomialHeap.insert (nums.[i]) h 
-      if BinomialHeap.findMin h <> (Seq.min nums.[0 .. i]) then failwith "Min failed" 
-    
+    for i in 0 .. nums.Length - 1 do
+      h <- BinomialHeap.insert (nums.[i]) h
+      if BinomialHeap.findMin h <> (Seq.min nums.[0 .. i]) then failwith "Min failed"
+
     // Check that we can remove all elements and the one before is always smaller
     let mutable lastMin = Int32.MinValue
     for i in 0 .. nums.Length - 1 do
@@ -397,9 +397,9 @@ let ``Array.quickSelectInplace selects nth element when compared with sorted arr
 // Type conversions
 // ------------------------------------------------------------------------------------------------
 
-let values = 
-  [ box 1uy; box 1y; box 1us; box 1s; box 1; box 1u; box 1L; 
-    box 1UL; box 1.0M; box 1.0f; box 1.0; box "1"; box true ] 
+let values =
+  [ box 1uy; box 1y; box 1us; box 1s; box 1; box 1u; box 1L;
+    box 1UL; box 1.0M; box 1.0f; box 1.0; box "1"; box true ]
 
 [<Test>]
 let ``Type conversion (flexible) can convert values to float and int`` () =
@@ -413,12 +413,12 @@ let ``Type conversion (flexible) can convert values to float and int`` () =
 [<Test>]
 let ``Type conversion (exact) can convert values of exact numeric types to float and int`` () =
   for value in values do
-    let ty = value.GetType() 
+    let ty = value.GetType()
     if ty = typeof<float> then
       Convert.convertType<float> ConversionKind.Safe value |> shouldEqual 1.0
       Convert.canConvertType<float> ConversionKind.Exact value |> shouldEqual true
   for value in values do
-    let ty = value.GetType() 
+    let ty = value.GetType()
     if ty = typeof<int> then
       Convert.convertType<int> ConversionKind.Exact value |> shouldEqual 1
       Convert.canConvertType<int> ConversionKind.Exact value |> shouldEqual true
@@ -426,12 +426,12 @@ let ``Type conversion (exact) can convert values of exact numeric types to float
 [<Test>]
 let ``Type conversion (exact) cannot convert values of non-exact numeric types to float and int`` () =
   for value in values do
-    let ty = value.GetType() 
+    let ty = value.GetType()
     if ty <> typeof<float> then
       (fun () -> Convert.convertType<float> ConversionKind.Exact value |> ignore) |> should throw typeof<InvalidCastException>
       Convert.canConvertType<float> ConversionKind.Exact value |> shouldEqual false
   for value in values do
-    let ty = value.GetType() 
+    let ty = value.GetType()
     if ty <> typeof<int> then
       (fun () -> Convert.convertType<int> ConversionKind.Exact value |> ignore) |> should throw typeof<InvalidCastException>
       Convert.canConvertType<int> ConversionKind.Exact value |> shouldEqual false
@@ -439,13 +439,13 @@ let ``Type conversion (exact) cannot convert values of non-exact numeric types t
 [<Test>]
 let ``Type conversion (safe) can convert values of smaller numeric types to float and int`` () =
   for value in values do
-    let ty = value.GetType() 
+    let ty = value.GetType()
     if ty <> typeof<string> && ty <> typeof<bool> then
       Convert.convertType<float> ConversionKind.Safe value |> shouldEqual 1.0
       Convert.canConvertType<float> ConversionKind.Safe value |> shouldEqual true
   for value in values do
-    let ty = value.GetType() 
-    if ty <> typeof<string> && ty <> typeof<bool> && ty <> typeof<float> && ty <> typeof<decimal> && 
+    let ty = value.GetType()
+    if ty <> typeof<string> && ty <> typeof<bool> && ty <> typeof<float> && ty <> typeof<decimal> &&
        ty <> typeof<float32> && ty <> typeof<float> && ty <> typeof<uint32> && ty <> typeof<int64> && ty <> typeof<uint64> then
       Convert.convertType<int> ConversionKind.Safe value |> shouldEqual 1
       Convert.canConvertType<int> ConversionKind.Safe value |> shouldEqual true
@@ -453,13 +453,13 @@ let ``Type conversion (safe) can convert values of smaller numeric types to floa
 [<Test>]
 let ``Type conversion (safe) cannot convert values of bigger or non-numeric types to float and int`` () =
   for value in values do
-    let ty = value.GetType() 
+    let ty = value.GetType()
     if ty = typeof<string> || ty = typeof<bool> then
       (fun () -> Convert.convertType<float> ConversionKind.Safe value |> ignore) |> should throw typeof<InvalidCastException>
       Convert.canConvertType<float> ConversionKind.Safe value |> shouldEqual false
   for value in values do
-    let ty = value.GetType() 
-    if ty = typeof<string> || ty = typeof<bool> || ty = typeof<float> || ty = typeof<decimal> || 
+    let ty = value.GetType()
+    if ty = typeof<string> || ty = typeof<bool> || ty = typeof<float> || ty = typeof<decimal> ||
        ty = typeof<float32> || ty = typeof<float> || ty = typeof<uint32> || ty = typeof<int64> || ty = typeof<uint64> then
       (fun () -> Convert.convertType<int> ConversionKind.Safe value |> ignore) |> should throw typeof<InvalidCastException>
       Convert.canConvertType<int> ConversionKind.Safe value |> shouldEqual false

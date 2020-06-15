@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------
-// Test that the documentation is generated correctly withtout F# errors 
+// Test that the documentation is generated correctly withtout F# errors
 // --------------------------------------------------------------------------------------
 #if INTERACTIVE
 #I "../../packages/FSharp.Formatting/lib/net40"
@@ -37,14 +37,14 @@ do Directory.CreateDirectory(output) |> ignore
 type TestError =
   | EvaluationFailed of FsiEvaluationFailedInfo
   | CompileError of string * SourceError
-  override x.ToString() = 
+  override x.ToString() =
     match x with
     | EvaluationFailed(err) ->
         sprintf "%s: %A\nSource:\n%s\n\nError:%s" (defaultArg err.File "unknown") err.Exception.Message err.Text err.StdErr
-    | CompileError(file, SourceError(startl, endl, kind, msg)) -> 
+    | CompileError(file, SourceError(startl, endl, kind, msg)) ->
         sprintf "%s (%d:%d-%d:%d): %O - %s" file (fst startl) (snd startl) (fst endl) (snd endl) kind msg
 
-/// Process a specified file in the documentation folder and return 
+/// Process a specified file in the documentation folder and return
 /// the total number of unexpected errors found (print them to the output too)
 let processFile file =
   printfn "Processing '%s'" file
@@ -68,13 +68,13 @@ let processFile file =
 // Core API documentation
 // ------------------------------------------------------------------------------------
 
-let docFiles = 
+let docFiles =
   seq { for sub in [ "."; ] do
           for file in Directory.EnumerateFiles(sources @@ sub, "*.fsx") do
             yield sub + "/" + Path.GetFileName(file) }
 
 #if INTERACTIVE
-for file in docFiles do 
+for file in docFiles do
     let errors = processFile file
     errors |> Seq.map (sprintf "%O") |> String.concat "\n" |> printfn "%s"
 #else
@@ -83,25 +83,25 @@ for file in docFiles do
 [<TestCaseSource "docFiles">]
 let ``Documentation generated correctly `` (file:string) =
 
-  let errors = 
+  let errors =
     // WORKAROUND: The R type provider fails on Travis because it does not have R installed
     // (This should be removed once we close #91 in RProvider)
     if file.Contains("rinterop.fsx") && Type.GetType("Mono.Runtime") <> null then []
     else processFile file
 
-  let errors =  
-    // WORKAROUND: The R type provider does not seem to work in the NUnit context 
-    // (it gives "System.Security.SecurityException : Type System.Runtime.Remoting.ObjRef 
-    // and the types derived from it (such as System.Runtime.Remoting.ObjRef) are not permitted 
+  let errors =
+    // WORKAROUND: The R type provider does not seem to work in the NUnit context
+    // (it gives "System.Security.SecurityException : Type System.Runtime.Remoting.ObjRef
+    // and the types derived from it (such as System.Runtime.Remoting.ObjRef) are not permitted
     // to be deserialized at this security level.) so ignore expected errors...
     if file.Contains("rinterop.fsx") then
       errors |> List.filter (function
         | CompileError(_, SourceError(_, _, _, msg)) ->
-            not (msg.Contains("'datasets' is not defined") || msg.Contains("'base' is not defined") || 
+            not (msg.Contains("'datasets' is not defined") || msg.Contains("'base' is not defined") ||
               msg.Contains("'zoo' is not defined") || msg.Contains("'R' is not defined") ||
               msg.Contains("System.Runtime.Remoting.ObjRef"))
         | EvaluationFailed _ -> false )
- 
+
     elif (file.Contains("series.fsx") || file.Contains("tutorial.fsx")) && Type.GetType("Mono.Runtime") <> null then
       // WORKAROUND: FSharp.Charting which is used in some examples does not work on Mono
       // and so the evaluation fails for various reasons - ignore that for now
@@ -110,9 +110,9 @@ let ``Documentation generated correctly `` (file:string) =
         | CompileError _ -> true
         | EvaluationFailed _ -> false )
 
-    else errors 
+    else errors
 
-  // WORKAROUND: parsing script incurs error such as 
+  // WORKAROUND: parsing script incurs error such as
   // "Error - An implementation of the file or module 'Frame$fsx' has already been given"
   // It might be related to compiler services issues. Ignore for now.
   let errors =

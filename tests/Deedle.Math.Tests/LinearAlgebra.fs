@@ -81,7 +81,7 @@ let ``Frame can multiply with matrix`` (name) =
       let s1 = frameA.GetRowAt<float>(i)
       let s2 = matrixB.Column(j)
       s1.Dot(s2) |> should beWithin (matrixC.Item(i,j) +/- 1e-5)
-  
+
   let matrixD = matrixB.Dot(frameA)
   for i in [|0..matrixD.RowCount-1|] do
     for j in [|0..matrixD.ColumnCount-1|] do
@@ -103,7 +103,7 @@ let ``Frame can multiply with vector``() =
   frame.Dot(x).Item(1) |> should beWithin (9.0 +/- 1e-5)
   x.Dot(frame).Item(1) |> should beWithin (6.0 +/- 1e-5)
 
-[<Test>] 
+[<Test>]
 let ``Series can multiply with vector``() =
   let frame = testFrame.["Singular3x3"]
   let s = frame.[1]
@@ -157,7 +157,7 @@ let ``Frame dot frame throws error on unmatched keys``() =
 let ``Frame dot series works on matching set of keys``() =
   let x =
     testFrame.["Singular3x3"]
-    |> Frame.indexColsWith [0; 2; 1]    
+    |> Frame.indexColsWith [0; 2; 1]
   let y = [1.; 2.; 4.] |> Series.ofValues
   let expectedKeys = seq [0; 1; 2]
   let actualKeys = x.Dot(y).Keys
@@ -165,12 +165,12 @@ let ``Frame dot series works on matching set of keys``() =
   let actualValue = 9.
   expectedKeys |> should equal actualKeys
   expectedValue |> should beWithin (actualValue +/- 1e-5)
-  
+
 [<Test>]
 let ``Frame dot series throws error on unmatched keys``() =
   let x =
     testFrame.["Singular3x3"]
-    |> Frame.indexColsWith [0; 3; 1]    
+    |> Frame.indexColsWith [0; 3; 1]
   let y = [1.; 2.; 4.] |> Series.ofValues
   (fun () -> x.Dot(y) |> ignore)
   |> should throw typeof<System.InvalidOperationException>
@@ -190,7 +190,7 @@ let ``Series dot frame works on matching set of keys``() =
 
 [<Test>]
 let ``Series dot frame throws error on unmatched keys``() =
-  let x = [1.; 2.; 4.] |> Series.ofValues |> Series.indexWith [0; 3; 1]    
+  let x = [1.; 2.; 4.] |> Series.ofValues |> Series.indexWith [0; 3; 1]
   let y =
     testFrame.["Singular3x3"]
     |> Frame.indexColsWith [0; 2; 1]

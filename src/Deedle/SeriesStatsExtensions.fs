@@ -1,9 +1,9 @@
-﻿namespace Deedle 
+﻿namespace Deedle
 
 open System
 open System.Runtime.CompilerServices
 
-/// The type implements C# and F# extension methods that add numerical operations 
+/// The type implements C# and F# extension methods that add numerical operations
 /// to Deedle series.
 ///
 /// [category:Frame and series operations]
@@ -65,7 +65,7 @@ type SeriesStatsExtensions =
 
   /// Groups the elements of the input series in groups based on the keys
   /// produced by `groupSelector` and then returns a new series containing
-  /// the mean of each group. 
+  /// the mean of each group.
   ///
   /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
   ///
@@ -75,12 +75,12 @@ type SeriesStatsExtensions =
   ///
   /// [category:Statistics]
   [<Extension>]
-  static member inline MeanLevel(series:Series<'K1, 'V>, groupSelector:Func<'K1, 'K2>) = 
+  static member inline MeanLevel(series:Series<'K1, 'V>, groupSelector:Func<'K1, 'K2>) =
     Series.applyLevel groupSelector.Invoke Stats.mean series
 
   /// Groups the elements of the input series in groups based on the keys
   /// produced by `groupSelector` and then returns a new series containing
-  /// the standard deviation of each group. 
+  /// the standard deviation of each group.
   ///
   /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
   ///
@@ -89,12 +89,12 @@ type SeriesStatsExtensions =
   ///  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
   ///
   /// [category:Statistics]
-  static member inline StdDevLevel(series:Series<'K1, 'V>, groupSelector:Func<'K1, 'K2>) = 
+  static member inline StdDevLevel(series:Series<'K1, 'V>, groupSelector:Func<'K1, 'K2>) =
     Series.applyLevel groupSelector.Invoke Stats.stdDev series
 
   /// Groups the elements of the input series in groups based on the keys
   /// produced by `groupSelector` and then returns a new series containing
-  /// the median of each group. 
+  /// the median of each group.
   ///
   /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
   ///
@@ -104,12 +104,12 @@ type SeriesStatsExtensions =
   ///
   /// [category:Statistics]
   [<Extension>]
-  static member inline MedianLevel(series:Series<'K1, 'V>, groupSelector:Func<'K1, 'K2>) = 
+  static member inline MedianLevel(series:Series<'K1, 'V>, groupSelector:Func<'K1, 'K2>) =
       Series.applyLevel groupSelector.Invoke Stats.median series
 
   /// Groups the elements of the input series in groups based on the keys
   /// produced by `groupSelector` and then returns a new series containing
-  /// the sum of each group. 
+  /// the sum of each group.
   ///
   /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
   ///
@@ -119,12 +119,12 @@ type SeriesStatsExtensions =
   ///
   /// [category:Statistics]
   [<Extension>]
-  static member inline SumLevel(series:Series<'K1, 'V>, groupSelector:Func<'K1, 'K2>) = 
+  static member inline SumLevel(series:Series<'K1, 'V>, groupSelector:Func<'K1, 'K2>) =
     Series.applyLevel groupSelector.Invoke Stats.sum series
 
   /// Groups the elements of the input series in groups based on the keys
   /// produced by `groupSelector` and then returns a new series containing
-  /// the smallest element of each group. 
+  /// the smallest element of each group.
   ///
   /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
   ///
@@ -134,12 +134,12 @@ type SeriesStatsExtensions =
   ///
   /// [category:Statistics]
   [<Extension>]
-  static member inline MinLevel(series:Series<'K1, 'V>, groupSelector:Func<'K1, 'K2>) = 
+  static member inline MinLevel(series:Series<'K1, 'V>, groupSelector:Func<'K1, 'K2>) =
     Series.applyLevelOptional groupSelector.Invoke Stats.tryMin series
 
   /// Groups the elements of the input series in groups based on the keys
   /// produced by `groupSelector` and then returns a new series containing
-  /// the greatest element of each group. 
+  /// the greatest element of each group.
   ///
   /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
   ///
@@ -149,10 +149,10 @@ type SeriesStatsExtensions =
   ///
   /// [category:Statistics]
   [<Extension>]
-  static member inline MaxLevel(series:Series<'K1, 'V>, groupSelector:Func<'K1, 'K2>) = 
+  static member inline MaxLevel(series:Series<'K1, 'V>, groupSelector:Func<'K1, 'K2>) =
     Series.applyLevelOptional groupSelector.Invoke Stats.tryMax series
 
-  /// Linearly interpolates an ordered series given a new sequence of keys. 
+  /// Linearly interpolates an ordered series given a new sequence of keys.
   ///
   /// ## Parameters
   ///  - `keys` - Sequence of new keys that forms the index of interpolated results
@@ -160,6 +160,6 @@ type SeriesStatsExtensions =
   ///
   /// [category:Calculations, aggregation and statistics]
   [<Extension>]
-  static member inline InterpolateLinear(series:Series<'K, 'V>, keys:'K seq, keyDiff:Func<'K,'K,float>): Series<'K,float> = 
-    series |> Stats.interpolateLinear keys (fun a b -> keyDiff.Invoke(a,b))   
+  static member inline InterpolateLinear(series:Series<'K, 'V>, keys:'K seq, keyDiff:Func<'K,'K,float>): Series<'K,float> =
+    series |> Stats.interpolateLinear keys (fun a b -> keyDiff.Invoke(a,b))
 

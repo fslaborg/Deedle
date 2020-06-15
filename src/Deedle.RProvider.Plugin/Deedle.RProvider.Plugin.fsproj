@@ -5,12 +5,12 @@
     <OutputPath>../../bin/</OutputPath>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <DisableImplicitFSharpCoreReference>true</DisableImplicitFSharpCoreReference>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>    
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   <PropertyGroup>
     <FscToolPath>$(MSBuildThisFileDirectory)</FscToolPath>
     <FscToolExe>fscfix.bat</FscToolExe>
-  </PropertyGroup>   
+  </PropertyGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="Convertors.fs" />

@@ -50,7 +50,7 @@ namespace Deedle.CSharp.Tests
 				nums.Aggregate(Aggregation.WindowSize<int>(5, Boundary.Skip),
 					(segment => segment.Data.Keys.First()),
 					(segment => new OptionalValue<string>(new string(segment.Data.Values.ToArray()))));
-			
+
 			var expected =
 				new SeriesBuilder<int, string> {
 					{ 0, "abcde" },

@@ -16,18 +16,18 @@ type InferedProperty =
 /// For heterogeneous types (types that have multiple possible forms
 /// such as differently named XML nodes or records and arrays mixed together)
 /// this type represents the number of occurrences of individual forms
-and InferedMultiplicity = 
+and InferedMultiplicity =
   | Single
   | OptionalSingle
   | Multiple
 
 /// For heterogeneous types, this represents the tag that defines the form
 /// (that is either primitive type, collection, named record etc.)
-and [<RequireQualifiedAccess>] InferedTypeTag = 
+and [<RequireQualifiedAccess>] InferedTypeTag =
   // Unknown type
   | Null
   // Primitive types
-  | Number 
+  | Number
   | Boolean
   | String
   | Json
@@ -35,17 +35,17 @@ and [<RequireQualifiedAccess>] InferedTypeTag =
   | TimeSpan
   | Guid
   // Collections and sum types
-  | Collection 
+  | Collection
   | Heterogeneous
   // Possibly named record
   | Record of string option
 
 /// Represents inferred structural type. A type may be either primitive type
-/// (one of those listed by `primitiveTypes`) or it can be collection, 
+/// (one of those listed by `primitiveTypes`) or it can be collection,
 /// (named) record and heterogeneous type. We also have `Null` type (which is
 /// a subtype of all non-primitive types) and universal `Top` type.
 ///
-///  * For collection, we infer the types of different things that appear in 
+///  * For collection, we infer the types of different things that appear in
 ///    the collection and how many times they do.
 ///
 ///  * A heterogeneous type (sum type) is simply a choice containing one
@@ -68,7 +68,7 @@ and [<CustomEquality; NoComparison; RequireQualifiedAccess>] InferedType =
     | Primitive(optional = true) | Record(optional = true) | Json(optional = true) -> true
     | _ -> false
 
-  static member CanHaveEmptyValues typ = 
+  static member CanHaveEmptyValues typ =
     typ = typeof<string> || typ = typeof<float>
 
   /// When allowEmptyValues is true, we allow "" and double.NaN, otherwise
@@ -77,7 +77,7 @@ and [<CustomEquality; NoComparison; RequireQualifiedAccess>] InferedType =
   member x.EnsuresHandlesMissingValues allowEmptyValues =
     match x with
     | Null | Heterogeneous _ | Primitive(optional = true) | Record(optional = true) | Json(optional = true) -> x
-    | Primitive(typ, _, false) when allowEmptyValues && InferedType.CanHaveEmptyValues typ -> x    
+    | Primitive(typ, _, false) when allowEmptyValues && InferedType.CanHaveEmptyValues typ -> x
     | Primitive(typ, unit, false) -> Primitive(typ, unit, true)
     | Record(name, props, false) -> Record(name, props, true)
     | Json(typ, false) -> Json(typ, true)
@@ -92,12 +92,12 @@ and [<CustomEquality; NoComparison; RequireQualifiedAccess>] InferedType =
     | Json(typ, true) -> Json(typ, false)
     | _ -> x
 
-  // We need to implement custom equality that returns 'true' when 
+  // We need to implement custom equality that returns 'true' when
   // values reference the same object (to support recursive types)
   override x.GetHashCode() = -1
 
-  override x.Equals(y:obj) = 
-    if y :? InferedType then 
+  override x.Equals(y:obj) =
+    if y :? InferedType then
       match x, y :?> InferedType with
       | a, b when Object.ReferenceEquals(a, b) -> true
       | Primitive(t1, ot1, b1), Primitive(t2, ot2, b2) -> t1 = t2 && ot1 = ot2 && b1 = b2
@@ -115,7 +115,7 @@ and [<CustomEquality; NoComparison; RequireQualifiedAccess>] InferedType =
 // Additional operations for working with the inferred representation
 
 type InferedTypeTag with
-  member x.NiceName = 
+  member x.NiceName =
     match x with
     | Null -> failwith "Null nodes should be skipped"
     | Number -> "Number"
@@ -129,9 +129,9 @@ type InferedTypeTag with
     | Record None -> "Record"
     | Record (Some name) -> NameUtils.nicePascalName name
     | Json _ -> "Json"
-  
+
   /// Converts tag to string code that can be passed to generated code
-  member x.Code = 
+  member x.Code =
     match x with
     | Record (Some name) -> "Record@" + name
     | _ -> x.NiceName
@@ -142,9 +142,9 @@ type InferedTypeTag with
     | s when s.StartsWith("Record@") -> Record(Some(s.Substring("Record@".Length)))
     | "Record" -> Record None
     | "Json" -> Json
-    | "Number" -> Number 
+    | "Number" -> Number
     | "Boolean" -> Boolean
-    | "String" -> String 
+    | "String" -> String
     | "DateTime" -> DateTime
     | "TimeSpan" -> TimeSpan
     | "Guid" -> Guid
@@ -177,7 +177,7 @@ type PrimitiveInferedProperty =
     UnitOfMeasure : Type option
     TypeWrapper : TypeWrapper }
   static member Create(name, typ, typWrapper, unit) =
-    let runtimeTyp = 
+    let runtimeTyp =
       if typ = typeof<Bit> then typeof<bool>
       elif typ = typeof<Bit0> || typ = typeof<Bit1> then typeof<int>
       else typ
@@ -189,13 +189,13 @@ type PrimitiveInferedProperty =
   static member Create(name, typ, optional, unit) =
     PrimitiveInferedProperty.Create(name, typ, (if optional then TypeWrapper.Option else TypeWrapper.None), unit)
 
-and     
-    [<RequireQualifiedAccess>] 
+and
+    [<RequireQualifiedAccess>]
     /// Represents a transformation of a type
-    TypeWrapper = 
+    TypeWrapper =
     /// No transformation will be made to the type
-    | None 
+    | None
     /// The type T will be converter to type T option
-    | Option 
+    | Option
     /// The type T will be converter to type Nullable<T>
     | Nullable

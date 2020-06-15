@@ -14,15 +14,15 @@ type internal UriResolutionType =
 
 let internal isWeb (uri:Uri) = uri.IsAbsoluteUri && not uri.IsUnc && uri.Scheme <> "file"
 
-type internal UriResolver = 
-    
+type internal UriResolver =
+
     { ResolutionType : UriResolutionType
       DefaultResolutionFolder : string
       ResolutionFolder : string }
-    
+
     static member Create(resolutionType, defaultResolutionFolder, resolutionFolder) =
       { ResolutionType = resolutionType
-        DefaultResolutionFolder = defaultResolutionFolder       
+        DefaultResolutionFolder = defaultResolutionFolder
         ResolutionFolder = resolutionFolder }
 
     /// Resolve the absolute location of a file (or web URL) according to the rules
@@ -38,15 +38,15 @@ type internal UriResolver =
     ///      * otherwise use the default resolution folder
     ///    At run-time:
     ///      * if the user specified resolution folder, use that
-    ///      * if it is running in F# interactive (config.IsHostedExecution) 
+    ///      * if it is running in F# interactive (config.IsHostedExecution)
     ///        use the default resolution folder
     ///      * otherwise, use 'CurrentDomain.BaseDirectory'
     /// returns an absolute uri * isWeb flag
-    member x.Resolve(uri:Uri) = 
-      if uri.IsAbsoluteUri then 
+    member x.Resolve(uri:Uri) =
+      if uri.IsAbsoluteUri then
         uri, isWeb uri
       else
-        let root = 
+        let root =
           match x.ResolutionType with
           | DesignTime -> if String.IsNullOrEmpty x.ResolutionFolder
                           then x.DefaultResolutionFolder
@@ -68,7 +68,7 @@ let private appendToLogMultiple logFile lines = lock logLock <| fun () ->
         writer.WriteLine(line.Replace("\r", null).Replace("\n","\\n"))
     writer.Flush()
 
-let private appendToLog logFile line = 
+let private appendToLog logFile line =
     appendToLogMultiple logFile [line]
 
 let internal log str =
@@ -80,7 +80,7 @@ let internal log str =
     |> appendToLog "log.txt"
 
 let internal logWithStackTrace (str:string) =
-    let stackTrace = 
+    let stackTrace =
         Environment.StackTrace.Split '\n'
         |> Seq.skip 3
         |> Seq.truncate 5
@@ -90,7 +90,7 @@ let internal logWithStackTrace (str:string) =
 
 open System.Diagnostics
 open System.Threading
-  
+
 let internal logTime category (instance:string) =
 
     log (sprintf "%s %s" category instance)
@@ -123,16 +123,16 @@ type private FileWatcher(path) =
 
     let getLastWrite() = File.GetLastWriteTime path
     let mutable lastWrite = getLastWrite()
-    
-    let watcher = 
+
+    let watcher =
         new FileSystemWatcher(
-            Filter = Path.GetFileName path, 
-            Path = Path.GetDirectoryName path, 
+            Filter = Path.GetFileName path,
+            Path = Path.GetDirectoryName path,
             EnableRaisingEvents = true)
 
     let checkForChanges action _ =
         let curr = getLastWrite()
-    
+
         if lastWrite <> curr then
             log (sprintf "File %s: %s" action path)
             lastWrite <- curr
@@ -146,29 +146,29 @@ type private FileWatcher(path) =
         watcher.Renamed.Add (checkForChanges "renamed")
         watcher.Deleted.Add (checkForChanges "deleted")
 
-    member __.Subscribe(name, action) = 
+    member __.Subscribe(name, action) =
         subscriptions.Add(name, action)
 
-    member __.Unsubscribe(name) = 
+    member __.Unsubscribe(name) =
         if subscriptions.Remove(name) then
-            log (sprintf "Unsubscribed %s from %s watcher" name path)         
+            log (sprintf "Unsubscribed %s from %s watcher" name path)
             if subscriptions.Count = 0 then
-                log (sprintf "Disposing %s watcher" path) 
+                log (sprintf "Disposing %s watcher" path)
                 watcher.Dispose()
                 true
             else
-                false 
+                false
         else
             false
 
-let private watchers = Dictionary<string, FileWatcher>() 
+let private watchers = Dictionary<string, FileWatcher>()
 
 // sets up a filesystem watcher that calls the invalidate function whenever the file changes
 let watchForChanges path (owner, onChange) =
 
-    let watcher = 
+    let watcher =
 
-        lock watchers <| fun () -> 
+        lock watchers <| fun () ->
 
             match watchers.TryGetValue(path) with
             | true, watcher ->
@@ -178,20 +178,20 @@ let watchForChanges path (owner, onChange) =
                 watcher
 
             | false, _ ->
-                   
+
                 log (sprintf "Setting up %s watcher" path)
                 let watcher = FileWatcher path
                 watcher.Subscribe(owner, onChange)
                 watchers.Add(path, watcher)
                 watcher
-    
+
     { new IDisposable with
         member __.Dispose() =
             lock watchers <| fun () ->
                 if watcher.Unsubscribe(owner) then
-                    watchers.Remove(path) |> ignore 
+                    watchers.Remove(path) |> ignore
     }
-            
+
 /// Opens a stream to the uri using the uriResolver resolution rules
 /// It the uri is a file, uses shared read, so it works when the file locked by Excel or similar tools,
 /// and sets up a filesystem watcher that calls the invalidate function whenever the file changes
@@ -207,7 +207,7 @@ let internal asyncRead (uriResolver:UriResolver) formatName encodingStr (uri:Uri
             | "XML" -> [ HttpContentTypes.Xml ]
             | _ -> []
             @ [ HttpContentTypes.Any ]
-        let headers = [ HttpRequestHeaders.UserAgent ("F# Data " + formatName + " Type Provider") 
+        let headers = [ HttpRequestHeaders.UserAgent ("F# Data " + formatName + " Type Provider")
                         HttpRequestHeaders.Accept (String.concat ", " contentTypes) ]
         // Download the whole web resource at once, otherwise with some servers we won't get the full file
         let! text = Http.AsyncRequestString(uri.OriginalString, headers = headers, responseEncodingOverride = encodingStr)
@@ -227,14 +227,14 @@ let private withUri uri f =
   | true, uri -> f uri
 
 /// Returns a TextReader for the uri using the runtime resolution rules
-let asyncReadTextAtRuntime forFSI defaultResolutionFolder resolutionFolder formatName encodingStr uri = 
+let asyncReadTextAtRuntime forFSI defaultResolutionFolder resolutionFolder formatName encodingStr uri =
   withUri uri <| fun uri ->
-    let resolver = UriResolver.Create((if forFSI then RuntimeInFSI else Runtime), 
+    let resolver = UriResolver.Create((if forFSI then RuntimeInFSI else Runtime),
                                       defaultResolutionFolder, resolutionFolder)
     asyncRead resolver formatName encodingStr uri |> fst
 
 /// Returns a TextReader for the uri using the designtime resolution rules
-let asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder formatName encodingStr uri = 
+let asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder formatName encodingStr uri =
   withUri uri <| fun uri ->
     let resolver = UriResolver.Create(DesignTime, defaultResolutionFolder, resolutionFolder)
     asyncRead resolver formatName encodingStr uri |> fst

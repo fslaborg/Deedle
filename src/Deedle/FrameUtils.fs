@@ -74,7 +74,7 @@ module internal Reflection =
         let body = Expression.Call(createTypedVectorMi.MakeGenericMethod([| typ |]), par)
         Expression.Lambda<Func<seq<OptionalValue<obj>>, _>>(body, par).Compile().Invoke)
     fun typ ->
-      cache.GetOrAdd(typ, valueFactory)      
+      cache.GetOrAdd(typ, valueFactory)
 
   let getExpandableProperties (ty:Type) =
     ty.GetProperties(BindingFlags.Instance ||| BindingFlags.Public)
@@ -428,7 +428,7 @@ module internal FrameUtils =
     let preferOptionals = defaultArg preferOptions false
 
     // Default parameters that cannot be overriden (Frames can always contain NAs)
-    let safeMode = false    
+    let safeMode = false
 
     // If the stream does not support seeking, we read the entire dataset into memory
     // because we need to iterate over the stream twice; once for inferring the schema

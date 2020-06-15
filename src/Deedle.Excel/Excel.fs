@@ -91,7 +91,7 @@ let private assertInstance () =
         let wbs = excelApp.Workbooks
         if wbs.Count = 0 then
             wbs.Add(Enums.XlWBATemplate.xlWBATWorksheet) |> ignore
-            
+
         if excelApp = null then
             openNewExcelApplication () |> ignore
         elif activeWb <> null then
@@ -177,7 +177,7 @@ let private putArray isH (arr : obj [,]) startRange =
         let (height, width) = arr |> arraySize
         let range = startRange.NextRange |> convertRange |> resize(height, width)
         range.Value2 <- arr
-        
+
         let next = if isH then range |> offset (0, width) else range |> offset (height, 0)
         let current = RealExcel range
         {
@@ -260,15 +260,15 @@ let clearRange range =
     r.ClearContents() |> ignore
 
 module internal XlHelper =
-    let ap opt f state = 
-        match opt with 
+    let ap opt f state =
+        match opt with
         | Some a -> f a state
         | None -> state
-        
-    let aptest opt f state = 
-        if opt then 
+
+    let aptest opt f state =
+        if opt then
             f state
-        else 
+        else
             state
 
     let unionRange = Seq.reduce (fun r1 r2 -> excelApp.Union(r1,r2))
@@ -277,7 +277,7 @@ module internal XlHelper =
         Debug.WriteLine(r.Address)
         r
 
-    let debugState msg (state:ExcelState) = 
+    let debugState msg (state:ExcelState) =
         let printRange (msg:string) = function
             | Empty -> Debug.Write(sprintf "%s -> %s" msg "Empty")
             | RealExcel r -> Debug.Write(sprintf "%s -> %s" msg (r.Address))
@@ -290,33 +290,33 @@ module internal XlHelper =
         state.History |> List.iter (fun x->printRange "\tH" x ; Debug.WriteLine("");)
         Debug.WriteLine("-------------")
         state
-        
 
-    let skipHistory n state = 
-        let rec loop count l = 
-            if count = n then 
+
+    let skipHistory n state =
+        let rec loop count l =
+            if count = n then
                 l
-            else 
-                match l with 
+            else
+                match l with
                 | h::t -> loop (count+1) t
                 | [] -> l
 
         { state with History = state.History |> loop 0 |> Seq.toList }
 
     let applyToHistory f state =
-        let res = state.History |> List.choose (function | Empty -> None | RealExcel r -> Some r) 
+        let res = state.History |> List.choose (function | Empty -> None | RealExcel r -> Some r)
                                 |> unionRange
                                 |> (fun r -> if r.Areas.Count > 0 then r.Areas.[1] else r)
                                 |> f
         {state with LastRange = RealExcel res}
 
-    let (|?) (str:string) defaultText = 
-        if System.String.IsNullOrEmpty(str) then 
+    let (|?) (str:string) defaultText =
+        if System.String.IsNullOrEmpty(str) then
             defaultText
-        else 
+        else
             str
 
-    let asTable (t:IExportExcelTable) start showRowHeaders showColumnHeaders tableTitle tableStyle showFilter= 
+    let asTable (t:IExportExcelTable) start showRowHeaders showColumnHeaders tableTitle tableStyle showFilter=
         // Remove the check that bailed if t.Count = 0, because if we don't generate row and column
         // headers, various other downstream things fail.
         let showRows = defaultArg showRowHeaders t.ShowIndex
@@ -324,11 +324,11 @@ module internal XlHelper =
         let showFilter = defaultArg showFilter false
         let tableStyle = defaultArg tableStyle ("TableStyleLight9" :> obj)
 
-        start |> ap tableTitle putSingle 
+        start |> ap tableTitle putSingle
                 |> skipHistory 1
                 |> aptest showRows (putSingle (t.IndexLabel |? "Index") >> (putArray true t.RowHeaders) >> moveUpRows 1 )
                 |> aptest showCols (putArray false t.ColumnHeaders)
-                |> putArray false t.DataArray     
+                |> putArray false t.DataArray
                 |> aptest showRows (moveLeftCols 1 >> skipHistory 1)
                 |> aptest (tableStyle <> null) (applyToHistory (fun r->
                     ExcelStyles.ApplyTableStyle(r,tableStyle, showFilter, showRows)))
@@ -342,8 +342,8 @@ module internal XlHelper =
     let transpose (array:'T[,]) =
       Array2D.init (array.GetLength(1)) (array.GetLength(0)) (fun i j ->
         array.[j, i])
-    
-    let formatMap = 
+
+    let formatMap =
       let register (f:'T -> 'R) = typeof<'T>, (fun (o:obj) ->
           let res = f (unbox<'T> o)
           box res)
@@ -351,16 +351,16 @@ module internal XlHelper =
           if dateTime = DateTime.MinValue then ""
           elif dateTime.TimeOfDay = TimeSpan.Zero then (dateTime.ToShortDateString())
           else (dateTime.ToString()) )
-        register (fun (d:double) -> 
+        register (fun (d:double) ->
           if Double.IsNaN(d) then box "" else box d) ] |> dict
 
     let getExcelValue typ obj =
       match obj, formatMap.TryGetValue(typ) with
       | Deedle.OptionalValue.Present obj, (true, f) -> f obj
-      | Deedle.OptionalValue.Present obj, _ -> box (obj.ToString()) 
+      | Deedle.OptionalValue.Present obj, _ -> box (obj.ToString())
       | _ -> box ""
 
-    let formatExcelHeader (value:obj) = 
+    let formatExcelHeader (value:obj) =
       if value = null then box "" else
       match formatMap.TryGetValue(value.GetType()) with
       | true, f -> f value
@@ -368,20 +368,20 @@ module internal XlHelper =
 
     let deedleDataToExcel (data:Deedle.FrameData) =
       { new IExportExcelTable with
-          member x.ColumnHeaders = 
+          member x.ColumnHeaders =
             data.ColumnKeys |> array2D |> transpose |> Array2D.map formatExcelHeader
-          member x.RowHeaders = 
+          member x.RowHeaders =
             data.RowKeys |> array2D |> Array2D.map formatExcelHeader
           member x.IndexLabel = "Index"
           member x.ShowIndex = true
           member x.Count = 0
-          member x.DataArray = 
-            data.Columns 
-            |> Seq.map (fun (ty, vec) -> 
-                  vec.ObjectSequence |> Seq.map (fun o -> getExcelValue ty o) |> Array.ofSeq ) 
+          member x.DataArray =
+            data.Columns
+            |> Seq.map (fun (ty, vec) ->
+                  vec.ObjectSequence |> Seq.map (fun o -> getExcelValue ty o) |> Array.ofSeq )
             |> array2D |> transpose
           member x.ColumnHeaderDescriptions =
-            data.ColumnKeys 
+            data.ColumnKeys
             |> Seq.map (fun objs ->
                 objs |> Seq.map (fun o -> o.ToString()) |> String.concat " - ")
             |> Array.ofSeq }
@@ -389,9 +389,9 @@ module internal XlHelper =
     let deedleFrameToExcel (frame:Deedle.Frame<_, _>) =
       frame.GetFrameData() |> deedleDataToExcel
 
-type Xl = 
+type Xl =
     static member WithSheetFormat(?FontSize, ?AutoFit) =
-        fun state -> 
+        fun state ->
             let range = state.LastRange |> convertRange
             if FontSize.IsSome then range.Worksheet.Cells.Font.Size <- FontSize.Value
             if AutoFit.IsSome then range.Worksheet.Cells.AutoFit() |> ignore
@@ -399,8 +399,8 @@ type Xl =
 
     static member WithColumnFormats (fs:seq<ColumnFormat>) state =
          let lastRange = state.LastRange
-         let rows = (lastRange |> convertRange).Rows.Count 
-         let range = (lastRange |> convertRange) 
+         let rows = (lastRange |> convertRange).Rows.Count
+         let range = (lastRange |> convertRange)
          for cf in fs do
             for c in cf.Columns do
                  let colRange = range.Find(c,null,null,Enums.XlLookAt.xlWhole,null)
@@ -411,13 +411,13 @@ type Xl =
 
     static member WithEntireColumnFormats (fs:seq<ColumnFormat>) state =
          let lastRange = state.LastRange
-         let range = (lastRange |> convertRange) 
+         let range = (lastRange |> convertRange)
          for cf in fs do
             for c in cf.Columns do
                  let colRange = range.Find(c,null,null,Enums.XlLookAt.xlWhole,null)
                  if colRange <> null then
                      {state with LastRange = (RealExcel  colRange.EntireColumn)} |> cf.Format |> ignore
-         state    
+         state
 
     static member WithColumnFormatsWithOffset (fs:seq<ColumnFormat>) offSet numOfRows useEndOfData state =
         if numOfRows > 0 && numOfRows > offSet then
@@ -434,8 +434,8 @@ type Xl =
                      {state with LastRange = (RealExcel  colRange)} |> cf.Format |> ignore
         state
 
-    static member WithColumn(col:string) = //Format (?Background2, ?Foreground, ?FontSize, ?NumberFormat, ?AutoFit) = 
-        fun state -> 
+    static member WithColumn(col:string) = //Format (?Background2, ?Foreground, ?FontSize, ?NumberFormat, ?AutoFit) =
+        fun state ->
             let lastRange = state.LastRange
             let range = lastRange |> convertRange
             let colRange = (range |> offset (-1,0)).Find(col,null,null,null,null).EntireColumn
@@ -456,7 +456,7 @@ type Xl =
 
     static member GroupColumns cStart cEnd state =
          let lastRange = state.LastRange
-         let range = (lastRange |> convertRange) 
+         let range = (lastRange |> convertRange)
          let startRange = range.Find(cStart,null,null,Enums.XlLookAt.xlWhole,null)
          let endRange = range.Find(cEnd,null,null,Enums.XlLookAt.xlWhole,null)
          if startRange <> null && endRange <> null then
@@ -466,13 +466,13 @@ type Xl =
              r.EntireColumn.Group() |> ignore
          state
 
-    static member AsCell(range:string) = 
-        fun v -> 
+    static member AsCell(range:string) =
+        fun v ->
             let start = {LastRange = RealExcel (getRealRange range); NextRange = RealExcel (getRealRange range); History = []}
             (getRealRange range).Value2 <- v
             start
 
-    static member ToCell(data) (start:ExcelState) = 
+    static member ToCell(data) (start:ExcelState) =
         (getRealRange ((start.NextRange |> convertRange).get_Address(0,0))).Value2 <- data
         start
 
@@ -484,18 +484,18 @@ let (|DeedleFrameAsExcelTable|_|) (v:obj) =
         Some excel
     else None
 
-let toExcel (rangeStr:string) (v:obj) = 
+let toExcel (rangeStr:string) (v:obj) =
     assertInstance()
     let range = getRealRange rangeStr
-    match v with 
+    match v with
         | DeedleFrameAsExcelTable df
-        | (:? IExportExcelTable as df) -> 
+        | (:? IExportExcelTable as df) ->
             let start = {LastRange = Empty; NextRange = RealExcel range; History = []}
-            XlHelper.asTable df start None None None None None 
+            XlHelper.asTable df start None None None None None
             |> ignore
         | _ -> range.Value2 <- v
 
-let ( *=) (range:string) (v:obj) = 
+let ( *=) (range:string) (v:obj) =
     toExcel range v
 
 
@@ -527,8 +527,8 @@ type DynamicExcel(app, ?keepInSync) =
         with get () = keepInSync
         and set (choice) = keepInSync <- choice
 
-    member private this.createInstance() = 
-        if localExcelApp = null then 
+    member private this.createInstance() =
+        if localExcelApp = null then
             localExcelApp <- openNewExcelApplication()
         else
             ()
@@ -563,23 +563,23 @@ type DynamicExcel(app, ?keepInSync) =
                 this.asyncToExcel(r, value, ?sheet = sheet)
         | _ -> ()
         this.syncToExcel(r, value, ?sheet = sheet)
-    
-    static member (?<-)(excel : DynamicExcel, r : string, value : 'a) : unit = 
+
+    static member (?<-)(excel : DynamicExcel, r : string, value : 'a) : unit =
         excel.registerSyncToExcel(r, value)
 
-    member this.SwitchSheet(name : string) = 
+    member this.SwitchSheet(name : string) =
         this.createInstance()
         switchSheet name
 
-    member this.RenameSheet(name : string) = 
+    member this.RenameSheet(name : string) =
         this.createInstance()
         renameSheet name
 
-    member this.DeleteSheet(name : string ) = 
+    member this.DeleteSheet(name : string ) =
         this.createInstance()
         deleteSheet name
 
-    member this.fromSeq (seq, ?cell) = 
+    member this.fromSeq (seq, ?cell) =
             (?<-) this (defaultArg cell "A1") (seq
                                                |> Seq.map (fun (n, xs) -> (n, Series.ofValues xs))
                                                |> Frame.ofColumns)
@@ -588,13 +588,13 @@ let xl = DynamicExcel(excelApp)
 
 type Xl with
     static member AsTable<'R, 'C, 'T when 'T :> Deedle.Frame<'R, 'C>> (range:string, ?ShowRowHeaders, ?ShowColumnHeaders, ?TableStyle,?ShowFilter, ?Style, ?RowSpan, ?ColSpan, ?TableTitle, ?TableTitleStyle) =
-        fun (t:'T) -> 
+        fun (t:'T) ->
             let start = {LastRange = Empty; NextRange = RealExcel (getRealRange range); History = []}
             let te = XlHelper.deedleFrameToExcel t
             XlHelper.asTable te start ShowRowHeaders ShowColumnHeaders TableTitle TableStyle ShowFilter
 
     static member AsTable<'R, 'C, 'T when 'T :> Deedle.Frame<'R, 'C>> (t:'T, ?ShowRowHeaders, ?ShowColumnHeaders, ?TableStyle,?ShowFilter, ?Style, ?RowSpan, ?ColSpan, ?TableTitle, ?TableTitleStyle) =
-        fun start -> 
+        fun start ->
             let te = XlHelper.deedleFrameToExcel t
             XlHelper.asTable te start ShowRowHeaders ShowColumnHeaders TableTitle TableStyle ShowFilter
 

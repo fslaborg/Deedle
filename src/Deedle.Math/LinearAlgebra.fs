@@ -35,14 +35,14 @@ type LinearAlgebra =
 
   /// Conjugate
   ///
-  static member conjugate (df:Frame<'R, 'C>) = 
+  static member conjugate (df:Frame<'R, 'C>) =
     df
     |> Frame.toMatrix
     |> Matrix.conjugate
 
   /// Conjugate tranpose
   ///
-  static member conjugateTranspose (df:Frame<'R, 'C>) = 
+  static member conjugateTranspose (df:Frame<'R, 'C>) =
     df
     |> Frame.toMatrix
     |> Matrix.conjugateTranspose
@@ -67,7 +67,7 @@ type LinearAlgebra =
     df
     |> Frame.toMatrix
     |> Matrix.normCols
-  
+
   /// Matrix rank
   ///
   static member rank (df:Frame<'R, 'C>) =
@@ -144,7 +144,7 @@ type LinearAlgebra =
     df
     |> Frame.toMatrix
     |> Matrix.lu
-  
+
   /// QR decomposition
   ///
   static member qr (df:Frame<'R, 'C>) =
@@ -170,13 +170,13 @@ type LinearAlgebra =
 ///
 /// [category:Matrix conversions and operators]
 type Matrix =
-  
+
   /// Convert frame to matrix
   ///
   /// [category: Conversions]
   static member ofFrame df =
     df |> Frame.toMatrix
-  
+
   /// Convert matrix to frame
   ///
   /// [category: Conversions]
@@ -189,7 +189,7 @@ type Matrix =
   static member dot (df:Frame<'R, 'C>, m2:Matrix<float>) =
     let m1 = df |> Frame.toMatrix
     m1 * m2 |> Frame.ofMatrix df.RowKeys df.RowKeys
-  
+
   /// matrix multiply frame
   ///
   /// [category: Matrix multiplication]
@@ -210,13 +210,13 @@ type Matrix =
   static member dot (df:Frame<'R, 'C>, v:Vector<float>) =
     let m = df |> Frame.toMatrix
     m * v |> Series.ofVector df.RowKeys
-  
+
   /// series multiply matrix
   ///
   /// [category: Matrix multiplication]
   static member dot (s:Series<'K, float>, m:Matrix<float>) =
     (Series.toVector s) * m
-  
+
   /// matrix multiply series
   ///
   /// [category: Matrix multiplication]
@@ -232,7 +232,7 @@ type Matrix =
   /// series multiply vector
   ///
   /// [category: Matrix multiplication]
-  static member dot (s:Series<'R, float>, v:Vector<float>) =    
+  static member dot (s:Series<'R, float>, v:Vector<float>) =
     (Series.toVector s) * v
 
   /// frame multiply frame
@@ -249,7 +249,7 @@ type Matrix =
     let m1 = left |> Frame.toMatrix
     let m2 = right |> Frame.toMatrix
     m1 * m2 |> Frame.ofMatrix left.RowKeys df2.ColumnKeys
-  
+
   /// frame multiply series
   ///
   /// [category: Matrix multiplication]
@@ -264,7 +264,7 @@ type Matrix =
     let m1 = left |> Frame.toMatrix
     let v2 = right |> Series.toVector
     m1 * v2 |> Series.ofVector common
-  
+
   /// series multiply frame
   ///
   /// [category: Matrix multiplication]

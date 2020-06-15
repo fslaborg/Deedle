@@ -37,7 +37,7 @@ let ``Can get frame containing subset of columns and pass it to R``() =
   R.as_data_frame(mtcars').GetValue() |> shouldEqual mtcars'
 
 [<Test>]
-let ``Can pass numerical stacked frames to R``() = 
+let ``Can pass numerical stacked frames to R``() =
   let df1 = frame [ 10 => series [ 1 => 1.0 ]; 11 => series [ 2 => 2.0] ] |> Frame.melt
   R.assign("df", df1) |> ignore
   let df2 : Frame<int, string> = R.get("df").GetValue()
@@ -54,7 +54,7 @@ let ``Can roundtrip data frames with missing values to R`` () =
   df1 |> shouldEqual df2
 
 [<Test>]
-let ``Can pass strings in data frame to R``() = 
+let ``Can pass strings in data frame to R``() =
   let df = frame [ "Names" => series [ 1 => "Tomas" ] ]
   R.as_data_frame(df).Print() |> should contain "Tomas"
 
@@ -72,10 +72,10 @@ let ``Can roundtrip time series with date times between Deedle and R`` () =
   // NOTE: This does not work for "DateTime.Now" because R uses less precise representation
   let ts = series [ for i in 0.0 .. 100.0 -> System.DateTime(2014,1,1).AddHours(i), rnd.NextDouble() ]
   R.assign("x", ts) |> ignore
-  R.get("x").GetValue<Series<System.DateTime, float>>() 
+  R.get("x").GetValue<Series<System.DateTime, float>>()
   |> shouldEqual ts
 
-[<Test>] 
+[<Test>]
 let ``Can manipulate columns of a frame and pass it to R`` () =
   let cars1 : Frame<string, string> = R.mtcars.GetValue()
 
@@ -92,22 +92,22 @@ let ``Can manipulate columns of a frame and pass it to R`` () =
   R.get("x3").GetValue<_>() |> shouldEqual take3
 
 [<Test>]
-let ``Can pass data frame containing decimals to R (#90)``() = 
-  let df = Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/data/sample.csv", inferRows=10) 
+let ``Can pass data frame containing decimals to R (#90)``() =
+  let df = Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/data/sample.csv", inferRows=10)
   // The data frame has been loaded with decimals
   let types = df.GetFrameData().Columns |> Seq.map (fun (t, _) -> t.Name) |> List.ofSeq
   types |> shouldEqual ["Int32"; "Decimal"; "Decimal"; "Decimal"; "Decimal"; "Decimal"]
   // We can pass it to R and read it back
   // and the value we get is "reasonably same" as the original
   let rframe = df |> R.as_data_frame
-  let actual = rframe.GetValue<Frame<int, string>>() 
+  let actual = rframe.GetValue<Frame<int, string>>()
   round (actual * 100.0) |> shouldEqual (round (df * 100.0))
 
 [<Test>]
 let ``Can index rows ordinally and pass the result to R (#146)`` () =
   let df = Frame.ofRowKeys([0; 1])
   df?col <- [10.0; 20.0]
-  let df2 = df |> Frame.indexRowsOrdinally 
+  let df2 = df |> Frame.indexRowsOrdinally
 
   R.assign("df", df2) |> ignore
   R.get("df").GetValue<Frame<int, string>>() |> shouldEqual df2

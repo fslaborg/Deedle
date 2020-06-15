@@ -57,7 +57,7 @@ type Finance =
     |> Frame.mapValues(fun (v:float) -> v * v)
 
   /// Exponentially weighted moving covariance matrix
-  /// 
+  ///
   /// [category: Exponentially Weighted Moving]
   static member ewmCovMatrix (df:Frame<'R, 'C>, ?com, ?span, ?halfLife, ?alpha) =
     // Return to RiskMetrics: The Evolution of a Standard
@@ -76,24 +76,24 @@ type Finance =
           (1. - alpha) * res.[i-1] + alpha * inc
     Series(df.RowKeys, res)
 
-  /// Exponentially weighted moving covariance frame 
-  /// 
+  /// Exponentially weighted moving covariance frame
+  ///
   /// [category: Exponentially Weighted Moving]
   static member ewmCov (df:Frame<'R, 'C>, ?com, ?span, ?halfLife, ?alpha) =
     let alpha = StatsInternal.ewDecay(com, span, halfLife, alpha)
     Finance.ewmCovMatrix(df, alpha = alpha)
     |> Series.mapValues (Frame.ofMatrix df.ColumnKeys df.ColumnKeys)
-    
-  /// Exponentially weighted moving correlation matrix 
-  /// 
+
+  /// Exponentially weighted moving correlation matrix
+  ///
   /// [category: Exponentially Weighted Moving]
   static member ewmCorrMatrix (df:Frame<'R, 'C>, ?com, ?span, ?halfLife, ?alpha) =
     let alpha = StatsInternal.ewDecay(com, span, halfLife, alpha)
     Finance.ewmCov(df, alpha = alpha)
     |> Series.mapValues (Stats.cov2Corr >> snd >> Matrix.ofFrame)
 
-  /// Exponentially weighted moving correlation frame 
-  /// 
+  /// Exponentially weighted moving correlation frame
+  ///
   /// [category: Exponentially Weighted Moving]
   static member ewmCorr (df:Frame<'R, 'C>, ?com, ?span, ?halfLife, ?alpha) =
     let alpha = StatsInternal.ewDecay(com, span, halfLife, alpha)

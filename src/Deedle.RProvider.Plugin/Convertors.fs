@@ -44,8 +44,8 @@ let (|NumericIndex|StringIndex|) (items:string[]) =
 
 /// Turn columns/rows into an index with the specified type of keys
 let convertIndex (names:string[]) : option<IIndex<'R>> =
-  try 
-    names 
+  try
+    names
     |> Array.map (Convert.convertType<'R> ConversionKind.Flexible)
     |> Index.ofKeys |> Some
   with _ -> None
@@ -53,10 +53,10 @@ let convertIndex (names:string[]) : option<IIndex<'R>> =
 /// Convert vector to a boxed array that can be passed to the R provider
 let convertVector (vector:IVector) : obj =
   { new VectorCallSite<obj> with
-      override x.Invoke<'T>(col:IVector<'T>) = 
+      override x.Invoke<'T>(col:IVector<'T>) =
         // Figure out how to handle missing values - if we can pass NA or NaN to R
         // then we just fill missing values with 'missingVal'
-        let missingVal = 
+        let missingVal =
           if typeof<'T> = typeof<string> then Some (Unchecked.defaultof<'T>)
           elif typeof<'T> = typeof<double> then Some (unbox<'T> Double.NaN)
           else None
@@ -70,8 +70,8 @@ let convertVector (vector:IVector) : obj =
           else
             invalidOp (sprintf "Cannot pass column with missing values to R. Missing values of type %s are not supported" (typeof<'T>.Name))
 
-        // Either there are no missing values, or we can fill them 
-        else 
+        // Either there are no missing values, or we can fill them
+        else
           box [| for v in col.DataSequence -> if v.HasValue then v.Value else missingVal.Value |] }
   |> vector.Invoke
 
@@ -115,7 +115,7 @@ let tryCreateFrame (symExpr:SymbolicExpression) : option<Frame<'R, 'C>> =
 /// This works for almost everything, but not quite (e.g. lambda functions)
 let tryAsZooSeries (symExpr:SymbolicExpression) =
   if Array.exists ((=) "zoo") symExpr.Class then Some symExpr
-  else 
+  else
     try Some(R.as_zoo(symExpr))
     with :? RDotNet.ParseException -> None
 
@@ -129,7 +129,7 @@ let tryGetDateTimeKeys (zoo:SymbolicExpression) fromDateTime =
   with :? RDotNet.ParseException | :? RDotNet.EvaluationException -> None
 
 /// Try converting the specified symbolic expression to a time series
-let tryCreateTimeSeries fromDateTime (symExpr:SymbolicExpression) : option<Series<'K, 'V>> = 
+let tryCreateTimeSeries fromDateTime (symExpr:SymbolicExpression) : option<Series<'K, 'V>> =
   tryAsZooSeries symExpr |> Option.bind (fun zoo ->
     // Format the keys as string and turn them into DateTimes
     let keys = tryGetDateTimeKeys zoo fromDateTime
@@ -139,7 +139,7 @@ let tryCreateTimeSeries fromDateTime (symExpr:SymbolicExpression) : option<Serie
       Some(Series(keys, values)) ))
 
 /// Try converting the specified symbolic expression to a series with arbitrary keys
-let tryCreateSeries (symExpr:SymbolicExpression) : option<Series<'K, 'V>> = 
+let tryCreateSeries (symExpr:SymbolicExpression) : option<Series<'K, 'V>> =
   tryAsZooSeries symExpr |> Option.map (fun zoo ->
     // Format the keys as string and turn them into DateTimes
     let keys = R.index(zoo).GetValue<'K[]>()
@@ -148,7 +148,7 @@ let tryCreateSeries (symExpr:SymbolicExpression) : option<Series<'K, 'V>> =
 
 /// Given symbolic expression, convert it to a time series.
 /// Pick the most appropriate key/value type, based on the data.
-let createDefaultSeries (symExpr:SymbolicExpression) = 
+let createDefaultSeries (symExpr:SymbolicExpression) =
   tryAsZooSeries symExpr |> Option.bind (fun zoo ->
     let dateKeys = tryGetDateTimeKeys zoo id
     let index = R.index(zoo)

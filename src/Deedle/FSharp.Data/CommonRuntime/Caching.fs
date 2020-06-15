@@ -1,4 +1,4 @@
-﻿/// Implements caching using in-memory and local file system 
+﻿/// Implements caching using in-memory and local file system
 module FSharp.Data.Runtime.Caching
 
 open System
@@ -9,19 +9,19 @@ open System.Security.Cryptography
 open System.Text
 open FSharp.Data.Runtime.IO
 
-type ICache<'TKey, 'TValue> = 
+type ICache<'TKey, 'TValue> =
   abstract Set : key:'TKey * value:'TValue -> unit
   abstract TryRetrieve : key:'TKey * ?extendCacheExpiration:bool -> 'TValue option
   abstract Remove : key:'TKey -> unit
 
 /// Creates a cache that uses in-memory collection
-let createInMemoryCache (expiration:TimeSpan) = 
+let createInMemoryCache (expiration:TimeSpan) =
     let dict = ConcurrentDictionary<'TKey_,'TValue*DateTime>()
-    let rec invalidationFunction key = 
-        async { 
-            do! Async.Sleep (int expiration.TotalMilliseconds) 
+    let rec invalidationFunction key =
+        async {
+            do! Async.Sleep (int expiration.TotalMilliseconds)
             match dict.TryGetValue(key) with
-            | true, (_, timestamp) -> 
+            | true, (_, timestamp) ->
                 if DateTime.UtcNow - timestamp >= expiration then
                     match dict.TryRemove(key) with
                     | true, _ -> log (sprintf "Cache expired: %O" key)
@@ -36,22 +36,22 @@ let createInMemoryCache (expiration:TimeSpan) =
             invalidationFunction key |> Async.Start
         member x.TryRetrieve(key, ?extendCacheExpiration) =
             match dict.TryGetValue(key) with
-            | true, (value, timestamp) when DateTime.UtcNow - timestamp < expiration -> 
-                if extendCacheExpiration = Some true then 
+            | true, (value, timestamp) when DateTime.UtcNow - timestamp < expiration ->
+                if extendCacheExpiration = Some true then
                     dict.[key] <- (value, DateTime.UtcNow)
                 Some value
             | _ -> None
-        member __.Remove(key) = 
+        member __.Remove(key) =
             match dict.TryRemove(key) with
             | true, _ -> log (sprintf "Explicitly removed from cache: %O" key)
             | _ -> ()
     }
 
 /// Get hash code of a string - used to determine cache file
-let private hashString (plainText:string) = 
+let private hashString (plainText:string) =
   let plainTextBytes = Encoding.UTF8.GetBytes(plainText)
   let hash = new SHA1Managed()
-  let hashBytes = hash.ComputeHash(plainTextBytes)        
+  let hashBytes = hash.ComputeHash(plainTextBytes)
   let s = Convert.ToBase64String(hashBytes)
   s.Replace("ab","abab").Replace("\\","ab")
 
@@ -67,8 +67,8 @@ let createInternetFileCache prefix expiration =
   let downloadCache = Path.Combine(cacheFolder, prefix)
 
   // Get file name for a given string (using hash)
-  let cacheFile key = 
-    let sha1 = hashString key 
+  let cacheFile key =
+    let sha1 = hashString key
     let encoded = Uri.EscapeDataString sha1
     Path.Combine(downloadCache, encoded + ".txt")
 
@@ -80,16 +80,16 @@ let createInternetFileCache prefix expiration =
     if not (Directory.Exists downloadCache) then
       Directory.CreateDirectory downloadCache |> ignore
 
-    let cache = 
-      { new ICache<string, string> with 
-          member __.Set(key, value) = 
+    let cache =
+      { new ICache<string, string> with
+          member __.Set(key, value) =
             let cacheFile = cacheFile key
             try File.WriteAllText(cacheFile, value)
             with e ->
                 Debug.WriteLine("Caching: Failed to write file {0} with an exception: {1}", cacheFile, e.Message)
 
-          member __.TryRetrieve(key, ?extendCacheExpiration) = 
-            if extendCacheExpiration = Some true then 
+          member __.TryRetrieve(key, ?extendCacheExpiration) =
+            if extendCacheExpiration = Some true then
                 failwith "Not implemented"
             let cacheFile = cacheFile key
             try
@@ -99,28 +99,28 @@ let createInternetFileCache prefix expiration =
                 then Some result
                 else None
               else None
-            with e -> 
+            with e ->
               Debug.WriteLine("Caching: Failed to read file {0} with an exception: {1}", cacheFile, e.Message)
               None
-                
-          member __.Remove(key) = 
+
+          member __.Remove(key) =
             let cacheFile = cacheFile key
-            try 
+            try
               File.Delete(cacheFile)
             with e ->
               Debug.WriteLine("Caching: Failed to delete file {0} with an exception: {1}", cacheFile, e.Message)
       }
-    
+
     // Ensure that we can access the file system by writing a sample value to the cache
     cache.Set("$$$test$$$", "dummyValue")
     match cache.TryRetrieve("$$$test$$$") with
-    | Some "dummyValue" -> 
+    | Some "dummyValue" ->
         cache.Remove("$$$test$$$") |> ignore
         cache
-    | _ -> 
+    | _ ->
         // fallback to an in memory cache
         createInMemoryCache expiration
-  with e -> 
+  with e ->
     Debug.WriteLine("Caching: Fall back to memory cache, because of an exception: {0}", e.Message)
     // fallback to an in memory cache
     createInMemoryCache expiration

@@ -24,22 +24,22 @@ let stockReturns = stockPrices / (stockPrices |> Frame.shift 1) - 1 |> Frame.dro
 
 [<Test>]
 let ``Median is the same as in Math.NET``() =
-  Check.QuickThrowOnFailure(fun (input:int[]) -> 
+  Check.QuickThrowOnFailure(fun (input:int[]) ->
     let expected = Statistics.Median(Array.map float input)
     let s = Series.ofValues (Array.map float input)
-    if s.ValueCount < 1 then 
+    if s.ValueCount < 1 then
       Double.IsNaN(Stats.median s) |> shouldEqual true
-    else 
+    else
       Stats.median s |> should beWithin (expected +/- 1e-9) )
 
 [<Test>]
 let ``Quantile is the same as in Math.NET``() =
-  Check.QuickThrowOnFailure(fun (input:int[]) -> 
+  Check.QuickThrowOnFailure(fun (input:int[]) ->
     let expected = Statistics.QuantileCustom(Array.map float input, 0.75, QuantileDefinition.Excel)
     let s = Series.ofValues (Array.map float input)
-    if s.ValueCount < 1 then 
+    if s.ValueCount < 1 then
       Double.IsNaN(Stats.quantile(s, 0.75)) |> shouldEqual true
-    else 
+    else
       Stats.quantile(s, 0.75) |> should beWithin (expected +/- 1e-9) )
 
 [<Test>]

@@ -33,10 +33,10 @@ module Addressing =
 
   [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
   module Address =
-    /// Represents an invalid address (which is returned from 
+    /// Represents an invalid address (which is returned from
     /// optimized lookup functions when they fail)
     let invalid = -1L<address>
-   
+
   /// Address operations that are used by the standard in-memory Deedle structures
   /// (LinearIndex and ArrayVector). Here, address is a positive array offset.
   module LinearAddress =
@@ -55,13 +55,13 @@ module Addressing =
   type IAddressingScheme = interface end
 
   /// Represents a linear addressing scheme where the addresses are `0 .. <size>-1`.
-  type LinearAddressingScheme private() = 
+  type LinearAddressingScheme private() =
     static let instance = LinearAddressingScheme() :> IAddressingScheme
     /// Returns a single instance of the object (to enable reference equality)
-    static member Instance = instance 
+    static member Instance = instance
     interface IAddressingScheme
 
-  /// Various implementations can use different schemes for working with addresses 
+  /// Various implementations can use different schemes for working with addresses
   /// (for example, address can be just a global offset, or it can be pair of `int32` values
   /// that store partition and offset in a partition). This interface represents a specific
   /// address range and abstracts operations that BigDeedle needs to perform on addresses
@@ -77,7 +77,7 @@ module Addressing =
     abstract Range : seq<Address>
 
     /// Given an address, return the absolute offset of the address in the range
-    /// This might be tricky for partitioned ranges. For example if you have two 
+    /// This might be tricky for partitioned ranges. For example if you have two
     /// partitions with 10 values addressed by (0,0)..(0,9); (1,0)..(1,9), the the
     /// offset of address (1, 5) is 15.
     abstract OffsetOf : Address -> int64
@@ -93,17 +93,17 @@ module Addressing =
 // Address-related things like ranges
 // --------------------------------------------------------------------------------------
 
-open Addressing 
+open Addressing
 
 /// A sequence of indicies together with the total number. Use `RangeRestriction.ofSeq` to
-/// create one from a sequence. This can be implemented by concrete vector/index 
+/// create one from a sequence. This can be implemented by concrete vector/index
 /// builders to allow further optimizations (e.g. when the underlying source directly
-/// supports range operations). 
+/// supports range operations).
 ///
-/// For example, if your source has an optimised way for getting every 10th address, you 
-/// can create your own `IRangeRestriction` and then check for it in `LookupRange` and 
+/// For example, if your source has an optimised way for getting every 10th address, you
+/// can create your own `IRangeRestriction` and then check for it in `LookupRange` and
 /// use optimised implementation rather than actually iterating over the sequence of indices.
-type IRangeRestriction<'TAddress> = 
+type IRangeRestriction<'TAddress> =
   inherit seq<'TAddress>
   abstract Count : int64
 
@@ -119,7 +119,7 @@ type RangeRestriction<'TAddress> =
   /// Range referring to the specified number of elements from the start
   | Start of int64
   /// Range referring to the specified number of elements from the end
-  | End of int64 
+  | End of int64
   /// Custom range, which is a sequence of indices, or other representation of it
   | Custom of IRangeRestriction<'TAddress>
 
@@ -136,7 +136,7 @@ module RangeRestriction =
         { new IRangeRestriction<'TNewAddress> with
             member x.Count = c.Count
           interface System.Collections.IEnumerable with
-            member x.GetEnumerator() = (x :?> seq<'TNewAddress>).GetEnumerator() :> _ 
+            member x.GetEnumerator() = (x :?> seq<'TNewAddress>).GetEnumerator() :> _
           interface seq<'TNewAddress> with
             member x.GetEnumerator() = (Seq.map f c).GetEnumerator() }
         |> RangeRestriction.Custom
@@ -158,10 +158,10 @@ open System.Runtime.CompilerServices
 
 /// [omit]
 [<AutoOpen>]
-module AddressingExtensions = 
+module AddressingExtensions =
   [<Extension>]
   type AddressRangeExtensions =
-    /// When the address represents an absolute offset, this can be used to turn 'Start' 
+    /// When the address represents an absolute offset, this can be used to turn 'Start'
     /// and 'End' restrictions into the usual 'Fixed' restriction. The result is a choice
     /// with either new absolute range or custom (sequence of addresses)
     [<Extension>]
@@ -170,6 +170,6 @@ module AddressingExtensions =
       | RangeRestriction.Fixed(lo, hi) -> Choice1Of2(lo, hi)
       | RangeRestriction.Start(count) ->
           Choice1Of2(LinearAddress.ofInt 0, LinearAddress.ofInt64 (count-1L))
-      | RangeRestriction.End(count) -> 
+      | RangeRestriction.End(count) ->
           Choice1Of2(LinearAddress.ofInt64 (total - count), LinearAddress.ofInt64 (total-1L))
       | RangeRestriction.Custom(ar) -> Choice2Of2(ar)

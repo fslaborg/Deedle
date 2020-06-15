@@ -6,27 +6,27 @@ open System.Collections.Generic
 open Deedle.Internal
 
 // ------------------------------------------------------------------------------------
-// StatsHelpers module contains various helper functions that are used in the Stats 
+// StatsHelpers module contains various helper functions that are used in the Stats
 // type. We put all the public functionality in a type to allow overloading.
-// ------------------------------------------------------------------------------------  
+// ------------------------------------------------------------------------------------
 
 // TODO: still to do, possibly: median, percentile, corr, cov
 
 module StatsInternal =
   // ------------------------------------------------------------------------------------
   // Implementation internals - moving window functionality
-  // ------------------------------------------------------------------------------------  
-  
+  // ------------------------------------------------------------------------------------
+
   let toFloat : obj -> float = Convert.ToDouble
-  
+
   /// Apply transformation on series elements. The projection function `proj` always
   /// returns `float`, but may return `nan` to indicate that the value is not available.
   /// The resulting sequence should have the same number of values as the input sequence
   let applySeriesProj (proj: float opt seq -> float[]) (series:Series<'K, float>) : Series<'K, float> =
-    let newData = 
-      series.Vector.DataSequence 
-      |> proj 
-      |> series.VectorBuilder.Create  
+    let newData =
+      series.Vector.DataSequence
+      |> proj
+      |> series.VectorBuilder.Create
     Series(series.Index, newData, series.VectorBuilder, series.IndexBuilder)
 
   /// Helper for moving window calculations (adopted from `Seq.windowed` in F# code base)
@@ -36,48 +36,48 @@ module StatsInternal =
   /// # Parameters
   ///   - `winSize` - The size of the window to create
   ///   - `finit` takes the first fully populated window array to an initial state
-  ///   - `fupdate` takes the current state, incoming observation, 
+  ///   - `fupdate` takes the current state, incoming observation,
   ///      and out-going observation to the next state
   ///   - `ftransf` takes the current state to the current output
   let movingWindowFn winSize finit fupdate ftransf (source: seq<_>) =
     seq {
-       let arr = Array.zeroCreate winSize 
+       let arr = Array.zeroCreate winSize
        let r = ref (winSize - 1)
-       let i = ref 0 
+       let i = ref 0
        let isInit = ref false
        let state = ref Unchecked.defaultof<_>
-       use e = source.GetEnumerator() 
-       while e.MoveNext() do 
+       use e = source.GetEnumerator()
+       while e.MoveNext() do
          let curr = e.Current
          let outg = arr.[!i]
          arr.[!i] <- curr
          i := (!i + 1) % winSize
-         if !r = 0 then 
+         if !r = 0 then
            if not !isInit then
              state := arr |> finit
              isInit := true
-           else 
+           else
              state := fupdate !state curr outg
            yield !state |> ftransf
-         else 
+         else
            r := (!r - 1)
            yield nan }
 
-  /// When calculating moments, this record is used to keep track of the 
+  /// When calculating moments, this record is used to keep track of the
   /// count (`nobs`), sum of values (`sum`), sum of squares (`sum2`),
   /// sum of values to the power of 3 and 3 (`sum3` and `sum4`)
   type Sums = { nobs: float; sum: float; sump2: float; sump3: float; sump4: float }
 
   /// Given an initial array of values, calculate the initial `Sums` value
   /// (only required elements of `Sums` are calculated based on `moment`)
-  let initSumsDense moment (init: float []) = 
+  let initSumsDense moment (init: float []) =
     let count = init |> Array.length |> float
     let sum   = if moment < 1 then 0.0 else init |> Array.sum
     let sump2 = if moment < 2 then 0.0 else init |> Array.sumBy (fun x -> pown x 2)
     let sump3 = if moment < 3 then 0.0 else init |> Array.sumBy (fun x -> pown x 3)
     let sump4 = if moment < 4 then 0.0 else init |> Array.sumBy (fun x -> pown x 4)
     { nobs = count; sum = sum; sump2 = sump2; sump3 = sump3; sump4 = sump4 }
-  
+
   /// Given an existing `state` of type `Sums`, new incoming element and
   /// an old outgoing element, update the sums value
   /// (only required elements of `Sums` are calculated based on `moment`)
@@ -93,14 +93,14 @@ module StatsInternal =
   /// Throws a `FormatException` or an `InvalidCastException` if the value type
   /// is not convertible to floating point number.
   let inline initSumsSparse moment (init: 'V opt []) =
-    init 
+    init
     |> Array.choose OptionalValue.asOption
     |> Array.map toFloat
     |> initSumsDense moment
 
   /// Update `Sums` value using `updateSumsDense`, but handle the case
   /// when removing/adding value that is missing (`OptionalValue.Missing`)
-  let updateSumsSparse moment state curr outg = 
+  let updateSumsSparse moment state curr outg =
     match curr, outg with
     | OptionalValue.Present x, OptionalValue.Present y -> updateSumsDense moment state x y
     | OptionalValue.Present x, OptionalValue.Missing   -> { updateSumsDense moment state x 0.0 with nobs = state.nobs + 1.0 }
@@ -119,7 +119,7 @@ module StatsInternal =
 
   /// Calculate variance from `Sums`; requires `moment=2`
   let varianceSums s =
-    let v = (s.nobs * s.sump2 - s.sum * s.sum) / (s.nobs * s.nobs - s.nobs) 
+    let v = (s.nobs * s.sump2 - s.sum * s.sum) / (s.nobs * s.nobs - s.nobs)
     if v < 0.0 then nan else v
 
   /// Calculate skewness from `Sums`; requires `moment=3`
@@ -128,9 +128,9 @@ module StatsInternal =
     let b = s.sump2 / s.nobs - a * a
     let c = s.sump3 / s.nobs - a * a * a - 3.0 * a * b
     let r = b |> sqrt
-    if b = 0.0 || s.nobs < 3.0 then nan 
+    if b = 0.0 || s.nobs < 3.0 then nan
     else (sqrt (s.nobs * (s.nobs - 1.0)) * c) / ((s.nobs - 2.0) * pown r 3)
-  
+
   /// Calculate kurtosis from `Sums`; requires `moment=4`
   let kurtSums s =
     let a = s.sum / s.nobs
@@ -140,29 +140,29 @@ module StatsInternal =
     let c = s.sump3 / s.nobs - r - 3.0 * a * b
     let r = r * a
     let d = s.sump4 / s.nobs - r - 6.0 * b * a * a - 4.0 * c * a
-    if b = 0.0 || s.nobs < 4.0 then nan 
-    else 
+    if b = 0.0 || s.nobs < 4.0 then nan
+    else
       let k = (s.nobs * s.nobs - 1.0) * d / (b * b) - 3.0 * (pown (s.nobs - 1.0) 2)
       k / ((s.nobs - 2.0) * (s.nobs - 3.0))
 
   // ------------------------------------------------------------------------------------
   // Implementation internals - moving minimum and maximum
   // ------------------------------------------------------------------------------------
-      
+
   /// O(n) moving min/max calculator
   ///
   /// Keeps double-ended queue of values sorted acording to the specified order,
   /// such that the front is the min/max value. During the iteration, new value is
   /// added to the end (and all values that are greater/smaller than the new value
   /// are removed before it is appended).
-  let movingMinMaxHelper winSize cmp (s:seq<OptionalValue<_>>) = 
+  let movingMinMaxHelper winSize cmp (s:seq<OptionalValue<_>>) =
     let res = ResizeArray<_>()
     let i = ref 0
     let q = Deque()
     for v in s do
       // invariant: all values in deque are strictly ascending (min) or descending (max)
       // invariant: all values in deque are in the current window (fst q.[i] > !i)
-      i := !i + 1        
+      i := !i + 1
       // remove from front any values that fell out of moving window
       while q.Count > 0 && !i >= fst q.First do q.RemoveFirst() |> ignore
       if v.HasValue then
@@ -187,20 +187,20 @@ module StatsInternal =
   //   - `fupdate` takes the current state and incoming observation to the next state
   //   - `ftransf` takes the current state to the current output
   let expandingWindowFn initState fupdate ftransf (source: seq<_>) =
-    source 
+    source
     |> Seq.scan fupdate initState
     |> Seq.skip 1
-    |> Seq.map ftransf 
+    |> Seq.map ftransf
 
   /// Represents the moments as calculated during online processing
   /// (`nobs` is the count, `sum` is the sum, `M1` to `M4` are moments)
-  type Moments = { 
-    nobs : float 
-    sum  : float 
+  type Moments = {
+    nobs : float
+    sum  : float
     M1   : float
-    M2   : float 
+    M2   : float
     M3   : float
-    M4   : float 
+    M4   : float
   }
 
   /// Updates the moments using the Knuth/Welford algorithm for online stats updating
@@ -217,11 +217,11 @@ module StatsInternal =
     let M4 = M4 + term1 * delta_n2 * (n * n - 3.0 * n + 3.0) + 6.0 * delta_n2 * M2 - 4.0 * delta_n * M3
     let M3 = M3 + term1 * delta_n * (n - 2.0) - 3.0 * delta_n * M2
     let M2 = M2 + term1
-    let s = sum + x 
-    { nobs = n; sum = s; M1 = M1; M2 = M2; M3 = M3; M4 = M4 }   
+    let s = sum + x
+    { nobs = n; sum = s; M1 = M1; M2 = M2; M3 = M3; M4 = M4 }
 
   /// Updates the moments using `updateMoments`, but skips over missing values
-  let updateMomentsSparse state curr =     
+  let updateMomentsSparse state curr =
     match curr with
     | OptionalValue.Present x -> updateMoments state x
     | OptionalValue.Missing   -> state
@@ -239,12 +239,12 @@ module StatsInternal =
   let internal expandingMinMaxHelper cmp s =
     seq {
       let m = ref nan
-      for v in s ->        
+      for v in s ->
         match v with
-        | Some x -> 
+        | Some x ->
           let mv = !m
           if System.Double.IsNaN(mv) || cmp mv x then m := x; x else mv
-        | None -> !m }  
+        | None -> !m }
 
   // ------------------------------------------------------------------------------------
   // Statistics calculated over the entire series
@@ -260,7 +260,7 @@ module StatsInternal =
     let mutable res = Unchecked.defaultof<_>
     let mutable initialized = false
     for v in series.Vector.DataSequence do
-      if v.HasValue then 
+      if v.HasValue then
         res <- if initialized then f res v.Value else v.Value
         initialized <- true
     if initialized then Some res else None
@@ -268,7 +268,7 @@ module StatsInternal =
   /// Returns the nth smallest element from the specified array.
   /// (QuickSelect implementation based on: http://en.wikipedia.org/wiki/Quickselect)
   let quickSelectInplace n (arr:float[]) =
-    let inline swap a b = 
+    let inline swap a b =
       let t = arr.[b]
       arr.[b] <- arr.[a]
       arr.[a] <- t
@@ -284,21 +284,21 @@ module StatsInternal =
       swap right storeIndex  // Move pivot to its final place
       storeIndex
 
-    let rec select left right = 
+    let rec select left right =
       if left = right then arr.[left] else
-        let pivotIndex = (left + right) / 2 
+        let pivotIndex = (left + right) / 2
         let pivotIndex = partition left right pivotIndex
         if n = pivotIndex then arr.[n]
         elif n < pivotIndex then select left (pivotIndex - 1)
         else select (pivotIndex + 1) right
-    
+
     select 0 (arr.Length - 1)
 
 
 open StatsInternal
 
 /// The `Stats` type contains functions for fast calculation of statistics over
-/// series and frames as well as over a moving and an expanding window in a series. 
+/// series and frames as well as over a moving and an expanding window in a series.
 ///
 /// The resulting series has the same keys as the input series. When there are
 /// no values, or missing values, different functions behave in different ways.
@@ -306,7 +306,7 @@ open StatsInternal
 /// functions return the minimal/maximal element (skipping over missing values).
 ///
 /// ## Series statistics
-/// 
+///
 /// Functions such as `count`, `mean`, `kurt` etc. return the
 /// statistics calculated over all values of a series. The calculation skips
 /// over missing values (or `nan` values), so for example `mean` returns the
@@ -314,9 +314,9 @@ open StatsInternal
 ///
 /// ## Frame statistics
 ///
-/// The standard functions are exposed as static members and are 
-/// overloaded. This means that they can be applied to both `Series<'K, float>` and 
-/// to `Frame<'R, 'C>`. When applied to data frame, the functions apply the 
+/// The standard functions are exposed as static members and are
+/// overloaded. This means that they can be applied to both `Series<'K, float>` and
+/// to `Frame<'R, 'C>`. When applied to data frame, the functions apply the
 /// statistical calculation to all numerical columns of the frame.
 ///
 /// ## Moving windows
@@ -336,28 +336,28 @@ open StatsInternal
 /// ## Multi-level statistics
 ///
 /// For a series with multi-level (hierarchical) index, the
-/// functions prefixed with `level` provide a way to apply statistical operation on 
-/// a single level of the index. (For example you can sum values along the `'K1` keys 
+/// functions prefixed with `level` provide a way to apply statistical operation on
+/// a single level of the index. (For example you can sum values along the `'K1` keys
 /// in a series `Series<'K1 * 'K2, float>` and get `Series<'K1, float>` as the result.)
 ///
 /// ## Remarks
 ///
 /// The windowing functions in the `Stats` type support calculations over a fixed-size
-/// windows specified by the size of the window. If you need more complex windowing 
+/// windows specified by the size of the window. If you need more complex windowing
 /// behavior (such as window based on the distance between keys), different handling
 /// of boundary, or chunking (calculation over adjacent chunks), you can use chunking and
 /// windowing functions from the `Series` module such as `Series.windowSizeInto` or
 /// `Series.chunkSizeInto`.
 ///
 /// [category:Frame and series operations]
-type Stats = 
+type Stats =
 
   // ------------------------------------------------------------------------------------
   // Public - moving window functions
   // ------------------------------------------------------------------------------------
 
   /// Returns a series that contains counts over a moving window of the specified size.
-  /// The first `size-1` elements of the returned series are always missing; if the 
+  /// The first `size-1` elements of the returned series are always missing; if the
   /// entire window contains missing values, the result is 0.
   /// Throws a `FormatException` or an `InvalidCastException` if the value type of the specified series
   /// is not convertible to floating point number.
@@ -367,7 +367,7 @@ type Stats =
     applyMovingSumsTransform 0 size (fun s -> s.nobs) series
 
   /// Returns a series that contains sums over a moving window of the specified size.
-  /// The first `size-1` elements of the returned series are always missing; if the 
+  /// The first `size-1` elements of the returned series are always missing; if the
   /// entire window contains missing values, the result is 0.
   /// Throws a `FormatException` or an `InvalidCastException` if the value type of the specified series
   /// is notconvertible to floating point number.
@@ -377,7 +377,7 @@ type Stats =
     applyMovingSumsTransform 1 size (fun s -> s.sum) series
 
   /// Returns a series that contains means over a moving window of the specified size.
-  /// The first `size-1` elements of the returned series are always missing; if the 
+  /// The first `size-1` elements of the returned series are always missing; if the
   /// entire window contains missing values, the result is also missing.
   /// Throws a `FormatException` or an `InvalidCastException` if the value type of the specified series
   /// is not convertible to floating point number.
@@ -387,7 +387,7 @@ type Stats =
     applyMovingSumsTransform 1 size (fun s -> s.sum / s.nobs) series
 
   /// Returns a series that contains variance over a moving window of the specified size.
-  /// The first `size-1` elements of the returned series are always missing; if the 
+  /// The first `size-1` elements of the returned series are always missing; if the
   /// entire window contains missing values, the result is also missing.
   /// Throws a `FormatException` or an `InvalidCastException` if the value type of the specified series
   /// is not convertible to floating point number.
@@ -397,7 +397,7 @@ type Stats =
     applyMovingSumsTransform 2 size varianceSums series
 
   /// Returns a series that contains standard deviations over a moving window of the specified size.
-  /// The first `size-1` elements of the returned series are always missing; if the 
+  /// The first `size-1` elements of the returned series are always missing; if the
   /// entire window contains missing values, the result is also missing.
   /// Throws a `FormatException` or an `InvalidCastException` if the value type of the specified series
   /// is not convertible to floating point number.
@@ -407,7 +407,7 @@ type Stats =
     applyMovingSumsTransform 2 size (varianceSums >> sqrt) series
 
   /// Returns a series that contains skewness over a moving window of the specified size.
-  /// The first `size-1` elements of the returned series are always missing; if the 
+  /// The first `size-1` elements of the returned series are always missing; if the
   /// entire window contains missing values, the result is also missing.
   /// Throws a `FormatException` or an `InvalidCastException` if the value type of the specified series
   /// is not convertible to floating point number.
@@ -417,17 +417,17 @@ type Stats =
     applyMovingSumsTransform 3 size skewSums series
 
   /// Returns a series that contains kurtosis over a moving window of the specified size.
-  /// The first `size-1` elements of the returned series are always missing; if the 
+  /// The first `size-1` elements of the returned series are always missing; if the
   /// entire window contains missing values, the result is also missing.
   /// Throws a `FormatException` or an `InvalidCastException` if the value type of the specified series
   /// is not convertible to floating point number.
   ///
   /// [category:Moving windows]
   static member inline movingKurt size (series:Series<'K, 'V>) : Series<'K, float> =
-    applyMovingSumsTransform 4 size kurtSums series 
+    applyMovingSumsTransform 4 size kurtSums series
 
   /// Returns a series that contains minimum over a moving window of the specified size.
-  /// The first `size-1` elements are calculated using smaller windows spanning over `1 .. size-1` 
+  /// The first `size-1` elements are calculated using smaller windows spanning over `1 .. size-1`
   /// values. If the entire window contains missing values, the result is missing.
   /// Throws a `FormatException` or an `InvalidCastException` if the value type of the series
   /// is not convertible to floating point number.
@@ -437,7 +437,7 @@ type Stats =
     applySeriesProj (movingMinMaxHelper size (>=)) (series |> Series.mapValues toFloat)
 
   /// Returns a series that contains maximum over a moving window of the specified size.
-  /// The first `size-1` elements are calculated using smaller windows spanning over `1 .. size-1` 
+  /// The first `size-1` elements are calculated using smaller windows spanning over `1 .. size-1`
   /// values. If the entire window contains missing values, the result is missing.
   /// Throws a `FormatException` or an `InvalidCastException` if the value type of the series
   /// is not convertible to floating point number.
@@ -458,7 +458,7 @@ type Stats =
     applyExpandingMomentsTransform (fun w -> w.nobs) series
 
   /// Returns a series that contains sums over expanding windows (the value for
-  /// a given key is calculated from all elements with smaller keys); If the 
+  /// a given key is calculated from all elements with smaller keys); If the
   /// entire window contains no values, the result is 0.
   ///
   /// [category:Expanding windows]
@@ -466,57 +466,57 @@ type Stats =
     applyExpandingMomentsTransform (fun w -> w.sum) series
 
   /// Returns a series that contains means over expanding windows (the value for
-  /// a given key is calculated from all elements with smaller keys); If the 
+  /// a given key is calculated from all elements with smaller keys); If the
   /// entire window contains no values, the result is missing.
   ///
   /// [category:Expanding windows]
   static member inline expandingMean (series:Series<'K, 'V>) : Series<'K, float> =
-    applyExpandingMomentsTransform (fun w -> 
+    applyExpandingMomentsTransform (fun w ->
       if w.nobs < 1.0 then nan else w.M1) series
 
   /// Returns a series that contains variance over expanding windows (the value for
-  /// a given key is calculated from all elements with smaller keys); If the 
+  /// a given key is calculated from all elements with smaller keys); If the
   /// entire window contains fewer than 2 values, the result is missing.
   ///
   /// [category:Expanding windows]
   static member inline expandingVariance (series:Series<'K, 'V>) : Series<'K, float> =
-    let toVar w = 
+    let toVar w =
       if w.nobs < 2.0 then nan
       else w.M2 / (w.nobs - 1.0)
     applyExpandingMomentsTransform toVar series
 
-  /// Returns a series that contains standard deviation over expanding windows (the 
-  /// value for a given key is calculated from all elements with smaller keys); If the 
+  /// Returns a series that contains standard deviation over expanding windows (the
+  /// value for a given key is calculated from all elements with smaller keys); If the
   /// entire window contains fewer than 2 values, the result is missing.
   ///
   /// [category:Expanding windows]
   static member inline expandingStdDev (series:Series<'K, 'V>) : Series<'K, float> =
-    let toStdDev w = 
+    let toStdDev w =
       if w.nobs < 2.0 then nan
       else w.M2 / (w.nobs - 1.0) |> sqrt
     applyExpandingMomentsTransform toStdDev series
 
   /// Returns a series that contains skewness over expanding windows (the value for
-  /// a given key is calculated from all elements with smaller keys); If the 
+  /// a given key is calculated from all elements with smaller keys); If the
   /// entire window contains fewer than 3 values, the result is missing.
   ///
   /// [category:Expanding windows]
   static member inline expandingSkew (series:Series<'K, 'V>) : Series<'K, float> =
-    // population -> sample estimate    
-    let toEstSkew w = 
+    // population -> sample estimate
+    let toEstSkew w =
       if w.nobs < 3.0 then nan else
         let adjust = (sqrt (w.nobs * (w.nobs - 1.0))) / (w.nobs - 2.0)
-        adjust * (sqrt w.nobs) * w.M3 / (w.M2 ** 1.5) 
+        adjust * (sqrt w.nobs) * w.M3 / (w.M2 ** 1.5)
     applyExpandingMomentsTransform toEstSkew series
 
   /// Returns a series that contains kurtosis over expanding windows (the value for
-  /// a given key is calculated from all elements with smaller keys); If the 
+  /// a given key is calculated from all elements with smaller keys); If the
   /// entire window contains fewer than 4 values, the result is missing.
   ///
   /// [category:Expanding windows]
   static member inline expandingKurt (series:Series<'K, 'V>) : Series<'K, float> =
     // population -> sample estimate
-    let toEstKurt w = 
+    let toEstKurt w =
       if w.nobs < 4.0 then nan else
         let adjust p = (6.0 + p * (w.nobs + 1.0)) * (w.nobs - 1.0) / ((w.nobs - 2.0) * (w.nobs - 3.0))
         adjust ((w.nobs * w.M4) / (w.M2 * w.M2) - 3.0)
@@ -535,7 +535,7 @@ type Stats =
       | OptionalValue.Present x -> if System.Double.IsNaN(s) then x else min x s
       | OptionalValue.Missing   -> s
     applySeriesProj ((Seq.scan minFn nan) >> (Seq.skip 1) >> Array.ofSeq) (series |> Series.mapValues toFloat)
-    
+
   /// Returns a series that contains maximum over an expanding window. The value
   /// for a key _k_ in the returned series is the maximum from all elements with
   /// smaller keys.
@@ -567,16 +567,16 @@ type Stats =
   /// is not convertible to floating point number.
   ///
   /// [category:Series statistics]
-  static member inline sum (series:Series<'K, 'V>) = 
-    series.Values |> Seq.fold (fun sum v -> 
+  static member inline sum (series:Series<'K, 'V>) =
+    series.Values |> Seq.fold (fun sum v ->
       if Double.IsNaN sum then toFloat v else sum + toFloat v) nan
 
-  /// Sum that operates only any appropriate numeric type. When there are no available 
+  /// Sum that operates only any appropriate numeric type. When there are no available
   /// values, the result is zero of the approriate numeric type.
   ///
   /// [category:Series statistics]
-  static member inline numSum (series:Series<'K, 'V>) = 
-    series.Values |> Seq.sum 
+  static member inline numSum (series:Series<'K, 'V>) =
+    series.Values |> Seq.sum
 
   /// Returns the mean of the values in a series. The function skips over missing values
   /// and `NaN` values. When there are no available values, the result is NaN.
@@ -597,7 +597,7 @@ type Stats =
   static member inline variance (series:Series<'K, 'V>) =
     varianceSums (initSumsSparse 2 (valuesAllOpt series))
 
-  /// Returns the standard deviation of the values in a series. The function skips over 
+  /// Returns the standard deviation of the values in a series. The function skips over
   /// missing values and `NaN` values. When there are less than 2 values, the result is NaN.
   /// Throws a `FormatException` or an `InvalidCastException` if the value type of the series
   /// is not convertible to floating point number.
@@ -606,7 +606,7 @@ type Stats =
   static member inline stdDev (series:Series<'K, 'V>) =
     sqrt (varianceSums (initSumsSparse 2 (valuesAllOpt series)))
 
-  /// Returns the skewness of the values in a series. The function skips over missing 
+  /// Returns the skewness of the values in a series. The function skips over missing
   /// values and `NaN` values. When there are less than 3 values, the result is NaN.
   /// Throws a `FormatException` or an `InvalidCastException` if the value type of the series
   /// is not convertible to floating point number.
@@ -615,7 +615,7 @@ type Stats =
   static member inline skew (series:Series<'K, 'V>) =
     skewSums (initSumsSparse 3 (valuesAllOpt series))
 
-  /// Returns the kurtosis of the values in a series. The function skips over missing 
+  /// Returns the kurtosis of the values in a series. The function skips over missing
   /// values and `NaN` values. When there are less than 4 values, the result is NaN.
   ///
   /// [category:Series statistics]
@@ -670,7 +670,7 @@ type Stats =
   /// is an optional value. When the series contains no values, the result is `None`.
   ///
   /// [category:Series statistics]
-  static member inline maxBy f (series:Series<'K, 'T>) = 
+  static member inline maxBy f (series:Series<'K, 'T>) =
     if series.ValueCount = 0 then None
     else Some(series |> Series.observations |> Seq.maxBy (snd >> f))
 
@@ -678,7 +678,7 @@ type Stats =
   /// is an optional value. When the series contains no values, the result is `None`.
   ///
   /// [category:Series statistics]
-  static member inline minBy f (series:Series<'K, 'T>) = 
+  static member inline minBy f (series:Series<'K, 'T>) =
     if series.ValueCount = 0 then None
     else Some(series |> Series.observations |> Seq.minBy (snd >> f))
 
@@ -687,7 +687,7 @@ type Stats =
   /// is not convertible to floating point number.
   ///
   /// [category:Series statistics]
-  static member inline median (series:Series<'K, 'V>) = 
+  static member inline median (series:Series<'K, 'V>) =
     let values = Array.ofSeq series.Values |> Array.map toFloat
     let mid = values.Length / 2
     if values.Length = 0 then nan
@@ -712,7 +712,7 @@ type Stats =
     else
       quantiles
       |> Array.map(fun q ->
-        let quantile = 
+        let quantile =
           if q < 0.0 || q > 1.0 then
             nan
           else if q = 0.0 || valsLength = 1 then
@@ -727,7 +727,7 @@ type Stats =
             let r = vals.[index]
 
             l + (r - l) * (floatIndex % 1.0)
-        
+
         string q, quantile
       )
       |> Series.ofObservations
@@ -739,7 +739,7 @@ type Stats =
   /// [category:Series statistics]
   static member inline describe (series:Series<'K, 'V>) =
     let quantileResult = Stats.quantile ([|0.25; 0.5; 0.75|], series)
-    
+
     Seq.concat [
       [
         "unique", Stats.uniqueCount series |> float
@@ -753,14 +753,14 @@ type Stats =
       ]
     ]
     |> Series.ofObservations
-   
+
   // ------------------------------------------------------------------------------------
   // Series interpolation
   // ------------------------------------------------------------------------------------
 
   /// Interpolates an ordered series given a new sequence of keys. The function iterates through
-  /// each new key, and invokes a function on the current key, the nearest smaller and larger valid 
-  /// observations from the series argument. The function must return a new valid float. 
+  /// each new key, and invokes a function on the current key, the nearest smaller and larger valid
+  /// observations from the series argument. The function must return a new valid float.
   ///
   /// ## Parameters
   ///  - `keys` - Sequence of new keys that forms the index of interpolated results
@@ -775,7 +775,7 @@ type Stats =
 
     series.Interpolate(keys, Func<_,_,_,_>(liftedf))
 
-  /// Linearly interpolates an ordered series given a new sequence of keys. 
+  /// Linearly interpolates an ordered series given a new sequence of keys.
   ///
   /// ## Parameters
   ///  - `keys` - Sequence of new keys that forms the index of interpolated results
@@ -787,8 +787,8 @@ type Stats =
   static member inline interpolateLinear keys (keyDiff:'K->'K->float) (series:Series<'K, 'V>) =
     let linearF k a b =
       match a, b with
-      | Some x, Some y -> 
-        if x = y then snd x 
+      | Some x, Some y ->
+        if x = y then snd x
         else (snd x) + (keyDiff k (fst x)) / (keyDiff (fst y) (fst x)) * (snd y - snd x)
       | Some x, _      -> snd x
       | _, Some y      -> snd y
@@ -799,82 +799,82 @@ type Stats =
   // Statistics calculated over the entire frames' float column series
   // ------------------------------------------------------------------------------------
 
-  /// For each column, returns the number of the values in the column. 
+  /// For each column, returns the number of the values in the column.
   /// This excludes missing values and values created from `Double.NaN` etc.
   ///
   /// [category:Frame statistics]
-  static member count (frame:Frame<'R, 'C>) = 
+  static member count (frame:Frame<'R, 'C>) =
     frame.Columns |> Series.map (fun _ -> Stats.count)
 
-  /// For each numerical column, returns the sum of the values in the column. 
-  /// The function skips over missing values and `NaN` values. When there are no 
+  /// For each numerical column, returns the sum of the values in the column.
+  /// The function skips over missing values and `NaN` values. When there are no
   /// available values, the result is 0.
   ///
   /// [category:Frame statistics]
-  static member sum (frame:Frame<'R, 'C>) = 
+  static member sum (frame:Frame<'R, 'C>) =
     frame.GetColumns<float>() |> Series.map (fun _ -> Stats.sum)
 
-  /// For each numerical column, returns the mean of the values in the column. 
-  /// The function skips over missing values and `NaN` values. When there are 
+  /// For each numerical column, returns the mean of the values in the column.
+  /// The function skips over missing values and `NaN` values. When there are
   /// no available values, the result is NaN.
   ///
   /// [category:Frame statistics]
-  static member mean (frame:Frame<'R, 'C>) = 
+  static member mean (frame:Frame<'R, 'C>) =
     frame.GetColumns<float>() |> Series.map (fun _ -> Stats.mean)
 
   /// For each numerical column, returns the median of the values in the column.
   ///
   /// [category:Frame statistics]
-  static member median (frame:Frame<'R, 'C>) = 
+  static member median (frame:Frame<'R, 'C>) =
     frame.GetColumns<float>() |> Series.map (fun _ -> Stats.median)
 
-  /// For each numerical column, returns the standard deviation of the values in the column. 
-  /// The function skips over missing values and `NaN` values. When there are less than 2 values, 
+  /// For each numerical column, returns the standard deviation of the values in the column.
+  /// The function skips over missing values and `NaN` values. When there are less than 2 values,
   /// the result is NaN.
   ///
   /// [category:Frame statistics]
-  static member stdDev (frame:Frame<'R, 'C>) = 
+  static member stdDev (frame:Frame<'R, 'C>) =
     frame.GetColumns<float>() |> Series.map (fun _ -> Stats.stdDev)
 
   /// For each numerical column, returns the variance of the values in the column.
-  /// The function skips over missing values and `NaN` values. When there are less 
+  /// The function skips over missing values and `NaN` values. When there are less
   /// than 2 values, the result is NaN.
   ///
   /// [category:Frame statistics]
-  static member variance (frame:Frame<'R, 'C>) = 
+  static member variance (frame:Frame<'R, 'C>) =
     frame.GetColumns<float>() |> Series.map (fun _ -> Stats.variance)
 
-  /// For each numerical column, returns the skewness of the values in a series. 
-  /// The function skips over missing values and `NaN` values. When there are less than 3 values, 
+  /// For each numerical column, returns the skewness of the values in a series.
+  /// The function skips over missing values and `NaN` values. When there are less than 3 values,
   /// the result is NaN.
   ///
   /// [category:Frame statistics]
-  static member skew (frame:Frame<'R, 'C>) = 
+  static member skew (frame:Frame<'R, 'C>) =
     frame.GetColumns<float>() |> Series.map (fun _ -> Stats.skew)
 
-  /// For each numerical column, returns the kurtosis of the values in a series. 
-  /// The function skips over missing values and `NaN` values. When there are less than 4 values, 
+  /// For each numerical column, returns the kurtosis of the values in a series.
+  /// The function skips over missing values and `NaN` values. When there are less than 4 values,
   /// the result is NaN.
   ///
   /// [category:Frame statistics]
-  static member kurt (frame:Frame<'R, 'C>) = 
-    frame.GetColumns<float>() |> Series.map (fun _ -> Stats.kurt)  
+  static member kurt (frame:Frame<'R, 'C>) =
+    frame.GetColumns<float>() |> Series.map (fun _ -> Stats.kurt)
 
   /// For each numerical column, returns the minimal values as a series.
   /// The function skips over missing and `NaN` values. When there are no values,
   /// the result is `NaN`.
   ///
   /// [category:Frame statistics]
-  static member min (frame:Frame<'R, 'C>) = 
-    frame.GetColumns<float>() |> Series.map (fun _ s -> Stats.min s)  
+  static member min (frame:Frame<'R, 'C>) =
+    frame.GetColumns<float>() |> Series.map (fun _ s -> Stats.min s)
 
   /// For each numerical column, returns the maximal values as a series.
   /// The function skips over missing and `NaN` values. When there are no values,
   /// the result is `NaN`.
   ///
   /// [category:Frame statistics]
-  static member max (frame:Frame<'R, 'C>) = 
-    frame.GetColumns<float>() |> Series.map (fun _ s -> Stats.max s)  
+  static member max (frame:Frame<'R, 'C>) =
+    frame.GetColumns<float>() |> Series.map (fun _ s -> Stats.max s)
 
   /// For each column, returns the number of unique values.
   static member uniqueCount (frame: Frame<'R, 'C>) =
@@ -884,79 +884,79 @@ type Stats =
   // Statistics applied to a single level of a multi-level indexed series
   // ------------------------------------------------------------------------------------
 
-  /// For each group with equal keys at the level specified by `level`, 
-  /// returns the number of the values in the group. This excludes missing 
+  /// For each group with equal keys at the level specified by `level`,
+  /// returns the number of the values in the group. This excludes missing
   /// values and values created from `Double.NaN` etc.
   ///
   /// [category:Multi-level statistics]
-  static member inline levelCount (level:'K -> 'L) (series:Series<'K, 'V>) = 
+  static member inline levelCount (level:'K -> 'L) (series:Series<'K, 'V>) =
     Series.applyLevel level Stats.count series
 
-  /// For each group with equal keys at the level specified by `level`, 
-  /// returns the sum of the values in the group. The function skips over missing values 
+  /// For each group with equal keys at the level specified by `level`,
+  /// returns the sum of the values in the group. The function skips over missing values
   /// and `NaN` values. When there are no available values, the result is 0.
   /// Throws a `FormatException` or an `InvalidCastException` if the value type of the series
   /// is not convertible to floating point number.
   ///
   /// [category:Multi-level statistics]
-  static member inline levelSum (level:'K -> 'L) (series:Series<'K, 'V>) = 
+  static member inline levelSum (level:'K -> 'L) (series:Series<'K, 'V>) =
     Series.applyLevel level Stats.sum series
 
-  /// For each group with equal keys at the level specified by `level`, 
-  /// returns the mean of the values in the group. The function skips over missing 
+  /// For each group with equal keys at the level specified by `level`,
+  /// returns the mean of the values in the group. The function skips over missing
   /// values and `NaN` values. When there are no available values, the result is NaN.
   /// Throws a `FormatException` or an `InvalidCastException` if the value type of the series
   /// is not convertible to floating point number.
   ///
   /// [category:Multi-level statistics]
-  static member inline levelMean (level:'K -> 'L) (series:Series<'K, 'V>) = 
+  static member inline levelMean (level:'K -> 'L) (series:Series<'K, 'V>) =
     Series.applyLevel level Stats.mean series
 
-  /// For each group with equal keys at the level specified by `level`, 
+  /// For each group with equal keys at the level specified by `level`,
   /// returns the median of the values in the group.
   /// Throws a `FormatException` or an `InvalidCastException` if the value type of the series
   /// is not convertible to floating point number.
   ///
   /// [category:Multi-level statistics]
-  static member inline levelMedian (level:'K -> 'L) (series:Series<'K, 'V>) = 
+  static member inline levelMedian (level:'K -> 'L) (series:Series<'K, 'V>) =
     Series.applyLevel level Stats.median series
 
-  /// For each group with equal keys at the level specified by `level`, 
-  /// returns the standard deviation of the values in the group. The function skips over 
+  /// For each group with equal keys at the level specified by `level`,
+  /// returns the standard deviation of the values in the group. The function skips over
   /// missing values and `NaN` values. When there are less than 2 values, the result is NaN.
   /// Throws a `FormatException` or an `InvalidCastException` if the value type of the series
   /// is not convertible to floating point number.
   ///
   /// [category:Multi-level statistics]
-  static member inline levelStdDev (level:'K -> 'L) (series:Series<'K, 'V>) = 
+  static member inline levelStdDev (level:'K -> 'L) (series:Series<'K, 'V>) =
     Series.applyLevel level Stats.stdDev series
 
-  /// For each group with equal keys at the level specified by `level`, 
-  /// returns the variance of the values in the group. The function skips over missing 
+  /// For each group with equal keys at the level specified by `level`,
+  /// returns the variance of the values in the group. The function skips over missing
   /// values and `NaN` values. When there are less than 2 values, the result is NaN.
   /// Throws a `FormatException` or an `InvalidCastException` if the value type of the series
   /// is not convertible to floating point number.
   ///
   /// [category:Multi-level statistics]
-  static member inline levelVariance (level:'K -> 'L) (series:Series<'K, 'V>) = 
+  static member inline levelVariance (level:'K -> 'L) (series:Series<'K, 'V>) =
     Series.applyLevel level Stats.variance series
 
-  /// For each group with equal keys at the level specified by `level`, 
-  /// returns the skewness of the values in a series. The function skips over missing 
+  /// For each group with equal keys at the level specified by `level`,
+  /// returns the skewness of the values in a series. The function skips over missing
   /// values and `NaN` values. When there are less than 3 values, the result is NaN.
   /// Throws a `FormatException` or an `InvalidCastException` if the value type of the series
   /// is not convertible to floating point number.
   ///
   /// [category:Multi-level statistics]
-  static member inline levelSkew (level:'K -> 'L) (series:Series<'K, 'V>) = 
+  static member inline levelSkew (level:'K -> 'L) (series:Series<'K, 'V>) =
     Series.applyLevel level Stats.skew series
 
-  /// For each group with equal keys at the level specified by `level`, 
-  /// returns the kurtosis of the values in a series. The function skips over missing values 
+  /// For each group with equal keys at the level specified by `level`,
+  /// returns the kurtosis of the values in a series. The function skips over missing values
   /// and `NaN` values. When there are less than 4 values, the result is NaN.
   /// Throws a `FormatException` or an `InvalidCastException` if the value type of the series
   /// is not convertible to floating point number.
   ///
   /// [category:Multi-level statistics]
-  static member inline levelKurt (level:'K -> 'L) (series:Series<'K, 'V>) = 
+  static member inline levelKurt (level:'K -> 'L) (series:Series<'K, 'V>) =
     Series.applyLevel level Stats.kurt series

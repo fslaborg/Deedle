@@ -27,15 +27,15 @@ let ``empty deque is empty`` () =
   let d = Deque()
 
   d.IsEmpty |> shouldEqual true
-  
+
 [<Test>]
 let ``can add single element`` () =
   let d = Deque()
 
   d.Add(1)
-  
-  d.IsEmpty |> shouldEqual false 
-  d.Count |> shouldEqual 1  
+
+  d.IsEmpty |> shouldEqual false
+  d.Count |> shouldEqual 1
   d.Last |> shouldEqual 1
   d.First |> shouldEqual 1
 
@@ -45,8 +45,8 @@ let ``can add two elements`` () =
 
   d.Add(1)
   d.Add(2)
-  
-  d.IsEmpty |> shouldEqual false 
+
+  d.IsEmpty |> shouldEqual false
   d.Count |> shouldEqual 2
   d.Last |> shouldEqual 2
   d.First |> shouldEqual 1
@@ -60,8 +60,8 @@ let ``can add elements`` () =
   d.Add(3)
   d.Add(4)
   d.Add(5)
-  
-  d.IsEmpty |> shouldEqual false 
+
+  d.IsEmpty |> shouldEqual false
   d.Count |> shouldEqual 5
 
   d.[0] |> shouldEqual 1
@@ -75,7 +75,7 @@ let ``can double the capacity`` () =
 
   for x in 1..17 do
       d.Add(x)
- 
+
   d |> Seq.toList |> shouldEqual [1..17]
 
 [<Test>]
@@ -84,8 +84,8 @@ let ``can add elements and remove from front`` () =
 
   for x in 1..2049 do
       d.Add(x.ToString())
- 
-  d.IsEmpty |> shouldEqual false 
+
+  d.IsEmpty |> shouldEqual false
   d.Count |> shouldEqual 2049
 
   for x in 1..2049 do
@@ -101,8 +101,8 @@ let ``can add elements and remove from back`` () =
 
   for x in 1..2049 do
       d.Add(x)
- 
-  d.IsEmpty |> shouldEqual false 
+
+  d.IsEmpty |> shouldEqual false
   d.Count |> shouldEqual 2049
 
   for x in 1..2049 do
@@ -118,7 +118,7 @@ let ``can add elements and interate`` () =
 
   for x in 1..2049 do
       d.Add(x)
- 
+
   let l = ref 1
   for x in d do
     x |> shouldEqual !l
@@ -130,7 +130,7 @@ let ``can add elements and convert to list`` () =
 
   for x in 1..2049 do
       d.Add(x)
- 
+
   d |> Seq.toList |> shouldEqual [1..2049]
 
 
@@ -141,7 +141,7 @@ let ``can add and remove elements and convert to list`` () =
 
   for x in 1..max do
       d.Add(x)
- 
+
   for x in 1..max do
       d.RemoveFirst() |> ignore
 
@@ -164,7 +164,7 @@ let ``can add and remove elements and double capacity`` () =
 
   for x in 1..max do
       d.Add(x)
- 
+
   for x in 1..max do
       d.RemoveFirst() |> ignore
 
@@ -210,13 +210,13 @@ let ``moving max regression at front`` () =
   d.Add(4, 0)
   d.Add(5, -1)
   d.RemoveFirst() |> shouldEqual (4,0)
-  d.RemoveFirst() |> shouldEqual (5,-1)  
+  d.RemoveFirst() |> shouldEqual (5,-1)
   d.IsEmpty |> shouldEqual true
-  d.Add(7, 3) 
+  d.Add(7, 3)
   d.RemoveFirst() |> shouldEqual (7,3)
-  d.Add(8, -5) 
+  d.Add(8, -5)
   d.RemoveFirst() |> shouldEqual (8,-5)
-  d.Add(9, 4) 
+  d.Add(9, 4)
   d.RemoveFirst() |> shouldEqual (9,4)
   d.IsEmpty |> shouldEqual true
 

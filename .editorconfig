@@ -1,9 +1,28 @@
- [*.fs]
- indent_style = space
- indent_size = 2
- tab_size = 2
+# EditorConfig is awesome:http://EditorConfig.org
 
- [*.fsx]
- indent_style = space
- indent_size = 2
- tab_size = 2
+# top-most EditorConfig file
+root = true
+
+# Baseline
+[*]
+charset = utf-8
+indent_style = space
+trim_trailing_whitespace = true
+end_of_line              = crlf
+insert_final_newline     = true
+max_line_length = 120
+
+# MSBuild
+[*.{csproj,proj,projitems,shproj,fsproj,target,props}]
+indent_style = space
+indent_size = 2
+
+# XML config files
+[*.{config,nuspec,resx}]
+indent_style = space
+indent_size = 2
+
+# F# files
+[*.{fs, fsx, fsi}]
+indent_style = space
+indent_size = 2

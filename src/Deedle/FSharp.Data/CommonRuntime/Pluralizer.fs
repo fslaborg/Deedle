@@ -14,11 +14,11 @@ module internal FSharp.Data.Runtime.Pluralizer
 open System
 open System.Collections.Generic
 
-// Pluralization service for nice 'NameUtils.fs' based on C# code from 
-// http://blogs.msdn.com/b/dmitryr/archive/2007/01/11/simple-english-noun-pluralizer-in-c.aspx 
+// Pluralization service for nice 'NameUtils.fs' based on C# code from
+// http://blogs.msdn.com/b/dmitryr/archive/2007/01/11/simple-english-noun-pluralizer-in-c.aspx
 // (with a couple of more rules were added)
 
-type private SuffixRule = 
+type private SuffixRule =
     { SingularSuffix : string
       PluralSuffix : string }
 
@@ -28,14 +28,14 @@ let private tables = lazy(
         ["ch",       "ches"
          "sh",       "shes"
          "ss",       "sses"
-         
+
          "ay",       "ays"
          "ey",       "eys"
          "iy",       "iys"
          "oy",       "oys"
          "uy",       "uys"
          "y",        "ies"
-         
+
          "ao",       "aos"
          "eo",       "eos"
          "io",       "ios"
@@ -45,19 +45,19 @@ let private tables = lazy(
 
          "house",    "houses"
          "course",   "courses"
-         
+
          "cis",      "ces"
          "us",       "uses"
          "sis",      "ses"
          "xis",      "xes"
-         
+
          "louse",    "lice"
          "mouse",    "mice"
-         
+
          "zoon",     "zoa"
-         
+
          "man",      "men"
-         
+
          "deer",     "deer"
          "fish",     "fish"
          "sheep",    "sheep"
@@ -79,7 +79,7 @@ let private tables = lazy(
          "life",     "lives"
          "wife",     "wives"]
 
-    let specialWords = 
+    let specialWords =
         ["agendum",          "agenda",           ""
          "aircraft",         "",                 ""
          "albino",           "albinos",          ""
@@ -177,7 +177,7 @@ let private tables = lazy(
 
     let specialSingulars = new Dictionary<_, _>(StringComparer.OrdinalIgnoreCase)
     let specialPlurals = new Dictionary<_, _>(StringComparer.OrdinalIgnoreCase)
-    
+
     for singular, plural, plural2 in specialWords do
         let plural = if plural = "" then singular else plural
         specialPlurals.Add(singular, plural)
@@ -188,7 +188,7 @@ let private tables = lazy(
     suffixRules, specialSingulars, specialPlurals)
 
 let private adjustCase (s: string) (template: string) =
-    if String.IsNullOrEmpty s then 
+    if String.IsNullOrEmpty s then
         s
     else
         // determine the type of casing of the template string
@@ -225,7 +225,7 @@ let private tryToPlural (word: string) suffixRule =
     else
         None
 
-let private tryToSingular (word: string) suffixRule = 
+let private tryToSingular (word: string) suffixRule =
     if word.EndsWith(suffixRule.PluralSuffix, StringComparison.OrdinalIgnoreCase) then
         Some <| word.Substring(0, word.Length - suffixRule.PluralSuffix.Length) + suffixRule.SingularSuffix
     else
@@ -233,30 +233,30 @@ let private tryToSingular (word: string) suffixRule =
 
 let toPlural noun =
     if String.IsNullOrEmpty noun then noun
-    else 
+    else
         let suffixRules, _, specialPlurals = tables.Value
-        let plural = 
+        let plural =
             match specialPlurals.TryGetValue noun with
             | true, plural -> plural
-            | false, _ -> 
+            | false, _ ->
                 match suffixRules |> Seq.tryPick (tryToPlural noun) with
                 | Some plural -> plural
-                | None -> 
+                | None ->
                     if noun.EndsWith("s", StringComparison.OrdinalIgnoreCase) then
                         noun
                     else
                         noun + "s"
-                        
+
         (plural, noun) ||> adjustCase
 
 let toSingular noun =
     if String.IsNullOrEmpty noun then noun
-    else 
+    else
         let suffixRules, specialSingulars, _ = tables.Value
-        let singular = 
+        let singular =
             match specialSingulars.TryGetValue noun with
             | true, singular -> singular
-            | false, _ -> 
+            | false, _ ->
                 match suffixRules |> Seq.tryPick (tryToSingular noun) with
                 | Some singular -> singular
                 | None ->

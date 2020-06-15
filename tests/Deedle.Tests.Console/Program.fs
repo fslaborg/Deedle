@@ -14,19 +14,19 @@ open System.Linq.Expressions
 open Deedle
 
 // ------------------------------------------------------------------------------------------------
-// Simple "test runner" for running tests in your IDE with just Run 
+// Simple "test runner" for running tests in your IDE with just Run
 // (useful for performance analysis in VS)
 // ------------------------------------------------------------------------------------------------
 
 // Set console color temporarilly
-let colored color = 
+let colored color =
   let prev = Console.ForegroundColor
   Console.ForegroundColor <- color
   { new IDisposable with
       member x.Dispose() = Console.ForegroundColor <- prev }
 
 // Measure how long does a test take
-let timed k f = 
+let timed k f =
   let times = ResizeArray<_>()
   for i in 1 .. k do
     let sw = System.Diagnostics.Stopwatch.StartNew()
@@ -36,7 +36,7 @@ let timed k f =
     res
 
 // Measure how long does a test take
-let timedFormat f fmt arg = 
+let timedFormat f fmt arg =
   let sw = System.Diagnostics.Stopwatch.StartNew()
   let res = f()
   printfn fmt sw.ElapsedMilliseconds arg
@@ -56,12 +56,12 @@ let testAll () =
   for unit, tests in tests do
     ( use _n = colored ConsoleColor.White
       printfn "\nTESTING: %s" unit )
-    for _, test in tests do 
+    for _, test in tests do
       let call = Expression.Lambda<Action>(Expression.Call(null, test)).Compile()
-      try 
+      try
         use _n = colored ConsoleColor.Green
         timedFormat call.Invoke " - [%dms] %s" test.Name
-      with e -> 
+      with e ->
         ( use _n = colored ConsoleColor.Red
           printfn " - %s (FAILED)" test.Name )
         ( use _n = colored ConsoleColor.Gray
@@ -85,13 +85,13 @@ let s2 = series <| Array.init 1000000 (fun i -> i*2+1 => rnd.NextDouble())
 let ss1 = series <| Array.init 100 (fun i -> i*2 => rnd.NextDouble())
 let ss2 = series <| Array.init 100 (fun i -> i*2+1 => rnd.NextDouble())
 *)
-let testOne() =      
+let testOne() =
   let file = "c:/temp/test.csv"
   //System.IO.File.WriteAllLines(file, Array.create 1000000 "20160114,ABC,acc12345,entity llc,Joe Doe,default,port1,FWD,ABC.TO,CAD")
   timed 1 (fun () ->
-    let df = 
+    let df =
       Frame.ReadCsv(file, hasHeaders = false, schema = "report_date,source_system,account,legal_entity,trader,strategy,portfolio,security_type,security,currency")
-    ()  
+    ()
   )
   //Console.ReadLine() |> ignore
 (*
@@ -132,13 +132,13 @@ let testOne() =
   )
 
   timed 10 (fun () ->
-    for i in 0 .. 5000 do 
+    for i in 0 .. 5000 do
       ss1.Select(fun kvp -> kvp.Value * 2.0) |> ignore
 
     // 177
   )
 *)
-  ()  
+  ()
 //  Deedle.Tests.Frame.``Applying (+) on frame & series introduces missing values``()
 
 (*
@@ -150,7 +150,7 @@ let testOne() =
   timed 5 (fun () ->
     f1.FastRows.KeyCount |> ignore
   )
-  
+
   printfn "Slow iterate"
   timed 5 (fun () ->
     f1.Rows |> Series.mapValues (fun r -> r.GetAs<float>(5)) |> ignore
@@ -165,7 +165,7 @@ let testOne() =
   timed 5 (fun () ->
 
     ()
-  
+
     // 75 ms ~> 40 ms
     //f0 + s0 |> ignore
 

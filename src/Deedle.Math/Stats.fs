@@ -48,7 +48,7 @@ type Stats =
   /// [category: Exponentially Weighted Moving]
   static member ewmMean (x:Series<'R, float>, ?com, ?span, ?halfLife, ?alpha) =
     let alpha = StatsInternal.ewDecay(com, span, halfLife, alpha)
-    let data = 
+    let data =
       x
       |> Series.valuesAll
       |> Seq.map (Option.defaultValue nan)
@@ -91,7 +91,7 @@ type Stats =
       |> Matrix.inverse
     let stdDevSeries = stdDev.ToSeries(keys)
     let corrFrame = dInv * cov * dInv |> Frame.ofMatrix keys keys
-    stdDevSeries, corrFrame    
+    stdDevSeries, corrFrame
 
   /// Convert standard deviation series and correlation frame to covariance frame
   ///
@@ -117,7 +117,7 @@ type Stats =
     | CorrelationMethod.Pearson -> Correlation.PearsonMatrix arr
     | CorrelationMethod.Spearman -> Correlation.SpearmanMatrix arr
     | _ -> invalidArg "method" "Unknown correlation method"
-  
+
   /// Correlation frame
   ///
   /// [category: Correlation and Covariance]
@@ -133,7 +133,7 @@ type Stats =
     let method = defaultArg method CorrelationMethod.Pearson
     let df = [1, s1; 2, s2] |> Frame.ofColumns
     Stats.corr(df, method).GetColumnAt(1).GetAt(0)
-    
+
   /// Covariance matrix
   ///
   /// [category: Correlation and Covariance]
@@ -161,7 +161,7 @@ type Stats =
     |> Seq.map float
     |> Array.ofSeq
     |> fun x -> Statistics.QuantileCustom(x, tau, definition)
-  
+
   /// Ranks of Series
   ///
   /// [category: Descriptive Statistics]
@@ -174,7 +174,7 @@ type Stats =
       (series.Keys, Statistics.Ranks(x, rankDefinition))
       ||> Seq.zip
       |> Series.ofObservations
-  
+
   /// Median of Series
   ///
   /// [category: Descriptive Statistics]
@@ -220,10 +220,10 @@ type Stats =
     [|window..len|]
     |> Array.Parallel.map(fun i ->
       rowKeys.[i-1],
-      df.Rows.[rowKeys.[i-window..i-1]] |> Stats.stdDev)   
+      df.Rows.[rowKeys.[i-window..i-1]] |> Stats.stdDev)
     |> Frame.ofColumns
     |> LinearAlgebra.transpose
-  
+
   /// Moving variance of frame (parallel implementation)
   ///
   /// [category: Moving statistics]
@@ -233,7 +233,7 @@ type Stats =
     [|window..len|]
     |> Array.Parallel.map(fun i ->
       rowKeys.[i-1],
-      df.Rows.[rowKeys.[i-window..i-1]] |> Stats.variance)   
+      df.Rows.[rowKeys.[i-window..i-1]] |> Stats.variance)
     |> Frame.ofColumns
     |> LinearAlgebra.transpose
 
@@ -248,4 +248,4 @@ type Stats =
       rowKeys.[i-1],
       df.Rows.[rowKeys.[i-window..i-1]]
       |> Stats.covMatrix )
-    |> Series.ofObservations    
+    |> Series.ofObservations
