@@ -6,6 +6,9 @@
 #I "packages/MathNet.Numerics.4.8.0/lib/net40/"
 #I "packages/MathNet.Numerics.4.8.1/lib/net40/"
 #I "packages/MathNet.Numerics.4.9.0/lib/net40/"
+#I "packages/MathNet.Numerics.FSharp.4.9.1/lib/net40/"
+#I "packages/MathNet.Numerics.FSharp.4.10.0/lib/net40/"
+#I "packages/MathNet.Numerics.FSharp.4.11.0/lib/net40/"
 
 #I "packages/MathNet.Numerics.FSharp/lib/net45/"
 #I "packages/MathNet.Numerics.FSharp.4.7.0/lib/net45/"
@@ -14,6 +17,9 @@
 #I "packages/MathNet.Numerics.FSharp.4.8.0/lib/net45/"
 #I "packages/MathNet.Numerics.FSharp.4.8.1/lib/net45/"
 #I "packages/MathNet.Numerics.FSharp.4.9.0/lib/net45/"
+#I "packages/MathNet.Numerics.FSharp.4.9.1/lib/net45/"
+#I "packages/MathNet.Numerics.FSharp.4.10.0/lib/net45/"
+#I "packages/MathNet.Numerics.FSharp.4.11.0/lib/net45/"
 
 #I "../packages/MathNet.Numerics/lib/net40/"
 #I "../packages/MathNet.Numerics.4.7.0/lib/net40/"
@@ -22,6 +28,9 @@
 #I "../packages/MathNet.Numerics.4.8.0/lib/net40/"
 #I "../packages/MathNet.Numerics.4.8.1/lib/net40/"
 #I "../packages/MathNet.Numerics.4.9.0/lib/net40/"
+#I "../packages/MathNet.Numerics.FSharp.4.9.1/lib/net40/"
+#I "../packages/MathNet.Numerics.FSharp.4.10.0/lib/net40/"
+#I "../packages/MathNet.Numerics.FSharp.4.11.0/lib/net40/"
 
 #I "../packages/MathNet.Numerics.FSharp/lib/net45/"
 #I "../packages/MathNet.Numerics.FSharp.4.7.0/lib/net45/"
@@ -30,6 +39,9 @@
 #I "../packages/MathNet.Numerics.FSharp.4.8.0/lib/net45/"
 #I "../packages/MathNet.Numerics.FSharp.4.8.1/lib/net45/"
 #I "../packages/MathNet.Numerics.FSharp.4.9.0/lib/net45/"
+#I "../packages/MathNet.Numerics.FSharp.4.9.1/lib/net40/"
+#I "../packages/MathNet.Numerics.FSharp.4.10.0/lib/net40/"
+#I "../packages/MathNet.Numerics.FSharp.4.11.0/lib/net40/"
 
 #I "../../packages/MathNet.Numerics/lib/net40/"
 #I "../../packages/MathNet.Numerics.4.7.0/lib/net40/"
@@ -38,6 +50,9 @@
 #I "../../packages/MathNet.Numerics.4.8.0/lib/net40/"
 #I "../../packages/MathNet.Numerics.4.8.1/lib/net40/"
 #I "../../packages/MathNet.Numerics.4.9.0/lib/net40/"
+#I "../../packages/MathNet.Numerics.FSharp.4.9.1/lib/net40/"
+#I "../../packages/MathNet.Numerics.FSharp.4.10.0/lib/net40/"
+#I "../../packages/MathNet.Numerics.FSharp.4.11.0/lib/net40/"
 
 #I "../../packages/MathNet.Numerics.FSharp/lib/net45/"
 #I "../../packages/MathNet.Numerics.FSharp.4.7.0/lib/net45/"
@@ -46,6 +61,9 @@
 #I "../../packages/MathNet.Numerics.FSharp.4.8.0/lib/net45/"
 #I "../../packages/MathNet.Numerics.FSharp.4.8.1/lib/net45/"
 #I "../../packages/MathNet.Numerics.FSharp.4.9.0/lib/net45/"
+#I "../../packages/MathNet.Numerics.FSharp.4.9.1/lib/net45/"
+#I "../../packages/MathNet.Numerics.FSharp.4.10.0/lib/net45/"
+#I "../../packages/MathNet.Numerics.FSharp.4.11.0/lib/net45/"
 
 #r "MathNet.Numerics.dll"
 #r "MathNet.Numerics.FSharp.dll"

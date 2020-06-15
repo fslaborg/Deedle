@@ -312,7 +312,7 @@
 <summary>
  Extension of Vector&lt;float&gt;
 
- [category:Vector conversions and operators]  
+ [category:Vector conversions and operators]
 </summary>
 </member>
 <member name="M:Deedle.Math.MatrixExtensions.ToFrame``2(MathNet.Numerics.LinearAlgebra.Matrix{System.Double},System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEnumerable{``1})">
@@ -342,14 +342,14 @@
 <member name="M:Deedle.Math.MatrixExtensions.Dot``2(MathNet.Numerics.LinearAlgebra.Matrix{System.Double},Deedle.Frame{``0,``1})">
 <summary>
  matrix multiply frame
- 
+
 </summary>
 </member>
 <member name="T:Deedle.Math.MatrixExtensions">
 <summary>
  Extension of Matrix&lt;float&gt;
 
- [category:Matrix conversions and operators]  
+ [category:Matrix conversions and operators]
 </summary>
 </member>
 <member name="M:Deedle.Math.SeriesExtensions.ToVector``1(Deedle.Series{``0,System.Double})">
@@ -379,14 +379,14 @@
 <member name="M:Deedle.Math.SeriesExtensions.Dot``2(Deedle.Series{``0,System.Double},Deedle.Frame{``1,``0})">
 <summary>
  series multiply frame
- 
+
 </summary>
 </member>
 <member name="T:Deedle.Math.SeriesExtensions">
 <summary>
  Extension of Series&lt;&apos;C, float&gt;
 
- [category:Matrix conversions and operators]  
+ [category:Matrix conversions and operators]
 </summary>
 </member>
 <member name="M:Deedle.Math.FrameExtensions.ToMatrix``2(Deedle.Frame{``0,``1})">
@@ -409,21 +409,21 @@
 </member>
 <member name="M:Deedle.Math.FrameExtensions.Dot``2(Deedle.Frame{``0,``1},Deedle.Series{``1,System.Double})">
 <summary>
- frame multiply 
- 
+ frame multiply
+
 </summary>
 </member>
 <member name="M:Deedle.Math.FrameExtensions.Dot``2(Deedle.Frame{``0,``1},Deedle.Frame{``1,``0})">
 <summary>
  frame multiply frame
- 
+
 </summary>
 </member>
 <member name="T:Deedle.Math.FrameExtensions">
 <summary>
  Extension of Frame&lt;&apos;R, &apos;C&gt;
 
- [category:Matrix conversions and operators]  
+ [category:Matrix conversions and operators]
 </summary>
 </member>
 <member name="M:Deedle.Math.Stats.ranks``2(Deedle.Frame{``0,``1},Microsoft.FSharp.Core.FSharpOption{MathNet.Numerics.Statistics.RankDefinition})">
@@ -605,28 +605,28 @@
 <member name="M:Deedle.Math.Finance.ewmCovMatrix``2(Deedle.Frame{``0,``1},Microsoft.FSharp.Core.FSharpOption{System.Double},Microsoft.FSharp.Core.FSharpOption{System.Double},Microsoft.FSharp.Core.FSharpOption{System.Double},Microsoft.FSharp.Core.FSharpOption{System.Double})">
 <summary>
  Exponentially weighted moving covariance matrix
- 
+
  [category: Exponentially Weighted Moving]
 </summary>
 </member>
 <member name="M:Deedle.Math.Finance.ewmCov``2(Deedle.Frame{``0,``1},Microsoft.FSharp.Core.FSharpOption{System.Double},Microsoft.FSharp.Core.FSharpOption{System.Double},Microsoft.FSharp.Core.FSharpOption{System.Double},Microsoft.FSharp.Core.FSharpOption{System.Double})">
 <summary>
- Exponentially weighted moving covariance frame 
- 
+ Exponentially weighted moving covariance frame
+
  [category: Exponentially Weighted Moving]
 </summary>
 </member>
 <member name="M:Deedle.Math.Finance.ewmCorrMatrix``2(Deedle.Frame{``0,``1},Microsoft.FSharp.Core.FSharpOption{System.Double},Microsoft.FSharp.Core.FSharpOption{System.Double},Microsoft.FSharp.Core.FSharpOption{System.Double},Microsoft.FSharp.Core.FSharpOption{System.Double})">
 <summary>
- Exponentially weighted moving correlation matrix 
- 
+ Exponentially weighted moving correlation matrix
+
  [category: Exponentially Weighted Moving]
 </summary>
 </member>
 <member name="M:Deedle.Math.Finance.ewmCorr``2(Deedle.Frame{``0,``1},Microsoft.FSharp.Core.FSharpOption{System.Double},Microsoft.FSharp.Core.FSharpOption{System.Double},Microsoft.FSharp.Core.FSharpOption{System.Double},Microsoft.FSharp.Core.FSharpOption{System.Double})">
 <summary>
- Exponentially weighted moving correlation frame 
- 
+ Exponentially weighted moving correlation frame
+
  [category: Exponentially Weighted Moving]
 </summary>
 </member>
@@ -636,6 +636,87 @@
 
  [category:Financial Analysis]
 </summary>
+</member>
+<member name="M:Deedle.Math.PCA.pca``2(Deedle.Frame{``0,``1})">
+ <summary>
+ Computes the principal components from the data frame.
+ The principal components are listed from PC1 .. PCn
+ Where PC1 explains most of the variance.
+ </summary>
+ <param name="dataFrame">A PCA datatype that contains the eigen values and vectors.</param>
+</member>
+<member name="M:Deedle.Math.PCA.normalizeColumns``2(Deedle.Frame{``0,``1})">
+ <summary>
+ Normalizes the columns in the dataframe using a z-score.
+ That is (X - mean) / (std. dev)
+ </summary>
+ <param name="df">The dataframe to normalize</param>
+</member>
+<member name="M:Deedle.Math.PCA.eigenVectors``1(Deedle.Math.PCA.t{``0})">
+ <summary>
+ The eigen vectors of the PCA transformation.
+ </summary>
+ <param name="pca">The PCA transformation.</param>
+</member>
+<member name="M:Deedle.Math.PCA.eigenValues``1(Deedle.Math.PCA.t{``0})">
+ <summary>
+ The eigen values of the PCA transformation.
+ </summary>
+ <param name="pca">The PCA transformation.</param>
+</member>
+<member name="M:Deedle.Math.LinearRegression.ols``1(System.Collections.Generic.IEnumerable{System.String},System.String,System.Boolean,Deedle.Frame{``0,System.String})">
+ <summary>
+ Performs linear regression on the values in a dataframe.
+ </summary>
+ <param name="xCols">The column keys that constitutes the independent variables.</param>
+ <param name="yCol">The column key that consitutes the dependent variable.</param>
+ <param name="fitIntercept">An option type that specifies a key to use for the intercept in the result, if set to None, the fit will not produce an intercept.</param>
+ <param name="df">The dataframe to perform the regression on</param>
+ <returns>A series with column keys as keys, and regression coefficients as values.</returns>
+</member>
+<member name="T:Deedle.Math.LinearRegression.Fit.t`1">
+ <summary>
+ Represents a linear model fitted to specific values in a data frame.
+ </summary>
+</member>
+<member name="M:Deedle.Math.LinearRegression.Fit.residuals``1(Deedle.Math.LinearRegression.Fit.t{``0})">
+ <summary>
+ Computes the residuals of the regression (y - yHat)
+ </summary>
+ <param name="fit">The fit.</param>
+</member>
+<member name="M:Deedle.Math.LinearRegression.Fit.fittedValues``1(Deedle.Math.LinearRegression.Fit.t{``0})">
+ <summary>
+ Computes the fitted values from the linear model.
+ </summary>
+ <param name="fit">The fit.</param>
+</member>
+<member name="M:Deedle.Math.LinearRegression.Fit.fitIntercept``1(Deedle.Math.LinearRegression.Fit.t{``0})">
+ <summary>
+ Whether or not the fit includes an estimate of the intercept.
+ </summary>
+ <param name="fit">The fit.</param>
+</member>
+<member name="M:Deedle.Math.LinearRegression.Fit.coefficients``1(Deedle.Math.LinearRegression.Fit.t{``0})">
+ <summary>
+ The coefficients found by the linear regression.
+ </summary>
+ <param name="fit">The fit.</param>
+</member>
+<member name="M:Deedle.Math.LinearRegression.Fit.input``1(Deedle.Math.LinearRegression.Fit.t{``0})">
+ <summary>
+ The dataframe used for fitting the data.
+ </summary>
+ <param name="fit">The fit.</param>
+</member>
+<member name="M:Deedle.Math.LinearRegression.Fit.make``1(Deedle.Frame{``0,System.String},Deedle.Series{System.String,System.Double},System.String,System.Boolean)">
+ <summary>
+ Construct a new fit.
+ </summary>
+ <param name="input">The data frame that served as input for the regression.</param>
+ <param name="coeffs">The coefficients found by the linear regression</param>
+ <param name="yKey">The y column used</param>
+ <param name="fitIntercept">An option that specifies whether the intercept should be fitted.</param>
 </member>
 </members>
 </doc>
