@@ -45,7 +45,7 @@ let rpluginTags = "R RProvider"
 let deedleExcelProject = "Deedle.Excel"
 let deedleExcelSummary = "Deedle integration with Excel"
 let deedleExcelDescription = """
-  This package installs the core Deedle package, NetOffice.Excel, and a Deedle extension
+  This package installs the core Deedle package, NetOfficeFw.Excel, and a Deedle extension
   which makes it possible to send Deedle Frames to Excel."""
 let deedleExcelTags = "Excel"
 
@@ -266,8 +266,8 @@ Target.create "NuGet" (fun _ ->
             OutputPath = "bin"
             Dependencies =
               [ "Deedle", release.NugetVersion
-                "NetOffice.Core", NuGet.GetPackageVersion "packages" "NetOffice.Core"
-                "NetOffice.Excel", NuGet.GetPackageVersion "packages" "NetOffice.Core" ]
+                "NetOfficeFw.Core", NuGet.GetPackageVersion "packages" "NetOfficeFw.Core"
+                "NetOfficeFw.Excel", NuGet.GetPackageVersion "packages" "NetOfficeFw.Excel" ]
             AccessKey = Environment.environVarOrDefault "nugetkey" ""
             Publish = Environment.hasEnvironVar "nugetkey" })
         ("nuget/Deedle.Excel.nuspec")
