@@ -19,8 +19,8 @@ nuget R.NET.Community
 nuget R.NET.Community.FSharp
 nuget DynamicInterop
 nuget System.ComponentModel.Composition
-nuget NetOffice.Core
-nuget NetOffice.Excel
+nuget NetOfficeFw.Core
+nuget NetOfficeFw.Excel
 nuget FSharp.Formatting
 
 // [ FAKE GROUP ]
