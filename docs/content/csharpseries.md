@@ -30,7 +30,7 @@ What is a series
  * **Immutable** - the type `Series<K, V>` is _immutable_. Once you create a series object, it cannot be 
   changed. All operations that operate on series return a copy (and typically also copy
   the data of the series, although this is an internal aspect of the implementation). So,
-  working with series is similar to workinig with .NET `string` type or with the 
+  working with series is similar to working with .NET `string` type or with the 
   `IEnumerable<T>` type using LINQ.
 
  * **Missing values** - series is desinged to automatically support and handle missing
@@ -72,8 +72,8 @@ to append to a data frame), you can do so as follows:
 
     [lang=csharp,file=../csharp/Series.cs,key=create-heterogen]
 
-Here, we assing `SeriesBuilder<K, V>` to a variable `nameNumsDyn` of type `dynamic` and
-use property setter syntax to add values for strng keys `One`, `Two` and `Three`. Then we
+Here, we assign `SeriesBuilder<K, V>` to a variable `nameNumsDyn` of type `dynamic` and
+use property setter syntax to add values for string keys `One`, `Two` and `Three`. Then we
 convert the original series builder to a series and print it.
 
 ### Converting collections to series
@@ -82,7 +82,7 @@ Using the series builder is useful if you want to create series with some data e
 code. However, more commonly, you already have the data you want to use in some collection.
 In that case, you can use one of the extension methods exposed by Deedle. 
 
-If you only care about the values, you can use `ToSeriesOrdinal` which s defined for any
+If you only care about the values, you can use `ToSeriesOrdinal` which is defined for any
 `IEnumerable<V>` and automatically generates keys of type `int`. For example, here we create
 a series containing random `double` values:
 
