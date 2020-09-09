@@ -1,4 +1,4 @@
-﻿#nowarn "10001"
+#nowarn "10001"
 namespace Deedle
 
 // ------------------------------------------------------------------------------------------------
@@ -1283,6 +1283,17 @@ type FrameExtensions =
   [<Extension>]
   static member DropSparseRows(frame:Frame<'TRowKey, 'TColumnKey>) = Frame.dropSparseRows frame
 
+  /// Creates a new data frame that contains only those rows that are empty for each column.
+  /// The resulting data frame has the same number of columns, but may have
+  /// fewer rows (or no rows at all).
+  ///
+  /// ## Parameters
+  ///  - `frame` - An input data frame that is to be filtered
+  ///
+  /// [category:Missing values]
+  [<Extension>]
+  static member DropEmptyRows(frame:Frame<'TRowKey, 'TColumnKey>) = Frame.dropEmptyRows frame
+
   /// Creates a new data frame that contains only those columns of the original
   /// data frame that are _dense_, meaning that they have a value for each row.
   /// The resulting data frame has the same number of rows, but may have
@@ -1294,6 +1305,17 @@ type FrameExtensions =
   /// [category:Missing values]
   [<Extension>]
   static member DropSparseColumns(frame:Frame<'TRowKey, 'TColumnKey>) = Frame.dropSparseCols frame
+
+  /// Creates a new data frame that drops those columns that are empty for each row.
+  /// The resulting data frame has the same number of rows, but may have
+  /// fewer columns (or no columns at all).
+  ///
+  /// ## Parameters
+  ///  - `frame` - An input data frame that is to be filtered
+  ///
+  /// [category:Missing values]
+  [<Extension>]
+  static member DropEmptyColumns(frame:Frame<'TRowKey, 'TColumnKey>) = Frame.dropEmptyCols frame
 
   // ----------------------------------------------------------------------------------------------
   // Obsolete - kept for temporary compatibility
