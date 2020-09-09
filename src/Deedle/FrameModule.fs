@@ -1,4 +1,4 @@
-﻿namespace Deedle
+namespace Deedle
 
 /// The `Frame` module provides an F#-friendly API for working with data frames.
 /// The module follows the usual desing for collection-processing in F#, so the
@@ -1375,6 +1375,26 @@ module Frame =
     let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder newRowIndex.AddressingScheme cmd)
     Frame<_, _>(newRowIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
+  /// Creates a new data frame that contains only those rows that are empty for each column.
+  /// The resulting data frame has the same number of columns, but may have
+  /// fewer rows (or no rows at all).
+  ///
+  /// [category:Missing values]
+  [<CompiledName("DropEmptyRows")>]
+  let dropEmptyRows (frame:Frame<'R, 'C>) =
+    // Create a combined vector that has 'true' for rows which have some values
+    let hasAllFlagVector =
+      frame.Data
+      |> createRowVector
+          frame.VectorBuilder frame.RowIndex.AddressingScheme (lazy frame.RowIndex.KeyCount)
+          frame.ColumnIndex.KeyCount frame.ColumnIndex.AddressAt
+          (fun rowReader -> rowReader.DataSequence |> Seq.exists (fun opt -> opt.HasValue))
+    // Collect all rows that have at least some values
+    let newRowIndex, cmd =
+      frame.IndexBuilder.Search( (frame.RowIndex, Vectors.Return 0), hasAllFlagVector, true)
+    let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder newRowIndex.AddressingScheme cmd)
+    Frame<_, _>(newRowIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
+
   /// Creates a new data frame that contains only those columns of the original
   /// data frame that are _dense_, meaning that they have a value for each row.
   /// The resulting data frame has the same number of rows, but may have
@@ -1387,6 +1407,22 @@ module Frame =
       [| for KeyValue(colKey, addr) in frame.ColumnIndex.Mappings do
             match frame.Data.GetValue(addr) with
             | OptionalValue.Present(vec) when vec.ObjectSequence |> Seq.forall (fun o -> o.HasValue) ->
+                yield colKey, vec
+            | _ -> () |] |> Array.unzip
+    let colIndex = frame.IndexBuilder.Create(ReadOnlyCollection.ofArray newColKeys, None)
+    Frame(frame.RowIndex, colIndex, frame.VectorBuilder.Create(newData), frame.IndexBuilder, frame.VectorBuilder )
+
+  /// Creates a new data frame that drops those columns that are empty for each row.
+  /// The resulting data frame has the same number of rows, but may have
+  /// fewer columns (or no columns at all).
+  ///
+  /// [category:Missing values]
+  [<CompiledName("DropEmptyColumns")>]
+  let dropEmptyCols (frame:Frame<'R, 'C>) =
+    let newColKeys, newData =
+      [| for KeyValue(colKey, addr) in frame.ColumnIndex.Mappings do
+            match frame.Data.GetValue(addr) with
+            | OptionalValue.Present(vec) when vec.ObjectSequence |> Seq.exists (fun o -> o.HasValue) ->
                 yield colKey, vec
             | _ -> () |] |> Array.unzip
     let colIndex = frame.IndexBuilder.Create(ReadOnlyCollection.ofArray newColKeys, None)

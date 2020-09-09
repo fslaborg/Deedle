@@ -1,4 +1,4 @@
-﻿#if INTERACTIVE
+#if INTERACTIVE
 #I "../../bin/net45"
 #load "Deedle.fsx"
 #r "../../packages/NUnit/lib/net45/nunit.framework.dll"
@@ -1583,6 +1583,20 @@ let ``Dropping sparse rows works on sample frame``() =
   actual |> shouldEqual expected
 
 [<Test>]
+let ``Dropping empty rows works on sample frame``() =
+  let emptyFrame =
+    frame [
+      "A", Series.ofValues [0.; nan; 2.; nan]
+      "B", Series.ofValues [0.; 1.; 2.; nan]
+      "C", Series.ofValues [0.; 1.; nan; nan] ]
+  let actual = emptyFrame |> Frame.dropEmptyRows
+  let expected =
+    frame [ "A" => series [0 => 0.0; 1 => nan; 2 => 2.0 ]
+            "B" => series [0 => 0.0; 1 => 1.0; 2 => 2.0 ]
+            "C" => series [0 => 0.0; 1 => 1.0; 2 => nan ] ]
+  actual |> shouldEqual expected
+
+[<Test>]
 let ``Dropping sparse rows works on frame with missing in one column``() =
   let sparseFrame =
     frame [ for k in ["A"; "B"; "C"] ->
@@ -1635,6 +1649,19 @@ let ``Dropping sparse columns works on sample frame``() =
   let actual = sparseFrame |> Frame.dropSparseCols
   let expected =
     frame [ "B" => series [0 => 0.0; 1 => 1.0; 2 => 2.0; 3 => 3.0; 4 => 4.0; 5 => 5.0 ] ]
+  actual |> shouldEqual expected
+
+[<Test>]
+let ``Dropping empty columns works on sample frame``() =
+  let emptyFrame =
+    frame [
+      "A", Series.ofValues [nan; nan; nan; nan]
+      "B", Series.ofValues [0.; 1.; 2.; nan]
+      "C", Series.ofValues [0.; 1.; nan; nan] ]
+  let actual = emptyFrame |> Frame.dropEmptyCols
+  let expected =
+    frame [ "B", Series.ofValues [0.; 1.; 2.; nan]
+            "C", Series.ofValues [0.; 1.; nan; nan] ]
   actual |> shouldEqual expected
 
 // ----------------------------------------------------------------------------------------------
