@@ -144,7 +144,7 @@ let testCoreProjs =
       "tests/Deedle.Tests/Deedle.Tests.fsproj"
       "tests/Deedle.Math.Tests/Deedle.Math.Tests.fsproj"
       "tests/Deedle.CSharp.Tests/Deedle.CSharp.Tests.csproj"
-      "tests/Deedle.Documentation.Tests/Deedle.Documentation.Tests.fsproj"
+      //"tests/Deedle.Documentation.Tests/Deedle.Documentation.Tests.fsproj"
       "tests/Deedle.PerfTests/Deedle.PerfTests.fsproj"
     ]
 
@@ -189,7 +189,7 @@ Target.create "BuildCoreTests" (fun _ ->
     DotNet.build (fun opts -> { opts with Configuration = DotNet.BuildConfiguration.Release }) proj )
 
 Target.create "RunCoreTests" (fun _ ->
-  for proj in testProjs do
+  for proj in testCoreProjs do
     DotNet.test (fun opts -> { opts with  Configuration = DotNet.BuildConfiguration.Release }) proj )
 
 // --------------------------------------------------------------------------------------
