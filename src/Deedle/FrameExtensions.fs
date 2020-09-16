@@ -1048,9 +1048,6 @@ type FrameExtensions =
   static member Print(frame:Frame<'K, 'V>, printTypes:bool) = Console.WriteLine(frame.Format(printTypes));
 
   [<Extension>]
-  static member Sum(frame:Frame<'R, 'C>) = Stats.sum frame
-
-  [<Extension>]
   static member Window(frame:Frame<'R, 'C>, size) = Frame.window size frame
 
   [<Extension>]
