@@ -5556,6 +5556,30 @@
  [category:Missing values]
 </summary>
 </member>
+<member name="M:Deedle.FrameExtensions.DropEmptyRows``2(Deedle.Frame{``0,``1})">
+<summary>
+ Creates a new data frame that contains only those rows that are empty for each column.
+ The resulting data frame has the same number of columns, but may have
+ fewer rows (or no rows at all).
+
+ ## Parameters
+  - `frame` - An input data frame that is to be filtered
+
+ [category:Missing values]
+</summary>
+</member>
+<member name="M:Deedle.FrameExtensions.DropEmptyColumns``2(Deedle.Frame{``0,``1})">
+<summary>
+ Creates a new data frame that drops those columns that are empty for each row.
+ The resulting data frame has the same number of rows, but may have
+ fewer columns (or no columns at all).
+
+ ## Parameters
+  - `frame` - An input data frame that is to be filtered
+
+ [category:Missing values]
+</summary>
+</member>
 <member name="M:Deedle.FrameExtensions.Diff``2(Deedle.Frame{``0,``1},System.Int32)">
 <summary>
  Returns a frame with columns containing difference between an original value and
@@ -11119,12 +11143,30 @@
  [category:Missing values]
 </summary>
 </member>
+<member name="M:Deedle.FrameModule.DropEmptyColumns``2(Deedle.Frame{``0,``1})">
+<summary>
+ Creates a new data frame that drops those columns that are empty for each row.
+ The resulting data frame has the same number of rows, but may have
+ fewer columns (or no columns at all).
+
+ [category:Missing values]
+</summary>
+</member>
 <member name="M:Deedle.FrameModule.DropSparseColumns``2(Deedle.Frame{``0,``1})">
 <summary>
  Creates a new data frame that contains only those columns of the original
  data frame that are _dense_, meaning that they have a value for each row.
  The resulting data frame has the same number of rows, but may have
  fewer columns (or no columns at all).
+
+ [category:Missing values]
+</summary>
+</member>
+<member name="M:Deedle.FrameModule.DropEmptyRows``2(Deedle.Frame{``0,``1})">
+<summary>
+ Creates a new data frame that contains only those rows that are empty for each column.
+ The resulting data frame has the same number of columns, but may have
+ fewer rows (or no rows at all).
 
  [category:Missing values]
 </summary>
