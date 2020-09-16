@@ -1,5 +1,10 @@
 # Release Notes
 
+## 2.3.0 - 2020-09-16
+* Add dropEmptyRows and dropEmptyCols [510](https://github.com/fslaborg/Deedle/pull/510)
+* Fix ambiguous sum function when calling it from Frame [515](https://github.com/fslaborg/Deedle/pull/515)
+* Update to latest NetOffice Excel package [505](https://github.com/fslaborg/Deedle/pull/505)
+
 ## 2.2.0 - 2020-06-15
 * Add linear regression and PCA functions in Deedle.Math thanks to @Ildhesten [496](https://github.com/fslaborg/Deedle/pull/496)
 * Add descriptions to Stats functions to clarify valid input types by @Arlofin [501](https://github.com/fslaborg/Deedle/pull/501)
