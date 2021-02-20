@@ -8,16 +8,13 @@ using System.IO;
 
 namespace Deedle.CSharp.Tests
 {
-	/* ----------------------------------------------------------------------------------
-	 * Test calling Frame.Zip from C#
-	 * --------------------------------------------------------------------------------*/
-	public class FrameZipTests
-	{
-		public static Frame<int, string> LoadMSFT([CallerFilePath] string source = "")
-		{
-			var file = Path.Combine(Path.GetDirectoryName(source), "..", "Deedle.Tests", "data", "MSFT.csv");
-			return Frame.ReadCsv(file, inferRows:10);
-		}
+    public class Common
+    {
+        public static Frame<int, string> LoadMSFT([CallerFilePath] string source = "")
+        {
+            var file = Path.Combine(Path.GetDirectoryName(source), "..", "Deedle.Tests", "data", "MSFT.csv");
+            return Frame.ReadCsv(file, inferRows: 10);
+        }
 
         public static Frame<int, string> LoadMSFTStream([CallerFilePath] string source = "")
         {
@@ -27,11 +24,16 @@ namespace Deedle.CSharp.Tests
             sr.Close();
             return csv;
         }
-
+    }
+	/* ----------------------------------------------------------------------------------
+	 * Test calling Frame.Zip from C#
+	 * --------------------------------------------------------------------------------*/
+	public class FrameZipTests
+	{
         [Test]
 		public static void CanSubtractNumericalValues()
 		{
-			var df = LoadMSFT();
+			var df = Common.LoadMSFT();
 			var actual = df.Zip<float, float, float>(df, (n1, n2) => n1 - n2).GetAllValues<float>().Sum();
 			Assert.AreEqual(0.0, actual);
 		}
@@ -39,7 +41,7 @@ namespace Deedle.CSharp.Tests
         [Test]
         public static void CanSubtractNumericalValuesStream()
         {
-            var df = LoadMSFTStream();
+            var df = Common.LoadMSFTStream();
             var actual = df.Zip<float, float, float>(df, (n1, n2) => n1 - n2).GetAllValues<float>().Sum();
             Assert.AreEqual(0.0, actual);
         }
@@ -148,6 +150,22 @@ namespace Deedle.CSharp.Tests
             var b = Deedle.FrameModule.DropSparseRows(f).GetColumn<float>("b").GetAllValues().ToArray();
             Assert.AreEqual(1.0, b[0].Value);
             Assert.AreEqual(3.0, b[1].Value);
+        }
+
+        [Test]
+        public static void CanSliceRows()
+        {
+            var df = Common.LoadMSFT();
+            var actual = df.Rows[new int[] { 0, 1, 2, 3, 4 }];
+            Assert.AreEqual(5, actual.RowCount);
+        }
+
+        [Test]
+        public static void CanSliceCols()
+        {
+            var df = Common.LoadMSFT();
+            var actual = df.Columns[new string[] { "Open", "High" }];
+            Assert.AreEqual(2, actual.ColumnCount);
         }
     }
 
