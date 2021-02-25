@@ -1,6 +1,7 @@
-﻿using System;
-using System.Linq;
+#pragma warning disable 1591
 
+using System;
+using System.Linq;
 using NUnit.Framework;
 using Deedle;
 

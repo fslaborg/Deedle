@@ -5,9 +5,6 @@
 #load ".fake/build.fsx/intellisense.fsx"
 
 
-#if !FAKE
-    #r "netstandard"
-#endif
 open Fake.Core
 open Fake.Tools
 open Fake.DotNet
@@ -336,17 +333,17 @@ Target.create "AllCore" ignore
 
 "Clean"
   ==> "AssemblyInfo"
-  ==> "Build"
-  ==> "All"
-
-"AssemblyInfo"
   ==> "BuildCore"
+  ==> "BuildCoreTests"
+  ==> "RunCoreTests"
   ==> "AllCore"
 
-"BuildTests" ==> "All"
-"RunTests" ==> "All"
-"BuildCoreTests" ==> "AllCore"
-"RunCoreTests" ==> "AllCore"
+"Clean"
+  ==> "AssemblyInfo"
+  ==> "Build"
+  ==> "BuildTests"
+  ==> "RunTests"
+  ==> "All"
 
 "All" ==> "NuGet" ==> "Release"
 "All"
