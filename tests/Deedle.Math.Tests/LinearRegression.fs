@@ -1,5 +1,5 @@
-﻿#if INTERACTIVE
-#I "../../bin/net45"
+#if INTERACTIVE
+#I "../../bin/netstandard2.0"
 #load "Deedle.fsx"
 #load "Deedle.Math.fsx"
 #r "../../packages/NUnit/lib/net45/nunit.framework.dll"

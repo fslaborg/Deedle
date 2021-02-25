@@ -8,15 +8,15 @@ install:
 matrix:
   include:
     - mono: latest
-      dotnet: 3.0.100
+      dotnet: 5.0.103
       os: linux
     - mono: latest
-      dotnet: 3.0.100
+      dotnet: 5.0.103
       os: osx
- 
-script: 
+
+script:
   - ./fake.sh build target AllCore
-  
+
 branches:
   except:
     - gh-pages
