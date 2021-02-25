@@ -1,12 +1,12 @@
-﻿#if INTERACTIVE
-#I "../../bin/net45"
+#if INTERACTIVE
+#I "../../bin/netstandard2.0"
 #load "Deedle.fsx"
 #r "../../packages/NUnit/lib/net45/nunit.framework.dll"
 #r "../../packages/FsCheck/lib/net452/FsCheck.dll"
 #r "../../packages/FSharp.Data/lib/net45/FSharp.Data.dll"
 #r "../../packages/FsUnit/lib/net45/FsUnit.NUnit.dll"
 #load "../Common/FsUnit.fs"
-#r "../PerformanceTools/bin/net45/Deedle.PerfTest.Core.dll"
+#r "../PerformanceTools/bin/netcoreapp3.0s/Deedle.PerfTest.Core.dll"
 #else
 module Deedle.Tests.Performance
 #endif

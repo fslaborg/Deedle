@@ -1,12 +1,12 @@
 #nowarn "211"
 // Standard NuGet or Paket location
 #I "."
-#I "lib/net45"
+#I "lib/netstandard2.0"
 
 // Try various folders that people might like
-#I "bin/net45"
-#I "../bin/net45"
-#I "../../bin/net45"
+#I "bin/netstandard2.0"
+#I "../bin/netstandard2.0"
+#I "../../bin/netstandard2.0"
 #I "lib"
 // Reference Deedle
 #r "Deedle.dll"

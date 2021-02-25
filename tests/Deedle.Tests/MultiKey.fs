@@ -1,7 +1,7 @@
-﻿module Deedle.Tests.MultiKey
+module Deedle.Tests.MultiKey
 
 #if INTERACTIVE
-#I "../../bin/net45"
+#I "../../bin/netstandard2.0"
 #load "Deedle.fsx"
 #r "../../packages/NUnit/lib/net45/nunit.framework.dll"
 #r "../../packages/FsCheck/lib/net452/FsCheck.dll"
