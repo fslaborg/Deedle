@@ -134,7 +134,7 @@ let testProjs =
       "tests/Deedle.Tests/Deedle.Tests.fsproj"
       "tests/Deedle.Math.Tests/Deedle.Math.Tests.fsproj"
       "tests/Deedle.CSharp.Tests/Deedle.CSharp.Tests.csproj"
-      "tests/Deedle.Documentation.Tests/Deedle.Documentation.Tests.fsproj"
+      // "tests/Deedle.Documentation.Tests/Deedle.Documentation.Tests.fsproj"
       "tests/Deedle.PerfTests/Deedle.PerfTests.fsproj"
       // "tests/Deedle.RPlugin.Tests/Deedle.RPlugin.Tests.fsproj"
     ]
@@ -151,13 +151,12 @@ let testCoreProjs =
 let buildProjs =
     [ "src/Deedle/Deedle.fsproj"
       "src/Deedle.Math/Deedle.Math.fsproj"
-      "src/Deedle.RProvider.Plugin/Deedle.RProvider.Plugin.fsproj"
+      // "src/Deedle.RProvider.Plugin/Deedle.RProvider.Plugin.fsproj"
       "src/Deedle.Excel/Deedle.Excel.fsproj" ]
 
 let buildCoreProjs =
     [ "src/Deedle/Deedle.fsproj"
-      "src/Deedle.Math/Deedle.Math.fsproj"
-      "src/Deedle.Excel/Deedle.Excel.fsproj" ]
+      "src/Deedle.Math/Deedle.Math.fsproj" ]
 
 Target.create "Build" ( fun _ ->
   Environment.setEnvironVar "GenerateDocumentationFile" "true"
