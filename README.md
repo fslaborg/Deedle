@@ -14,8 +14,7 @@ Windows: Run *fake build*
 
 Linux/Mac: Run *./fake.sh build*
 
-[![Travis Build Status](https://api.travis-ci.org/fslaborg/Deedle.svg?branch=master)](https://travis-ci.org/fslaborg/Deedle) 
-[![Azure DevOps Build Status](https://dev.azure.com/deedlefslab/Deedle/_apis/build/status/fslaborg.Deedle?branchName=master)](https://dev.azure.com/deedlefslab/Deedle/_build/latest?definitionId=1&branchName=master)
+[![Build Status](https://github.com/fslaborg/deedle/actions/workflows/push-master.yml/badge.svg)](https://github.com/fslaborg/Deedle/actions) 
 
 [![Deedle Nuget](https://buildstats.info/nuget/Deedle)](https://www.nuget.org/packages/Deedle/) Deedle  
 [![Deedle.Math Nuget](https://buildstats.info/nuget/Deedle.Math)](https://www.nuget.org/packages/Deedle.Math/) Deedle.Math
