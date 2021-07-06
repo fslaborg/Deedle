@@ -17,8 +17,8 @@
     @dependencies@
   </metadata>
   <files>
-    <file src="..\bin\net45\Deedle.Excel.dll" target="lib/net45" />
-    <file src="..\bin\net45\Deedle.Excel.pdb" target="lib/net45" /> 
-    <file src="..\bin\net45\Deedle.Excel.Sample.fsx" target="/" /> 
+    <file src="..\bin\net461\Deedle.Excel.dll" target="lib/net461" />
+    <file src="..\bin\net461\Deedle.Excel.pdb" target="lib/net461" />
+    <file src="..\bin\net461\Deedle.Excel.Sample.fsx" target="/" />
   </files>
 </package>

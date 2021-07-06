@@ -81,13 +81,13 @@ Target.create "AssemblyInfo" (fun _ ->
         AssemblyInfo.InformationalVersion release.NugetVersion
         AssemblyInfo.FileVersion release.AssemblyVersion]
 
-  AssemblyInfoFile.createFSharp "src/Deedle.RProvider.Plugin/AssemblyInfo.fs"
-      [ AssemblyInfo.Title rpluginProject
-        AssemblyInfo.Product rpluginProject
-        AssemblyInfo.Description rpluginSummary
-        AssemblyInfo.Version release.AssemblyVersion
-        AssemblyInfo.InformationalVersion release.NugetVersion
-        AssemblyInfo.FileVersion release.AssemblyVersion]
+  // AssemblyInfoFile.createFSharp "src/Deedle.RProvider.Plugin/AssemblyInfo.fs"
+  //     [ AssemblyInfo.Title rpluginProject
+  //       AssemblyInfo.Product rpluginProject
+  //       AssemblyInfo.Description rpluginSummary
+  //       AssemblyInfo.Version release.AssemblyVersion
+  //       AssemblyInfo.InformationalVersion release.NugetVersion
+  //       AssemblyInfo.FileVersion release.AssemblyVersion]
 
   AssemblyInfoFile.createFSharp "src/Deedle.Excel/AssemblyInfo.fs"
       [ AssemblyInfo.Title deedleExcelProject
@@ -213,25 +213,25 @@ Target.create "NuGet" (fun _ ->
             AccessKey = Environment.environVarOrDefault "nugetkey" ""
             Publish = Environment.hasEnvironVar "nugetkey" })
         ("nuget/Deedle.nuspec")
-    NuGet.NuGetPack (fun p ->
-        { p with
-            ToolPath = nugetExe
-            Authors = authors
-            Project = rpluginProject
-            Summary = rpluginSummary
-            Description = description + "\n\n" + rpluginDescription
-            Version = release.NugetVersion
-            ReleaseNotes = releaseNotes
-            Tags = tags + " " + rpluginTags
-            OutputPath = "bin"
-            Dependencies =
-              [ "Deedle", release.NugetVersion
-                "R.NET.Community", NuGet.GetPackageVersion "packages" "R.NET.Community"
-                "R.NET.Community.FSharp", NuGet.GetPackageVersion "packages" "R.NET.Community.FSharp"
-                "RProvider", NuGet.GetPackageVersion "packages" "RProvider" ]
-            AccessKey = Environment.environVarOrDefault "nugetkey" ""
-            Publish = Environment.hasEnvironVar "nugetkey" })
-        ("nuget/Deedle.RPlugin.nuspec")
+    // NuGet.NuGetPack (fun p ->
+    //     { p with
+    //         ToolPath = nugetExe
+    //         Authors = authors
+    //         Project = rpluginProject
+    //         Summary = rpluginSummary
+    //         Description = description + "\n\n" + rpluginDescription
+    //         Version = release.NugetVersion
+    //         ReleaseNotes = releaseNotes
+    //         Tags = tags + " " + rpluginTags
+    //         OutputPath = "bin"
+    //         Dependencies =
+    //           [ "Deedle", release.NugetVersion
+    //             "R.NET.Community", NuGet.GetPackageVersion "packages" "R.NET.Community"
+    //             "R.NET.Community.FSharp", NuGet.GetPackageVersion "packages" "R.NET.Community.FSharp"
+    //             "RProvider", NuGet.GetPackageVersion "packages" "RProvider" ]
+    //         AccessKey = Environment.environVarOrDefault "nugetkey" ""
+    //         Publish = Environment.hasEnvironVar "nugetkey" })
+    //     ("nuget/Deedle.RPlugin.nuspec")
     NuGet.NuGetPack (fun p ->
         { p with
             ToolPath = nugetExe
@@ -299,9 +299,9 @@ Target.create "ReleaseBinaries" (fun _ ->
     "temp/release/bin" |> Shell.cleanDir
     Shell.copyRecursive "bin" "temp/release/bin" true |> printfn "%A"
     !! "temp/release/bin/*" |> File.deleteAll
-    "temp/release/bin/net45/Deedle.Math.fsx" |> Shell.moveFile "temp/release"
-    "temp/release/bin/net45/Deedle.fsx" |> Shell.moveFile "temp/release"
-    "temp/release/bin/net451/RProvider.fsx" |> Shell.moveFile "temp/release"
+    "temp/release/bin/netstandard2.0/Deedle.Math.fsx" |> Shell.moveFile "temp/release"
+    "temp/release/bin/netstandard2.0/Deedle.fsx" |> Shell.moveFile "temp/release"
+    // "temp/release/bin/net451/RProvider.fsx" |> Shell.moveFile "temp/release"
 
     Git.CommandHelper.runSimpleGitCommand "temp/release" "add bin/*" |> printfn "%s"
     let cmd = sprintf """commit -a -m "Update binaries for version %s""" release.NugetVersion

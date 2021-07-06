@@ -1,4 +1,7 @@
 # Release Notes
+## 2.4.0 - 2021-07-06
+* Add Frame.ReadCsvString [530](https://github.com/fslaborg/Deedle/pull/530)
+* .NET Standard 2.0 only
 
 ## 2.3.0 - 2020-09-16
 * Add dropEmptyRows and dropEmptyCols [510](https://github.com/fslaborg/Deedle/pull/510)
