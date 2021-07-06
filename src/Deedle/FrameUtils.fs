@@ -1,4 +1,4 @@
-﻿namespace Deedle
+namespace Deedle
 
 // ------------------------------------------------------------------------------------------------
 // Utilities that use reflection (flattening records etc.)
@@ -494,6 +494,10 @@ module internal FrameUtils =
     let rowIndex = Index.ofKeys (Array.init length id)
     Frame(rowIndex, columnIndex, Vector.ofValues columns, IndexBuilder.Instance, VectorBuilder.Instance)
 
+  /// Load data from a string representing a UTF8-encoded CSV file using F# Data API
+  let readString (csvString:string) hasHeaders inferTypes inferRows schema (missingValues:string[] option) separators culture maxRows preferOptions =
+    let stream =  new MemoryStream(Text.Encoding.UTF8.GetBytes(csvString))
+    readCsv (new StreamReader(stream)) hasHeaders inferTypes inferRows schema (missingValues:string[] option) separators culture maxRows preferOptions
 
   /// Create data frame from a sequence of values using
   /// projections that return column/row keys and the value

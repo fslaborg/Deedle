@@ -34,6 +34,11 @@ let msftNoHeaders() =
   let data = System.Text.Encoding.UTF8.GetBytes(noHeaders)
   Frame.ReadCsv(new IO.MemoryStream(data), false, inferRows=10)
 
+let msftString() =
+  let csvString = IO.File.ReadAllText(__SOURCE_DIRECTORY__ + "/data/MSFT.csv")
+  Frame.ReadCsvString(csvString, inferRows=10)
+  |> Frame.indexRowsDate "Date"
+
 [<Test>]
 let ``Can create empty data frame and empty series`` () =
   let f : Frame<int, int> = frame []
@@ -41,6 +46,12 @@ let ``Can create empty data frame and empty series`` () =
   s.KeyCount |> shouldEqual 0
   f.ColumnCount |> shouldEqual 0
   f.RowCount |> shouldEqual 0
+
+[<Test>]
+let ``Can read MSFT data from CSV string`` () =
+  let df = msftString()
+  df.RowKeys |> Seq.length |> shouldEqual 6527
+  df.ColumnKeys |> Seq.length |> shouldEqual 6
 
 [<Test>]
 let ``Can read MSFT data from CSV file`` () =

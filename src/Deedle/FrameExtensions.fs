@@ -502,6 +502,37 @@ module ``F# Frame extensions`` =
           ?separators, ?culture, ?maxRows, ?missingValues, ?preferOptions ) =
       FrameUtils.readCsv reader hasHeaders inferTypes inferRows schema missingValues separators culture maxRows preferOptions
 
+    /// Load data frame from a string representing a UTF8-encoded CSV file. The operation automatically
+    /// reads column names from the string (if they are present) and infers the type of values for each column. Columns
+    /// of primitive types (`int`, `float`, etc.) are converted to the right type. Columns of other
+    /// types (such as dates) are not converted automatically.
+    ///
+    /// ## Parameters
+    ///
+    ///  * `csvString` - Specifies the input string containing the CSV
+    ///  * `hasHeaders` - Specifies whether the input CSV string has header row
+    ///  * `inferTypes` - Specifies whether the method should attempt to infer types
+    ///    of columns automatically (set this to `false` if you want to specify schema)
+    ///  * `inferRows` - If `inferTypes=true`, this parameter specifies the number of
+    ///    rows to use for type inference. The default value is 100.
+    ///  * `schema` - A string that specifies CSV schema. See the documentation for
+    ///    information about the schema format.
+    ///  * `separators` - A string that specifies one or more (single character) separators
+    ///    that are used to separate columns in the CSV string. Use for example `";"` to
+    ///    parse semicolon separated files.
+    ///  * `culture` - Specifies the name of the culture that is used when parsing
+    ///    values in the CSV string (such as `"en-US"`). The default is invariant culture.
+    ///  * `maxRows` - The maximal number of rows that should be read from the CSV string.
+    ///  * `missingValues` - An array of strings that contains values which should be treated
+    ///    as missing when reading the file. The default value is: "NaN"; "NA"; "#N/A"; ":"; "-"; "TBA"; "TBD".
+    ///
+    /// [category:Input and output]
+    static member ReadCsvString
+        ( csvString:string, ?hasHeaders, ?inferTypes, ?inferRows, ?schema, ?separators,
+          ?culture, ?maxRows, ?missingValues, ?preferOptions ) =
+      FrameUtils.readString csvString hasHeaders inferTypes inferRows schema missingValues separators culture maxRows preferOptions
+
+
     /// Creates a frame with ordinal Integer index from a sequence of rows.
     /// The column indices of individual rows are unioned, so if a row has fewer
     /// columns, it will be successfully added, but there will be missing values.
