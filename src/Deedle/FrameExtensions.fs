@@ -509,7 +509,7 @@ module ``F# Frame extensions`` =
     ///
     /// ## Parameters
     ///
-    ///  * `dataString` - Specifies the input stringcontaining the CSV
+    ///  * `dataString` - Specifies the input string containing the CSV
     ///  * `hasHeaders` - Specifies whether the input CSV string has header row
     ///  * `inferTypes` - Specifies whether the method should attempt to infer types
     ///    of columns automatically (set this to `false` if you want to specify schema)
