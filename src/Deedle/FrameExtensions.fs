@@ -288,7 +288,7 @@ type Frame =
   [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
   static member FromJaggedArray(jArray:'T [][]) =
     if Array.exists (fun (x:'T []) -> x.Length <> jArray.[0].Length) jArray then
-      failwith "the jaggedArray must have the same dimensions in all inner arrays."
+      invalidOp "FromJaggedArray: The input jagged array must have the same dimensions in all inner arrays."
     else
       let arr2D = Array2D.init jArray.Length jArray.[0].Length (fun r c -> jArray.[r].[c])
       Frame.FromArray2D(arr2D)
@@ -634,14 +634,14 @@ module ``F# Frame extensions`` =
     /// is used as rows and the second dimension is treated as columns. Rows and columns
     /// of the returned frame are indexed with the element's offset in the array.
     ///
-    /// 
+    /// Please note that this function will fail when the inner arrays of the input do not have the same lengths.
     ///
     /// ## Parameters
-    ///  - `array` - A two-dimensional array to be converted into a data frame
+    ///  - `array` - A jagged array to be converted into a data frame
     ///
     /// [category:Frame construction]
-    static member ofJaggedArray (array:'T[][]) =
-      Frame.FromJaggedArray(array)
+    static member ofJaggedArray (jArray:'T[][]) =
+      Frame.FromJaggedArray(jArray)
 
   type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equality> with
     /// Creates a new data frame resulting from a 'pivot' operation. Consider a denormalized data
