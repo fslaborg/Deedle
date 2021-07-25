@@ -285,6 +285,23 @@ type Frame =
     let data = VectorBuilder.Instance.Create(vectors)
     Frame(rowIndex, colIndex, data, IndexBuilder.Instance, VectorBuilder.Instance)
 
+  [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
+  static member FromJaggedArray(jArray:'T [][]) =
+    if Array.exists (fun (x:'T []) -> x.Length <> jArray.[0].Length) jArray then
+      invalidOp "FromJaggedArray: The input jagged array must have the same dimensions in all inner arrays."
+    else
+      let rowCount, colCount = jArray.Length, jArray.[0].Length
+      // Generate row index (int offsets) and column index (int offsets)
+      let rowIndex = IndexBuilder.Instance.Create(Array.init rowCount id, Some true)
+      let colIndex = IndexBuilder.Instance.Create(Array.init colCount id, Some true)
+      // Generate vectors with column-based data
+      let vectors = Array.zeroCreate colCount
+      for c = 0 to vectors.Length - 1 do
+        let col = Array.init rowCount (fun r -> jArray.[r].[c])
+        vectors.[c] <- VectorBuilder.Instance.Create(col) :> IVector
+      let data = VectorBuilder.Instance.Create(vectors)
+      Frame(rowIndex, colIndex, data, IndexBuilder.Instance, VectorBuilder.Instance)
+
   // ----------------------------------------------------------------------------------------------
   // Creating other frames
   // ----------------------------------------------------------------------------------------------
@@ -621,6 +638,19 @@ module ``F# Frame extensions`` =
     /// [category:Frame construction]
     static member ofArray2D (array:'T[,]) =
       Frame.FromArray2D(array)
+
+    /// Create data frame from a jagged array of values. The first dimension of the array
+    /// is used as rows and the second dimension is treated as columns. Rows and columns
+    /// of the returned frame are indexed with the element's offset in the array.
+    ///
+    /// Please note that this function will fail when the inner arrays of the input do not have the same lengths.
+    ///
+    /// ## Parameters
+    ///  - `array` - A jagged array to be converted into a data frame
+    ///
+    /// [category:Frame construction]
+    static member ofJaggedArray (jArray:'T[][]) =
+      Frame.FromJaggedArray(jArray)
 
   type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equality> with
     /// Creates a new data frame resulting from a 'pivot' operation. Consider a denormalized data
