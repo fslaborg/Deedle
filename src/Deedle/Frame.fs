@@ -731,7 +731,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     let defaultValue =
       if typeof<'R> = typeof<Double> then lazy unbox<'R> Double.NaN
       elif typeof<'R> = typeof<Single> then lazy unbox<'R> Single.NaN
-      else lazy (invalidOp "ToArray2D: Frame contains missing data, but default value was not provided.")
+      else lazy (invalidOp "ToJaggedArray: Frame contains missing data, but default value was not provided.")
     toJaggedArray frame.RowCount frame.ColumnCount frame.Data defaultValue
 
   // ----------------------------------------------------------------------------------------------
