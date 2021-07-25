@@ -290,8 +290,17 @@ type Frame =
     if Array.exists (fun (x:'T []) -> x.Length <> jArray.[0].Length) jArray then
       invalidOp "FromJaggedArray: The input jagged array must have the same dimensions in all inner arrays."
     else
-      let arr2D = Array2D.init jArray.Length jArray.[0].Length (fun r c -> jArray.[r].[c])
-      Frame.FromArray2D(arr2D)
+      let rowCount, colCount = jArray.Length, jArray.[0].Length
+      // Generate row index (int offsets) and column index (int offsets)
+      let rowIndex = IndexBuilder.Instance.Create(Array.init rowCount id, Some true)
+      let colIndex = IndexBuilder.Instance.Create(Array.init colCount id, Some true)
+      // Generate vectors with column-based data
+      let vectors = Array.zeroCreate colCount
+      for c = 0 to vectors.Length - 1 do
+        let col = Array.init rowCount (fun r -> jArray.[r].[c])
+        vectors.[c] <- VectorBuilder.Instance.Create(col) :> IVector
+      let data = VectorBuilder.Instance.Create(vectors)
+      Frame(rowIndex, colIndex, data, IndexBuilder.Instance, VectorBuilder.Instance)
 
   // ----------------------------------------------------------------------------------------------
   // Creating other frames
