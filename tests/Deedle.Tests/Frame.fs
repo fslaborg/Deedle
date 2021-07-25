@@ -336,6 +336,20 @@ let ``Can create frame from float[,] and get data as float[,]``() =
   data' |> shouldEqual data
 
 [<Test>]
+let ``Can create frame from float[][] and get data as float[][]``() =
+  let data = Array.init 5000 (fun x -> Array.init 200 (fun y -> float (x+y)))
+  let data' = data |> Frame.ofJaggedArray |> Frame.toJaggedArray
+  data' |> shouldEqual data
+
+[<Test>]
+let ``Frames from float[][] and float [,] are equal.``() =
+  let dataJagged = Array.init 5000 (fun x -> Array.init 200 (fun y -> float (x+y)))
+  let data2D = Array2D.init 5000 200 (fun x y -> float (x+y))
+  let frameJagged = dataJagged |> Frame.ofJaggedArray
+  let frame2D = data2D |> Frame.ofArray2D
+  frameJagged |> shouldEqual frame2D
+
+[<Test>]
 let ``Creating frame from sorted series returns sorted frame``() =
   let s1 = series [ 1 => 'a'; 2 => 'a' ]
   let s2 = series [ 2 => 'a'; 3 => 'a' ]

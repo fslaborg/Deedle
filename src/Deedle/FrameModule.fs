@@ -444,6 +444,13 @@ module Frame =
   [<CompiledName("ToArray2D")>]
   let toArray2D (frame:Frame<'R, 'C>) = frame.ToArray2D<float>()
 
+  /// Returns data of the data frame as a jagged array containing data as `float` values.
+  /// Missing data are represented as `Double.NaN` in the returned array.
+  ///
+  /// [category:Accessing frame data and lookup]
+  [<CompiledName("ToJaggedArray")>]
+  let toJaggedArray (frame:Frame<'R, 'C>) = frame.ToJaggedArray<float>()
+
   // ----------------------------------------------------------------------------------------------
   // Grouping, windowing and chunking
   // ----------------------------------------------------------------------------------------------

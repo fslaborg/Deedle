@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------
 // Internal helpers for working with vectors
 // --------------------------------------------------------------------------------------
 
@@ -412,6 +412,19 @@ let toArray2D<'R> rowCount colCount (data:IVector<IVector>) (defaultValue:Lazy<'
         |> Seq.iteri (fun r v ->
             res.[r,c] <- if v.HasValue then v.Value else defaultValue.Value )
       else for r = 0 to rowCount - 1 do res.[r, c] <- defaultValue.Value )
+    res
+
+/// Return data from a (column-major) vector of vectors as 2D array of a specified type
+/// If value is missing, `defaultValue` is used (which may throw an exception)
+let toJaggedArray<'R> rowCount colCount (data:IVector<IVector>) (defaultValue:Lazy<'R>) =
+    let res = Array.init rowCount (fun _ -> Array.zeroCreate colCount)
+    data.DataSequence
+    |> Seq.iteri (fun c vector ->
+      if vector.HasValue then
+        (convertType ConversionKind.Flexible vector.Value).DataSequence
+        |> Seq.iteri (fun r v ->
+            res.[r].[c] <- if v.HasValue then v.Value else defaultValue.Value )
+      else for r = 0 to rowCount - 1 do res.[r].[c] <- defaultValue.Value )
     res
 
 /// Helper functions and active patterns for type inference
