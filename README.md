@@ -46,7 +46,7 @@ More functions related to linear algebra, statistical analysis and financial ana
 Maintainers
 -----------
 
-* @alexpantyukhin
+* @kMutagene
 * @zyzhu 
 
 All fsprojects and fslaborg projects have @fsprojectsgit as a backup maintainer who can help recruit new maintainers should things go cold.
