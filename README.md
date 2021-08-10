@@ -2,6 +2,8 @@ Deedle
 ======
 <img align="right" src="https://github.com/fslaborg/Deedle/raw/master/docs/files/images/logo.png" alt="Deedle" />
 
+[![Discord](https://img.shields.io/discord/836161044501889064?color=purple&label=Join%20our%20Discord%21&logo=discord&logoColor=white)](https://discord.gg/tNxJkz9KaA)
+
 Deedle is an easy to use library for data and time series manipulation and for scientific programming. It supports working with structured data frames, ordered and unordered data, as well as time series. Deedle is designed to work well for exploratory programming using F# and C# interactive console, but can be also used in efficient compiled .NET code.
 
 The library implements a wide range of operations for data manipulation including advanced indexing and slicing, joining and aligning data, handling of missing values, grouping and aggregation, statistics and more.
