@@ -1,4 +1,4 @@
-﻿namespace Deedle.Math
+namespace Deedle.Math
 
 open MathNet.Numerics.LinearAlgebra
 open Deedle
@@ -238,17 +238,15 @@ type Matrix =
   /// frame multiply frame
   ///
   /// [category: Matrix multiplication]
-  static member dot (df1:Frame<'R, 'C>, df2:Frame<'C, 'R>) =
+  static member dot (df1:Frame<'R0, 'C>, df2:Frame<'C, 'R1>) =
     let set1 = df1.ColumnKeys |> Set.ofSeq
     let set2 = df2.RowKeys |> Set.ofSeq
-    let common = Set.union set1 set2
-    if common.Count > set1.Count || common.Count > set2.Count then
+    let union = Set.union set1 set2
+    if union.Count > set1.Count || union.Count > set2.Count then
       invalidOp "Matrices are not aligned"
-    let left = df1.Columns.[common]
-    let right = df2.Rows.[common]
-    let m1 = left |> Frame.toMatrix
-    let m2 = right |> Frame.toMatrix
-    m1 * m2 |> Frame.ofMatrix left.RowKeys df2.ColumnKeys
+    let m1 = df1.Columns.[union] |> Frame.toMatrix
+    let m2 = df2.Rows.[union] |> Frame.toMatrix
+    m1 * m2 |> Frame.ofMatrix df1.RowKeys df2.ColumnKeys
 
   /// frame multiply series
   ///
