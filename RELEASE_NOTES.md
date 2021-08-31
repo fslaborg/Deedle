@@ -1,5 +1,9 @@
 # Release Notes
 
+## 2.4.2 - 2021-08-31
+
+- Relax types for Matrix.dot of two frames [536](https://github.com/fslaborg/Deedle/issues/536)
+
 ## 2.4.1 - 2021-07-25
 
 - Add conversions between jagged array and frame [532](https://github.com/fslaborg/Deedle/pull/532)
