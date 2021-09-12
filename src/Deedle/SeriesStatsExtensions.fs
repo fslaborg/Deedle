@@ -24,15 +24,35 @@ type SeriesStatsExtensions =
   [<Extension>]
   static member inline NumSum(series:Series<'K, 'V>) = Stats.numSum series
 
-  /// Returns the smallest of all elements of the series.
+  /// Returns the minimum of the values in a series. The result is an float value.
+  /// When the series contains no values, the result is NaN.
+  /// Throws a `FormatException` or an `InvalidCastException` if the value type of the series
+  /// is not convertible to floating point number.
+  ///
   /// [category:Statistics]
   [<Extension>]
-  static member inline Min(series:Series<'K, 'V>) = Stats.min series
+  static member inline Min(series: Series<'K, 'V>) = Stats.min series
 
-  /// Returns the greatest of all elements of the series.
+  /// Returns the maximum of the values in a series. The result is an float value.
+  /// When the series contains no values, the result is NaN.
+  /// Throws a `FormatException` or an `InvalidCastException` if the value type of the series
+  /// is not convertible to floating point number.
+  ///
   /// [category:Statistics]
   [<Extension>]
-  static member inline Max(series:Series<'K, 'V>) = Stats.max series
+  static member inline Max(series: Series<'K, 'V>) = Stats.max series
+
+  /// Returns the minimum of the values in a series. The result is an option value.
+  /// When the series contains no values, the result is `None`.
+  /// [category:Statistics]
+  [<Extension>]
+  static member inline TryMin(series: Series<'K, 'V>) = Stats.tryMin series
+
+  /// Returns the maximum of the values in a series. The result is an option value.
+  /// When the series contains no values, the result is `None`.
+  /// [category:Statistics]
+  [<Extension>]
+  static member inline TryMax(series: Series<'K, 'V>) = Stats.tryMax series
 
   /// Returns the mean of the elements of the series.
   /// [category:Statistics]
