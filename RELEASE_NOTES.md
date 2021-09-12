@@ -1,5 +1,9 @@
 # Release Notes
 
+## 2.4.3 - 2021-09-11
+
+- Add TryMin and TryMax in extension to be utilized in C#
+
 ## 2.4.2 - 2021-08-31
 
 - Relax types for Matrix.dot of two frames [536](https://github.com/fslaborg/Deedle/issues/536)
