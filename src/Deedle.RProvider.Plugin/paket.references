@@ -1,3 +1,4 @@
-FSharp.Core
-System.ComponentModel.Composition
-RProvider
+group RProviderPlugin
+    FSharp.Core
+    System.ComponentModel.Composition
+    RProvider

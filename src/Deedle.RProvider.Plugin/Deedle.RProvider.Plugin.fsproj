@@ -1,15 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net461</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <OutputPath>../../bin/</OutputPath>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <DisableImplicitFSharpCoreReference>true</DisableImplicitFSharpCoreReference>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-  </PropertyGroup>
-  <PropertyGroup>
-    <FscToolPath>$(MSBuildThisFileDirectory)</FscToolPath>
-    <FscToolExe>fscfix.bat</FscToolExe>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
@@ -25,16 +21,5 @@
   <ItemGroup>
     <Reference Include="System.Runtime" />
   </ItemGroup>
-  <Target Name = "CopyFiles" AfterTargets="build">
-    <Copy SourceFiles="..\..\packages\RProvider\RProvider.fsx" DestinationFolder="$(OutputPath)" />
-    <Copy SourceFiles="..\..\packages\RProvider\lib\net40\RProvider.Runtime.dll.config" DestinationFolder="$(OutputPath)" />
-    <Copy SourceFiles="..\..\packages\RProvider\lib\net40\RProvider.DesignTime.dll" DestinationFolder="$(OutputPath)" />
-    <Copy SourceFiles="..\..\packages\RProvider\lib\net40\RProvider.DesignTime.pdb" DestinationFolder="$(OutputPath)" />
-    <Copy SourceFiles="..\..\packages\RProvider\lib\net40\RProvider.Server.exe" DestinationFolder="$(OutputPath)" />
-    <Copy SourceFiles="..\..\packages\RProvider\lib\net40\RProvider.Server.pdb" DestinationFolder="$(OutputPath)" />
-    <Copy SourceFiles="..\..\packages\RProvider\lib\net40\FSharp.Core.dll" DestinationFolder="$(OutputPath)" />
-    <Copy SourceFiles="..\..\packages\RProvider\lib\net40\FSharp.Core.sigdata" DestinationFolder="$(OutputPath)" />
-    <Copy SourceFiles="..\..\packages\RProvider\lib\net40\FSharp.Core.optdata" DestinationFolder="$(OutputPath)" />
-  </Target>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

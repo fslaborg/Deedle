@@ -1,7 +1,8 @@
-NUnit
-FSharp.Core
-Microsoft.NET.Test.Sdk
-NUnit3TestAdapter
-System.ComponentModel.Composition
-FsUnit
-RProvider
+group RProviderPlugin
+    FSharp.Core
+    System.ComponentModel.Composition
+    RProvider
+    NUnit
+    Microsoft.NET.Test.Sdk
+    NUnit3TestAdapter
+    FsUnit
