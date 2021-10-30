@@ -35,10 +35,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
-      - uses: r-lib/actions/setup-r@v1
-        name: Setup R environment
-        with:
-            r-version: '4.0.2'
       - name: Set R_HOME (for RProvider)
         run: echo "R_HOME=$(R RHOME)" >> "$GITHUB_ENV"
         shell: bash
