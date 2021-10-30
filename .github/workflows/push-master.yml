@@ -18,7 +18,7 @@ jobs:
         run: echo "R_HOME=$(R RHOME)" >> "$GITHUB_ENV"
         shell: bash
       - name: Install R package dependencies
-        run: Rscript -e "install.packages(c('zoo'))"
+        run: Rscript -e "install.packages(c('zoo'), repos = 'http://cran.us.r-project.org')"
         shell: bash
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
@@ -39,7 +39,10 @@ jobs:
         run: echo "R_HOME=$(R RHOME)" >> "$GITHUB_ENV"
         shell: bash
       - name: Install R package dependencies
-        run: Rscript -e "install.packages(c('zoo'))"
+        run:  |
+          mkdir -p ~/.local/lib/R
+          echo "R_LIBS_USER=~/.local/lib/R" >> "$GITHUB_ENV"
+          Rscript -e "install.packages(c('zoo'))"
         shell: bash
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
