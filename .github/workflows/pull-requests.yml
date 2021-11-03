@@ -10,6 +10,16 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v1
+      - uses: r-lib/actions/setup-r@v1
+        name: Setup R environment
+        with:
+            r-version: '4.0.2'
+      - name: Set R_HOME (for RProvider)
+        run: echo "R_HOME=$(R RHOME)" >> "$GITHUB_ENV"
+        shell: bash
+      - name: Install R package dependencies
+        run: Rscript -e "install.packages(c('zoo'), repos = 'http://cran.us.r-project.org')"
+        shell: bash
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
         with:
@@ -25,6 +35,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
+      - name: Set R environment variables (for RProvider)
+        run:  |
+          mkdir -p ~/.local/lib/R
+          echo "R_LIBS_USER=~/.local/lib/R" >> "$GITHUB_ENV"
+          echo "R_HOME=$(R RHOME)" >> "$GITHUB_ENV"
+        shell: bash
+      - name: Install R package dependencies
+        run: Rscript -e "install.packages(c('zoo'))"
+        shell: bash
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
         with:

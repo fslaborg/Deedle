@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net461</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <ItemGroup>
@@ -12,13 +12,7 @@
     <None Include="paket.references" />
   </ItemGroup>
   <ItemGroup>
-    <!-- <ProjectReference Include="..\..\src\Deedle.RProvider.Plugin\Deedle.RProvider.Plugin.fsproj"><Name>Deedle.RProvider.Plugin</Name></ProjectReference><ProjectReference Include="..\..\src\Deedle\Deedle.fsproj"><Name>Deedle</Name></ProjectReference> -->
-    <Reference Include="Deedle">
-      <HintPath>..\..\bin\netstandard2.0\Deedle.dll</HintPath>
-    </Reference>
-    <Reference Include="Deedle.RProvider.Plugin">
-      <HintPath>..\..\bin\net461\Deedle.RProvider.Plugin.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\..\src\Deedle.RProvider.Plugin\Deedle.RProvider.Plugin.fsproj" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Runtime" />
