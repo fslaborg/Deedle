@@ -15,10 +15,8 @@ jobs:
         with:
             r-version: '4.0.2'
       - name: Set R environment variables (for RProvider)
-        run:  |
-          mkdir -p ~/.local/lib/R
-          echo "R_LIBS_USER=~/.local/lib/R" >> "$GITHUB_ENV"
-          echo "R_HOME=$(R RHOME)" >> "$GITHUB_ENV"
+        run: echo "R_HOME=$(R RHOME)" >> "$GITHUB_ENV"
+        shell: bash
       - name: Install R package dependencies
         run: Rscript -e "install.packages(c('zoo'), repos = 'http://cran.us.r-project.org')"
         shell: bash
