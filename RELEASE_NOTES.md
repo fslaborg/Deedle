@@ -1,5 +1,9 @@
 # Release Notes
 
+## 2.5.0 - 2021-11-03
+
+- Restore Deedle.RPlugin targeting net5.0
+
 ## 2.4.3 - 2021-09-11
 
 - Add TryMin and TryMax in extension to be utilized in C#
