@@ -1637,7 +1637,7 @@ NUGET
       DynamicInterop (>= 0.9.1)
       FSharp.Core (>= 4.6.2)
       R.NET (>= 1.9)
-    RProvider (2.0.1-beta2)
+    RProvider (2.0.2)
       FSharp.Core (>= 4.6.2)
       Newtonsoft.Json (>= 13.0.1)
       PipeMethodCalls (>= 3.0.4)
