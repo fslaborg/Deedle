@@ -24,7 +24,7 @@ group RProviderPlugin
     framework: net5.0
 
     nuget FSharp.Core 4.6.2
-    nuget RProvider 2.0.1-beta2
+    nuget RProvider 2.0.1
     nuget System.ComponentModel.Composition
     nuget NUnit3TestAdapter 3.9.0
     nuget NUnit 3.9.0
