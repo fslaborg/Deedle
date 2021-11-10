@@ -1,6 +1,6 @@
 # Release Notes
 
-## 2.5.0 - 2021-11-03
+## 2.5.0 - 2021-11-10
 
 - Restore Deedle.RPlugin targeting net5.0
 
