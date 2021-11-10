@@ -14,7 +14,7 @@ jobs:
         name: Setup R environment
         with:
             r-version: '4.0.2'
-      - name: Set R_HOME (for RProvider)
+      - name: Set R environment variables (for RProvider)
         run: echo "R_HOME=$(R RHOME)" >> "$GITHUB_ENV"
         shell: bash
       - name: Install R package dependencies

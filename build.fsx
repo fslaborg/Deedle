@@ -135,24 +135,10 @@ let testProjs =
       "tests/Deedle.PerfTests/Deedle.PerfTests.fsproj"
     ]
 
-let testCoreProjs =
-    [
-      "tests/Deedle.Tests/Deedle.Tests.fsproj"
-      "tests/Deedle.Math.Tests/Deedle.Math.Tests.fsproj"
-      "tests/Deedle.CSharp.Tests/Deedle.CSharp.Tests.csproj"
-      "tests/Deedle.RPlugin.Tests/Deedle.RPlugin.Tests.fsproj"
-      //"tests/Deedle.Documentation.Tests/Deedle.Documentation.Tests.fsproj"
-      "tests/Deedle.PerfTests/Deedle.PerfTests.fsproj"
-    ]
-
 let buildProjs =
     [ "src/Deedle/Deedle.fsproj"
       "src/Deedle.Math/Deedle.Math.fsproj"
-      "src/Deedle.Excel/Deedle.Excel.fsproj" ]
-
-let buildCoreProjs =
-    [ "src/Deedle/Deedle.fsproj"
-      "src/Deedle.Math/Deedle.Math.fsproj"
+      "src/Deedle.Excel/Deedle.Excel.fsproj"
       "src/Deedle.RProvider.Plugin/Deedle.RProvider.Plugin.fsproj" ]
 
 Target.create "Build" ( fun _ ->
@@ -160,13 +146,6 @@ Target.create "Build" ( fun _ ->
   for proj in buildProjs do
     DotNet.build (fun opts -> { opts with Common = { opts.Common with
                                                                       CustomParams = Some "/v:n /p:SourceLinkCreate=true" }
-                                          Configuration = DotNet.BuildConfiguration.Release }) proj )
-
-
-Target.create "BuildCore" ( fun _ ->
-  Environment.setEnvironVar "GenerateDocumentationFile" "true"
-  for proj in buildCoreProjs do
-    DotNet.build (fun opts -> { opts with Common = { opts.Common with CustomParams = Some "/v:n /p:SourceLinkCreate=true" }
                                           Configuration = DotNet.BuildConfiguration.Release }) proj )
 
 // --------------------------------------------------------------------------------------
@@ -179,14 +158,6 @@ Target.create "BuildTests" (fun _ ->
 Target.create "RunTests" (fun _ ->
   for proj in testProjs do
     DotNet.test (fun opts -> { opts with Configuration = DotNet.BuildConfiguration.Release }) proj )
-
-Target.create "BuildCoreTests" (fun _ ->
-  for proj in testCoreProjs do
-    DotNet.build (fun opts -> { opts with Configuration = DotNet.BuildConfiguration.Release }) proj )
-
-Target.create "RunCoreTests" (fun _ ->
-  for proj in testCoreProjs do
-    DotNet.test (fun opts -> { opts with  Configuration = DotNet.BuildConfiguration.Release }) proj )
 
 // --------------------------------------------------------------------------------------
 // Build a NuGet package
@@ -226,7 +197,7 @@ Target.create "NuGet" (fun _ ->
             OutputPath = "bin"
             Dependencies =
               [ "Deedle", release.NugetVersion
-                "RProvider", NuGet.GetPackageVersion "packages" "RProvider" ]
+                "RProvider", NuGet.GetPackageVersion "packages/rproviderplugin" "RProvider" ]
             AccessKey = Environment.environVarOrDefault "nugetkey" ""
             Publish = Environment.hasEnvironVar "nugetkey" })
         ("nuget/Deedle.RPlugin.nuspec")
@@ -327,14 +298,6 @@ Target.create "Release" ignore
 // Run all targets by default. Invoke 'build <Target>' to override
 
 Target.create "All" ignore
-Target.create "AllCore" ignore
-
-"Clean"
-  ==> "AssemblyInfo"
-  ==> "BuildCore"
-  ==> "BuildCoreTests"
-  ==> "RunCoreTests"
-  ==> "AllCore"
 
 "Clean"
   ==> "AssemblyInfo"
@@ -352,4 +315,4 @@ Target.create "AllCore" ignore
   ==> "TagRelease"
   ==> "Release"
 
-Target.runOrDefault "AllCore"
+Target.runOrDefault "All"

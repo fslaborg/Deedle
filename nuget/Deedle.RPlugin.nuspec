@@ -17,7 +17,7 @@
     @dependencies@
   </metadata>
   <files>
-    <file src="..\bin\net451\Deedle.RProvider.Plugin.dll" target="lib/net451" />
-    <file src="..\bin\net451\Deedle.RProvider.Plugin.pdb" target="lib/net451" />  
+    <file src="..\bin\net5.0\Deedle.RProvider.Plugin.dll" target="lib/net5.0" />
+    <file src="..\bin\net5.0\Deedle.RProvider.Plugin.pdb" target="lib/net5.0" />  
   </files>
 </package>
