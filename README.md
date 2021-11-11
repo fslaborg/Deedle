@@ -48,6 +48,7 @@ More functions related to linear algebra, statistical analysis and financial ana
 Maintainers
 -----------
 
+* @AndrewIOM
 * @kMutagene
 * @zyzhu 
 
