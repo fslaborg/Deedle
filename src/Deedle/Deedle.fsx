@@ -13,3 +13,18 @@
 
 do fsi.AddPrinter(fun (printer:Deedle.Internal.IFsiFormattable) -> "\n" + (printer.Format()))
 open Deedle
+
+frame [
+    "C1" => series ["R1" => 1; "R2" => 2]
+    "C2" => series ["R1" => 3; "R2" => 4]
+    "C3" => series ["R1" => 5; "R2" => 6]
+    "C4" => series ["R1" => 7; "R2" => 8]
+    "C5" => series ["R1" => 9; "R2" => 10]
+]
+
+frame [
+    for i in 0 .. 100 ->
+        (i,(string i,(float i, box i))) => series [for ii in 0 .. 100 -> (ii,(string ii,(float ii, box ii))) => ii]
+]
+
+series ["R1" => 9; "R2" => 10]

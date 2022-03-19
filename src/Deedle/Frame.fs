@@ -1322,7 +1322,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   /// shows all columns, but a limited number of rows.
   /// [category:Formatting and raw data access]
   member frame.Format() =
-    frame.Format(Formatting.StartItemCount, Formatting.EndItemCount)
+    frame.Format(Formatting.RowStartItemCount, Formatting.RowEndItemCount, Formatting.ColumnStartItemCount, Formatting.ColumnEndItemCount)
 
   /// Shows the data frame content in a human-readable format. The resulting string
   /// shows all columns, but a limited number of rows.
@@ -1333,7 +1333,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   ///  - `printTypes` - When true, the types of vectors storing column data are printed
   /// [category:Formatting and raw data access]
   member frame.Format(printTypes) =
-    frame.Format(Formatting.StartItemCount, Formatting.EndItemCount, printTypes)
+    frame.Format(Formatting.RowStartItemCount, Formatting.RowEndItemCount, Formatting.ColumnStartItemCount, Formatting.ColumnEndItemCount, printTypes)
 
   /// Shows the data frame content in a human-readable format. The resulting string
   /// shows all columns, but a limited number of rows.
@@ -1342,9 +1342,10 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   ///  - `count` - The maximal total number of rows to be printed
   ///
   /// [category:Formatting and raw data access]
-  member frame.Format(count) =
-    let half = count / 2
-    frame.Format(half, half)
+  member frame.Format(rowCount, columnCount) =
+    let rowHalf = rowCount / 2
+    let colHalf = columnCount / 2
+    frame.Format(rowHalf, rowHalf, colHalf, colHalf)
 
   /// Shows the data frame content in a human-readable format. The resulting string
   /// shows all columns, but a limited number of rows.
@@ -1354,8 +1355,107 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   ///  - `endCount` - The number of rows at the end of the frame to be printed
   ///
   /// [category:Formatting and raw data access]
-  member frame.Format(startCount, endCount) =
-    frame.Format(startCount, endCount, false)
+  member frame.Format(rowStartCount, rowEndCount, columnStartCount, columnEndCount) =
+    frame.Format(rowStartCount, rowEndCount, columnStartCount, columnEndCount, false)
+
+  member frame.FormatStrings(rowStartCount, rowEndCount, columnStartCount, columnEndCount, printTypes) =
+
+   
+    // Get the number of levels in column/row index
+    let colLevels =
+      if frame.ColumnIndex.IsEmpty then 1
+      else CustomKey.Get(frame.ColumnIndex.KeyAt(frame.ColumnIndex.AddressAt(0L))).Levels
+    let rowLevels =
+      if frame.RowIndex.IsEmpty then 1
+      else CustomKey.Get(frame.RowIndex.KeyAt(frame.RowIndex.AddressAt(0L))).Levels
+
+    // take slices from the start and end of a row when amount of cols it exceeds print maximum
+    let takeColSlices (startCount:int) (endCount: int) (row: string []) =
+      if frame.ColumnCount <= startCount + endCount then
+        row
+      else 
+        [|
+          yield! row |> Seq.take (columnStartCount + rowLevels + 1)
+          yield "..."
+          yield! row |> Seq.rev |> Seq.take columnEndCount |> Seq.rev
+        |]
+
+    /// Format type with a few special cases for common types
+    let formatType (typ:System.Type) =
+      if typ = typeof<obj> then "obj"
+      elif typ = typeof<float> then "float"
+      elif typ = typeof<int> then "int"
+      elif typ = typeof<string> then "string"
+      else typ.Name
+
+    /// Get annotation for the specified level of the given key
+    /// (returns empty string if the value is the same as previous)
+    let getLevel ordered previous reset maxLevel level (key:'K) =
+      let levelKey =
+        if level = 0 && maxLevel = 0 then box key
+        else CustomKey.Get(key).GetLevel(level)
+      if ordered && (Some levelKey = !previous) then ""
+      else previous := Some levelKey; reset(); levelKey.ToString()
+
+    [|
+      // Yield headers (for all column levels)
+      for colLevel in 0 .. colLevels - 1 do
+        yield [|
+          // Prefix with appropriate number of (empty) row keys
+          for i in 0 .. rowLevels - 1 do yield ""
+          yield ""
+          let previous = ref None
+          for KeyValue(colKey, _) in frame.ColumnIndex.Mappings do
+            yield getLevel frame.ColumnIndex.IsOrdered previous ignore colLevels colLevel colKey |]
+            |> takeColSlices (columnStartCount + rowLevels + 1) columnEndCount
+
+      // If we want to print types, add another line with type information
+      if printTypes then
+        yield
+          [|
+            // Prefix with appropriate number of (empty) row keys
+            for i in 0 .. rowLevels - 1 do yield ""
+            yield ""
+            let previous = ref None
+            for kvp in frame.ColumnIndex.Mappings do
+              let vector = frame.Data.GetValue(kvp.Value)
+              let typ =
+                if not vector.HasValue then "missing"
+                else formatType vector.Value.ElementType
+              yield String.Concat("(", typ, ")")
+          |]
+          |> takeColSlices (columnStartCount + rowLevels + 1) columnEndCount
+
+      // Yield row data
+      let previous = Array.init rowLevels (fun _ -> ref None)
+      let reset i () = for j in i + 1 .. rowLevels - 1 do previous.[j] := None
+      for item in frame.GetPrintedRowObservations(rowStartCount, rowEndCount) do
+        match item with
+        | Choice2Of3() ->
+            yield
+              [|
+                // Prefix with appropriate number of (empty) row keys
+                for i in 0 .. rowLevels - 1 do yield ":" 
+                yield ""
+                for i in 1 .. frame.ColumnCount ->  "..."
+              |]
+              |> takeColSlices (columnStartCount + rowLevels + 1) columnEndCount
+        | Choice1Of3(rowKey, row) | Choice3Of3(rowKey, row) ->
+            yield
+              [|
+                // Yield all row keys
+                for rowLevel in 0 .. rowLevels - 1 do
+                  yield getLevel frame.RowIndex.IsOrdered previous.[rowLevel] (reset rowLevel) rowLevels rowLevel rowKey
+                yield "->"
+                yield! (
+                  SeriesExtensions.GetAllObservations(row)  // TODO: is this good?
+                  |> Seq.map (fun x ->
+                    x.Value.ToString()
+                  )
+                )
+              |]
+              |> takeColSlices (columnStartCount + rowLevels + 1) columnEndCount
+            |]
 
   /// Shows the data frame content in a human-readable format. The resulting string
   /// shows all columns, but a limited number of rows.
@@ -1366,79 +1466,14 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   ///  - `printTypes` - When true, the types of vectors storing column data are printed
   ///
   /// [category:Formatting and raw data access]
-  member frame.Format(startCount, endCount, printTypes) =
+  member frame.Format(rowStartCount, rowEndCount, columnStartCount, columnEndCount, printTypes) =
     try
-      // Get the number of levels in column/row index
-      let colLevels =
-        if frame.ColumnIndex.IsEmpty then 1
-        else CustomKey.Get(frame.ColumnIndex.KeyAt(frame.ColumnIndex.AddressAt(0L))).Levels
-      let rowLevels =
-        if frame.RowIndex.IsEmpty then 1
-        else CustomKey.Get(frame.RowIndex.KeyAt(frame.RowIndex.AddressAt(0L))).Levels
-
-      /// Format type with a few special cases for common types
-      let formatType (typ:System.Type) =
-        if typ = typeof<obj> then "obj"
-        elif typ = typeof<float> then "float"
-        elif typ = typeof<int> then "int"
-        elif typ = typeof<string> then "string"
-        else typ.Name
-
-      /// Get annotation for the specified level of the given key
-      /// (returns empty string if the value is the same as previous)
-      let getLevel ordered previous reset maxLevel level (key:'K) =
-        let levelKey =
-          if level = 0 && maxLevel = 0 then box key
-          else CustomKey.Get(key).GetLevel(level)
-        if ordered && (Some levelKey = !previous) then ""
-        else previous := Some levelKey; reset(); levelKey.ToString()
-
-      seq {
-        // Yield headers (for all column levels)
-        for colLevel in 0 .. colLevels - 1 do
-          yield [
-            // Prefix with appropriate number of (empty) row keys
-            for i in 0 .. rowLevels - 1 do yield ""
-            yield ""
-            let previous = ref None
-            for KeyValue(colKey, _) in frame.ColumnIndex.Mappings do
-              yield getLevel frame.ColumnIndex.IsOrdered previous ignore colLevels colLevel colKey ]
-
-        // If we want to print types, add another line with type information
-        if printTypes then
-          yield [
-            // Prefix with appropriate number of (empty) row keys
-            for i in 0 .. rowLevels - 1 do yield ""
-            yield ""
-            let previous = ref None
-            for kvp in frame.ColumnIndex.Mappings do
-              let vector = frame.Data.GetValue(kvp.Value)
-              let typ =
-                if not vector.HasValue then "missing"
-                else formatType vector.Value.ElementType
-              yield String.Concat("(", typ, ")") ]
-
-        // Yield row data
-        let previous = Array.init rowLevels (fun _ -> ref None)
-        let reset i () = for j in i + 1 .. rowLevels - 1 do previous.[j] := None
-        for item in frame.GetPrintedRowObservations(startCount, endCount) do
-          match item with
-          | Choice2Of3() ->
-              yield [
-                // Prefix with appropriate number of (empty) row keys
-                for i in 0 .. rowLevels - 1 do yield if i = 0 then ":" else ""
-                yield ""
-                for i in 1 .. data.DataSequence |> Seq.length -> "..." ]
-          | Choice1Of3(rowKey, row) | Choice3Of3(rowKey, row) ->
-              yield [
-                // Yield all row keys
-                for rowLevel in 0 .. rowLevels - 1 do
-                  yield getLevel frame.RowIndex.IsOrdered previous.[rowLevel] (reset rowLevel) rowLevels rowLevel rowKey
-                yield "->"
-                for KeyValue(_, value) in SeriesExtensions.GetAllObservations(row) do  // TODO: is this good?
-                  yield value.ToString() ] }
-      |> array2D
-      |> Formatting.formatTable
+      let formattedtable =
+        frame.FormatStrings(rowStartCount, rowEndCount, columnStartCount, columnEndCount, printTypes)
+        |> array2D
+        |> Formatting.formatTable
+      let frameInfo = sprintf "%i rows x %i columns" frame.RowCount frame.ColumnCount
+      sprintf "%s%s%s" formattedtable System.Environment.NewLine frameInfo
     with e -> sprintf "Formatting failed: %A" e
 
   // ----------------------------------------------------------------------------------------------
@@ -1450,6 +1485,26 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
 
   interface IFsiFormattable with
     member x.Format() = (x :> Frame<_, _>).Format()
+
+  interface IFrameFormattable with
+    member x.InteractiveFormat(rowCount,colCount,printTypes) =
+      (x :> Frame<_, _>).FormatStrings(
+        (rowCount / 2),
+        (rowCount / 2),
+        (colCount / 2),
+        (colCount / 2)
+        ,printTypes
+      )
+    member x.GetColLevels() =
+      if x.ColumnIndex.IsEmpty then 1
+      else CustomKey.Get(x.ColumnIndex.KeyAt(x.ColumnIndex.AddressAt(0L))).Levels
+
+    member x.GetRowLevels() =
+      if x.RowIndex.IsEmpty then 1
+      else CustomKey.Get(x.RowIndex.KeyAt(x.RowIndex.AddressAt(0L))).Levels
+
+    member x.GetDimensions() =
+      x.RowCount,x.ColumnCount
 
   interface INotifyCollectionChanged with
     [<CLIEvent>]

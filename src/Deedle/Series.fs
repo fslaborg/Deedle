@@ -1,4 +1,4 @@
-﻿namespace Deedle
+namespace Deedle
 
 open System
 open System.ComponentModel
@@ -1133,7 +1133,7 @@ and
   /// Shows the series content in a human-readable format. The resulting string
   /// shows a limited number of values from the series.
   member series.Format() =
-    series.Format(Formatting.StartItemCount, Formatting.EndItemCount)
+    series.Format(Formatting.RowStartItemCount, Formatting.RowEndItemCount)
 
   /// Shows the series content in a human-readable format. The resulting string
   /// shows a limited number of values from the series.
@@ -1187,7 +1187,8 @@ and
   interface IFsiFormattable with
     member x.Format() = (x :> Series<_, _>).Format()
 
-
+  //interface ISeriesFormattable with
+  //  member x.InteractiveFormat(count) = (x :> Series<_, _>).Format(count)
 
   // ----------------------------------------------------------------------------------------------
   // Nicer constructor

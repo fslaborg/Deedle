@@ -1,4 +1,4 @@
-﻿#nowarn "86" // Let me redefine <, >, <=, >= locally using comparator
+#nowarn "86" // Let me redefine <, >, <=, >= locally using comparator
 namespace Deedle
 
 open System
@@ -1348,12 +1348,34 @@ type IFsiFormattable =
   abstract Format : unit -> string
 
 /// [omit]
+/// An interface implemented by frames that support nice formatting for .NET interactive notebooks
+/// This seems to be needed as you cannot register formatters for Frame<_,_> in .NET interactive
+/// (The `Deedle.Interactive` packages uses this interface for registering custom formatters.)
+type IFrameFormattable =
+  abstract InteractiveFormat : nRows:int * nCols:int * showColumnTypes:bool -> string [] []
+  abstract GetColLevels : unit -> int
+  abstract GetRowLevels : unit -> int
+  abstract GetDimensions : unit -> int*int
+
+/// [omit]
+/// An interface implemented by series that support nice formatting for .NET interactive notebooks
+/// This seems to be needed as you cannot register formatters for Series<_,_> in .NET interactive
+/// (The `Deedle.Interactive` packages uses this interface for registering custom formatters.)
+type ISeriesFormattable =
+  abstract InteractiveFormat : int -> string []
+
+/// [omit]
 /// Contains helper functions and configuration constants for pretty printing
 module Formatting =
-  /// Maximal number of items to be printed at the beginning of a series/frame
-  let StartItemCount = 15
-  /// Maximal number of items to be printed at the end of a series/frame
-  let EndItemCount = 15
+  /// Maximal number of rows to be printed at the beginning of a series/frame
+  let RowStartItemCount = 15
+  /// Maximal number of rows to be printed at the end of a series/frame
+  let RowEndItemCount = 15
+
+  /// Maximal number of columns to be printed at the beginning of a series/frame
+  let ColumnStartItemCount = 15
+  /// Maximal number of columns to be printed at the end of a series/frame
+  let ColumnEndItemCount = 15
 
   /// Maximal number of items to be printed at the beginning of an inline formatted series/frame
   let StartInlineItemCount = 5
