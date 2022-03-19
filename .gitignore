@@ -45,3 +45,5 @@ tests/PerformanceTools/Deedle.PerfTest/bin
 /.fake
 docs/content/RELEASE_NOTES.md
 .ionide/
+/pkg
+/src/Deedle.Interactive/obj
