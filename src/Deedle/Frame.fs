@@ -1360,7 +1360,6 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
 
   member frame.FormatStrings(rowStartCount, rowEndCount, columnStartCount, columnEndCount, printTypes) =
 
-   
     // Get the number of levels in column/row index
     let colLevels =
       if frame.ColumnIndex.IsEmpty then 1
@@ -1375,9 +1374,9 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
         row
       else 
         [|
-          yield! row |> Seq.take (columnStartCount + rowLevels + 1)
+          yield! row |> Array.take (columnStartCount + rowLevels + 1)
           yield "..."
-          yield! row |> Seq.rev |> Seq.take columnEndCount |> Seq.rev
+          yield! row |> Array.rev |> Array.take columnEndCount |> Array.rev
         |]
 
     /// Format type with a few special cases for common types
@@ -1505,6 +1504,12 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
 
     member x.GetDimensions() =
       x.RowCount,x.ColumnCount
+
+    member x.GetMissingValueCount() =
+      x.Columns
+      |> Series.mapValues (fun os -> os.KeyCount - os.ValueCount)
+      |> Series.values
+      |> Seq.sum
 
   interface INotifyCollectionChanged with
     [<CLIEvent>]

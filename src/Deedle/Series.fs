@@ -1151,7 +1151,7 @@ and
   /// ## Parameters
   ///  - `startCount` - The number of elements to show at the beginning of the series
   ///  - `endCount` - The number of elements to show at the end of the series
-  member series.Format(startCount, endCount) =
+  member series.FormatStrings(startCount, endCount) : string [] [] =
     let getLevel ordered previous reset maxLevel level (key:'K) =
       let levelKey =
         if level = 0 && maxLevel = 0 then box key
@@ -1159,9 +1159,9 @@ and
       if ordered && (Some levelKey = !previous) then ""
       else previous := Some levelKey; reset(); levelKey.ToString()
 
-    if vector.SuppressPrinting then "(Suppressed)" else
+    if vector.SuppressPrinting then [|[|"(Suppressed)"|]|] else
       if series.IsEmpty then
-        "(Empty)"
+        [|[|"(Empty)"|]|]
       else
         let firstKey = series.GetKeyAt(0)
         let levels = CustomKey.Get(firstKey).Levels
@@ -1169,26 +1169,48 @@ and
         let reset i () = for j in i + 1 .. levels - 1 do previous.[j] := None
 
         series.GetPrintedObservations(startCount, endCount)
-        |> Seq.map (function
+        |> Array.ofSeq
+        |> Array.map (function
             | Choice1Of3(k, v) | Choice3Of3(k, v) ->
-                [ // Yield all row keys
+                [| // Yield all row keys
                   for level in 0 .. levels - 1 do
                     yield getLevel series.Index.IsOrdered previous.[level] (reset level) levels level k
                   yield "->"
-                  yield v.ToString() ]
+                  yield v.ToString()
+                |]
             | Choice2Of3() ->
-                [ yield "..."
+                [|
+                  yield "..."
                   for level in 1 .. levels - 1 do yield ""
                   yield "->"
-                  yield "..." ] )
+                  yield "..."
+                |] )
+
+
+  member series.Format(startCount, endCount) =
+    try
+      let formattedtable =
+        series.FormatStrings(startCount, endCount)
         |> array2D
         |> Formatting.formatTable
+      let seriesInfo = sprintf "series of %i items with %i missing values" series.KeyCount (series.KeyCount - series.ValueCount)
+      sprintf "%s%s%s" formattedtable System.Environment.NewLine seriesInfo
+    with e -> sprintf "Formatting failed: %A" e
+
 
   interface IFsiFormattable with
     member x.Format() = (x :> Series<_, _>).Format()
 
-  //interface ISeriesFormattable with
-  //  member x.InteractiveFormat(count) = (x :> Series<_, _>).Format(count)
+  interface ISeriesFormattable with
+    member x.InteractiveFormat(count) = (x :> Series<_, _>).FormatStrings((count/2),(count/2))
+    member x.GetValueCount() = x.ValueCount
+    member x.GetKeyCount() = x.KeyCount
+    member x.GetKeyLevels() =
+      if x.IsEmpty then
+        1
+      else
+        let firstKey = x.GetKeyAt(0)
+        CustomKey.Get(firstKey).Levels
 
   // ----------------------------------------------------------------------------------------------
   // Nicer constructor

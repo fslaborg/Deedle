@@ -1356,13 +1356,17 @@ type IFrameFormattable =
   abstract GetColLevels : unit -> int
   abstract GetRowLevels : unit -> int
   abstract GetDimensions : unit -> int*int
+  abstract GetMissingValueCount: unit -> int
 
 /// [omit]
 /// An interface implemented by series that support nice formatting for .NET interactive notebooks
 /// This seems to be needed as you cannot register formatters for Series<_,_> in .NET interactive
 /// (The `Deedle.Interactive` packages uses this interface for registering custom formatters.)
 type ISeriesFormattable =
-  abstract InteractiveFormat : int -> string []
+  abstract InteractiveFormat : int -> string [] []
+  abstract GetValueCount : unit -> int
+  abstract GetKeyCount : unit -> int
+  abstract GetKeyLevels : unit -> int
 
 /// [omit]
 /// Contains helper functions and configuration constants for pretty printing

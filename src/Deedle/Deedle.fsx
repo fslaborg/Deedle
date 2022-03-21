@@ -24,7 +24,9 @@ frame [
 
 frame [
     for i in 0 .. 100 ->
-        (i,(string i,(float i, box i))) => series [for ii in 0 .. 100 -> (ii,(string ii,(float ii, box ii))) => ii]
+        i => series [for ii in 0 .. 100 -> ii => ii]
 ]
 
 series ["R1" => 9; "R2" => 10]
+
+series [for ii in 0 .. 100 -> ii => if ii % 10 = 0 then nan else float ii]
