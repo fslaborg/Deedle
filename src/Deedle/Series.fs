@@ -1133,7 +1133,10 @@ and
   /// Shows the series content in a human-readable format. The resulting string
   /// shows a limited number of values from the series.
   member series.Format() =
-    series.Format(Formatting.RowStartItemCount, Formatting.RowEndItemCount)
+    series.Format(Formatting.RowStartItemCount, Formatting.RowEndItemCount, false)
+
+  member series.Format(showInfo) =
+    series.Format(Formatting.RowStartItemCount, Formatting.RowEndItemCount, showInfo)
 
   /// Shows the series content in a human-readable format. The resulting string
   /// shows a limited number of values from the series.
@@ -1143,7 +1146,7 @@ and
   ///    at most `itemCount/2` items at the beginning and ending of the series.
   member series.Format(itemCount) =
     let half = itemCount / 2
-    series.Format(half, half)
+    series.Format(half, half, false)
 
   /// Shows the series content in a human-readable format. The resulting string
   /// shows a limited number of values from the series.
@@ -1187,19 +1190,23 @@ and
                 |] )
 
 
-  member series.Format(startCount, endCount) =
+  member series.Format(startCount, endCount, showInfo) =
     try
       let formattedtable =
         series.FormatStrings(startCount, endCount)
         |> array2D
         |> Formatting.formatTable
-      let seriesInfo = sprintf "series of %i items with %i missing values" series.KeyCount (series.KeyCount - series.ValueCount)
-      sprintf "%s%s%s" formattedtable System.Environment.NewLine seriesInfo
+      if showInfo then
+        let seriesInfo = sprintf "series of %i items with %i missing values" series.KeyCount (series.KeyCount - series.ValueCount)
+        sprintf "%s%s%s" formattedtable System.Environment.NewLine seriesInfo
+      else
+        formattedtable
     with e -> sprintf "Formatting failed: %A" e
 
 
   interface IFsiFormattable with
     member x.Format() = (x :> Series<_, _>).Format()
+    member x.FormatWithInfo() = (x :> Series<_, _>).Format(true)
 
   interface ISeriesFormattable with
     member x.InteractiveFormat(count) = (x :> Series<_, _>).FormatStrings((count/2),(count/2))

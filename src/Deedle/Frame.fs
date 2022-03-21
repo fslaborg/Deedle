@@ -1333,7 +1333,10 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   ///  - `printTypes` - When true, the types of vectors storing column data are printed
   /// [category:Formatting and raw data access]
   member frame.Format(printTypes) =
-    frame.Format(Formatting.RowStartItemCount, Formatting.RowEndItemCount, Formatting.ColumnStartItemCount, Formatting.ColumnEndItemCount, printTypes)
+    frame.Format(Formatting.RowStartItemCount, Formatting.RowEndItemCount, Formatting.ColumnStartItemCount, Formatting.ColumnEndItemCount, printTypes, false)
+
+  member frame.Format(printTypes, showInfo) =
+    frame.Format(Formatting.RowStartItemCount, Formatting.RowEndItemCount, Formatting.ColumnStartItemCount, Formatting.ColumnEndItemCount, printTypes, showInfo)
 
   /// Shows the data frame content in a human-readable format. The resulting string
   /// shows all columns, but a limited number of rows.
@@ -1356,7 +1359,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   ///
   /// [category:Formatting and raw data access]
   member frame.Format(rowStartCount, rowEndCount, columnStartCount, columnEndCount) =
-    frame.Format(rowStartCount, rowEndCount, columnStartCount, columnEndCount, false)
+    frame.Format(rowStartCount, rowEndCount, columnStartCount, columnEndCount, false, false)
 
   member frame.FormatStrings(rowStartCount, rowEndCount, columnStartCount, columnEndCount, printTypes) =
 
@@ -1465,14 +1468,22 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   ///  - `printTypes` - When true, the types of vectors storing column data are printed
   ///
   /// [category:Formatting and raw data access]
-  member frame.Format(rowStartCount, rowEndCount, columnStartCount, columnEndCount, printTypes) =
+  member frame.Format(rowStartCount, rowEndCount, columnStartCount, columnEndCount, printTypes, showInfo) =
     try
       let formattedtable =
         frame.FormatStrings(rowStartCount, rowEndCount, columnStartCount, columnEndCount, printTypes)
         |> array2D
         |> Formatting.formatTable
-      let frameInfo = sprintf "%i rows x %i columns" frame.RowCount frame.ColumnCount
-      sprintf "%s%s%s" formattedtable System.Environment.NewLine frameInfo
+      if showInfo then
+        let missingValueCount =
+          frame.Columns
+          |> Series.mapValues (fun os -> os.KeyCount - os.ValueCount)
+          |> Series.values
+          |> Seq.sum
+        let frameInfo = sprintf "%i rows x %i columns%s%i missing values" frame.RowCount frame.ColumnCount System.Environment.NewLine missingValueCount
+        sprintf "%s%s%s" formattedtable System.Environment.NewLine frameInfo
+      else
+        formattedtable
     with e -> sprintf "Formatting failed: %A" e
 
   // ----------------------------------------------------------------------------------------------
@@ -1484,6 +1495,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
 
   interface IFsiFormattable with
     member x.Format() = (x :> Frame<_, _>).Format()
+    member x.FormatWithInfo() = (x :> Frame<_, _>).Format(false,true)
 
   interface IFrameFormattable with
     member x.InteractiveFormat(rowCount,colCount,printTypes) =

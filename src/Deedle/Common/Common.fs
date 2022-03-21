@@ -1346,6 +1346,7 @@ module Seq =
 /// (The `FSharp.DataFrame.fsx` file registers an FSI printer using this interface.)
 type IFsiFormattable =
   abstract Format : unit -> string
+  abstract FormatWithInfo : unit -> string
 
 /// [omit]
 /// An interface implemented by frames that support nice formatting for .NET interactive notebooks
