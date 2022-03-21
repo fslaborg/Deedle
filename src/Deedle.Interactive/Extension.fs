@@ -18,4 +18,10 @@ type FormatterKernelExtension() =
             writer.Write(item |> Deedle.Interactive.Formatters.frameToHtmlTable)),
         "text/html"
       )
+      Formatter.Register<ISeriesFormattable>(
+        Action<_, _>
+          (fun item (writer: IO.TextWriter) ->
+            writer.Write(item |> Deedle.Interactive.Formatters.seriesToHtmlTable)),
+        "text/html"
+      )
       Task.CompletedTask
