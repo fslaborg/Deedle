@@ -22,7 +22,7 @@ open Deedle.Addressing
 let prettyPrintVector (vector:IVector<'T>) =
   let printSequence kind (input:seq<string>) =
     let sb = Text.StringBuilder(kind + " [")
-    for it in input |> Seq.startAndEnd Formatting.StartItemCount Formatting.EndItemCount do
+    for it in input |> Seq.startAndEnd Formatting.RowStartItemCount Formatting.RowEndItemCount do
       match it with
       | Choice1Of3(v) | Choice3Of3(v) ->
           sb.Append(" ").Append(v).Append(";") |> ignore

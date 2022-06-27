@@ -1,5 +1,10 @@
 # Release Notes
 
+## 3.0.0-beta.1 - 2022-06-22
+
+- Add Deedle.Interactive package for formatting in dotnet notebooks
+- Adjust and extend formatting interfaces accordingly.
+
 ## 2.5.0 - 2021-11-10
 
 - Restore Deedle.RPlugin targeting net5.0
