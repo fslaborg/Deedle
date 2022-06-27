@@ -26,6 +26,7 @@
     <Compile Include="Ranges.fs" />
     <Compile Include="VirtualFrame.fs" />
     <Compile Include="VirtualPartitioned.fs" />
+    <Compile Include="Formatting.fs" />
     <None Include="paket.references" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />

@@ -190,7 +190,7 @@ let ``Lookup and ValueAt works on merged tracking sources`` () =
 let ``Formatting accesses only printed values`` () =
   let src = TrackingSource.CreateLongs(0L, 1000000000L)
   let series = Virtual.CreateOrdinalSeries(src)
-  series.Format(3, 3) |> ignore
+  series.Format(3, 3, false) |> ignore
   src.AccessList |> shouldEqual [ 0L; 1L; 2L; 1000000000L-2L; 1000000000L-1L; 1000000000L ]
 
 [<Test>]
@@ -339,7 +339,7 @@ let createTicksFrame() =
 [<Test>]
 let ``Can format virtual frame without evaluating it`` () =
   let s1, s2, frame = createSimpleFrame()
-  frame.Format(2, 2) |> ignore
+  frame.Format(2, 2, 2, 2) |> ignore
   s1.AccessList |> shouldEqual [0L; 1L; 9999999L; 10000000L]
   s2.AccessList |> shouldEqual [0L; 1L; 9999999L; 10000000L]
 
@@ -354,7 +354,7 @@ let ``Accessing row evaluates only the required values`` () =
 [<Test>]
 let ``Accessing series of rows accesses only required values`` () =
   let s1, s2, frame = createSimpleFrame()
-  frame.Rows.Format(2,2) |> ignore
+  frame.Rows.Format(2,2, false) |> ignore
   s1.AccessList |> shouldEqual [0L; 1L; 9999999L; 10000000L]
   s2.AccessList |> shouldEqual [0L; 1L; 9999999L; 10000000L]
 
