@@ -23,6 +23,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "project", "project", "{B6AF
 	ProjectSection(SolutionItems) = preProject
 		build.fsx = build.fsx
 		nuget\Deedle.Excel.nuspec = nuget\Deedle.Excel.nuspec
+		nuget\Deedle.Interactive.nuspec = nuget\Deedle.Interactive.nuspec
 		nuget\Deedle.nuspec = nuget\Deedle.nuspec
 		nuget\Deedle.RPlugin.nuspec = nuget\Deedle.RPlugin.nuspec
 		README.md = README.md

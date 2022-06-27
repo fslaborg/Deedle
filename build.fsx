@@ -32,6 +32,12 @@ let description = """
   available. """
 let tags = "F# fsharp deedle dataframe series statistics data science"
 
+let interactiveProject = "Deedle.Interactive"
+let interactiveSummary = "Deedle Formatting extensions for dotnet interactive"
+let interactiveDescription = """
+  This package provides customizable formatting extensions for frames and series in dotnet interactive."""
+let interactiveTags = "interactive jupyter deedle dataframe"
+
 let rpluginProject = "Deedle.RPlugin"
 let rpluginSummary = "Easy to use .NET library for data manipulation with R project integration"
 let rpluginDescription = """
@@ -81,7 +87,50 @@ Target.create "AssemblyInfo" (fun _ ->
         AssemblyInfo.InformationalVersion release.NugetVersion
         AssemblyInfo.FileVersion release.AssemblyVersion]
 
+  AssemblyInfoFile.createFSharp "src/Deedle.Interactive/AssemblyInfo.fs"
+      [ AssemblyInfo.Title interactiveProject
+        AssemblyInfo.Product interactiveProject
+        AssemblyInfo.Description interactiveSummary
+        AssemblyInfo.Version release.AssemblyVersion
+        AssemblyInfo.InformationalVersion release.NugetVersion
+        AssemblyInfo.FileVersion release.AssemblyVersion]
+
   AssemblyInfoFile.createFSharp "src/Deedle.RProvider.Plugin/AssemblyInfo.fs"
+      [ AssemblyInfo.Title rpluginProject
+        AssemblyInfo.Product rpluginProject
+        AssemblyInfo.Description rpluginSummary
+        AssemblyInfo.Version release.AssemblyVersion
+        AssemblyInfo.InformationalVersion release.NugetVersion
+        AssemblyInfo.FileVersion release.AssemblyVersion]
+
+  AssemblyInfoFile.createFSharp "src/Deedle.Excel/AssemblyInfo.fs"
+      [ AssemblyInfo.Title deedleExcelProject
+        AssemblyInfo.Product deedleExcelProject
+        AssemblyInfo.Description deedleExcelSummary
+        AssemblyInfo.Version release.AssemblyVersion
+        AssemblyInfo.InformationalVersion release.NugetVersion
+        AssemblyInfo.FileVersion release.AssemblyVersion]
+
+  AssemblyInfoFile.createFSharp "src/Deedle.Math/AssemblyInfo.fs"
+      [ AssemblyInfo.Title deedleMathProject
+        AssemblyInfo.Product deedleMathProject
+        AssemblyInfo.Description deedleMathSummary
+        AssemblyInfo.Version release.AssemblyVersion
+        AssemblyInfo.InformationalVersion release.NugetVersion
+        AssemblyInfo.FileVersion release.AssemblyVersion]
+)
+
+// Generate assembly info files with the right version & up-to-date information
+Target.create "AssemblyInfoNoR" (fun _ ->
+  AssemblyInfoFile.createFSharp "src/Deedle/Common/AssemblyInfo.fs"
+      [ AssemblyInfo.Title project
+        AssemblyInfo.Product project
+        AssemblyInfo.Description summary
+        AssemblyInfo.Version release.AssemblyVersion
+        AssemblyInfo.InformationalVersion release.NugetVersion
+        AssemblyInfo.FileVersion release.AssemblyVersion]
+
+  AssemblyInfoFile.createFSharp "src/Deedle.Interactive/AssemblyInfo.fs"
       [ AssemblyInfo.Title rpluginProject
         AssemblyInfo.Product rpluginProject
         AssemblyInfo.Description rpluginSummary
@@ -137,13 +186,26 @@ let testProjs =
 
 let buildProjs =
     [ "src/Deedle/Deedle.fsproj"
+      "src/Deedle.Interactive/Deedle.Interactive.fsproj"
       "src/Deedle.Math/Deedle.Math.fsproj"
       "src/Deedle.Excel/Deedle.Excel.fsproj"
       "src/Deedle.RProvider.Plugin/Deedle.RProvider.Plugin.fsproj" ]
 
+let buildProjsNoR =
+    [ "src/Deedle/Deedle.fsproj"
+      "src/Deedle.Interactive/Deedle.Interactive.fsproj"
+      "src/Deedle.Math/Deedle.Math.fsproj"
+      "src/Deedle.Excel/Deedle.Excel.fsproj" ]
+
 Target.create "Build" ( fun _ ->
   Environment.setEnvironVar "GenerateDocumentationFile" "true"
   for proj in buildProjs do
+    DotNet.build (fun opts -> { opts with Common = { opts.Common with
+                                                                      CustomParams = Some "/v:n /p:SourceLinkCreate=true" }
+                                          Configuration = DotNet.BuildConfiguration.Release }) proj )
+Target.create "BuildNoR" ( fun _ ->
+  Environment.setEnvironVar "GenerateDocumentationFile" "true"
+  for proj in buildProjsNoR do
     DotNet.build (fun opts -> { opts with Common = { opts.Common with
                                                                       CustomParams = Some "/v:n /p:SourceLinkCreate=true" }
                                           Configuration = DotNet.BuildConfiguration.Release }) proj )
@@ -154,8 +216,16 @@ Target.create "Build" ( fun _ ->
 Target.create "BuildTests" (fun _ ->
   for proj in testProjs do
     DotNet.build (fun opts -> { opts with Configuration = DotNet.BuildConfiguration.Release }) proj )
+    
+Target.create "BuildTestsNoR" (fun _ ->
+  for proj in testProjs do
+    DotNet.build (fun opts -> { opts with Configuration = DotNet.BuildConfiguration.Release }) proj )
 
 Target.create "RunTests" (fun _ ->
+  for proj in testProjs do
+    DotNet.test (fun opts -> { opts with Configuration = DotNet.BuildConfiguration.Release }) proj )
+    
+Target.create "RunTestsNoR" (fun _ ->
   for proj in testProjs do
     DotNet.test (fun opts -> { opts with Configuration = DotNet.BuildConfiguration.Release }) proj )
 
@@ -165,6 +235,7 @@ Target.create "RunTests" (fun _ ->
 Target.create "NuGet" (fun _ ->
     // Format the description to fit on a single line (remove \r\n and double-spaces)
     let description = description.Replace("\r", "").Replace("\n", "").Replace("  ", " ")
+    let interactiveDescription = interactiveDescription.Replace("\r", "").Replace("\n", "").Replace("  ", " ")
     let rpluginDescription = rpluginDescription.Replace("\r", "").Replace("\n", "").Replace("  ", " ")
     let releaseNotes = release.Notes |> String.concat "\n"
     let nugetExe = "packages" </> "build" </> "NuGet.CommandLine" </> "tools" </> "NuGet.exe"
@@ -184,6 +255,24 @@ Target.create "NuGet" (fun _ ->
             AccessKey = Environment.environVarOrDefault "nugetkey" ""
             Publish = Environment.hasEnvironVar "nugetkey" })
         ("nuget/Deedle.nuspec")
+    NuGet.NuGetPack (fun p ->
+        { p with
+            ToolPath = nugetExe
+            Authors = authors
+            Project = interactiveProject
+            Summary = interactiveSummary
+            Description = description + "\n\n" + interactiveDescription
+            Version = release.NugetVersion
+            ReleaseNotes = releaseNotes
+            Tags = interactiveTags
+            OutputPath = "bin"
+            Dependencies =
+              [ "Deedle", release.NugetVersion
+                "Microsoft.DotNet.Interactive", NuGet.GetPackageVersion "packages/interactive" "Microsoft.DotNet.Interactive"
+                "Microsoft.DotNet.Interactive.Formatting", NuGet.GetPackageVersion "packages/interactive" "Microsoft.DotNet.Interactive.Formatting" ]
+            AccessKey = Environment.environVarOrDefault "nugetkey" ""
+            Publish = Environment.hasEnvironVar "nugetkey" })
+        ("nuget/Deedle.Interactive.nuspec")
     NuGet.NuGetPack (fun p ->
         { p with
             ToolPath = nugetExe
@@ -237,6 +326,84 @@ Target.create "NuGet" (fun _ ->
             Publish = Environment.hasEnvironVar "nugetkey" })
         ("nuget/Deedle.Excel.nuspec")
 )
+
+Target.create "NuGetNoR" (fun _ ->
+    // Format the description to fit on a single line (remove \r\n and double-spaces)
+    let description = description.Replace("\r", "").Replace("\n", "").Replace("  ", " ")
+    let interactiveDescription = interactiveDescription.Replace("\r", "").Replace("\n", "").Replace("  ", " ")
+    let releaseNotes = release.Notes |> String.concat "\n"
+    let nugetExe = "packages" </> "build" </> "NuGet.CommandLine" </> "tools" </> "NuGet.exe"
+
+    NuGet.NuGetPack (fun p ->
+        { p with
+            ToolPath = nugetExe
+            Authors = authors
+            Project = project
+            Summary = summary
+            Description = description
+            Version = release.NugetVersion
+            ReleaseNotes = releaseNotes
+            Tags = tags
+            OutputPath = "bin"
+            Dependencies = [ "FSharp.Core", NuGet.GetPackageVersion "packages" "FSharp.Core" ]
+            AccessKey = Environment.environVarOrDefault "nugetkey" ""
+            Publish = Environment.hasEnvironVar "nugetkey" })
+        ("nuget/Deedle.nuspec")
+    NuGet.NuGetPack (fun p ->
+        { p with
+            ToolPath = nugetExe
+            Authors = authors
+            Project = interactiveProject
+            Summary = interactiveSummary
+            Description = description + "\n\n" + interactiveDescription
+            Version = release.NugetVersion
+            ReleaseNotes = releaseNotes
+            Tags = interactiveTags
+            OutputPath = "bin"
+            Dependencies =
+              [ "Deedle", release.NugetVersion
+                "Microsoft.DotNet.Interactive", NuGet.GetPackageVersion "packages/interactive" "Microsoft.DotNet.Interactive"
+                "Microsoft.DotNet.Interactive.Formatting", NuGet.GetPackageVersion "packages/interactive" "Microsoft.DotNet.Interactive.Formatting" ]
+            AccessKey = Environment.environVarOrDefault "nugetkey" ""
+            Publish = Environment.hasEnvironVar "nugetkey" })
+        ("nuget/Deedle.Interactive.nuspec")
+    NuGet.NuGetPack (fun p ->
+        { p with
+            ToolPath = nugetExe
+            Authors = authors
+            Project = deedleMathProject
+            Summary = deedleMathSummary
+            Description = description + "\n\n" + deedleMathDescription
+            Version = release.NugetVersion
+            ReleaseNotes = releaseNotes
+            Tags = tags + " " + deedleMathTags
+            OutputPath = "bin"
+            Dependencies =
+              [ "Deedle", release.NugetVersion
+                "MathNet.Numerics", NuGet.GetPackageVersion "packages" "MathNet.Numerics"
+                "MathNet.Numerics.FSharp", NuGet.GetPackageVersion "packages" "MathNet.Numerics.FSharp" ]
+            AccessKey = Environment.environVarOrDefault "nugetkey" ""
+            Publish = Environment.hasEnvironVar "nugetkey" })
+        ("nuget/Deedle.Math.nuspec")
+    NuGet.NuGetPack (fun p ->
+        { p with
+            Authors = authors
+            Project = deedleExcelProject
+            Summary = deedleExcelSummary
+            Description = description + "\n\n" + deedleExcelDescription
+            Version = release.NugetVersion
+            ReleaseNotes = releaseNotes
+            Tags = tags + " " + deedleExcelTags
+            OutputPath = "bin"
+            Dependencies =
+              [ "Deedle", release.NugetVersion
+                "NetOfficeFw.Core", NuGet.GetPackageVersion "packages" "NetOfficeFw.Core"
+                "NetOfficeFw.Excel", NuGet.GetPackageVersion "packages" "NetOfficeFw.Excel" ]
+            AccessKey = Environment.environVarOrDefault "nugetkey" ""
+            Publish = Environment.hasEnvironVar "nugetkey" })
+        ("nuget/Deedle.Excel.nuspec")
+)
+
 
 // --------------------------------------------------------------------------------------
 // Generate the documentation
@@ -294,10 +461,14 @@ Target.create "TagRelease" (fun _ ->
 
 Target.create "Release" ignore
 
+Target.create "ReleaseNoR" ignore
+
 // --------------------------------------------------------------------------------------
 // Run all targets by default. Invoke 'build <Target>' to override
 
 Target.create "All" ignore
+
+Target.create "AllNoR" ignore
 
 "Clean"
   ==> "AssemblyInfo"
@@ -306,7 +477,15 @@ Target.create "All" ignore
   ==> "RunTests"
   ==> "All"
 
+"Clean"
+  ==> "AssemblyInfoNoR"
+  ==> "BuildNoR"
+  ==> "BuildTestsNoR"
+  ==> "RunTestsNoR"
+  ==> "AllNoR"
+
 "All" ==> "NuGet" ==> "Release"
+
 "All"
   ==> "CleanDocs"
   ==> "GenerateDocs"
@@ -314,5 +493,6 @@ Target.create "All" ignore
   ==> "ReleaseBinaries"
   ==> "TagRelease"
   ==> "Release"
+
 
 Target.runOrDefault "All"

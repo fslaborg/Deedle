@@ -19,6 +19,13 @@ nuget NetOfficeFw.Core
 nuget NetOfficeFw.Excel
 nuget FSharp.Formatting
 
+group interactive
+    source https://api.nuget.org/v3/index.json
+    framework: netstandard2.1
+    nuget FSharp.Core 4.6.2
+    nuget Microsoft.DotNet.Interactive 1.0.0-beta.22314.1
+    nuget Microsoft.DotNet.Interactive.Formatting 1.0.0-beta.22314.1
+
 group RProviderPlugin
     source https://api.nuget.org/v3/index.json
     framework: net5.0
