@@ -140,7 +140,7 @@ type Stats =
   static member covMatrix (df:Frame<'R, 'C>) =
     // Treat nan as zero, the same as MATLAB
     let corr = Stats.corrMatrix(df) |> Matrix.map(fun x -> if Double.IsNaN x then 0. else x)
-    let stdev = df |> Stats.stdDev |> Series.values |> Array.ofSeq
+    let stdev = df |> Stats.stdDev |> Series.valuesAll |> Seq.map (Option.defaultValue nan) |> Array.ofSeq
     let stdevDiag = DenseMatrix.ofDiagArray stdev
     stdevDiag * corr * stdevDiag
 
