@@ -66,3 +66,22 @@ let ``cov2Corr and corr2Cov work`` () =
   let actual = Stats.corr2Cov(std, corr).GetColumnAt<float>(0).GetAt(0)
   let expected = cov.GetColumnAt<float>(0).GetAt(0)
   actual |> should beWithin (expected +/- 1e-6)
+
+[<Test>]
+let ``cov propogates missing values when stddev produces missing values`` () =
+  let returns =
+    Frame.ofColumns [ "A"
+                      => series [ DateTime(2022, 11, 1) => 0.
+                                  DateTime(2022, 11, 2) => 0. ]
+                      "B" => series [ DateTime(2022, 11, 1) => 0. ] ]
+
+  let cov = returns |> Stats.cov
+
+  let expected =
+    Frame.ofRowKeys [ "A"; "B" ]
+    |> Frame.addCol "A" (series [ "A" => 0. ])
+    |> Frame.addCol "B" (series [])
+
+  cov
+  |> Frame.toMatrix
+  |> shouldEqual (expected |> Frame.toMatrix)
