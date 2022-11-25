@@ -1057,6 +1057,11 @@ and
   static member (/) (s1, s2) = Series<'K, _>.VectorOperation<decimal>(s1, s2, (/))
 
   /// [category:Operators]
+  static member (+) (s1, s2) = Series<'K, _>.VectorOperation<TimeSpan>(s1, s2, (+))
+  /// [category:Operators]
+  static member (-) (s1, s2) = Series<'K, _>.VectorOperation<TimeSpan>(s1, s2, (-))
+
+  /// [category:Operators]
   static member (+) (s1, s2) = Series<'K, _>.VectorOperation<string>(s1, s2, (+))
   /// [category:Operators]
   static member (+) (series, scalar) = Series<'K, _>.ScalarOperationL<string>(series, scalar, (+))
