@@ -2,18 +2,18 @@
 namespace System
 open System.Reflection
 
-[<assembly: AssemblyTitleAttribute("Deedle.RPlugin")>]
-[<assembly: AssemblyProductAttribute("Deedle.RPlugin")>]
-[<assembly: AssemblyDescriptionAttribute("Easy to use .NET library for data manipulation with R project integration")>]
+[<assembly: AssemblyTitleAttribute("Deedle.Interactive")>]
+[<assembly: AssemblyProductAttribute("Deedle.Interactive")>]
+[<assembly: AssemblyDescriptionAttribute("Deedle Formatting extensions for dotnet interactive")>]
 [<assembly: AssemblyVersionAttribute("3.0.0")>]
-[<assembly: AssemblyInformationalVersionAttribute("3.0.0-beta.1")>]
+[<assembly: AssemblyInformationalVersionAttribute("3.0.0")>]
 [<assembly: AssemblyFileVersionAttribute("3.0.0")>]
 do ()
 
 module internal AssemblyVersionInformation =
-    let [<Literal>] AssemblyTitle = "Deedle.RPlugin"
-    let [<Literal>] AssemblyProduct = "Deedle.RPlugin"
-    let [<Literal>] AssemblyDescription = "Easy to use .NET library for data manipulation with R project integration"
+    let [<Literal>] AssemblyTitle = "Deedle.Interactive"
+    let [<Literal>] AssemblyProduct = "Deedle.Interactive"
+    let [<Literal>] AssemblyDescription = "Deedle Formatting extensions for dotnet interactive"
     let [<Literal>] AssemblyVersion = "3.0.0"
-    let [<Literal>] AssemblyInformationalVersion = "3.0.0-beta.1"
+    let [<Literal>] AssemblyInformationalVersion = "3.0.0"
     let [<Literal>] AssemblyFileVersion = "3.0.0"

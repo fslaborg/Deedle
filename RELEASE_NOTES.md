@@ -1,5 +1,9 @@
 # Release Notes
 
+## 3.0.0 - 2023-01-17
+
+- Fix missing value in Stats.cov[552](https://github.com/fslaborg/Deedle/pull/552)
+
 ## 3.0.0-beta.1 - 2022-06-22
 
 - Add Deedle.Interactive package for formatting in dotnet notebooks
