@@ -930,6 +930,10 @@ and
     series.Select(fun (KeyValue(k, v)) -> op v)
   static member inline internal UnaryOperation<'T>(series:Series<'K, 'T>, op : 'T -> 'T) =
     series.Select(fun (KeyValue(k, v)) -> op v)
+  static member inline internal ScalarGenericOperationL<'T1, 'T2, 'T3>(series:Series<'K, 'T1>, scalar, op: 'T1 -> 'T2 -> 'T3) =
+    series.Select(fun (KeyValue(k, v)) -> op v scalar)
+  static member inline internal ScalarGenericOperationR<'T1, 'T2, 'T3>(scalar, series:Series<'K, 'T1>, op: 'T1 -> 'T2 -> 'T3) =
+    series.Select(fun (KeyValue(k, v)) -> op v scalar)
   static member inline internal ScalarOperationL<'T>(series:Series<'K, 'T>, scalar, op : 'T -> 'T -> 'T) =
     series.Select(fun (KeyValue(k, v)) -> op v scalar)
   static member inline internal ScalarOperationR<'T>(scalar, series:Series<'K, 'T>, op : 'T -> 'T -> 'T) =
@@ -1006,6 +1010,26 @@ and
   static member (/) (series, scalar) = Series<'K, _>.ScalarOperationL<decimal>(series, scalar, (/))
 
   /// [category:Operators]
+  static member (+) (scalar, series) = Series<'K, _>.ScalarOperationR<TimeSpan>(scalar, series, (+))
+  /// [category:Operators]
+  static member (+) (series, scalar) = Series<'K, _>.ScalarOperationL<TimeSpan>(series, scalar, (+))
+  /// [category:Operators]
+  static member (-) (scalar, series) = Series<'K, _>.ScalarOperationR<TimeSpan>(scalar, series, (-))
+  /// [category:Operators]
+  static member (-) (series, scalar) = Series<'K, _>.ScalarOperationL<TimeSpan>(series, scalar, (-))
+
+  /// [category:Operators]
+  static member (-) (scalar, series) = Series<'K, _>.ScalarGenericOperationR<DateTime, DateTime, TimeSpan>(scalar, series, (-))
+  /// [category:Operators]
+  static member (-) (series, scalar) = Series<'K, _>.ScalarGenericOperationL<DateTime, DateTime, TimeSpan>(series, scalar, (-))
+  /// [category:Operators]
+  static member (-) (series, scalar) = Series<'K, _>.ScalarGenericOperationL<DateTime, TimeSpan, DateTime>(series, scalar, (-))
+  /// [category:Operators]
+  static member (+) (scalar, series) = Series<'K, _>.ScalarGenericOperationR<DateTime, TimeSpan, DateTime>(scalar, series, (+))
+  /// [category:Operators]
+  static member (+) (series, scalar) = Series<'K, _>.ScalarGenericOperationL<DateTime, TimeSpan, DateTime>(series, scalar, (+))
+
+  /// [category:Operators]
   static member (+) (s1, s2) = Series<'K, _>.VectorOperation<int>(s1, s2, (+))
   /// [category:Operators]
   static member (-) (s1, s2) = Series<'K, _>.VectorOperation<int>(s1, s2, (-))
@@ -1033,6 +1057,11 @@ and
   static member (*) (s1, s2) = Series<'K, _>.VectorOperation<decimal>(s1, s2, (*))
   /// [category:Operators]
   static member (/) (s1, s2) = Series<'K, _>.VectorOperation<decimal>(s1, s2, (/))
+
+  /// [category:Operators]
+  static member (+) (s1, s2) = Series<'K, _>.VectorOperation<TimeSpan>(s1, s2, (+))
+  /// [category:Operators]
+  static member (-) (s1, s2) = Series<'K, _>.VectorOperation<TimeSpan>(s1, s2, (-))
 
   /// [category:Operators]
   static member (+) (s1, s2) = Series<'K, _>.VectorOperation<string>(s1, s2, (+))
