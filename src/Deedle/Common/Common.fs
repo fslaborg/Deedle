@@ -860,11 +860,12 @@ module Seq =
   ///    size) are returned at the beginning.
   ///  * `Boundary.AtEnding` - incomplete windows are returned at the end.
   ///
-  /// The result is a sequence of `DataSegnebt<T>` values, which makes it
+  /// The result is a sequence of `DataSegment<T>` values, which makes it
   /// easy to distinguish between complete and incomplete windows.
   let windowedWithBounds size boundary (input:seq<'T>) = seq {
     let windows = Array.create size []
     let currentWindow = ref 0
+    let inputLength = ref 0
     for v in input do
       for i in 0 .. windows.Length - 1 do windows.[i] <- v::windows.[i]
       let win = windows.[currentWindow.Value] |> Array.ofList |> Array.rev
@@ -875,10 +876,12 @@ module Seq =
       else yield DataSegment(Complete, win)
       windows.[currentWindow.Value] <- []
       currentWindow := (!currentWindow + 1) % size
+      inputLength := !inputLength + 1
     // If we are supposed to generate boundary at the end, do it now
     if boundary = Boundary.AtEnding then
-      for _ in 1 .. size - 1 do
-        yield DataSegment(Incomplete, windows.[currentWindow.Value] |> Array.ofList |> Array.rev)
+      for i in 1 .. min (size - 1) (windows.Length - 1) do
+        if i >= size - inputLength.Value then
+          yield DataSegment(Incomplete, windows.[currentWindow.Value] |> Array.ofList |> Array.rev)
         currentWindow := (!currentWindow + 1) % size }
 
 
@@ -934,22 +937,24 @@ module Seq =
   /// The windows are specified by *inclusive* indices, so, e.g. the first window is returned
   /// as a pair (0, 0).
   let windowRangesWithBounds size boundary length = seq {
+    let maxIndex = length - 1L
+    let maxIncompleteIndex = min (size - 2L) maxIndex
     // If we want incomplete windows at the beginning,
     // generate "size - 1" windows always starting from 0
     if boundary = Boundary.AtBeginning then
-      for i in 1L .. size - 1L do yield DataSegmentKind.Incomplete, 0L, i - 1L
+      for i in 0L .. maxIncompleteIndex do yield DataSegmentKind.Incomplete, 0L, i
     // Generate all windows in the middle. There is always length - size + 1 of those
     for i in 0L .. length - size do yield DataSegmentKind.Complete, i, i + size - 1L
     // If we want incomplete windows at the ending
     // gneerate "size - 1" windows, always ending with length-1
     if boundary = Boundary.AtEnding then
-      for i in 1L .. size - 1L do yield DataSegmentKind.Incomplete, length - size + i, length - 1L }
+      for i in maxIncompleteIndex .. -1L .. 0L do yield DataSegmentKind.Incomplete, maxIndex - i, maxIndex }
 
 
   /// Generates addresses of windows in a collection of size 'length'. For example, consider
   /// a collection with 7 elements (and indices 0 .. 6) and the requirement to create windows
   /// of length 3:
-  ///
+  //
   ///    0 1 2 3 4 5 6
   ///
   /// When the `AtEnding` flag is set for `boundary`:
