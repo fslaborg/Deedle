@@ -196,10 +196,29 @@ let ``Seq.windowedWithBounds can generate boundary at the beginning`` () =
        DataSegment(Complete, [| 1; 2; 3 |]); DataSegment(Complete, [| 2; 3; 4 |]) |]
 
 [<Test>]
+let ``Seq.windowedWithBounds can generate boundary at the beginning when input length equals size`` () =
+  Seq.windowedWithBounds 3 Boundary.AtBeginning [ 1; 2; 3 ] |> Array.ofSeq
+  |> shouldEqual
+    [| DataSegment(Incomplete, [| 1 |]); DataSegment(Incomplete, [| 1; 2 |])
+       DataSegment(Complete, [| 1; 2; 3 |]) |]
+
+[<Test>]
+let ``Seq.windowedWithBounds can generate boundary at the beginning when input length is less than size`` () =
+  Seq.windowedWithBounds 10 Boundary.AtBeginning [ 1; 2; ] |> Array.ofSeq
+  |> shouldEqual
+    [| DataSegment(Incomplete, [| 1 |]); DataSegment(Incomplete, [| 1; 2 |]) |]
+
+[<Test>]
 let ``Seq.windowedWithBounds can skip boundaries`` () =
   Seq.windowedWithBounds 3 Boundary.Skip [ 1; 2; 3; 4 ] |> Array.ofSeq
   |> shouldEqual
     [| DataSegment(Complete, [| 1; 2; 3 |]); DataSegment(Complete, [| 2; 3; 4 |]) |]
+
+[<Test>]
+let ``Seq.windowedWithBounds is empty when input length is less than size`` () =
+  Seq.windowedWithBounds 10 Boundary.Skip [ 1; 2; 3; 4 ] |> Array.ofSeq
+  |> shouldEqual
+    [| |]
 
 [<Test>]
 let ``Seq.windowedWithBounds can generate boundary at the ending`` () =
@@ -207,6 +226,19 @@ let ``Seq.windowedWithBounds can generate boundary at the ending`` () =
   |> shouldEqual
     [| DataSegment(Complete, [| 1; 2; 3 |]); DataSegment(Complete, [| 2; 3; 4 |])
        DataSegment(Incomplete, [| 3; 4 |]); DataSegment(Incomplete, [| 4 |]) |]
+
+[<Test>]
+let ``Seq.windowedWithBounds can generate boundary at the ending when input length equals size`` () =
+  Seq.windowedWithBounds 3 Boundary.AtEnding [ 1; 2; 3 ] |> Array.ofSeq
+  |> shouldEqual
+    [| DataSegment(Complete, [| 1; 2; 3 |])
+       DataSegment(Incomplete, [| 2; 3 |]); DataSegment(Incomplete, [| 3 |]) |]
+
+[<Test>]
+let ``Seq.windowedWithBounds can generate boundary at the ending when input length is less than size`` () =
+  Seq.windowedWithBounds 10 Boundary.AtEnding [ 1; 2 ] |> Array.ofSeq
+  |> shouldEqual
+    [| DataSegment(Incomplete, [| 1; 2 |]); DataSegment(Incomplete, [| 2 |]) |]
 
 [<Test>]
 let ``Seq.chunkedWithBounds works when length is multiple of chunk size`` () =
@@ -249,6 +281,58 @@ let ``Seq.chunkedWithBounds can skip incomplete chunk at the end`` () =
   |> shouldEqual
     [| DataSegment(Complete, [|1; 2; 3|]); DataSegment(Complete, [|4; 5; 6|]);
        DataSegment(Complete, [|7; 8; 9|]) |]
+
+[<Test>]
+let ``Seq.windowRangesWithBounds can generate boundary at the beginning`` () =
+  Seq.windowRangesWithBounds 3L Boundary.AtBeginning 4L |> Array.ofSeq
+  |> shouldEqual
+    [| DataSegmentKind.Incomplete, 0L, 0L; DataSegmentKind.Incomplete, 0L, 1L
+       DataSegmentKind.Complete, 0L, 2L; DataSegmentKind.Complete, 1L, 3L |]
+
+[<Test>]
+let ``Seq.windowRangesWithBounds can generate boundary at the beginning when input length equals size`` () =
+  Seq.windowRangesWithBounds 3L Boundary.AtBeginning 3L |> Array.ofSeq
+  |> shouldEqual
+    [| DataSegmentKind.Incomplete, 0L, 0L; DataSegmentKind.Incomplete, 0L, 1L
+       DataSegmentKind.Complete, 0L, 2L |]
+
+[<Test>]
+let ``Seq.windowRangesWithBounds can generate boundary at the beginning when input length is less than size`` () =
+  Seq.windowRangesWithBounds 10L Boundary.AtBeginning 2L |> Array.ofSeq
+  |> shouldEqual
+    [| DataSegmentKind.Incomplete, 0L, 0L; DataSegmentKind.Incomplete, 0L, 1L |]
+
+[<Test>]
+let ``Seq.windowRangesWithBounds can skip boundaries`` () =
+  Seq.windowRangesWithBounds 3L Boundary.Skip 4L |> Array.ofSeq
+  |> shouldEqual
+    [| DataSegmentKind.Complete, 0L, 2L; DataSegmentKind.Complete, 1L, 3L |]
+
+[<Test>]
+let ``Seq.windowRangesWithBounds is empty when input length is less than size`` () =
+  Seq.windowRangesWithBounds 10L Boundary.Skip 4L |> Array.ofSeq
+  |> shouldEqual
+    [| |]
+
+[<Test>]
+let ``Seq.windowRangesWithBounds can generate boundary at the ending`` () =
+  Seq.windowRangesWithBounds 3L Boundary.AtEnding 4L |> Array.ofSeq
+  |> shouldEqual
+    [| DataSegmentKind.Complete, 0L, 2L; DataSegmentKind.Complete, 1L, 3L
+       DataSegmentKind.Incomplete, 2L, 3L; DataSegmentKind.Incomplete, 3L, 3L |]
+
+[<Test>]
+let ``Seq.windowRangesWithBounds can generate boundary at the ending when input length equals size`` () =
+  Seq.windowRangesWithBounds 3L Boundary.AtEnding 3L |> Array.ofSeq
+  |> shouldEqual
+    [| DataSegmentKind.Complete, 0L, 2L
+       DataSegmentKind.Incomplete, 1L, 2L; DataSegmentKind.Incomplete, 2L, 2L |]
+
+[<Test>]
+let ``Seq.windowRangesWithBounds can generate boundary at the ending when input length is less than size`` () =
+  Seq.windowRangesWithBounds 10L Boundary.AtEnding 2L |> Array.ofSeq
+  |> shouldEqual
+    [| DataSegmentKind.Incomplete, 0L, 1L; DataSegmentKind.Incomplete, 1L, 1L |]
 
 [<Test>]
 let ``Seq.alignOrdered (union) satisfies basic conditions`` () =
