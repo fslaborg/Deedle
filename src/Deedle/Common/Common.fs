@@ -935,15 +935,19 @@ module Seq =
   /// as a pair (0, 0).
   let windowRangesWithBounds size boundary length = seq {
     // If we want incomplete windows at the beginning,
-    // generate "size - 1" windows always starting from 0
+    // generate up to "size - 1" windows always starting from 0, but cap at
+    // 'length' to avoid generating out-of-bounds indices when the series is
+    // shorter than the window size.
     if boundary = Boundary.AtBeginning then
-      for i in 1L .. size - 1L do yield DataSegmentKind.Incomplete, 0L, i - 1L
+      for i in 1L .. min (size - 1L) length do yield DataSegmentKind.Incomplete, 0L, i - 1L
     // Generate all windows in the middle. There is always length - size + 1 of those
     for i in 0L .. length - size do yield DataSegmentKind.Complete, i, i + size - 1L
     // If we want incomplete windows at the ending
-    // gneerate "size - 1" windows, always ending with length-1
+    // generate up to "size - 1" windows always ending with length-1, but skip
+    // windows whose start index would be negative when the series is shorter
+    // than the window size.
     if boundary = Boundary.AtEnding then
-      for i in 1L .. size - 1L do yield DataSegmentKind.Incomplete, length - size + i, length - 1L }
+      for i in max 1L (size - length) .. size - 1L do yield DataSegmentKind.Incomplete, length - size + i, length - 1L }
 
 
   /// Generates addresses of windows in a collection of size 'length'. For example, consider

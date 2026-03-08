@@ -176,6 +176,34 @@ let ``Series.windowSizeInto with AtEnding boundary works correctly on sample inp
   actual |> shouldEqual expected
 
 [<Test>]
+let ``Series.windowSize with AtBeginning does not throw when size exceeds series length`` () =
+  // Regression test for https://github.com/fslaborg/Deedle/issues/559
+  let empty : Series<int, int> = Series.ofValues []
+  let result1 = empty |> Series.windowSizeInto (1, Boundary.AtBeginning) (fun s -> s.Data.KeyCount)
+  result1 |> shouldEqual (series [])
+  let result2 = empty |> Series.windowSizeInto (2, Boundary.AtBeginning) (fun s -> s.Data.KeyCount)
+  result2 |> shouldEqual (series [])
+  // Series shorter than window size - 1
+  let short = series [0 => 10]
+  let result3 = short |> Series.windowSizeInto (3, Boundary.AtBeginning) (fun s -> s.Data.KeyCount)
+  let expected3 = series [0 => 1]
+  result3 |> shouldEqual expected3
+
+[<Test>]
+let ``Series.windowSize with AtEnding does not throw when size exceeds series length`` () =
+  // Regression test for https://github.com/fslaborg/Deedle/issues/559
+  let empty : Series<int, int> = Series.ofValues []
+  let result1 = empty |> Series.windowSizeInto (1, Boundary.AtEnding) (fun s -> s.Data.KeyCount)
+  result1 |> shouldEqual (series [])
+  let result2 = empty |> Series.windowSizeInto (2, Boundary.AtEnding) (fun s -> s.Data.KeyCount)
+  result2 |> shouldEqual (series [])
+  // Series shorter than window size - 1
+  let short = series [0 => 10]
+  let result3 = short |> Series.windowSizeInto (3, Boundary.AtEnding) (fun s -> s.Data.KeyCount)
+  let expected3 = series [0 => 1]
+  result3 |> shouldEqual expected3
+
+[<Test>]
 let ``Series.chunkInto works correctly on sample input`` () =
   let actual = letters 10 |> Series.chunkInto 4 (fun s -> new String(Array.ofSeq s.Values))
   let expected = series [0 => "ABCD"; 4 => "EFGH" ]
