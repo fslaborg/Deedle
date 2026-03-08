@@ -316,6 +316,31 @@ let ``Cannot access typed rows when column is not available`` () =
   let error = try ignore(df.GetRowsAs<IMsftRow>()); "" with e -> e.Message
   error |> should contain "High"
 
+type ISimpleRow =
+  abstract A : float
+  abstract B : float
+
+[<Test>]
+let ``Can mapValues on a GetRowsAs series (issue #545)`` () =
+  // Series.mapValues called Select on the mapFrameRowVector, which used to throw
+  let df = frame [ "A" => Series.ofValues [1.0; 2.0]; "B" => Series.ofValues [3.0; 4.0] ]
+  let rows = df.GetRowsAs<ISimpleRow>()
+  // mapValues id should succeed and return identical rows
+  let mapped = rows |> Series.mapValues id
+  mapped.[0].A |> shouldEqual 1.0
+  mapped.[1].A |> shouldEqual 2.0
+  mapped.[0].B |> shouldEqual 3.0
+  mapped.[1].B |> shouldEqual 4.0
+
+[<Test>]
+let ``Can transform a GetRowsAs series to a different type (issue #545)`` () =
+  let df = frame [ "A" => Series.ofValues [1.0; 2.0]; "B" => Series.ofValues [3.0; 4.0] ]
+  let rows = df.GetRowsAs<ISimpleRow>()
+  // Map rows to a derived value to exercise Select with a non-identity function
+  let values = rows |> Series.mapValues (fun r -> r.A + r.B)
+  values.[0] |> shouldEqual 4.0
+  values.[1] |> shouldEqual 6.0
+
 // ------------------------------------------------------------------------------------------------
 // Constructing frames and getting frame data
 // ------------------------------------------------------------------------------------------------
