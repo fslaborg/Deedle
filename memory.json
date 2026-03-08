@@ -1,1 +1,22 @@
-{"last_run":"2026-03-08T22:25Z","run_id":"22831245635","cursor":580,"comments":{"569":true,"559":true,"562":true,"551":true,"516":true,"545":true,"544":true},"prs":{"559":573,"569":579,"562":580,"544":581},"monthly":{"issue":574,"month":"2026-03"},"notes":"#578 dup of #579. #577 can close. #576 closed by dsyme. Fix #545 Select on mapFrameRowVector. Fix #516 deeper work needed."}
+{
+  "last_run": "2026-03-08T22:23Z",
+  "run_id": "22831221542",
+  "backlog_cursor": {"issues": 545},
+  "comments_made": {
+    "569": "2026-03-08",
+    "559": "2026-03-08",
+    "562": "2026-03-08",
+    "551": "2026-03-08",
+    "516": "2026-03-08",
+    "545": "2026-03-08",
+    "544": "2026-03-08"
+  },
+  "fix_attempts": {
+    "559": {"pr": 573, "status": "open"},
+    "569": {"pr": 578, "status": "open"},
+    "562": {"pr": 580, "status": "open"},
+    "544": {"status": "open", "branch": "repo-assist/fix-issue-544-optionalvalue-culture-csv"}
+  },
+  "monthly": {"issue": 574, "month": "2026-03"},
+  "notes": "Duplicate monthly issues: #575, #576 (576 was closed by dsyme). Monthly summary now in #574. PRs #578 and #579 both fix #569 - maintainer should close one. Fix #516 type-loss needs deeper work. Implement Select on mapFrameRowVector for #545."
+}
