@@ -544,7 +544,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
       failwith "The GetRows operation can only be used when column key is a string."
 
     let keys = columnIndex.Keys |> Seq.map unbox<string> |> List.ofSeq
-    let rowBuilder = VectorHelpers.createTypedRowReader<'TRow> keys (fun column ->
+    let rowBuilder = VectorHelpers.createTypedRowReader<'TRow> vectorBuilder keys (fun column ->
       let address = columnIndex.Locate(unbox<'TColumnKey> column)
       if address = Address.invalid then
         failwithf "The interface member '%s' does not exist in the column index." column

@@ -316,6 +316,23 @@ let ``Cannot access typed rows when column is not available`` () =
   let error = try ignore(df.GetRowsAs<IMsftRow>()); "" with e -> e.Message
   error |> should contain "High"
 
+type IMyRecord =
+  abstract member MyString : string
+  abstract member MyInt : int
+
+[<Test>]
+let ``Can map values over GetRowsAs series (issue 545)`` () =
+  let df =
+    Frame.ofRecords [
+      {| MyString = "One"; MyInt = 1 |}
+      {| MyString = "Two"; MyInt = 2 |}
+    ]
+  let mapped =
+    df.GetRowsAs<IMyRecord>()
+    |> Series.mapValues (fun r -> r.MyString + string r.MyInt)
+  mapped.[0] |> shouldEqual "One1"
+  mapped.[1] |> shouldEqual "Two2"
+
 // ------------------------------------------------------------------------------------------------
 // Constructing frames and getting frame data
 // ------------------------------------------------------------------------------------------------

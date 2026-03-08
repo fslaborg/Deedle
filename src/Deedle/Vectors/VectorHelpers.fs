@@ -511,6 +511,7 @@ open System.Reflection.Emit
 /// (the `ctor` function takes data and address of the row to be wrapped)
 let mapFrameRowVector
     (ctor:System.Func<IVector[], Addressing.Address, 'TRow>)
+    (builder:IVectorBuilder)
     length (addressAt:int64 -> Address)
     (data:IVector[])  =
   { new IVector<'TRow> with
@@ -519,8 +520,22 @@ let mapFrameRowVector
       member x.Data =
         seq { for i in Seq.range 0L (length-1L) -> (x :> IVector<_>).GetValue(addressAt i) }
         |> VectorData.Sequence
-      member x.Select(g) =  failwith "mapFrameRowVector: Select not supported"
-      member x.Convert(h, g) = failwith "mapFrameRowVector: Convert not supported"
+      member x.Select(g) =
+        let isNA = MissingValues.isNA<'TNewValue>()
+        let flattenNA (value:OptionalValue<_>) =
+          if value.HasValue && isNA value.Value then OptionalValue.Missing else value
+        let arr =
+          [| for i in 0L .. length - 1L ->
+               let addr = addressAt i
+               let v = x.GetValue(addr)
+               g (KnownLocation(addr, i)) v |> flattenNA |]
+        builder.CreateMissing(arr)
+      member x.Convert(h, _) =
+        let arr =
+          [| for i in 0L .. length - 1L ->
+               let addr = addressAt i
+               x.GetValue(addr) |> OptionalValue.map h |]
+        builder.CreateMissing(arr)
     interface IVector with
       member x.AddressingScheme =
         data |> Seq.map (fun v -> v.AddressingScheme) |> Seq.reduce (fun a b ->
@@ -530,7 +545,7 @@ let mapFrameRowVector
       member x.SuppressPrinting = false
       member x.ElementType = typeof<'TRow>
       member x.GetObject(i) = (x :?> IVector<'TRow>).GetValue(i) |> OptionalValue.map box
-      member x.Invoke(site) = failwith "mapFrameRowVector: Invoke not supported" }
+      member x.Invoke(site) = site.Invoke(x :?> IVector<'TRow>) }
 
 // Dynamic assembly & module for storing generated types
 let private typedRowModule = Lazy<_>.Create(fun _ ->
@@ -702,6 +717,7 @@ let createTypedRowCreator<'TRow> columnKeys =
 /// Creates a typed vector of `IVector<'TRow>` for a given interface `'TRow`
 /// (which is expected to have only read-only properties).
 let createTypedRowReader<'TRow>
+    (builder:IVectorBuilder)
     columnKeys (columnIndex:string -> Address) size
     addressAt (data:IVector<IVector>) =
   let ctor, meta = createTypedRowCreator<'TRow> columnKeys
@@ -710,7 +726,7 @@ let createTypedRowReader<'TRow>
          let colVector = data.GetValue(columnIndex name)
          if colVector.Value.ElementType = typ then colVector.Value
          else convertTypeDynamic typ ConversionKind.Flexible colVector.Value |]
-  mapFrameRowVector ctor size addressAt subData
+  mapFrameRowVector ctor builder size addressAt subData
 
 // --------------------------------------------------------------------------------------
 // Vector constructions
