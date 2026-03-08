@@ -10,7 +10,7 @@
     <None Include="paket.references" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="FSharp.Core" Version="4.5.2" />
+    <PackageReference Update="FSharp.Core" Version="4.5.2" />
   </ItemGroup>
   <Target Name = "CopyFiles" AfterTargets="build">
    <Copy SourceFiles="..\..\packages\FSharp.Core\lib\net45\FSharp.Core.sigdata" DestinationFolder="$(OutputPath)" />
