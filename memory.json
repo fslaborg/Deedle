@@ -1,9 +1,1 @@
-{
-  "last_run": "2026-03-08T22:01Z",
-  "run_id": "22830817855",
-  "backlog_cursor": {"issues": 569},
-  "comments_made": {"569": {"date": "2026-03-08", "summary": "Root cause: CompilerGenerated backing fields in getExpandableFields"}},
-  "fix_attempts": {"559": {"branch": "repo-assist/fix-issue-559-window-ranges-bounds", "status": "open"}},
-  "monthly": {"title": "[Repo Assist] Monthly Activity 2026-03", "month": "2026-03"},
-  "notes": "559 PR open. 569 needs PR (filter CompilerGeneratedAttribute in getExpandableFields). 551 needs PR (Stats.cov missing stdDev). Tests target net5.0 (EOL). Many unlabelled issues from #447 onwards need triage."
-}
+{"last_run":"2026-03-08T22:14Z","run_id":"22831061289","cursor":570,"comments":{"559":"2026-03-08","562":"2026-03-08","569":"2026-03-08","570":"2026-03-08"},"fix_prs":{"559":573},"eng_prs":["github-actions-v4:open"],"monthly":576,"close_duplicates":[574,575],"notes":"Fix 569: CompilerGenerated filter in getExpandableFields. Fix 551: Stats.cov. Close 574,575 (duplicate monthly issues)."}
