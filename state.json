@@ -1,8 +1,1 @@
-{
-  "last_run": "2026-03-08T22:04:15Z",
-  "last_run_id": "22830869784",
-  "comments_made": {"559": "2026-03-08", "562": "2026-03-08", "569": "2026-03-08"},
-  "issues_labelled": [257,336,346,447,454,497,502,503,508,509,511,516,521,523,524,526,529,531,539,544,545,546,550,551,554,555,556,558,559,561,562,563,564,565,567,568,569,570],
-  "issue_cursor": "Y3Vyc29yOnYyOpK0MjAyNi0wMy0wOFQyMTo1NTowN1rO8PAQaQ==",
-  "notes": "All 39 unlabelled issues labelled. Commented on #559 #562 #569. PR #560 fixes #559 (open, awaiting merge). Monthly activity issue created. Next: comment on older issues #2-#310, fix #569 (CompilerGenerated filter)."
-}
+{"last_run":"2026-03-08T22:01Z","run_id":"22830819371","comments":{"569":"2026-03-08","559":"2026-03-08"},"labeled":[257,336,497,502,503,509,516,526,531,539,544,545,546,550,551,554,555,556,559,561,562,563,564,565,567,568,569,570],"unlabeled_todo":[346,447,454,508,511,521,523,524,529,558,571],"fix_candidates":["569:getExpandableFields filter CompilerGenerated","559:windowRangesWithBounds fix AtBeginning/AtEnding"],"comment_next":["562","516"]}
