@@ -383,6 +383,7 @@ let ``Rows of an empty frame should return empty series``() =
 
 type Price = { Open : decimal; High : decimal; Low : Decimal; Close : decimal }
 type Stock = { Date : DateTime; Volume : int; Price : Price }
+type internal InternalPrice = { IOpen : float; IClose : float }
 
 let typedRows () =
   [| for (KeyValue(k,r)) in msft().Rows.Observations ->
@@ -398,6 +399,17 @@ let ``Can read simple sequence of records`` () =
   let df = Frame.ofRecords prices
   set df.ColumnKeys |> shouldEqual (set ["Open"; "High"; "Low"; "Close"])
   df |> Frame.countRows |> shouldEqual prices.Length
+
+[<Test>]
+let ``Can read sequence of internal records`` () =
+  // Regression test for https://github.com/fslaborg/Deedle/issues/562
+  let prices =
+    [| { IOpen = 10.1; IClose = 11.0 }
+       { IOpen = 15.1; IClose = 16.0 }
+       { IOpen = 9.1;  IClose = 10.0 } |]
+  let df = Frame.ofRecords prices
+  set df.ColumnKeys |> shouldEqual (set ["IOpen"; "IClose"])
+  df |> Frame.countRows |> shouldEqual 3
 
 [<Test>]
 let ``Can read simple sequence of records using a specified column as index`` () =

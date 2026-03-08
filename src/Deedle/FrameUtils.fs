@@ -77,11 +77,22 @@ module internal Reflection =
       cache.GetOrAdd(typ, valueFactory)
 
   let getExpandableProperties (ty:Type) =
-    ty.GetProperties(BindingFlags.Instance ||| BindingFlags.Public)
-    |> Seq.filter (fun p -> p.CanRead && p.GetIndexParameters().Length = 0)
+    ty.GetProperties(BindingFlags.Instance ||| BindingFlags.Public ||| BindingFlags.NonPublic)
+    |> Seq.filter (fun p ->
+        p.CanRead && p.GetIndexParameters().Length = 0
+        // Exclude explicit interface implementations (name contains '.')
+        && not (p.Name.Contains('.'))
+        // Exclude private members; allow public or assembly-visible (internal) ones
+        && (let getter = p.GetGetMethod(nonPublic=true)
+            getter <> null && (getter.IsPublic || getter.IsAssembly)))
 
   let getExpandableFields (ty:Type) =
-    ty.GetFields(BindingFlags.Instance ||| BindingFlags.Public)
+    ty.GetFields(BindingFlags.Instance ||| BindingFlags.Public ||| BindingFlags.NonPublic)
+    |> Seq.filter (fun f ->
+        // Include public or assembly-visible (internal) fields only
+        (f.IsPublic || f.IsAssembly)
+        // Exclude compiler-generated backing fields (e.g. F# record backing fields like 'Field@')
+        && f.GetCustomAttribute<System.Runtime.CompilerServices.CompilerGeneratedAttribute>() = null)
 
   /// Given System.Type for some .NET object, get a sequence of projections
   /// that return the values of all readonly properties (together with their name & type)
@@ -91,7 +102,7 @@ module internal Reflection =
          let propTy = p.PropertyType
          // Build: fun recd -> recd.get_<Prop>
          let recd = Expression.Parameter(recdTy)
-         let call = Expression.Call(recd, p.GetGetMethod())
+         let call = Expression.Call(recd, p.GetGetMethod(nonPublic=true))
          yield p.Name, propTy, Expression.Lambda(call, [recd])
 
        let flds = getExpandableFields recdTy
