@@ -383,6 +383,7 @@ let ``Rows of an empty frame should return empty series``() =
 
 type Price = { Open : decimal; High : decimal; Low : Decimal; Close : decimal }
 type Stock = { Date : DateTime; Volume : int; Price : Price }
+type SimpleRecord = { Name: string; Value: int }
 
 let typedRows () =
   [| for (KeyValue(k,r)) in msft().Rows.Observations ->
@@ -391,6 +392,15 @@ let typedRows () =
       { Date = k; Volume = r.GetAs<int>("Volume"); Price = p } |]
 let typedPrices () =
   [| for r in typedRows () -> r.Price |]
+
+[<Test>]
+let ``Can read simple sequence of records without duplicated compiler-generated backing fields`` () =
+  // F# records emit both a public property (e.g., "Name") and a compiler-generated
+  // public backing field (e.g., "Name@"). Frame.ofRecords must not produce duplicate columns.
+  let records = [| { Name = "a"; Value = 1 }; { Name = "b"; Value = 2 } |]
+  let df = Frame.ofRecords records
+  set df.ColumnKeys |> shouldEqual (set ["Name"; "Value"])
+  df |> Frame.countRows |> shouldEqual 2
 
 [<Test>]
 let ``Can read simple sequence of records`` () =

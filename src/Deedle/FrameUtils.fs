@@ -82,6 +82,7 @@ module internal Reflection =
 
   let getExpandableFields (ty:Type) =
     ty.GetFields(BindingFlags.Instance ||| BindingFlags.Public)
+    |> Seq.filter (fun f -> not (f.IsDefined(typeof<System.Runtime.CompilerServices.CompilerGeneratedAttribute>, false)))
 
   /// Given System.Type for some .NET object, get a sequence of projections
   /// that return the values of all readonly properties (together with their name & type)
