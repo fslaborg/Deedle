@@ -182,6 +182,22 @@ col_A
     actual = [| "col_A"; "col_A\r\n2"; "col_B" |] )
 
 [<Test>]
+let ``Can read space-separated file without headers`` () =
+  // Regression test for https://github.com/fslaborg/Deedle/issues/550:
+  // users expect to be able to read space-separated data using separators=" " and hasHeaders=false.
+  let data =
+    "1 2 3\n" +
+    "4 5 6\n" +
+    "7 8 9"
+  use reader = new System.IO.StringReader(data)
+  let df = Frame.ReadCsv(reader, hasHeaders=false, separators=" ", inferTypes=false)
+  df.ColumnKeys |> Seq.toArray |> shouldEqual [| "Column1"; "Column2"; "Column3" |]
+  df |> Frame.countRows |> shouldEqual 3
+  df.GetColumn<string>("Column1").GetAt(0) |> shouldEqual "1"
+  df.GetColumn<string>("Column2").GetAt(1) |> shouldEqual "5"
+  df.GetColumn<string>("Column3").GetAt(2) |> shouldEqual "9"
+
+[<Test>]
 let ``Can read CSV file with empty cell`` () =
   let csv =
     "row,c1,c2,c3\n" +
@@ -753,6 +769,38 @@ let ``Frame.melt preserves type of values`` () =
   let res = df |> Frame.melt
   let colTypes = res.GetFrameData().Columns |> Seq.map (fun (ty,_) -> ty.Name) |> List.ofSeq
   colTypes |> shouldEqual ["Int32"; "String"; "Double"]
+
+[<Test>]
+let ``Frame.unmelt is the inverse of Frame.melt for homogeneous frames`` () =
+  // A homogeneous float frame should survive a melt/unmelt round-trip.
+  let original =
+    frame [ "A" => series [ 1 => 1.0; 2 => 2.0 ]
+            "B" => series [ 1 => 3.0; 2 => 4.0 ] ]
+  let melted = original |> Frame.melt
+  // Melted frame must have exactly the three structural columns.
+  melted.ColumnKeys |> Seq.toArray |> shouldEqual [| "Row"; "Column"; "Value" |]
+  melted |> Frame.countRows |> shouldEqual 4
+  // Round-trip: unmelt should reconstruct the original structure.
+  let roundTripped : Frame<int, string> = melted |> Frame.unmelt
+  set roundTripped.ColumnKeys |> shouldEqual (set ["A"; "B"])
+  roundTripped |> Frame.countRows |> shouldEqual 2
+
+[<Test>]
+let ``Frame.melt skips missing values and Frame.unmelt reconstructs present values`` () =
+  // melt should omit missing cells; unmelt should place values at the right (row, col) address.
+  let df =
+    frame [ "X" => series [ "r1" => 10.0; "r2" => 20.0 ]
+            "Y" => series [ "r1" => 30.0 ] ]   // "r2"/"Y" is missing
+  let melted = df |> Frame.melt
+  // Only the three present cells should appear.
+  melted |> Frame.countRows |> shouldEqual 3
+  let roundTripped : Frame<string, string> = melted |> Frame.unmelt
+  set roundTripped.ColumnKeys |> shouldEqual (set ["X"; "Y"])
+  roundTripped |> Frame.countRows |> shouldEqual 2
+  roundTripped.GetColumn<float>("X").TryGet("r1") |> shouldEqual (OptionalValue 10.0)
+  roundTripped.GetColumn<float>("X").TryGet("r2") |> shouldEqual (OptionalValue 20.0)
+  roundTripped.GetColumn<float>("Y").TryGet("r1") |> shouldEqual (OptionalValue 30.0)
+  roundTripped.GetColumn<float>("Y").TryGet("r2") |> shouldEqual OptionalValue.Missing
 
 [<Test>]
 let ``Can group 10x5k data frame by row of type string (in less than a few seconds)`` () =
