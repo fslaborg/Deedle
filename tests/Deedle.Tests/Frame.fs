@@ -1710,3 +1710,23 @@ let ``Saving CSV to a stream via the extension method closes the stream when com
   let expected = msft()
   FrameExtensions.SaveCsv (expected, stream, true, ["Date"], ';', cz)
   stream.CanWrite |> shouldEqual false
+
+[<Test>]
+let ``SaveCsv respects culture for OptionalValue columns`` () =
+  // Regression test for https://github.com/fslaborg/Deedle/issues/544
+  // OptionalValue<float> columns were formatted with invariant culture (dot decimal separator)
+  // even when a non-invariant culture was passed to SaveCsv.
+  let de = System.Globalization.CultureInfo.GetCultureInfo("de-DE")
+  let builder = new System.Text.StringBuilder()
+  use writer = new System.IO.StringWriter(builder)
+  // Build frame with both a plain float and an OptionalValue<float> column
+  let df =
+    Frame.ofColumns [
+      "Age" =?> (series [ 0 => 1.5; 1 => 2.5 ] : Series<int, float>)
+      "Bmi" =?> (series [ 0 => OptionalValue(1.5); 1 => OptionalValue<float>.Missing ] : Series<int, OptionalValue<float>>) ]
+  FrameExtensions.SaveCsv(df, writer, false, null, ';', de)
+  let csv = builder.ToString()
+  // German locale: decimal separator is comma, so 1.5 → "1,5" (quoted because comma is special)
+  csv |> should contain "\"1,5\""
+  // Missing OptionalValue should produce empty string, not "<missing>"
+  csv.Split('\n').[2].Trim() |> should contain ";\"2,5\";"  // row 1: Age=2.5, Bmi=missing

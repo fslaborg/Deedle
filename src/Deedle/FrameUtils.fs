@@ -312,8 +312,24 @@ module internal FrameUtils =
           // default of 100ns fractional second precision
           dt.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffzzz", ci) ) ] |> dict
 
+    // Open generic type definition for OptionalValue<T>, used to detect and unwrap columns
+    // whose element type is OptionalValue<T> so the inner value is formatted with culture.
+    let optionalValueTypeDef = typeof<OptionalValue<int>>.GetGenericTypeDefinition()
+
     // Format optional value, using
-    let formatOptional (typ, opt:obj option) =
+    let formatOptional (typ:Type, opt:obj option) =
+      // Unwrap OptionalValue<T> so the inner value is formatted with culture (fixes #544)
+      let typ, opt =
+        if typ <> null && typ.IsGenericType && typ.GetGenericTypeDefinition() = optionalValueTypeDef then
+          let innerType : Type = typ.GetGenericArguments().[0]
+          match opt with
+          | Some v ->
+            let hasValue = (typ.GetProperty("HasValue").GetValue(v)) :?> bool
+            if hasValue then innerType, Some (typ.GetProperty("Value").GetValue(v) : obj)
+            else innerType, None
+          | None -> innerType, None
+        else
+          typ, opt
       match opt, formatters.TryGetValue(typ) with
       | Some null, _ | None, _ -> ""
       | Some value, (true, formatter) -> formatter value
