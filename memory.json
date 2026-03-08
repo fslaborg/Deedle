@@ -1,22 +1,12 @@
 {
-  "last_run": "2026-03-08T22:23Z",
-  "run_id": "22831221542",
-  "backlog_cursor": {"issues": 545},
-  "comments_made": {
-    "569": "2026-03-08",
-    "559": "2026-03-08",
-    "562": "2026-03-08",
-    "551": "2026-03-08",
-    "516": "2026-03-08",
-    "545": "2026-03-08",
-    "544": "2026-03-08"
-  },
+  "last_run": "2026-03-08T22:21Z",
+  "run_id": "22831177764",
+  "backlog_cursor": {"issues": 569},
+  "comments_made": {"569": {"date": "2026-03-08", "summary": "Root cause: CompilerGenerated backing fields in getExpandableFields"}},
   "fix_attempts": {
-    "559": {"pr": 573, "status": "open"},
-    "569": {"pr": 578, "status": "open"},
-    "562": {"pr": 580, "status": "open"},
-    "544": {"status": "open", "branch": "repo-assist/fix-issue-544-optionalvalue-culture-csv"}
+    "559": {"branch": "repo-assist/fix-issue-559-window-ranges-bounds", "status": "open"},
+    "562": {"branch": "repo-assist/fix-issue-562-nonpublic-records", "status": "open"}
   },
-  "monthly": {"issue": 574, "month": "2026-03"},
-  "notes": "Duplicate monthly issues: #575, #576 (576 was closed by dsyme). Monthly summary now in #574. PRs #578 and #579 both fix #569 - maintainer should close one. Fix #516 type-loss needs deeper work. Implement Select on mapFrameRowVector for #545."
+  "monthly": {"title": "[Repo Assist] Monthly Activity 2026-03", "number": 574, "month": "2026-03"},
+  "notes": "559 PR open. 562 PR open (NonPublic BindingFlags fix). 569 has duplicate PR (578 and a newer one). 551 needs PR (Stats.cov missing stdDev). Tests target net5.0 (EOL). Many unlabelled issues from #447 onwards need triage."
 }
