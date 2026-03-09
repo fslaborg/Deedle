@@ -259,6 +259,7 @@ module internal FrameUtils =
   open System.Data
   open System.Globalization
   open System.IO
+  open System.Reflection
   open FSharp.Data
   open FSharp.Data.Runtime
   open FSharp.Data.Runtime.CsvInference
@@ -323,8 +324,24 @@ module internal FrameUtils =
           // default of 100ns fractional second precision
           dt.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffzzz", ci) ) ] |> dict
 
-    // Format optional value, using
+    // Unwrap OptionalValue<T> column types so the inner value is formatted with the
+    // correct culture. Without this, OptionalValue<float> columns fall through to
+    // value.ToString() which ignores the CultureInfo passed to SaveCsv. See #544.
+    let optionalValueTypeDef = typedefof<OptionalValue<_>>
+    let unwrapOptionalValue (typ:Type) (opt:obj option) =
+      if typ.IsGenericType && typ.GetGenericTypeDefinition() = optionalValueTypeDef then
+        let innerType = typ.GetGenericArguments().[0]
+        match opt with
+        | None | Some null -> innerType, None
+        | Some ov ->
+            let hasValue = typ.GetProperty("HasValue").GetValue(ov) :?> bool
+            if hasValue then innerType, Some (typ.GetProperty("Value").GetValue(ov))
+            else innerType, None
+      else typ, opt
+
+    // Format optional value, applying CultureInfo for IFormattable types.
     let formatOptional (typ, opt:obj option) =
+      let typ, opt = unwrapOptionalValue typ opt
       match opt, formatters.TryGetValue(typ) with
       | Some null, _ | None, _ -> ""
       | Some value, (true, formatter) -> formatter value

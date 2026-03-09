@@ -271,6 +271,49 @@ let ``Can save MSFT data as CSV file and read it afterwards (with custom format)
   actual |> shouldEqual expected
 
 [<Test>]
+let ``SaveCsv uses correct CultureInfo for OptionalValue float columns`` () =
+  // Regression test for #544 – OptionalValue<T> columns must honour CultureInfo in SaveCsv.
+  let deDe = System.Globalization.CultureInfo.GetCultureInfo("de-DE")
+  let builder = System.Text.StringBuilder()
+  use writer = new System.IO.StringWriter(builder)
+  // Build a frame where one column is plain float and one is OptionalValue<float>.
+  let df =
+    frame
+      [ "PlainFloat" =?> series [ 0 => 1.5; 1 => 2.5 ]
+        "OptFloat"   =?> series [ 0 => OptionalValue(3.5); 1 => OptionalValue.Missing ] ]
+  FrameExtensions.SaveCsv(df, writer, false, null, ';', deDe)
+  let csv = builder.ToString()
+  // In de-DE the decimal separator is ',' so 1.5 → "1,5" and 3.5 → "3,5"
+  csv |> should contain "1,5"
+  csv |> should contain "2,5"
+  csv |> should contain "3,5"
+  // The missing OptionalValue cell should serialize as empty.
+  // CSV (no row keys): header; row0 = "1,5;3,5"; row1 = "2,5;"
+  let lines = csv.Split([|'\n';'\r'|], System.StringSplitOptions.RemoveEmptyEntries)
+  // Find the data row that contains "2,5" (second row, PlainFloat=2.5, OptFloat=missing)
+  let row1 = lines |> Array.find (fun l -> l.Contains("2,5"))
+  let parts = row1.Split(';')
+  // Last field should be empty (missing OptionalValue)
+  parts |> Array.last |> should equal ""
+
+[<Test>]
+let ``SaveCsv uses correct CultureInfo for OptionalValue float columns (verify no dot decimal)`` () =
+  // Additional check: without the fix the decimal would be written with '.', not ','
+  let deDe = System.Globalization.CultureInfo.GetCultureInfo("de-DE")
+  let builder = System.Text.StringBuilder()
+  use writer = new System.IO.StringWriter(builder)
+  let df =
+    frame
+      [ "A" =?> series [ 0 => 1.1 ]
+        "B" =?> series [ 0 => OptionalValue(2.2) ] ]
+  FrameExtensions.SaveCsv(df, writer, false, null, ';', deDe)
+  let csv = builder.ToString()
+  // In de-DE '.' as a decimal separator should NOT appear in numeric values
+  // (it would appear if culture was ignored). We check both columns use ','
+  csv |> should contain "1,1"
+  csv |> should contain "2,2"
+
+[<Test>]
 let ``Can create frame from IDataReader``() =
   let dt = new DataTable()
   dt.Columns.Add(new DataColumn("First", typeof<int>))
