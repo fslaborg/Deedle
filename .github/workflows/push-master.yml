@@ -54,5 +54,6 @@ jobs:
           user: dsyme
       - name: Publish NuGets (if this version not published before)
         if: runner.os == 'Linux'
+        continue-on-error: true
         run: dotnet nuget push ./bin/*.nupkg -s https://www.nuget.org/api/v2/package -k ${{ steps.login.outputs.NUGET_API_KEY }} --skip-duplicate
 
