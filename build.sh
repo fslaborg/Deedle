@@ -17,6 +17,7 @@ fi
 
 dotnet pack Deedle.sln -c Release
 
-dotnet fsdocs build --eval --parameters fsdocs-package-version 4.0.0
+VERSION=$(grep -oP '(?<=<Version>)[^<]+' Directory.Build.props)
+dotnet fsdocs build --eval --parameters fsdocs-package-version "$VERSION"
 
 echo "--- Build complete ---"

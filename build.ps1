@@ -16,7 +16,8 @@ if (-not $NoTests) {
 dotnet pack Deedle.sln -c Release
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-dotnet fsdocs build --eval --parameters fsdocs-package-version 4.0.0
+$version = ([xml](Get-Content Directory.Build.props)).Project.PropertyGroup.Version
+dotnet fsdocs build --eval --parameters fsdocs-package-version $version
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
 Write-Host "--- Build complete ---"
