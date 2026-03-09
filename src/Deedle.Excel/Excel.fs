@@ -11,6 +11,10 @@ open System.Collections.Specialized
 open System.Diagnostics
 open System.Reflection
 
+// System.Range (introduced in .NET Standard 2.1) would shadow NetOffice.ExcelApi.Range
+// without this alias.
+type Range = NetOffice.ExcelApi.Range
+
 type IExportExcelTable =
     abstract ColumnHeaders : obj[,]
     abstract RowHeaders : obj[,]

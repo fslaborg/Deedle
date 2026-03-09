@@ -1,15 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Deedle\Deedle.fsproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="System.Runtime" />
-    <Reference Include="System.Reflection" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="../Common/FsUnit.fs">

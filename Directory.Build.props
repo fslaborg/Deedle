@@ -1,0 +1,10 @@
+<Project>
+  <PropertyGroup>
+    <Version>3.0.0</Version>
+    <AssemblyVersion>3.0.0</AssemblyVersion>
+    <FileVersion>3.0.0</FileVersion>
+    <RepositoryUrl>https://github.com/fslaborg/Deedle</RepositoryUrl>
+    <FsDocsLicenseLink>https://github.com/fslaborg/Deedle/blob/master/LICENSE.md</FsDocsLicenseLink>
+    <FsDocsReleaseNotesLink>https://github.com/fslaborg/Deedle/blob/master/RELEASE_NOTES.md</FsDocsReleaseNotesLink>
+  </PropertyGroup>
+</Project>

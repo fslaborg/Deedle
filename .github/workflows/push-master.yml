@@ -5,56 +5,53 @@ on:
     branches:
       - master
 
+permissions:
+  id-token: write
+  contents: write
+
 jobs:
   build-windows:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: r-lib/actions/setup-r@v2
-        name: Setup R environment
-        with:
-          r-version: '4.4'
-      - name: Set R environment variables (for RProvider)
-        run: echo "R_HOME=$(R RHOME)" >> "$GITHUB_ENV"
-        shell: bash
-      - name: Install R package dependencies
-        run: Rscript -e "install.packages(c('zoo'), repos = 'http://cran.us.r-project.org')"
-        shell: bash
-      - name: Setup .NET Core
+      - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: '9.0.x'
       - name: Restore .NET local tools
         run: dotnet tool restore
       - name: Restore packages
         run: dotnet paket restore
       - name: Build and test
-        run: dotnet fake build
+        run: .\build.ps1
+        shell: pwsh
 
   build-ubuntu:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: r-lib/actions/setup-r@v2
-        name: Setup R environment
-        with:
-          r-version: '4.4'
-      - name: Set R environment variables (for RProvider)
-        run:  |
-          mkdir -p ~/.local/lib/R
-          echo "R_LIBS_USER=~/.local/lib/R" >> "$GITHUB_ENV"
-          echo "R_HOME=$(R RHOME)" >> "$GITHUB_ENV"
-        shell: bash
-      - name: Install R package dependencies
-        run: Rscript -e "install.packages(c('zoo'))"
-        shell: bash
-      - name: Setup .NET Core
+      - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: '9.0.x'
       - name: Restore .NET local tools
         run: dotnet tool restore
       - name: Restore packages
         run: dotnet paket restore
       - name: Build and test
-        run: dotnet fake build
+        run: ./build.sh
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          personal_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./output
+          publish_branch: gh-pages
+          force_orphan: true
+      - name: Obtain NuGet key
+        # this hash is v1.1.0
+        uses: NuGet/login@d22cc5f58ff5b88bf9bd452535b4335137e24544
+        id: login
+        with:
+            user: dsyme
+      - name: Publish NuGets (if this version not published before)
+        run: dotnet nuget push ./bin/*.nupkg -s https://www.nuget.org/api/v2/package -k ${{ steps.login.outputs.NUGET_API_KEY }} --skip-duplicate
