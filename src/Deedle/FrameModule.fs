@@ -772,6 +772,32 @@ module Frame =
     if Seq.length frame.ColumnKeys <> Seq.length keys then invalidArg "keys" "New keys do not match current column index length"
     Frame<_, _>(frame.RowIndex, Index.ofKeys (ReadOnlyCollection.ofSeq keys), frame.Data, frame.IndexBuilder, frame.VectorBuilder)
 
+  /// Rename a single column of the data frame. Returns a new frame; does not mutate the
+  /// original. If `oldKey` is not found, the frame is returned unchanged.
+  ///
+  /// ## Parameters
+  ///  - `oldKey` - The current key of the column to rename.
+  ///  - `newKey` - The new key to assign to that column.
+  ///  - `frame` - Source data frame (which is not mutated by the operation).
+  ///
+  /// [category:Sorting and index manipulation]
+  [<CompiledName("RenameColumn")>]
+  let renameCol oldKey newKey (frame:Frame<'R, 'C>) =
+    let newKeys = frame.ColumnKeys |> Seq.map (fun k -> if k = oldKey then newKey else k)
+    Frame<_, _>(frame.RowIndex, Index.ofKeys (ReadOnlyCollection.ofSeq newKeys), frame.Data, frame.IndexBuilder, frame.VectorBuilder)
+
+  /// Rename all columns of the data frame by applying the specified mapping function.
+  /// Returns a new frame; does not mutate the original.
+  ///
+  /// ## Parameters
+  ///  - `mapping` - A function that maps each current column key to a new column key.
+  ///  - `frame` - Source data frame (which is not mutated by the operation).
+  ///
+  /// [category:Sorting and index manipulation]
+  [<CompiledName("RenameColumns")>]
+  let renameColsUsing (mapping:'C -> 'C2) (frame:Frame<'R, 'C>) =
+    Frame<_, _>(frame.RowIndex, Index.ofKeys (ReadOnlyCollection.map mapping frame.ColumnIndex.Keys), frame.Data, frame.IndexBuilder, frame.VectorBuilder)
+
   /// Replace the row index of the frame with the provided sequence of row keys.
   /// The rows of the frame are assigned keys according to the provided order.
   ///
