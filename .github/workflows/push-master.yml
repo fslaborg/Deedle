@@ -1,4 +1,4 @@
-name: Build and Test PR
+name: Build and Publish
 
 on:
   push:
@@ -10,37 +10,35 @@ permissions:
   contents: write
 
 jobs:
-  build-windows:
-    runs-on: windows-latest
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            build: ./build.sh
+          - os: windows-latest
+            build: .\build.ps1
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '9.0.x'
-      - name: Restore .NET local tools
-        run: dotnet tool restore
-      - name: Restore packages
-        run: dotnet paket restore
-      - name: Build and test
-        run: .\build.ps1
-        shell: pwsh
-
-  build-ubuntu:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
         with:
-          dotnet-version: '9.0.x'
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('paket.lock') }}
+          restore-keys: ${{ runner.os }}-nuget-
       - name: Restore .NET local tools
         run: dotnet tool restore
       - name: Restore packages
         run: dotnet paket restore
       - name: Build and test
-        run: ./build.sh
-      - name: Deploy
+        run: ${{ matrix.build }}
+      - name: Deploy docs
+        if: runner.os == 'Linux'
         uses: peaceiris/actions-gh-pages@v3
         with:
           personal_token: ${{ secrets.GITHUB_TOKEN }}
@@ -48,10 +46,13 @@ jobs:
           publish_branch: gh-pages
           force_orphan: true
       - name: Obtain NuGet key
+        if: runner.os == 'Linux'
         # this hash is v1.1.0
         uses: NuGet/login@d22cc5f58ff5b88bf9bd452535b4335137e24544
         id: login
         with:
-            user: dsyme
+          user: dsyme
       - name: Publish NuGets (if this version not published before)
+        if: runner.os == 'Linux'
         run: dotnet nuget push ./bin/*.nupkg -s https://www.nuget.org/api/v2/package -k ${{ steps.login.outputs.NUGET_API_KEY }} --skip-duplicate
+
