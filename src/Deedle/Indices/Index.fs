@@ -7,11 +7,13 @@
 // Index is an interface and so you can define your own.
 // --------------------------------------------------------------------------------------
 
+/// <summary>
 /// Represents a strategy for aggregating data in an ordered series into data segments.
 /// To create a value of this type from C#, use the non-generic `Aggregation` type.
 /// Data can be aggregate using floating windows or chunks of a specified size or
 /// by specifying a condition on two keys (i.e. end a window/chunk when the condition
 /// no longer holds).
+/// </summary>
 ///
 /// <category>Parameters and results of various operations</category>
 type Aggregation<'K> =
@@ -34,55 +36,45 @@ type Aggregation<'K> =
   | ChunkWhile of ('K -> 'K -> bool)
 
 
-/// A non-generic type that simplifies the construction of `Aggregation<K>` values
+/// <summary>
+/// A non-generic type that simplifies the construction of <c>Aggregation&lt;K&gt;</c> values
 /// from C#. It provides methods for constructing different kinds of aggregation
 /// strategies for ordered series.
+/// </summary>
 ///
 /// <category>Parameters and results of various operations</category>
 type Aggregation =
+  /// <summary>
   /// Aggregate data into floating windows of a specified size
   /// and the provided handling of boundary elements.
-  ///
-  /// ## Parameters
-  ///
-  ///  - `size` - Specifies the size of the floating window. Depending on the
-  ///    boundary behavior, the actual created windows may be smaller.
-  ///  - `boundary` - Specifies how to handle boundaries (when there is not
-  ///    enough data to create an entire window).
+  /// </summary>
+  /// <param name="size">Specifies the size of the floating window. Depending on the boundary behavior, the actual created windows may be smaller.</param>
+  /// <param name="boundary">Specifies how to handle boundaries (when there is not enough data to create an entire window).</param>
   static member WindowSize(size, boundary) = WindowSize(size, boundary)
 
+  /// <summary>
   /// Aggregate data into non-overlapping chunks of a specified size
   /// and the provided handling of boundary elements.
-  ///
-  /// ## Parameters
-  ///
-  ///  - `size` - Specifies the size of the floating window. Depending on the
-  ///    boundary behavior, the actual created windows may be smaller.
-  ///  - `boundary` - Specifies how to handle boundaries (when there is not
-  ///    enough data to create an entire window).
+  /// </summary>
+  /// <param name="size">Specifies the size of the floating window. Depending on the boundary behavior, the actual created windows may be smaller.</param>
+  /// <param name="boundary">Specifies how to handle boundaries (when there is not enough data to create an entire window).</param>
   static member ChunkSize(size, boundary) = ChunkSize(size, boundary)
 
+  /// <summary>
   /// Aggregate data into floating windows where each window ends as soon
   /// as the specified function returns `false` when called with the
   /// first key and the current key as arguments.
-  ///
-  /// ## Parameters
-  ///
-  ///  - `condition` - A delegate that specifies when to end the current window
-  ///    (e.g. `(k1, k2) => k2 - k1 < 10` means that the difference between keys
-  ///    in each window will be less than 10.
+  /// </summary>
+  /// <param name="condition">A delegate that specifies when to end the current window (e.g. <c>(k1, k2) =&gt; k2 - k1 &lt; 10</c> means that the difference between keys in each window will be less than 10.</param>
   static member WindowWhile<'K>(condition:System.Func<'K, 'K, bool>) =
     WindowWhile(fun k1 k2 -> condition.Invoke(k1, k2))
 
+  /// <summary>
   /// Aggregate data into non-overlapping chunks where each chunk ends as soon
   /// as the specified function returns `false` when called with the
   /// first key and the current key as arguments.
-  ///
-  /// ## Parameters
-  ///
-  ///  - `condition` - A delegate that specifies when to end the current chunk
-  ///    (e.g. `(k1, k2) => k2 - k1 < 10` means that the difference between keys
-  ///    in each chunk will be less than 10.
+  /// </summary>
+  /// <param name="condition">A delegate that specifies when to end the current chunk (e.g. <c>(k1, k2) =&gt; k2 - k1 &lt; 10</c> means that the difference between keys in each chunk will be less than 10.</param>
   static member ChunkWhile<'K>(condition:System.Func<'K, 'K, bool>) =
     ChunkWhile(fun k1 k2 -> condition.Invoke(k1, k2))
 
@@ -176,23 +168,24 @@ and SeriesConstruction<'K when 'K : equality> = IIndex<'K> * VectorConstruction
 /// the index, together with a construction to apply (asynchronously) on vectors
 and AsyncSeriesConstruction<'K when 'K : equality> = Async<IIndex<'K>> * VectorConstruction
 
+/// <summary>
 /// A builder represents various ways of constructing index, either from keys or from
 /// other indices. The operations that build a new index from an existing index also
 /// build `VectorConstruction` which specifies how to transform vectors aligned with the
 /// previous index to match the new index. The methods generally take `VectorConstruction`
 /// as an input, apply necessary transformations to it and return a new `VectorConstruction`.
-///
-/// ## Example
-///
+/// </summary>
+/// <example>
 /// For example, given `index`, we can say:
+/// <code>
+/// // Create an index that excludes the value 42
+/// let newIndex, vectorCmd = indexBuilder.DropItem(index, 42, VectorConstruction.Return(0))
 ///
-///     // Create an index that excludes the value 42
-///     let newIndex, vectorCmd = indexBuilder.DropItem(index, 42, VectorConstruction.Return(0))
-///
-///     // Now we can transform multiple vectors (e.g. all frame columns) using 'vectorCmd'
-///     // (the integer '0' in `Return` is an offset in the array of vector arguments)
-///     let newVector = vectorBuilder.Build(vectorCmd, [| vectorToTransform |])
-///
+/// // Now we can transform multiple vectors (e.g. all frame columns) using 'vectorCmd'
+/// // (the integer '0' in `Return` is an offset in the array of vector arguments)
+/// let newVector = vectorBuilder.Build(vectorCmd, [| vectorToTransform |])
+/// </code>
+/// </example>
 and IIndexBuilder =
 
   /// Create a new index using the specified keys. Optionally, the caller can specify
@@ -295,17 +288,13 @@ and IIndexBuilder =
   ///
   abstract Shift : SeriesConstruction<'K> * int -> SeriesConstruction<'K>
 
+  /// <summary>
   /// Aggregate an ordered index into floating windows or chunks.
-  ///
-  /// ## Parameters
-  ///
-  ///  - `index` - Specifies the index to be aggregated
-  ///  - `aggregation` - Defines the kind of aggregation to apply (the type
-  ///    is a discriminated union with a couple of cases)
-  ///  - `source` - Source vector construction to be transformed
-  ///  - `selector` - Given information about window/chunk (including
-  ///    vector construction that can be used to build the data chunk), return
-  ///    a new key, together with a new value for the returned vector.
+  /// </summary>
+  /// <param name="index">Specifies the index to be aggregated</param>
+  /// <param name="aggregation">Defines the kind of aggregation to apply (the type is a discriminated union with a couple of cases)</param>
+  /// <param name="source">Source vector construction to be transformed</param>
+  /// <param name="selector">Given information about window/chunk (including vector construction that can be used to build the data chunk), return a new key, together with a new value for the returned vector.</param>
   abstract Aggregate : index:IIndex<'K> * aggregation:Aggregation<'K> * source:VectorConstruction *
     selector:(DataSegmentKind * SeriesConstruction<'K> -> 'TNewKey * OptionalValue<'R>)
       -> IIndex<'TNewKey> * IVector<'R>
