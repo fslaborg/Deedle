@@ -51,9 +51,9 @@ let ``Ex-ante vol of equally weighted portfolio using exponentially weighted cov
   annualVol1 |> should beWithin (annualVol2 +/- 1e-6)
 
 [<Test>]
-let ``ewmVol on non-returns series should return standard deviation not root-mean-square (issue #555)`` () =
-  // For a monotonically increasing sequence, ewmVol should give std (~5),
-  // not a value near the mean (~45) as the old incorrect formula produced.
+let ``ewmVolStdDev on non-returns series should return standard deviation not root-mean-square (issue #555)`` () =
+  // For a monotonically increasing sequence, ewmVolStdDev should give std (~5),
+  // not a value near the mean (~45) as the old incorrect ewmVol formula produced.
   let s = Series.ofValues [ for i in 1.0 .. 50.0 -> i ]
   let vol = Finance.ewmVolStdDev(s, span = 10.)
   let lastVol = vol |> Series.lastValue

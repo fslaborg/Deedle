@@ -49,7 +49,7 @@ type Finance =
   /// Computes vol as sqrt(EWM(x²)), which equals ewmMean for strictly positive sequences.
   /// Appropriate for returns series that are already mean-centred (e.g. zero-mean returns).
   ///
-  /// [category: Exponentially Weighted Moving]
+  /// <category>Exponentially Weighted Moving</category>
   static member ewmVolRMS (x:Series<'R, float>, ?com, ?span, ?halfLife, ?alpha) =
     let alpha = StatsInternal.ewDecay(com, span, halfLife, alpha)
     let x = x |> Series.dropMissing
@@ -69,7 +69,7 @@ type Finance =
   /// Exponentially weighted moving volatility using root mean square (no mean correction)
   /// applied to each column of a frame.
   ///
-  /// [category: Exponentially Weighted Moving]
+  /// <category>Exponentially Weighted Moving</category>
   static member ewmVolRMS (df:Frame<'R, 'C>, ?com, ?span, ?halfLife, ?alpha) =
     let alpha = StatsInternal.ewDecay(com, span, halfLife, alpha)
     df
@@ -79,19 +79,54 @@ type Finance =
 
   /// Exponentially weighted moving volatility on series.
   ///
-  /// [category: Exponentially Weighted Moving]
-  [<Obsolete("ewmVol is deprecated. Use ewmVolStdDev for mean-corrected standard deviation or ewmVolRMS for root-mean-square volatility.")>]
+  /// <category>Exponentially Weighted Moving</category>
+  [<Obsolete("ewmVol is deprecated. Use ewmVolRMS for the same root-mean-square behaviour, or ewmVolStdDev for mean-corrected standard deviation.")>]
   static member ewmVol (x:Series<'R, float>, ?com, ?span, ?halfLife, ?alpha) =
+    // Return to RiskMetrics: The Evolution of a Standard
+    // https://www.msci.com/documents/10199/dbb975aa-5dc2-4441-aa2d-ae34ab5f0945
     let alpha = StatsInternal.ewDecay(com, span, halfLife, alpha)
-    Finance.ewmVolStdDev(x, alpha = alpha)
+    let x = x |> Series.dropMissing
+    if x.KeyCount < 2 then
+      x |> Series.mapValues(fun _ -> nan)
+    else
+      let init = x |> Stats.stdDev
+      let data = x.Values |> Array.ofSeq
+      let res = Array.zeroCreate x.KeyCount
+      for i in [|0..x.KeyCount-1|] do
+        if i = 0 then
+          res.[i] <- init
+        else
+          let prev = res.[i-1]
+          let curr = data.[i]
+          res.[i] <- Math.Sqrt((1. - alpha) * prev * prev + alpha * curr * curr)
+      Series(x.Keys, res)
 
   /// Exponentially weighted moving volatility on frame.
   ///
-  /// [category: Exponentially Weighted Moving]
-  [<Obsolete("ewmVol is deprecated. Use ewmVolStdDev for mean-corrected standard deviation or ewmVolRMS for root-mean-square volatility.")>]
+  /// <category>Exponentially Weighted Moving</category>
+  [<Obsolete("ewmVol is deprecated. Use ewmVolRMS for the same root-mean-square behaviour, or ewmVolStdDev for mean-corrected standard deviation.")>]
   static member ewmVol (df:Frame<'R, 'C>, ?com, ?span, ?halfLife, ?alpha) =
     let alpha = StatsInternal.ewDecay(com, span, halfLife, alpha)
-    Finance.ewmVolStdDev(df, alpha = alpha)
+    df
+    |> Frame.getNumericCols
+    |> Series.mapValues(fun series ->
+        // Inline original ewmVol series logic to avoid deprecation warning at call site
+        let x = series |> Series.dropMissing
+        if x.KeyCount < 2 then
+          x |> Series.mapValues(fun _ -> nan)
+        else
+          let init = x |> Stats.stdDev
+          let data = x.Values |> Array.ofSeq
+          let res = Array.zeroCreate x.KeyCount
+          for i in [|0..x.KeyCount-1|] do
+            if i = 0 then
+              res.[i] <- init
+            else
+              let prev = res.[i-1]
+              let curr = data.[i]
+              res.[i] <- Math.Sqrt((1. - alpha) * prev * prev + alpha * curr * curr)
+          Series(x.Keys, res))
+    |> Frame.ofColumns
 
   /// Exponentially weighted moving variance on series
   static member ewmVar (x:Series<'R, float>, ?com, ?span, ?halfLife, ?alpha) =
