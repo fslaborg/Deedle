@@ -17,6 +17,6 @@ fi
 
 dotnet pack Deedle.sln -c Release
 
-dotnet fsdocs build --eval --parameters fsdocs-package-version 3.0.0
+dotnet fsdocs build --eval --parameters fsdocs-package-version 4.0.0
 
 echo "--- Build complete ---"
