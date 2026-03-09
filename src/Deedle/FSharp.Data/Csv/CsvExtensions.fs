@@ -75,7 +75,6 @@ type StringExtensions =
     | Some g -> g
     | _ -> failwithf "Not a guid: %s" x
 
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 /// Provides the dynamic operator for getting column values by name from CSV rows
 module CsvExtensions =
 

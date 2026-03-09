@@ -176,6 +176,34 @@ let ``Series.windowSizeInto with AtEnding boundary works correctly on sample inp
   actual |> shouldEqual expected
 
 [<Test>]
+let ``Series.windowSize with AtBeginning does not throw when size exceeds series length`` () =
+  // Regression test for https://github.com/fslaborg/Deedle/issues/559
+  let empty : Series<int, int> = Series.ofValues []
+  let result1 = empty |> Series.windowSizeInto (1, Boundary.AtBeginning) (fun s -> s.Data.KeyCount)
+  result1 |> shouldEqual (series [])
+  let result2 = empty |> Series.windowSizeInto (2, Boundary.AtBeginning) (fun s -> s.Data.KeyCount)
+  result2 |> shouldEqual (series [])
+  // Series shorter than window size - 1
+  let short = series [0 => 10]
+  let result3 = short |> Series.windowSizeInto (3, Boundary.AtBeginning) (fun s -> s.Data.KeyCount)
+  let expected3 = series [0 => 1]
+  result3 |> shouldEqual expected3
+
+[<Test>]
+let ``Series.windowSize with AtEnding does not throw when size exceeds series length`` () =
+  // Regression test for https://github.com/fslaborg/Deedle/issues/559
+  let empty : Series<int, int> = Series.ofValues []
+  let result1 = empty |> Series.windowSizeInto (1, Boundary.AtEnding) (fun s -> s.Data.KeyCount)
+  result1 |> shouldEqual (series [])
+  let result2 = empty |> Series.windowSizeInto (2, Boundary.AtEnding) (fun s -> s.Data.KeyCount)
+  result2 |> shouldEqual (series [])
+  // Series shorter than window size - 1
+  let short = series [0 => 10]
+  let result3 = short |> Series.windowSizeInto (3, Boundary.AtEnding) (fun s -> s.Data.KeyCount)
+  let expected3 = series [0 => 1]
+  result3 |> shouldEqual expected3
+
+[<Test>]
 let ``Series.chunkInto works correctly on sample input`` () =
   let actual = letters 10 |> Series.chunkInto 4 (fun s -> new String(Array.ofSeq s.Values))
   let expected = series [0 => "ABCD"; 4 => "EFGH" ]
@@ -279,6 +307,41 @@ let ``Can perform string concatenation operations on series of strings`` () =
 // ------------------------------------------------------------------------------------------------
 // Operations - union, grouping, diff, etc.
 // ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Series.diffDate computes TimeSpan differences between consecutive DateTime values``() =
+  let t0 = System.DateTime(2024, 1, 1, 0, 0, 0)
+  let input = series [ 'a' => t0; 'b' => t0.AddHours(1.0); 'c' => t0.AddHours(2.5); 'd' => t0.AddHours(4.0) ]
+  let result = input |> Series.diffDate 1
+  result.['b'] |> shouldEqual (System.TimeSpan.FromHours(1.0))
+  result.['c'] |> shouldEqual (System.TimeSpan.FromMinutes(90.0))
+  result.['d'] |> shouldEqual (System.TimeSpan.FromMinutes(90.0))
+  result |> Series.countKeys |> shouldEqual 3
+  SeriesExtensions.Diff(input, 1) |> shouldEqual result
+
+[<Test>]
+let ``Series.diffDate with negative offset computes future differences``() =
+  let t0 = System.DateTime(2024, 1, 1)
+  let input = series [ 1 => t0; 2 => t0.AddDays(1.0); 3 => t0.AddDays(3.0) ]
+  let result = input |> Series.diffDate -1
+  result.[1] |> shouldEqual (System.TimeSpan.FromDays(-1.0))
+  result.[2] |> shouldEqual (System.TimeSpan.FromDays(-2.0))
+  result |> Series.countKeys |> shouldEqual 2
+
+[<Test>]
+let ``Series.diffDateOffset computes TimeSpan differences between DateTimeOffset values``() =
+  let t0 = System.DateTimeOffset(2024, 1, 1, 0, 0, 0, System.TimeSpan.Zero)
+  let input = series [ 'a' => t0; 'b' => t0.AddHours(2.0); 'c' => t0.AddHours(5.0) ]
+  let result = input |> Series.diffDateOffset 1
+  result.['b'] |> shouldEqual (System.TimeSpan.FromHours(2.0))
+  result.['c'] |> shouldEqual (System.TimeSpan.FromHours(3.0))
+  result |> Series.countKeys |> shouldEqual 2
+
+[<Test>]
+let ``Series.diffDate returns empty series when offset exceeds length``() =
+  let t0 = System.DateTime(2024, 1, 1)
+  let input = series [ 'a' => t0; 'b' => t0.AddDays(1.0) ]
+  input |> Series.diffDate 3 |> Series.countKeys |> shouldEqual 0
 
 [<Test>]
 let ``Series.diff and SeriesExtensions.Diff work on sample input``() =
@@ -1009,3 +1072,86 @@ let ``Masking works as expected`` () =
   let s = series [ 0 => 1.0; 1 => nan; 2 => 3.0 ]
   let t = series [ 1 => 5.0; 2 => 3.0; 4 => 4.0 ]
   (t |> Series.withMissingFrom s) |> shouldEqual (series [ 1 => nan; 2 => 3.0; 4 => 4.0 ])
+
+// ------------------------------------------------------------------------------------------------
+// Scanning, folding and reducing
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Series.scanValues accumulates running sum correctly`` () =
+  let s = series [ 1 => 1.0; 2 => 2.0; 3 => 3.0; 4 => 4.0 ]
+  let result = s |> Series.scanValues (+) 0.0
+  result |> shouldEqual (series [ 1 => 1.0; 2 => 3.0; 3 => 6.0; 4 => 10.0 ])
+
+[<Test>]
+let ``Series.scanValues skips missing values and leaves them missing`` () =
+  let s = Series.ofOptionalObservations [ 1, Some 1.0; 2, None; 3, Some 3.0 ]
+  let result = s |> Series.scanValues (+) 0.0
+  result.TryGet(1) |> shouldEqual (OptionalValue(1.0))
+  result.TryGet(2).HasValue |> shouldEqual false
+  // After a missing value, accumulation continues from the last good accumulator
+  result.TryGet(3) |> shouldEqual (OptionalValue(4.0))
+
+[<Test>]
+let ``Series.foldValues computes running product correctly`` () =
+  let s = series [ "a" => 2.0; "b" => 3.0; "c" => 4.0 ]
+  let result = s |> Series.foldValues (*) 1.0
+  result |> shouldEqual 24.0
+
+[<Test>]
+let ``Series.foldValues skips missing values`` () =
+  let s = Series.ofOptionalObservations [ 1, Some 2.0; 2, None; 3, Some 5.0 ]
+  let result = s |> Series.foldValues (*) 1.0
+  result |> shouldEqual 10.0
+
+[<Test>]
+let ``Series.reduceValues computes sum of series`` () =
+  let s = series [ "x" => 10.0; "y" => 20.0; "z" => 30.0 ]
+  let result = s |> Series.reduceValues (+)
+  result |> shouldEqual 60.0
+
+[<Test>]
+let ``Series.reduceValues skips missing values`` () =
+  let s = Series.ofOptionalObservations [ 1, Some 10.0; 2, None; 3, Some 30.0 ]
+  let result = s |> Series.reduceValues (+)
+  result |> shouldEqual 40.0
+
+[<Test>]
+let ``Series.scanAllValues sees missing values and can carry forward`` () =
+  // scanAllValues receives option wrappers and lets the user decide how to handle them
+  let s = Series.ofOptionalObservations [ 1, Some 1.0; 2, None; 3, Some 3.0 ]
+  // Carry forward the last present value when current is missing
+  let foldFunc (acc:float option) (v:float option) =
+    match acc, v with
+    | Some a, Some x -> Some (a + x)
+    | Some a, None   -> Some a  // carry forward
+    | None, Some x   -> Some x
+    | None, None     -> None
+  let result = s |> Series.scanAllValues foldFunc None
+  result.TryGet(1) |> shouldEqual (OptionalValue(1.0))
+  result.TryGet(2) |> shouldEqual (OptionalValue(1.0))  // carried forward
+  result.TryGet(3) |> shouldEqual (OptionalValue(4.0))
+
+// ------------------------------------------------------------------------------------------------
+// Creating series
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Series.empty returns an empty series with no keys`` () =
+  let s : Series<int, float> = Series.empty
+  s.KeyCount |> shouldEqual 0
+  s.ValueCount |> shouldEqual 0
+
+[<Test>]
+let ``Series.empty can be merged with another series`` () =
+  let empty : Series<int, float> = Series.empty
+  let s = series [ 1 => 1.0; 2 => 2.0 ]
+  let result = Series.merge empty s
+  result |> shouldEqual s
+
+[<Test>]
+let ``Series.empty is distinct per type instantiation`` () =
+  let si : Series<int, float> = Series.empty
+  let ss : Series<string, int> = Series.empty
+  si.KeyCount |> shouldEqual 0
+  ss.KeyCount |> shouldEqual 0

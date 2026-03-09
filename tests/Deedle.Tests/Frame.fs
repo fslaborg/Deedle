@@ -93,6 +93,19 @@ let ``Can read MSFT data from CSV with explicit schema``() =
   actual |> shouldEqual ["A";"B";"C";"D";"E";"F";"G"]
 
 [<Test>]
+let ``Can read CSV with schema where column name contains parentheses``() =
+  // Regression test for issue #348: nameAndTypeRegex was using RightToLeft which caused
+  // incorrect parsing of column names containing parentheses (e.g. "Revenue (USD)(float)")
+  let csv = "Revenue (USD),Count\n100.0,1\n200.0,2"
+  use reader = new System.IO.StringReader(csv)
+  // Schema specifies type for a column whose name contains parentheses
+  let df = Frame.ReadCsv(reader, schema="Revenue (USD)(float),Count(int)")
+  let actual = List.ofSeq df.ColumnKeys
+  actual |> shouldEqual ["Revenue (USD)"; "Count"]
+  df.GetColumn<float>("Revenue (USD)") |> Series.values |> List.ofSeq |> shouldEqual [100.0; 200.0]
+  df.GetColumn<int>("Count") |> Series.values |> List.ofSeq |> shouldEqual [1; 2]
+
+[<Test>]
 let ``Can read MSFT data from CSV and rename``() =
   let df = Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/data/MSFT.csv", schema="Day,Adj Close->Adjusted")
   let actual = List.ofSeq df.ColumnKeys
@@ -182,6 +195,22 @@ col_A
     actual = [| "col_A"; "col_A\r\n2"; "col_B" |] )
 
 [<Test>]
+let ``Can read space-separated file without headers`` () =
+  // Regression test for https://github.com/fslaborg/Deedle/issues/550:
+  // users expect to be able to read space-separated data using separators=" " and hasHeaders=false.
+  let data =
+    "1 2 3\n" +
+    "4 5 6\n" +
+    "7 8 9"
+  use reader = new System.IO.StringReader(data)
+  let df = Frame.ReadCsv(reader, hasHeaders=false, separators=" ", inferTypes=false)
+  df.ColumnKeys |> Seq.toArray |> shouldEqual [| "Column1"; "Column2"; "Column3" |]
+  df |> Frame.countRows |> shouldEqual 3
+  df.GetColumn<string>("Column1").GetAt(0) |> shouldEqual "1"
+  df.GetColumn<string>("Column2").GetAt(1) |> shouldEqual "5"
+  df.GetColumn<string>("Column3").GetAt(2) |> shouldEqual "9"
+
+[<Test>]
 let ``Can read CSV file with empty cell`` () =
   let csv =
     "row,c1,c2,c3\n" +
@@ -240,6 +269,49 @@ let ``Can save MSFT data as CSV file and read it afterwards (with custom format)
     Frame.ReadCsv(file, separators=";", culture="cs-CZ")
     |> Frame.indexRowsDate "Date"
   actual |> shouldEqual expected
+
+[<Test>]
+let ``SaveCsv uses correct CultureInfo for OptionalValue float columns`` () =
+  // Regression test for #544 – OptionalValue<T> columns must honour CultureInfo in SaveCsv.
+  let deDe = System.Globalization.CultureInfo.GetCultureInfo("de-DE")
+  let builder = System.Text.StringBuilder()
+  use writer = new System.IO.StringWriter(builder)
+  // Build a frame where one column is plain float and one is OptionalValue<float>.
+  let df =
+    frame
+      [ "PlainFloat" =?> series [ 0 => 1.5; 1 => 2.5 ]
+        "OptFloat"   =?> series [ 0 => OptionalValue(3.5); 1 => OptionalValue.Missing ] ]
+  FrameExtensions.SaveCsv(df, writer, false, null, ';', deDe)
+  let csv = builder.ToString()
+  // In de-DE the decimal separator is ',' so 1.5 → "1,5" and 3.5 → "3,5"
+  csv |> should contain "1,5"
+  csv |> should contain "2,5"
+  csv |> should contain "3,5"
+  // The missing OptionalValue cell should serialize as empty.
+  // CSV (no row keys): header; row0 = "1,5;3,5"; row1 = "2,5;"
+  let lines = csv.Split([|'\n';'\r'|], System.StringSplitOptions.RemoveEmptyEntries)
+  // Find the data row that contains "2,5" (second row, PlainFloat=2.5, OptFloat=missing)
+  let row1 = lines |> Array.find (fun l -> l.Contains("2,5"))
+  let parts = row1.Split(';')
+  // Last field should be empty (missing OptionalValue)
+  parts |> Array.last |> should equal ""
+
+[<Test>]
+let ``SaveCsv uses correct CultureInfo for OptionalValue float columns (verify no dot decimal)`` () =
+  // Additional check: without the fix the decimal would be written with '.', not ','
+  let deDe = System.Globalization.CultureInfo.GetCultureInfo("de-DE")
+  let builder = System.Text.StringBuilder()
+  use writer = new System.IO.StringWriter(builder)
+  let df =
+    frame
+      [ "A" =?> series [ 0 => 1.1 ]
+        "B" =?> series [ 0 => OptionalValue(2.2) ] ]
+  FrameExtensions.SaveCsv(df, writer, false, null, ';', deDe)
+  let csv = builder.ToString()
+  // In de-DE '.' as a decimal separator should NOT appear in numeric values
+  // (it would appear if culture was ignored). We check both columns use ','
+  csv |> should contain "1,1"
+  csv |> should contain "2,2"
 
 [<Test>]
 let ``Can create frame from IDataReader``() =
@@ -316,6 +388,31 @@ let ``Cannot access typed rows when column is not available`` () =
   let error = try ignore(df.GetRowsAs<IMsftRow>()); "" with e -> e.Message
   error |> should contain "High"
 
+type ISimpleRow =
+  abstract A : float
+  abstract B : float
+
+[<Test>]
+let ``Can mapValues on a GetRowsAs series (issue #545)`` () =
+  // Series.mapValues called Select on the mapFrameRowVector, which used to throw
+  let df = frame [ "A" => Series.ofValues [1.0; 2.0]; "B" => Series.ofValues [3.0; 4.0] ]
+  let rows = df.GetRowsAs<ISimpleRow>()
+  // mapValues id should succeed and return identical rows
+  let mapped = rows |> Series.mapValues id
+  mapped.[0].A |> shouldEqual 1.0
+  mapped.[1].A |> shouldEqual 2.0
+  mapped.[0].B |> shouldEqual 3.0
+  mapped.[1].B |> shouldEqual 4.0
+
+[<Test>]
+let ``Can transform a GetRowsAs series to a different type (issue #545)`` () =
+  let df = frame [ "A" => Series.ofValues [1.0; 2.0]; "B" => Series.ofValues [3.0; 4.0] ]
+  let rows = df.GetRowsAs<ISimpleRow>()
+  // Map rows to a derived value to exercise Select with a non-identity function
+  let values = rows |> Series.mapValues (fun r -> r.A + r.B)
+  values.[0] |> shouldEqual 4.0
+  values.[1] |> shouldEqual 6.0
+
 // ------------------------------------------------------------------------------------------------
 // Constructing frames and getting frame data
 // ------------------------------------------------------------------------------------------------
@@ -383,6 +480,7 @@ let ``Rows of an empty frame should return empty series``() =
 
 type Price = { Open : decimal; High : decimal; Low : Decimal; Close : decimal }
 type Stock = { Date : DateTime; Volume : int; Price : Price }
+type internal InternalPrice = { IOpen : float; IClose : float }
 
 let typedRows () =
   [| for (KeyValue(k,r)) in msft().Rows.Observations ->
@@ -393,11 +491,32 @@ let typedPrices () =
   [| for r in typedRows () -> r.Price |]
 
 [<Test>]
+let ``Frame.ofRecords does not create duplicate columns for F# records`` () =
+  // F# records have compiler-generated backing fields (e.g. Open@) in addition to
+  // the public properties; getExpandableFields must filter these out (issue #569).
+  let prices = typedPrices ()
+  let df = Frame.ofRecords prices
+  // Column count must match field count exactly (no duplicates like "Open@")
+  df.ColumnCount |> shouldEqual 4
+  set df.ColumnKeys |> shouldEqual (set ["Open"; "High"; "Low"; "Close"])
+
+[<Test>]
 let ``Can read simple sequence of records`` () =
   let prices = typedPrices ()
   let df = Frame.ofRecords prices
   set df.ColumnKeys |> shouldEqual (set ["Open"; "High"; "Low"; "Close"])
   df |> Frame.countRows |> shouldEqual prices.Length
+
+[<Test>]
+let ``Can read sequence of internal records`` () =
+  // Regression test for https://github.com/fslaborg/Deedle/issues/562
+  let prices =
+    [| { IOpen = 10.1; IClose = 11.0 }
+       { IOpen = 15.1; IClose = 16.0 }
+       { IOpen = 9.1;  IClose = 10.0 } |]
+  let df = Frame.ofRecords prices
+  set df.ColumnKeys |> shouldEqual (set ["IOpen"; "IClose"])
+  df |> Frame.countRows |> shouldEqual 3
 
 [<Test>]
 let ``Can read simple sequence of records using a specified column as index`` () =
@@ -570,6 +689,27 @@ let ``Filter all rows keeps column keys`` () =
   filt.["X"] |> shouldEqual (series [])
   filt.["Y"] |> shouldEqual (series [])
   (fun () -> filt.["Z"] |> ignore) |> should throw (typeof<ArgumentException>)
+
+[<Test>]
+let ``Filter rows preserves column types when all column values are missing`` () =
+  // Regression test for https://github.com/fslaborg/Deedle/issues/516
+  // filterRows must not change ColumnTypes when the filtered result contains only
+  // missing values in a column (e.g. all-NaN float column after filtering).
+  let df = frame [ "X" => series [1 => 1.0; 2 => nan]
+                   "Y" => series [1 => nan; 2 => 2.0] ]
+  // Filter to row 1 where Y is missing (nan) — Y column type should still be float
+  let filt = df |> Frame.filterRows (fun k _ -> k = 1)
+  filt.RowCount |> shouldEqual 1
+  let colTypes = filt.ColumnTypes |> Seq.toList
+  colTypes.[0] |> shouldEqual typeof<float>
+  colTypes.[1] |> shouldEqual typeof<float>
+
+  // Same via filterRowValues — filter to row 2 where X is missing (nan)
+  let filt2 = df |> Frame.filterRowValues (fun r -> r.GetAs<float>("Y", 0.0) > 1.0)
+  filt2.RowCount |> shouldEqual 1
+  let colTypes2 = filt2.ColumnTypes |> Seq.toList
+  colTypes2.[0] |> shouldEqual typeof<float>
+  colTypes2.[1] |> shouldEqual typeof<float>
 
 [<Test>]
 let ``Filter frame rows by column value`` () =
@@ -753,6 +893,38 @@ let ``Frame.melt preserves type of values`` () =
   let res = df |> Frame.melt
   let colTypes = res.GetFrameData().Columns |> Seq.map (fun (ty,_) -> ty.Name) |> List.ofSeq
   colTypes |> shouldEqual ["Int32"; "String"; "Double"]
+
+[<Test>]
+let ``Frame.unmelt is the inverse of Frame.melt for homogeneous frames`` () =
+  // A homogeneous float frame should survive a melt/unmelt round-trip.
+  let original =
+    frame [ "A" => series [ 1 => 1.0; 2 => 2.0 ]
+            "B" => series [ 1 => 3.0; 2 => 4.0 ] ]
+  let melted = original |> Frame.melt
+  // Melted frame must have exactly the three structural columns.
+  melted.ColumnKeys |> Seq.toArray |> shouldEqual [| "Row"; "Column"; "Value" |]
+  melted |> Frame.countRows |> shouldEqual 4
+  // Round-trip: unmelt should reconstruct the original structure.
+  let roundTripped : Frame<int, string> = melted |> Frame.unmelt
+  set roundTripped.ColumnKeys |> shouldEqual (set ["A"; "B"])
+  roundTripped |> Frame.countRows |> shouldEqual 2
+
+[<Test>]
+let ``Frame.melt skips missing values and Frame.unmelt reconstructs present values`` () =
+  // melt should omit missing cells; unmelt should place values at the right (row, col) address.
+  let df =
+    frame [ "X" => series [ "r1" => 10.0; "r2" => 20.0 ]
+            "Y" => series [ "r1" => 30.0 ] ]   // "r2"/"Y" is missing
+  let melted = df |> Frame.melt
+  // Only the three present cells should appear.
+  melted |> Frame.countRows |> shouldEqual 3
+  let roundTripped : Frame<string, string> = melted |> Frame.unmelt
+  set roundTripped.ColumnKeys |> shouldEqual (set ["X"; "Y"])
+  roundTripped |> Frame.countRows |> shouldEqual 2
+  roundTripped.GetColumn<float>("X").TryGet("r1") |> shouldEqual (OptionalValue 10.0)
+  roundTripped.GetColumn<float>("X").TryGet("r2") |> shouldEqual (OptionalValue 20.0)
+  roundTripped.GetColumn<float>("Y").TryGet("r1") |> shouldEqual (OptionalValue 30.0)
+  roundTripped.GetColumn<float>("Y").TryGet("r2") |> shouldEqual OptionalValue.Missing
 
 [<Test>]
 let ``Can group 10x5k data frame by row of type string (in less than a few seconds)`` () =
@@ -1210,6 +1382,28 @@ let ``Can fill missing values in a frame containing decimals`` () =
   let df1 = frame [ "A" => Series.ofOptionalObservations [ 1 => None; 2 => Some 0.2M ] ]
   let df2 = df1 |> Frame.fillMissingWith 0.1
   df2?A |> shouldEqual <| series [1 => 0.1; 2 => 0.2]
+
+[<Test>]
+let ``indexRowsWith with more keys than rows produces missing values for extra rows (issue 498)`` () =
+  // Regression test: indexRowsWith previously produced a frame with an inconsistent
+  // row index / vector length, causing fillMissingWith to throw or silently no-op.
+  let df =
+    [ {| Value1 = 1.0; Value2 = 2.0 |}
+      {| Value1 = 2.0; Value2 = 3.0 |} ]
+    |> Frame.ofRecords
+  let dfi = df |> Frame.indexRowsWith [0..2]
+  // Row 2 should exist with missing values
+  dfi.RowCount |> shouldEqual 3
+  dfi.TryGetRow(2).HasValue |> shouldEqual true
+  dfi?Value1.TryGet(2).HasValue |> shouldEqual false
+  // fillMissingWith should fill the missing row without throwing
+  let filled = dfi |> Frame.fillMissingWith 0.0
+  filled.RowCount |> shouldEqual 3
+  filled?Value1.[2] |> shouldEqual 0.0
+  filled?Value2.[2] |> shouldEqual 0.0
+  // Original rows should be unchanged
+  filled?Value1.[0] |> shouldEqual 1.0
+  filled?Value2.[1] |> shouldEqual 3.0
 
 // ------------------------------------------------------------------------------------------------
 // Operations - join & zip (handling missing values)
@@ -1710,3 +1904,21 @@ let ``Saving CSV to a stream via the extension method closes the stream when com
   let expected = msft()
   FrameExtensions.SaveCsv (expected, stream, true, ["Date"], ';', cz)
   stream.CanWrite |> shouldEqual false
+
+// ------------------------------------------------------------------------------------------------
+// Creating frames
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Frame.empty returns an empty frame with no rows or columns`` () =
+  let df : Frame<int, string> = Frame.empty
+  df.RowCount |> shouldEqual 0
+  df.ColumnCount |> shouldEqual 0
+
+[<Test>]
+let ``Frame.empty can have columns added to it`` () =
+  let df : Frame<int, string> = Frame.empty
+  let s = series [ 1 => 1.0; 2 => 2.0 ]
+  let result = df |> Frame.addCol "A" s
+  result.ColumnCount |> shouldEqual 1
+  result.RowCount |> shouldEqual 2
