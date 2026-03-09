@@ -1,6 +1,6 @@
 # Release Notes
 
-## 4.0.0 - 2026-03-09
+## 4.0.0-alpha-001 - 2026-03-09
 
 - Migrate to .NET 9
 - Migrate documentation to fsdocs
