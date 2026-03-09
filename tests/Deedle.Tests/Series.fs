@@ -434,6 +434,45 @@ let ``FillMissingUsing nan shall still return series with missing value``() =
   actual |> shouldEqual s
 
 // ------------------------------------------------------------------------------------------------
+// Series.maskValues and Series.maskAll
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``maskValues replaces matching values with missing`` () =
+  let s = series [ 1 => 1.0; 2 => 2.0; 3 => 3.0; 4 => 4.0 ]
+  let masked = s |> Series.maskValues (fun v -> v > 2.0)
+  masked.[1] |> shouldEqual 1.0
+  masked.[2] |> shouldEqual 2.0
+  masked.TryGet(3).HasValue |> shouldEqual false
+  masked.TryGet(4).HasValue |> shouldEqual false
+  masked.KeyCount |> shouldEqual 4
+
+[<Test>]
+let ``maskValues preserves existing missing values`` () =
+  let s = series [ 1 => 1.0; 2 => nan; 3 => 3.0 ]
+  let masked = s |> Series.maskValues (fun v -> v > 2.0)
+  masked.[1] |> shouldEqual 1.0
+  masked.TryGet(2).HasValue |> shouldEqual false
+  masked.TryGet(3).HasValue |> shouldEqual false
+  masked.KeyCount |> shouldEqual 3
+
+[<Test>]
+let ``maskAll can mask on key-value predicate`` () =
+  let s = series [ 1 => 10.0; 2 => 20.0; 3 => 30.0 ]
+  let masked = s |> Series.maskAll (fun k _ -> k = 2)
+  masked.[1] |> shouldEqual 10.0
+  masked.TryGet(2).HasValue |> shouldEqual false
+  masked.[3] |> shouldEqual 30.0
+
+[<Test>]
+let ``maskAll with existing missing value is passed None`` () =
+  let s = series [ 1 => 1.0; 2 => nan; 3 => 3.0 ]
+  let maskedNones = s |> Series.maskAll (fun _ v -> v.IsNone)
+  maskedNones.[1] |> shouldEqual 1.0
+  maskedNones.TryGet(2).HasValue |> shouldEqual false
+  maskedNones.[3] |> shouldEqual 3.0
+
+// ------------------------------------------------------------------------------------------------
 // Sorting and reindexing
 // ------------------------------------------------------------------------------------------------
 
