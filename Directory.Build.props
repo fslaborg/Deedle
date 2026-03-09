@@ -7,6 +7,7 @@
     <FsDocsLicenseLink>https://github.com/fslaborg/Deedle/blob/master/LICENSE.md</FsDocsLicenseLink>
     <FsDocsReleaseNotesLink>https://github.com/fslaborg/Deedle/blob/master/RELEASE_NOTES.md</FsDocsReleaseNotesLink>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <WarnOn>3390</WarnOn>
   </PropertyGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)README.md" Pack="true" PackagePath="\" />

@@ -10,11 +10,12 @@ open System.Collections.Generic
 open System.Diagnostics
 open System.Runtime.InteropServices
 
+/// <summary>
 /// Mutable double ended queue that holds elements in a circular array.
 /// The data structure provides O(1) RemoveFirst and RemoveLast. Add is
 /// O(1) when the deque has enough internal capacity, otherwise it extends
 /// the array 2x (so amortized cost is O(1) too).
-///
+/// </summary>
 /// <exclude />
 [<SerializableAttribute>]
 type Deque<'T>(initCapacity : int) =

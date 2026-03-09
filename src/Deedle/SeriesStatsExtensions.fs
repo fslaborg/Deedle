@@ -83,101 +83,95 @@ type SeriesStatsExtensions =
   [<Extension>]
   static member inline Median(series:Series<'K, 'V>) = Stats.median series
 
+  /// <summary>
   /// Groups the elements of the input series in groups based on the keys
   /// produced by `groupSelector` and then returns a new series containing
   /// the mean of each group.
   ///
   /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
-  ///
-  /// ## Parameters
-  ///  - `series` - A series of values that are used to calculate the means
-  ///  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
-  ///
+  /// </summary>
+  /// <param name="series">A series of values that are used to calculate the means</param>
+  /// <param name="groupSelector">A delegate that returns a new group key, based on the key in the input series</param>
   /// <category>Statistics</category>
   [<Extension>]
   static member inline MeanLevel(series:Series<'K1, 'V>, groupSelector:Func<'K1, 'K2>) =
     Series.applyLevel groupSelector.Invoke Stats.mean series
 
+  /// <summary>
   /// Groups the elements of the input series in groups based on the keys
   /// produced by `groupSelector` and then returns a new series containing
   /// the standard deviation of each group.
   ///
   /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
-  ///
-  /// ## Parameters
-  ///  - `series` - A series of values that are used to calculate the standard deviations
-  ///  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
-  ///
+  /// </summary>
+  /// <param name="series">A series of values that are used to calculate the standard deviations</param>
+  /// <param name="groupSelector">A delegate that returns a new group key, based on the key in the input series</param>
   /// <category>Statistics</category>
   static member inline StdDevLevel(series:Series<'K1, 'V>, groupSelector:Func<'K1, 'K2>) =
     Series.applyLevel groupSelector.Invoke Stats.stdDev series
 
+  /// <summary>
   /// Groups the elements of the input series in groups based on the keys
   /// produced by `groupSelector` and then returns a new series containing
   /// the median of each group.
   ///
   /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
-  ///
-  /// ## Parameters
-  ///  - `series` - A series of values that are used to calculate the medians
-  ///  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
-  ///
+  /// </summary>
+  /// <param name="series">A series of values that are used to calculate the medians</param>
+  /// <param name="groupSelector">A delegate that returns a new group key, based on the key in the input series</param>
   /// <category>Statistics</category>
   [<Extension>]
   static member inline MedianLevel(series:Series<'K1, 'V>, groupSelector:Func<'K1, 'K2>) =
       Series.applyLevel groupSelector.Invoke Stats.median series
 
+  /// <summary>
   /// Groups the elements of the input series in groups based on the keys
   /// produced by `groupSelector` and then returns a new series containing
   /// the sum of each group.
   ///
   /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
-  ///
-  /// ## Parameters
-  ///  - `series` - A series of values that are used to calculate the sums
-  ///  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
-  ///
+  /// </summary>
+  /// <param name="series">A series of values that are used to calculate the sums</param>
+  /// <param name="groupSelector">A delegate that returns a new group key, based on the key in the input series</param>
   /// <category>Statistics</category>
   [<Extension>]
   static member inline SumLevel(series:Series<'K1, 'V>, groupSelector:Func<'K1, 'K2>) =
     Series.applyLevel groupSelector.Invoke Stats.sum series
 
+  /// <summary>
   /// Groups the elements of the input series in groups based on the keys
   /// produced by `groupSelector` and then returns a new series containing
   /// the smallest element of each group.
   ///
   /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
-  ///
-  /// ## Parameters
-  ///  - `series` - A series of values that are used to calculate the smallest elements
-  ///  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
-  ///
+  /// </summary>
+  /// <param name="series">A series of values that are used to calculate the smallest elements</param>
+  /// <param name="groupSelector">A delegate that returns a new group key, based on the key in the input series</param>
   /// <category>Statistics</category>
   [<Extension>]
   static member inline MinLevel(series:Series<'K1, 'V>, groupSelector:Func<'K1, 'K2>) =
     Series.applyLevelOptional groupSelector.Invoke Stats.tryMin series
 
+  /// <summary>
   /// Groups the elements of the input series in groups based on the keys
   /// produced by `groupSelector` and then returns a new series containing
   /// the greatest element of each group.
   ///
   /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
-  ///
-  /// ## Parameters
-  ///  - `series` - A series of values that are used to calculate the greatest elements
-  ///  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
-  ///
+  /// </summary>
+  /// <param name="series">A series of values that are used to calculate the greatest elements</param>
+  /// <param name="groupSelector">A delegate that returns a new group key, based on the key in the input series</param>
   /// <category>Statistics</category>
   [<Extension>]
   static member inline MaxLevel(series:Series<'K1, 'V>, groupSelector:Func<'K1, 'K2>) =
     Series.applyLevelOptional groupSelector.Invoke Stats.tryMax series
 
+  /// <summary>
   /// Linearly interpolates an ordered series given a new sequence of keys.
-  ///
-  /// ## Parameters
-  ///  - `keys` - Sequence of new keys that forms the index of interpolated results
-  ///  - `keyDiff` - A function representing "subtraction" between two keys
-  ///
+  /// </summary>
+  /// <param name="series">The input series to interpolate</param>
+  /// <param name="keys">Sequence of new keys that forms the index of interpolated results</param>
+  /// <param name="keyDiff">A function representing "subtraction" between two keys</param>
   /// <category>Calculations, aggregation and statistics</category>
   [<Extension>]
   static member inline InterpolateLinear(series:Series<'K, 'V>, keys:'K seq, keyDiff:Func<'K,'K,float>): Series<'K,float> =

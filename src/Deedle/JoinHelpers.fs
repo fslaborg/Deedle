@@ -8,10 +8,12 @@ open System
 open Deedle.Indices
 open Deedle.Vectors
 
+/// <summary>
 /// This enumeration specifies joining behavior for `Join` method provided
 /// by `Series` and `Frame`. Outer join unions the keys (and may introduce
 /// missing values), inner join takes the intersection of keys; left and
 /// right joins take the keys of the first or the second series/frame.
+/// </summary>
 ///
 /// <category>Parameters and results of various operations</category>
 type JoinKind =

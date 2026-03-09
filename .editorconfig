@@ -23,6 +23,6 @@ indent_style = space
 indent_size = 2
 
 # F# files
-[*.{fs, fsx, fsi}]
+[*.{fs,fsx,fsi}]
 indent_style = space
 indent_size = 2

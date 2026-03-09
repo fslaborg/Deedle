@@ -5,7 +5,7 @@ open Deedle
 
 /// Linear algebra on frame using MathNet.Numerics library.
 ///
-/// [category:Linear Algebra]
+/// <category>Linear Algebra</category>
 type LinearAlgebra =
   /// Transpose.
   /// Performance is faster than generic Frame.transpose as it only applies to frame of float values
@@ -168,76 +168,76 @@ type LinearAlgebra =
 
 /// Matrix conversions and operators between Frame and Series
 ///
-/// [category:Matrix conversions and operators]
+/// <category>Matrix conversions and operators</category>
 type Matrix =
 
   /// Convert frame to matrix
   ///
-  /// [category: Conversions]
+  /// <category>Conversions</category>
   static member ofFrame df =
     df |> Frame.toMatrix
 
   /// Convert matrix to frame
   ///
-  /// [category: Conversions]
+  /// <category>Conversions</category>
   static member toFrame (rows: 'R seq) (cols: 'C seq) (m:Matrix<float>) =
     m |> Frame.ofMatrix rows cols
 
   /// frame multiply matrix
   ///
-  /// [category: Matrix multiplication]
+  /// <category>Matrix multiplication</category>
   static member dot (df:Frame<'R, 'C>, m2:Matrix<float>) =
     let m1 = df |> Frame.toMatrix
     m1 * m2 |> Frame.ofMatrix df.RowKeys df.RowKeys
 
   /// matrix multiply frame
   ///
-  /// [category: Matrix multiplication]
+  /// <category>Matrix multiplication</category>
   static member dot (m:Matrix<float>, df:Frame<'R, 'C>) =
     let m2 = df |> Frame.toMatrix
     m * m2
 
   /// vector multiply frame
   ///
-  /// [category: Matrix multiplication]
+  /// <category>Matrix multiplication</category>
   static member dot (v:Vector<float>, df:Frame<'R, 'C>) =
     let m = df |> Frame.toMatrix
     v * m
 
   /// frame multiply vector
   ///
-  /// [category: Matrix multiplication]
+  /// <category>Matrix multiplication</category>
   static member dot (df:Frame<'R, 'C>, v:Vector<float>) =
     let m = df |> Frame.toMatrix
     m * v |> Series.ofVector df.RowKeys
 
   /// series multiply matrix
   ///
-  /// [category: Matrix multiplication]
+  /// <category>Matrix multiplication</category>
   static member dot (s:Series<'K, float>, m:Matrix<float>) =
     (Series.toVector s) * m
 
   /// matrix multiply series
   ///
-  /// [category: Matrix multiplication]
+  /// <category>Matrix multiplication</category>
   static member dot (m:Matrix<float>, s:Series<'K, float>) =
     m * (Series.toVector s)
 
   /// vector multiply series
   ///
-  /// [category: Matrix multiplication]
+  /// <category>Matrix multiplication</category>
   static member dot (v:Vector<float>, s:Series<'R, float>) =
     v * (Series.toVector s)
 
   /// series multiply vector
   ///
-  /// [category: Matrix multiplication]
+  /// <category>Matrix multiplication</category>
   static member dot (s:Series<'R, float>, v:Vector<float>) =
     (Series.toVector s) * v
 
   /// frame multiply frame
   ///
-  /// [category: Matrix multiplication]
+  /// <category>Matrix multiplication</category>
   static member dot (df1:Frame<'R0, 'C>, df2:Frame<'C, 'R1>) =
     let set1 = df1.ColumnKeys |> Set.ofSeq
     let set2 = df2.RowKeys |> Set.ofSeq
@@ -250,7 +250,7 @@ type Matrix =
 
   /// frame multiply series
   ///
-  /// [category: Matrix multiplication]
+  /// <category>Matrix multiplication</category>
   static member dot (df:Frame<'R, 'C>, s:Series<'C, float>) =
     let set1 = df.ColumnKeys |> Set.ofSeq
     let set2 = s.Keys |> Set.ofSeq
@@ -265,7 +265,7 @@ type Matrix =
 
   /// series multiply frame
   ///
-  /// [category: Matrix multiplication]
+  /// <category>Matrix multiplication</category>
   static member dot (s:Series<'C, float>, df:Frame<'R, 'C>) =
     let set1 = s.Keys |> Set.ofSeq
     let set2 = df.ColumnKeys |> Set.ofSeq
@@ -280,7 +280,7 @@ type Matrix =
 
   /// series multiply series
   ///
-  /// [category: Matrix multiplication]
+  /// <category>Matrix multiplication</category>
   static member dot (s1:Series<'C, float>, s2:Series<'C, float>) =
     let v1 = Series.toVector s1
     let v2 = Series.toVector s2

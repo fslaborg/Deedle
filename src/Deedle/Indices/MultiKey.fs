@@ -4,9 +4,11 @@
 // Support for multi-key indexing
 // ------------------------------------------------------------------------------------------------
 
+/// <summary>
 /// Represents a special lookup. This can be used to support hierarchical or duplicate keys
-/// in an index. A key type `K` can come with associated `ICustomLookup<K>` to provide
+/// in an index. A key type `K` can come with associated <c>ICustomLookup&lt;K&gt;</c> to provide
 /// customized pattern matching (equality testing)
+/// </summary>
 ///
 /// <category>Parameters and results of various operations</category>
 type ICustomLookup<'K> =
@@ -111,7 +113,9 @@ type SimpleLookup<'T>(patterns) =
 namespace Deedle
 open Deedle.Keys
 
+/// <summary>
 /// F#-friendly functions for creating multi-level keys and lookups
+/// </summary>
 ///
 /// <category>Parameters and results of various operations</category>
 [<AutoOpen>]
@@ -163,7 +167,9 @@ module MultiKeyExtensions =
     SimpleLookup [| Option.map box k1; Option.map box k2; Option.map box k3; Option.map box k4 |] :> ICustomLookup<_>
 
 
+/// <summary>
 /// Module with helper functions for extracting values from hierarchical tuples
+/// </summary>
 ///
 /// <category>Primitive types and values</category>
 module Pair =
