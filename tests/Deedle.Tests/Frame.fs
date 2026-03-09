@@ -394,6 +394,16 @@ let typedPrices () =
   [| for r in typedRows () -> r.Price |]
 
 [<Test>]
+let ``Frame.ofRecords does not create duplicate columns for F# records`` () =
+  // F# records have compiler-generated backing fields (e.g. Open@) in addition to
+  // the public properties; getExpandableFields must filter these out (issue #569).
+  let prices = typedPrices ()
+  let df = Frame.ofRecords prices
+  // Column count must match field count exactly (no duplicates like "Open@")
+  df.ColumnCount |> shouldEqual 4
+  set df.ColumnKeys |> shouldEqual (set ["Open"; "High"; "Low"; "Close"])
+
+[<Test>]
 let ``Can read simple sequence of records`` () =
   let prices = typedPrices ()
   let df = Frame.ofRecords prices
