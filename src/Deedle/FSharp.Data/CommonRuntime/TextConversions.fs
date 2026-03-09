@@ -29,7 +29,7 @@ module private Helpers =
 
   let dateTimeStyles = DateTimeStyles.AllowWhiteSpaces ||| DateTimeStyles.RoundtripKind
 
-  let ParseISO8601FormattedDateTime text cultureInfo =
+  let ParseISO8601FormattedDateTime (text:string) cultureInfo =
     match DateTime.TryParse(text, cultureInfo, dateTimeStyles) with
     | true, d -> d |> Some
     | false, _ -> None
@@ -109,7 +109,7 @@ type TextConversions private() =
       let min = (hourMin%100) |> float |> TimeSpan.FromMinutes
       hr.Add min
 
-    let offset str =
+    let offset (str:string) =
       match Int32.TryParse str with
       | true, v -> getTimeSpanFromHourMin v |> Some
       | false, _ -> None
