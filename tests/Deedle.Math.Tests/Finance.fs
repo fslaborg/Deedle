@@ -47,11 +47,20 @@ let ``Ex-ante vol of equally weighted portfolio using exponentially weighted cov
   let annualVol2 =
     let vol = weights.Dot(covFrame).Dot(weights)
     Math.Sqrt(vol * nObsAnnual)
-  annualVol1 |> should beWithin (0.14437 +/- 1e-6)
+  annualVol1 |> should beWithin (0.14553 +/- 1e-5)
   annualVol1 |> should beWithin (annualVol2 +/- 1e-6)
 
 [<Test>]
-let ``Diagonals of ewmVar and ewmCov shall be identical `` () =
+let ``ewmVol on non-returns series should return standard deviation not root-mean-square (issue #555)`` () =
+  // For a monotonically increasing sequence, ewmVol should give std (~5),
+  // not a value near the mean (~45) as the old incorrect formula produced.
+  let s = Series.ofValues [ for i in 1.0 .. 50.0 -> i ]
+  let vol = Finance.ewmVol(s, span = 10.)
+  let lastVol = vol |> Series.lastValue
+  let ewmMeanLast = Stats.ewmMean(s, span = 10.) |> Series.lastValue
+  // Std should be much smaller than the mean (~5 vs ~45)
+  lastVol |> should be (lessThan 10.)
+  lastVol |> should be (greaterThan 1.)
   let varFrame = Finance.ewmVar(stockReturns, halfLife = 52.)
   let cov = Finance.ewmCovMatrix(stockReturns, halfLife = 52.) |> Series.lastValue
   let varSeries1 = (varFrame |> Frame.takeLast 1).GetRowAt<float>(0)

@@ -13,8 +13,6 @@ type Finance =
   ///
   /// [category: Exponentially Weighted Moving]
   static member ewmVol (x:Series<'R, float>, ?com, ?span, ?halfLife, ?alpha) =
-    // Return to RiskMetrics: The Evolution of a Standard
-    // https://www.msci.com/documents/10199/dbb975aa-5dc2-4441-aa2d-ae34ab5f0945
     let alpha = StatsInternal.ewDecay(com, span, halfLife, alpha)
     let x = x |> Series.dropMissing
     if x.KeyCount < 2 then
@@ -23,13 +21,15 @@ type Finance =
       let init = x |> Stats.stdDev
       let data = x.Values |> Array.ofSeq
       let res = Array.zeroCreate x.KeyCount
-      for i in [|0..x.KeyCount-1|] do
-        if i = 0 then
-          res.[i] <- init
-        else
-          let prev = res.[i-1]
-          let curr = data.[i]
-          res.[i] <- Math.Sqrt((1. - alpha) * prev * prev + alpha * curr * curr)
+      let mutable mean = data.[0]
+      let mutable var = init * init
+      res.[0] <- init
+      for i in 1..x.KeyCount-1 do
+        let prevMean = mean
+        let curr = data.[i]
+        mean <- (1.0 - alpha) * mean + alpha * curr
+        var <- (1.0 - alpha) * var + alpha * (curr - prevMean) * (curr - prevMean)
+        res.[i] <- Math.Sqrt(var)
       Series(x.Keys, res)
 
   /// Exponentially weighted moving volatility on frame
@@ -60,20 +60,21 @@ type Finance =
   ///
   /// [category: Exponentially Weighted Moving]
   static member ewmCovMatrix (df:Frame<'R, 'C>, ?com, ?span, ?halfLife, ?alpha) =
-    // Return to RiskMetrics: The Evolution of a Standard
-    // https://www.msci.com/documents/10199/dbb975aa-5dc2-4441-aa2d-ae34ab5f0945
     let alpha = StatsInternal.ewDecay(com, span, halfLife, alpha)
     let nCol = df.ColumnCount
     let matrix = df |> Frame.toMatrix
     let res = Array.create df.RowCount (DenseMatrix.zero nCol nCol)
+    let mutable meanVec = matrix.Row(0)
     for i in [|0..df.RowCount-1|] do
       if i = 0 then
         res.[i] <- Stats.covMatrix df
       else
-        res.[i] <-
-          let vector = matrix.Row(i)
-          let inc = vector.ToColumnMatrix() * vector.ToRowMatrix()
-          (1. - alpha) * res.[i-1] + alpha * inc
+        let prevMean = meanVec.Clone()
+        let row = matrix.Row(i)
+        meanVec <- (1.0 - alpha) * meanVec + alpha * row
+        let dev = row - prevMean
+        let inc = dev.ToColumnMatrix() * dev.ToRowMatrix()
+        res.[i] <- (1. - alpha) * res.[i-1] + alpha * inc
     Series(df.RowKeys, res)
 
   /// Exponentially weighted moving covariance frame
