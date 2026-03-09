@@ -983,7 +983,13 @@ module Frame =
   /// <category>Frame transformations</category>
   [<CompiledName("WhereRows")>]
   let filterRows f (frame:Frame<'R, 'C>) =
-    frame.Rows |> Series.filter f |> FrameUtils.fromRowsAndColumnKeys frame.IndexBuilder frame.VectorBuilder frame.ColumnIndex.Keys
+    // Filter rows using the predicate, then rebuild frame column-wise to preserve column types.
+    // (Going through fromRowsAndColumnKeys loses type info when all column values are missing.)
+    let filteredRows = frame.Rows |> Series.filter f
+    let newIdx = filteredRows.Index
+    let relocs = frame.IndexBuilder.Reindex(frame.RowIndex, newIdx, Lookup.Exact, VectorConstruction.Return 0, fun _ -> true)
+    let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder newIdx.AddressingScheme relocs)
+    Frame<_, _>(newIdx, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
   /// Returns a new data frame containing only the rows of the input frame
   /// for which the specified predicate returns `true`. The predicate is called
@@ -997,7 +1003,12 @@ module Frame =
   /// <category>Frame transformations</category>
   [<CompiledName("WhereRowValues")>]
   let filterRowValues f (frame:Frame<'R, 'C>) =
-    frame.Rows |> Series.filterValues f |> FrameUtils.fromRowsAndColumnKeys frame.IndexBuilder frame.VectorBuilder frame.ColumnIndex.Keys
+    // Filter rows using the predicate, then rebuild frame column-wise to preserve column types.
+    let filteredRows = frame.Rows |> Series.filterValues f
+    let newIdx = filteredRows.Index
+    let relocs = frame.IndexBuilder.Reindex(frame.RowIndex, newIdx, Lookup.Exact, VectorConstruction.Return 0, fun _ -> true)
+    let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder newIdx.AddressingScheme relocs)
+    Frame<_, _>(newIdx, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
 
   /// Returns a new data frame containing only the rows of the input frame

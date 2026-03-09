@@ -611,6 +611,27 @@ let ``Filter all rows keeps column keys`` () =
   (fun () -> filt.["Z"] |> ignore) |> should throw (typeof<ArgumentException>)
 
 [<Test>]
+let ``Filter rows preserves column types when all column values are missing`` () =
+  // Regression test for https://github.com/fslaborg/Deedle/issues/516
+  // filterRows must not change ColumnTypes when the filtered result contains only
+  // missing values in a column (e.g. all-NaN float column after filtering).
+  let df = frame [ "X" => series [1 => 1.0; 2 => nan]
+                   "Y" => series [1 => nan; 2 => 2.0] ]
+  // Filter to row 1 where Y is missing (nan) — Y column type should still be float
+  let filt = df |> Frame.filterRows (fun k _ -> k = 1)
+  filt.RowCount |> shouldEqual 1
+  let colTypes = filt.ColumnTypes |> Seq.toList
+  colTypes.[0] |> shouldEqual typeof<float>
+  colTypes.[1] |> shouldEqual typeof<float>
+
+  // Same via filterRowValues — filter to row 2 where X is missing (nan)
+  let filt2 = df |> Frame.filterRowValues (fun r -> r.GetAs<float>("Y", 0.0) > 1.0)
+  filt2.RowCount |> shouldEqual 1
+  let colTypes2 = filt2.ColumnTypes |> Seq.toList
+  colTypes2.[0] |> shouldEqual typeof<float>
+  colTypes2.[1] |> shouldEqual typeof<float>
+
+[<Test>]
 let ``Filter frame rows by column value`` () =
   let df = frame [ "X" =?> series [| "a" => true; "c" => false; "e" => true; "f" => false |]
                    "Y" =?> series [| "a" => 4.0; "c" => nan; "e" => 6.0; "f" => 4.0 |] ]
