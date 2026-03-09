@@ -30,7 +30,7 @@ open Deedle.Addressing
 /// extending the DataFrame library and adding a new way of storing or loading data.
 /// To allow invocation via Reflection, the vector exposes type of elements as `System.Type`.
 ///
-/// [category:Vectors and indices]
+/// <category>Vectors and indices</category>
 type IVector =
   /// Returns all values of the vector as a sequence of optional objects
   abstract ObjectSequence : seq<OptionalValue<obj>>
@@ -63,7 +63,7 @@ type IVector =
 /// Represents a generic function `\forall.'T.(IVector<'T> -> 'R)`. The function can be
 /// generically invoked on an argument of type `IVector` using `IVector.Invoke`
 ///
-/// [category:Vectors and indices]
+/// <category>Vectors and indices</category>
 and VectorCallSite<'R> =
   abstract Invoke<'T> : IVector<'T> -> 'R
 
@@ -72,7 +72,7 @@ and VectorCallSite<'R> =
 /// so we use this interface to delay the calculation of the Offset (which is mainly
 /// needed in one of the `series.Select` overloads)
 ///
-/// [category:Vectors and indices]
+/// <category>Vectors and indices</category>
 and IVectorLocation =
   /// Returns the address of the location (this should be immediate)
   abstract Address : Address
@@ -84,7 +84,7 @@ and IVectorLocation =
 /// implemented in a number of ways to provide vector backed by database or an
 /// alternative representation of data.
 ///
-/// [category:Vectors and indices]
+/// <category>Vectors and indices</category>
 and IVector<'T> =
   inherit IVector
   /// Returns value stored in the vector at a specified address.
@@ -117,7 +117,7 @@ and IVector<'T> =
 /// the extension property `vec.DataSequence` returns all data of the vector converted
 /// to the "least common denominator" data structure - `IEnumerable<T>`.
 ///
-/// [category:Vectors and indices]
+/// <category>Vectors and indices</category>
 [<AutoOpen>]
 module ``F# Vector extensions (core)`` =
   type IVector<'T> with

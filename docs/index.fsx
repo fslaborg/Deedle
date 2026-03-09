@@ -1,14 +1,25 @@
-(*** hide ***)
-#r "netstandard"
-#load "../../bin/net45/Deedle.fsx"
+(**
+---
+title: Deedle: Exploratory data library for .NET
+category: Documentation
+categoryindex: 1
+index: 1
+---
+*)
+(*** condition: prepare ***)
+#nowarn "211"
+#r "../bin/net9.0/Deedle.dll"
+(*** condition: fsx ***)
+#if FSX
+#r "nuget: Deedle,{{fsdocs-package-version}}"
+#endif // FSX
+
 open System
 open Deedle
+
 let root = __SOURCE_DIRECTORY__ + "/data/"
 
 (**
-Deedle: Exploratory data library for .NET
-=========================================
-
 
 Deedle is an easy to use library for data and time series manipulation and for scientific 
 programming. It supports working with structured data frames, ordered and unordered data, 
@@ -25,14 +36,12 @@ Assume we loaded [Titanic data set](http://www.kaggle.com/c/titanic-gettingStart
 into a data frame called `titanic` (the data frame has numerous columns including int
 `Pclass` and Boolean `Survived`). Now we can calculate the survival rates for three different
 classes of tickets:
-
-<div id="hp-snippeta">
 *)
-(*** define-output: sample ***)
+
 // Read Titanic data & group rows by 'Pclass'
 let titanic = Frame.ReadCsv(root + "titanic.csv").GroupRowsBy<int>("Pclass")
 
-// Get 'Survived' column and count survival count per clsas
+// Get 'Survived' column and count survival count per class
 let byClass =
   titanic.GetColumn<bool>("Survived")
   |> Series.applyLevel fst (fun s ->
@@ -49,43 +58,27 @@ byClass?Total <- byClass?Died + byClass?Survived
 // Build a data frame with nice summary of rates in percents
 frame [ "Died (%)" => round (byClass?Died / byClass?Total * 100.0)
         "Survived (%)" => round (byClass?Survived / byClass?Total * 100.0) ]
-(**
-</div>
-
-<style type="text/css">
-.hp-table th, .hp-table td { width: 140px; }
-.hp-table th:first-child, .hp-table td:first-child { width: 90px; }
-</style>
-<div class="hp-table">
-*)
-
-(*** include-it: sample ***)
 
 (**
-</div>
-
 We first group data by the `Pclass` and get the `Survived` column as a series
 of Boolean values. Then we reduce each group using `applyLevel`. This calls a specified
 function for each passenger class. We count the number of survivors and casualties.
-Then we add nice namings, sort the frame and build a new data frame with a nice summary:
+Then we add nice namings, sort the frame and build a new data frame with a nice summary.
 
 ### How to get Deedle
 
- * The library is available as [Deedle on NuGet](https://www.nuget.org/packages/Deedle). To get the
-   can also [get the code from GitHub](https://github.com/fslaborg/Deedle/)
+ * The library is available as [Deedle on NuGet](https://www.nuget.org/packages/Deedle).
+   You can also [get the code from GitHub](https://github.com/fslaborg/Deedle/)
    or download [the source as a ZIP file](https://github.com/fslaborg/Deedle/zipball/master).
-   Compiled binaries are also available for [download as a ZIP file](https://github.com/fslaborg/Deedle/zipball/release).
 
  * If you want to use Deedle with F# Data, R type provider and other F# components for data science,
-   consider using the [FsLab package](https://www.nuget.org/packages/FsLab). When using Visual Studio,
-   you can also install [the FsLab project template](http://visualstudiogallery.msdn.microsoft.com/45373b36-2a4c-4b6a-b427-93c7a8effddb).
+   consider using the [FsLab package](https://www.nuget.org/packages/FsLab).
 
-Samples & documentation
------------------------
+## Samples & documentation
 
 The library comes with comprehensible documentation. The tutorials and articles are 
 automatically generated from `*.fsx` files in [the docs folder][docs]. The API
-reference is automatically generated from Markdown comments in the library implementation.
+reference is automatically generated from XML documentation in the library implementation.
 
  * [Quick start tutorial](tutorial.html) shows how to use the most important 
    features of F# DataFrame library. Start here to learn how to use the library in 10 minutes.
@@ -98,12 +91,11 @@ reference is automatically generated from Markdown comments in the library imple
    windows, chunking, sampling and statistics.
 
  * [Calculating frame and series statistics](stats.html) shows how to calculate statistical
-   indicators such as mean, variance, skweness and other. The tutorial also covers moving
+   indicators such as mean, variance, skewness and other. The tutorial also covers moving
    window and expanding window statistics.
 
- * The Deedle library can be used from both F# and C#. We aim to provide idiomatic API for
-   both of the languages. Read the [using Deedle from C#](csharpintro.html) page for more 
-   information about the C#-friendly API.
+ * [Creating lazily loaded series](lazysource.html) explains how to create virtual series
+   backed by an external data source that loads data on demand.
 
 Automatically generated documentation for all types, modules and functions in the library 
 is available in the [API Reference](reference/index.html). The three most important modules
@@ -114,44 +106,27 @@ that are fully documented are the following:
  * [`Frame` module](reference/deedle-framemodule.html) provides functions that are similar
    to those in the `Series` module, but operate on entire data frames.
  * [`Stats` module](reference/deedle-stats.html) implements standard statistical functions,
-   moving windows and a lot more. It contains functions for both series and frames.
+   moving windows and a lot more.
 
 More functions related to linear algebra, statistical analysis and financial analysis can be 
 found in Deedle.Math extension. Deedle.Math has dependency on MathNet.Numerics.
 
- * [`LinearAlgebra` module](http://fslab.org/Deedle/reference/deedle-math-linearalgebra.html) 
- provides linear algebra functions on frame.
- * [`Matrix` module](http://fslab.org/Deedle/reference/deedle-math-matrix.html) provides matrix 
- multiplication between frame, series, matrix and vector. They are also available via type extensions.
- * [`Stats` module](http://fslab.org/Deedle/reference/deedle-math-stats.html) provides extra statistical 
- functions on frame and series by applying existing functions in MathNet.Numerics.
- * [`Finance` module](http://fslab.org/Deedle/reference/deedle-math-finance.html) provides statistical 
- functions specific to finance domain.   
-
- 
-Contributing and copyright
---------------------------
+## Contributing and copyright
 
 The project is hosted on [GitHub][gh] where you can [report issues][issues], fork 
 the project and submit pull requests. If you're adding new public API, please also 
-consider adding [samples][samples] that can be turned into a documentation. You might
+consider adding [samples][samples] that can be turned into documentation. You might
 also want to read [library design notes](design.html) to understand how it works.
-
-If you are interested in F# and data science more generally, consider also joining
-the [F# data science and machine learning][fsharp-dwg] working group, which coordinates
-work on data science projects for F#.
 
 The library has been developed by [BlueMountain Capital](https://www.bluemountaincapital.com/)
 and contributors. It is available under the BSD license, which allows modification and 
 redistribution for both commercial and non-commercial purposes. For more information see the 
 [License file][license] in the GitHub repository. 
 
-
-  [docs]: https://github.com/fslaborg/Deedle/tree/master/docs/content
-  [samples]: https://github.com/fslaborg/Deedle/tree/master/docs/content/samples
+  [docs]: https://github.com/fslaborg/Deedle/tree/master/docs
+  [samples]: https://github.com/fslaborg/Deedle/tree/master/docs
   [gh]: https://github.com/fslaborg/Deedle
   [issues]: https://github.com/fslaborg/Deedle/issues
   [readme]: https://github.com/fslaborg/Deedle/blob/master/README.md
   [license]: https://github.com/fslaborg/Deedle/blob/master/LICENSE.md
-  [fsharp-dwg]: http://fsharp.org/technical-groups/
 *)

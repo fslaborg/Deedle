@@ -1,56 +1,26 @@
 source https://api.nuget.org/v3/index.json
 
 nuget FsCheck
-nuget FSharp.Charting
+nuget FSharp.Compiler.Service
 nuget FSharp.Data
 nuget MathNet.Numerics
 nuget MathNet.Numerics.FSharp
-nuget NUnit 3.9.0
-nuget NUnit.ConsoleRunner 3.8.0
-nuget FsUnit 3.0.0
+nuget NUnit
+nuget NUnit.ConsoleRunner
+nuget FsUnit
 nuget System.Reflection.Emit
 nuget System.Reflection.Emit.Lightweight
-nuget FSharp.Core 4.5.2
-nuget Microsoft.NET.Test.Sdk 16.4.0
-nuget NUnit3TestAdapter 3.9.0
+nuget FSharp.Core
+nuget Microsoft.NET.Test.Sdk
+nuget NUnit3TestAdapter
 nuget Microsoft.CSharp
-nuget DynamicInterop
 nuget NetOfficeFw.Core
 nuget NetOfficeFw.Excel
-nuget FSharp.Formatting
 
 group interactive
     source https://api.nuget.org/v3/index.json
-    framework: netstandard2.1
-    nuget FSharp.Core 4.6.2
-    nuget Microsoft.DotNet.Interactive 1.0.0-beta.22314.1
-    nuget Microsoft.DotNet.Interactive.Formatting 1.0.0-beta.22314.1
+    framework: net9.0
+    nuget FSharp.Core
+    nuget Microsoft.DotNet.Interactive
+    nuget Microsoft.DotNet.Interactive.Formatting
 
-group RProviderPlugin
-    source https://api.nuget.org/v3/index.json
-    framework: net5.0
-
-    nuget FSharp.Core 4.6.2
-    nuget RProvider 2.0.2
-    nuget System.ComponentModel.Composition
-    nuget NUnit3TestAdapter 3.9.0
-    nuget NUnit 3.9.0
-    nuget Microsoft.NET.Test.Sdk 16.4.0
-    nuget FsUnit 3.0.0
-
-// [ FAKE GROUP ]
-group Build
-    source https://api.nuget.org/v3/index.json
-    framework: netstandard2.0
-
-    nuget Fake.Core.ReleaseNotes
-    nuget Fake.DotNet.Cli
-    nuget Fake.Tools.Git
-    nuget Fake.IO.FileSystem
-    nuget Fake.Core.Target
-    nuget NuGet.CommandLine
-    nuget Fake.BuildServer.AppVeyor
-    nuget Fake.BuildServer.Travis
-    nuget Fake.DotNet.AssemblyInfoFile
-    nuget Fake.DotNet.NuGet
-    nuget Fake.DotNet.Fsi
