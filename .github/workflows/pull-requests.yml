@@ -9,48 +9,42 @@ jobs:
   build-windows:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v1
-      - uses: r-lib/actions/setup-r@v1
-        name: Setup R environment
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
         with:
-            r-version: '4.0.2'
-      - name: Set R environment variables (for RProvider)
-        run: echo "R_HOME=$(R RHOME)" >> "$GITHUB_ENV"
-        shell: bash
-      - name: Install R package dependencies
-        run: Rscript -e "install.packages(c('zoo'), repos = 'http://cran.us.r-project.org')"
-        shell: bash
-      - name: Setup .NET Core
-        uses: actions/setup-dotnet@v1
+          dotnet-version: '9.0.x'
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
         with:
-          dotnet-version: 5.0.103
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('paket.lock') }}
+          restore-keys: ${{ runner.os }}-nuget-
       - name: Restore .NET local tools
         run: dotnet tool restore
       - name: Restore packages
         run: dotnet paket restore
       - name: Build and test
-        run: dotnet fake build
+        run: .\build.ps1
+        shell: pwsh
 
   build-ubuntu:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
-      - name: Set R environment variables (for RProvider)
-        run:  |
-          mkdir -p ~/.local/lib/R
-          echo "R_LIBS_USER=~/.local/lib/R" >> "$GITHUB_ENV"
-          echo "R_HOME=$(R RHOME)" >> "$GITHUB_ENV"
-        shell: bash
-      - name: Install R package dependencies
-        run: Rscript -e "install.packages(c('zoo'))"
-        shell: bash
-      - name: Setup .NET Core
-        uses: actions/setup-dotnet@v1
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 5.0.103
+          dotnet-version: '9.0.x'
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('paket.lock') }}
+          restore-keys: ${{ runner.os }}-nuget-
       - name: Restore .NET local tools
         run: dotnet tool restore
       - name: Restore packages
         run: dotnet paket restore
       - name: Build and test
-        run: dotnet fake build
+        run: ./build.sh

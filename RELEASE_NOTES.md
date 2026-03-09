@@ -1,5 +1,12 @@
 # Release Notes
 
+## 4.0.0 - 2026-03-09
+
+- Migrate to .NET 9
+- Migrate documentation to fsdocs
+- Remove FAKE build system, replace with simple build scripts
+- Remove R Provider plugin
+
 ## 3.0.0 - 2023-01-17
 
 - Fix missing value in Stats.cov[552](https://github.com/fslaborg/Deedle/pull/552)

@@ -16,7 +16,7 @@ open Deedle.VectorHelpers
 /// overlapping keys in two series that are being unioned. The options include preferring values
 /// from the left/right series or throwing an exception when both values are available.
 ///
-/// [category:Parameters and results of various operations]
+/// <category>Parameters and results of various operations</category>
 type UnionBehavior =
   /// When there are values available in both series that are being unioned, prefer the left value.
   | PreferLeft = 0
@@ -33,7 +33,7 @@ type UnionBehavior =
 /// (This type should not generally be used directly, but it can be used when you need
 /// to write code that works on a sequence of series of heterogeneous types).
 ///
-/// [category:Core frame and series types]
+/// <category>Core frame and series types</category>
 type ISeries<'K when 'K : equality> =
   /// Returns the vector containing data of the series (as an untyped vector)
   abstract Vector : Deedle.IVector
@@ -47,7 +47,7 @@ type ISeries<'K when 'K : equality> =
 /// The type `Series<K, V>` represents a data series consisting of values `V` indexed by
 /// keys `K`. The keys of a series may or may not be ordered
 ///
-/// [category:Core frame and series types]
+/// <category>Core frame and series types</category>
 and
   Series<'K, 'V when 'K : equality>
     ( index:IIndex<'K>, vector:IVector<'V>,
@@ -78,13 +78,13 @@ and
   /// Returns the index associated with this series. This member should not generally
   /// be accessed directly, because all functionality is exposed through series operations.
   ///
-  /// [category:Series data]
+  /// <category>Series data</category>
   member x.Index = index
 
   /// Returns the vector associated with this series. This member should not generally
   /// be accessed directly, because all functionality is exposed through series operations.
   ///
-  /// [category:Series data]
+  /// <category>Series data</category>
   member x.Vector = vector
 
   /// Returns a collection of keys that are defined by the index of this series.
@@ -92,7 +92,7 @@ and
   /// if there are missing values. To get matching sequence, use the `Observations`
   /// property or `Series.observation`.
   ///
-  /// [category:Series data]
+  /// <category>Series data</category>
   member x.Keys = seq { for kvp in index.Mappings -> kvp.Key }
 
   /// Returns a collection of values that are available in the series data.
@@ -100,7 +100,7 @@ and
   /// if there are missing values. To get matching sequence, use the `Observations`
   /// property or `Series.observation`.
   ///
-  /// [category:Series data]
+  /// <category>Series data</category>
   member x.Values =
     index.Mappings
     |> Seq.choosel (fun idx kvp ->
@@ -110,7 +110,7 @@ and
   /// Returns a collection of values, including possibly missing values. Note that
   /// the length of this sequence matches the `Keys` sequence.
   ///
-  /// [category:Series data]
+  /// <category>Series data</category>
   member x.ValuesAll =
     index.Mappings
     |> Seq.mapl (fun idx kvp ->
@@ -120,7 +120,7 @@ and
   /// skips over all missing (or NaN) values. Observations are returned as `KeyValuePair<K, V>`
   /// objects. For an F# alternative that uses tuples, see `Series.observations`.
   ///
-  /// [category:Series data]
+  /// <category>Series data</category>
   member x.Observations =
     index.Mappings
     |> Seq.choosel (fun idx kvp ->
@@ -133,7 +133,7 @@ and
   /// `KeyValuePair<K, OptionalValue<V>>` objects. For an F# alternative that uses tuples,
   /// see `Series.observationsAll`.
   ///
-  /// [category:Series data]
+  /// <category>Series data</category>
   member x.ObservationsAll =
     index.Mappings
     |> Seq.mapl (fun idx kvp ->
@@ -142,27 +142,27 @@ and
 
   ///
   ///
-  /// [category:Series data]
+  /// <category>Series data</category>
   member x.IsEmpty = Seq.isEmpty index.Mappings
 
-  /// [category:Series data]
+  /// <category>Series data</category>
   member x.IsOrdered = index.IsOrdered
 
-  /// [category:Series data]
+  /// <category>Series data</category>
   member x.KeyRange = index.KeyRange
 
   /// Returns the total number of keys in the specified series. This returns
   /// the total length of the series, including keys for which there is no
   /// value available.
   ///
-  /// [category:Series data]
+  /// <category>Series data</category>
   member x.KeyCount = int index.KeyCount
 
   /// Returns the total number of values in the specified series. This excludes
   /// missing values or not available values (such as values created from `null`,
   /// `Double.NaN`, or those that are missing due to outer join etc.).
   ///
-  /// [category:Series data]
+  /// <category>Series data</category>
   member x.ValueCount =
     if valueCount = -1 then
       // In concurrent access, we may run this multiple times,
@@ -183,13 +183,13 @@ and
     let vec = vectorBuilder.Build(newIndex.AddressingScheme, cmd, [| vector |])
     Series(newIndex, vec, vectorBuilder, indexBuilder)
 
-  /// [category:Accessors and slicing]
+  /// <category>Accessors and slicing</category>
   member x.GetSubrange(lo, hi) =
     let newIndex, newVector = indexBuilder.GetRange((index, Vectors.Return 0), (lo, hi))
     let newVector = vectorBuilder.Build(newIndex.AddressingScheme, newVector, [| vector |])
     Series(newIndex, newVector, vectorBuilder, indexBuilder)
 
-  /// [category:Accessors and slicing]
+  /// <category>Accessors and slicing</category>
   [<EditorBrowsable(EditorBrowsableState.Never)>]
   member x.GetSlice(lo, hi) =
     let inclusive v = v |> Option.map (fun v -> v, BoundaryBehavior.Inclusive)
@@ -222,7 +222,7 @@ and
   ///
   ///  * `keys` - A collection of keys in the current series.
   ///
-  /// [category:Accessors and slicing]
+  /// <category>Accessors and slicing</category>
   member x.GetItems(keys) = x.GetItems(keys, Lookup.Exact)
 
   /// Returns a new series with an index containing the specified keys.
@@ -238,7 +238,7 @@ and
   ///    the current series. `Lookup.NearestGreater` and `Lookup.NearestSmaller`
   ///    can be used when the current series is ordered.
   ///
-  /// [category:Accessors and slicing]
+  /// <category>Accessors and slicing</category>
   member series.GetItems(keys, lookup) =
     let newIndex = indexBuilder.Create<_>((keys:seq<_>), None)
     let cmd = indexBuilder.Reindex(index, newIndex, lookup, Vectors.Return 0, fun addr -> series.Vector.GetValue(addr).HasValue)
@@ -246,7 +246,7 @@ and
     Series(newIndex, newVector, vectorBuilder, indexBuilder)
 
   ///
-  /// [category:Accessors and slicing]
+  /// <category>Accessors and slicing</category>
   member x.TryGetObservation(key, lookup) =
     let address = index.Lookup(key, lookup, fun addr -> vector.GetValue(addr).HasValue)
     match address with
@@ -254,7 +254,7 @@ and
     | OptionalValue.Present(key, addr) -> vector.GetValue(addr) |> OptionalValue.map (fun v -> KeyValuePair(key, v))
 
   ///
-  /// [category:Accessors and slicing]
+  /// <category>Accessors and slicing</category>
   member x.GetObservation(key, lookup) =
     let mapping = index.Lookup(key, lookup, fun addr -> vector.GetValue(addr).HasValue)
     if not mapping.HasValue then keyNotFound key
@@ -263,17 +263,17 @@ and
     KeyValuePair(fst mapping.Value, value.Value)
 
   ///
-  /// [category:Accessors and slicing]
+  /// <category>Accessors and slicing</category>
   member x.TryGet(key, lookup) =
     x.TryGetObservation(key, lookup) |> OptionalValue.map (fun (KeyValue(_, v)) -> v)
 
   ///
-  /// [category:Accessors and slicing]
+  /// <category>Accessors and slicing</category>
   member x.Get(key, lookup) =
     x.GetObservation(key, lookup).Value
 
   ///
-  /// [category:Accessors and slicing]
+  /// <category>Accessors and slicing</category>
   member x.GetByLevel(key:ICustomLookup<'K>) =
     let newIndex, levelCmd = indexBuilder.LookupLevel((index, Vectors.Return 0), key)
     let newVector = vectorBuilder.Build(newIndex.AddressingScheme, levelCmd, [| vector |])
@@ -281,7 +281,7 @@ and
 
   /// Attempts to get a value at the specified 'key'
   ///
-  /// [category:Accessors and slicing]
+  /// <category>Accessors and slicing</category>
   member x.TryGetObservation(key) =
     let addr = index.Locate(key)
     if addr = Address.invalid then OptionalValue.Missing
@@ -290,7 +290,7 @@ and
       OptionalValue(KeyValuePair(key, value))
 
   ///
-  /// [category:Accessors and slicing]
+  /// <category>Accessors and slicing</category>
   member x.GetObservation(key) =
     let addr = index.Locate(key)
     if addr = Address.invalid then keyNotFound key
@@ -299,14 +299,14 @@ and
     KeyValuePair(key, value.Value)
 
   ///
-  /// [category:Accessors and slicing]
+  /// <category>Accessors and slicing</category>
   member x.TryGet(key) =
     let addr = x.Index.Locate(key)
     if addr = Address.invalid then OptionalValue.Missing
     else x.Vector.GetValue(addr)
 
   ///
-  /// [category:Accessors and slicing]
+  /// <category>Accessors and slicing</category>
   member x.Get(key) =
     let addr = x.Index.Locate(key)
     if addr = Address.invalid then keyNotFound key
@@ -316,15 +316,15 @@ and
       | OptionalValue.Present v -> v
 
   ///
-  /// [category:Accessors and slicing]
+  /// <category>Accessors and slicing</category>
   member x.TryGetAt(index : int) =
     x.Vector.GetValue(x.Index.AddressAt(int64 index))
 
-  /// [category:Accessors and slicing]
+  /// <category>Accessors and slicing</category>
   member x.GetKeyAt(index : int) =
     x.Index.KeyAt(x.Index.AddressAt(int64 index))
 
-  /// [category:Accessors and slicing]
+  /// <category>Accessors and slicing</category>
   member x.GetAt(index : int) =
     if x.Index.IsEmpty then
       raise (new IndexOutOfRangeException("Series is empty"))
@@ -332,24 +332,24 @@ and
       x.TryGetAt(index).Value
 
   ///
-  /// [category:Accessors and slicing]
+  /// <category>Accessors and slicing</category>
   member x.Item with get(a) = x.Get(a)
   ///
-  /// [category:Accessors and slicing]
+  /// <category>Accessors and slicing</category>
   member x.Item with get(items) = x.GetItems items
   ///
-  /// [category:Accessors and slicing]
+  /// <category>Accessors and slicing</category>
   member x.Item with get(a) = x.GetByLevel(a)
 
   ///
-  /// [category:Accessors and slicing]
+  /// <category>Accessors and slicing</category>
   static member (?) (series:Series<_, _>, name:string) = series.Get(name, Lookup.Exact)
 
   // ----------------------------------------------------------------------------------------------
   // Projection and filtering
   // ----------------------------------------------------------------------------------------------
 
-  /// [category:Projection and filtering]
+  /// <category>Projection and filtering</category>
   member x.Where(f:System.Func<KeyValuePair<'K, 'V>, int, bool>) =
     let keys, optValues =
       index.Mappings
@@ -363,11 +363,11 @@ and
     let newVector = vectorBuilder.CreateMissing(optValues)
     Series(newIndex, newVector, vectorBuilder, indexBuilder )
 
-  /// [category:Projection and filtering]
+  /// <category>Projection and filtering</category>
   member x.Where(f:System.Func<KeyValuePair<'K, 'V>, bool>) =
     x.Where(fun kvp _ -> f.Invoke kvp)
 
-  /// [category:Projection and filtering]
+  /// <category>Projection and filtering</category>
   member x.WhereOptional(f:System.Func<KeyValuePair<'K, OptionalValue<'V>>, bool>) =
     let keys, optValues =
       [| for KeyValue(key, addr) in index.Mappings do
@@ -378,7 +378,7 @@ and
     let newVector = vectorBuilder.CreateMissing(optValues)
     Series(newIndex, newVector, vectorBuilder, indexBuilder )
 
-  /// [category:Projection and filtering]
+  /// <category>Projection and filtering</category>
   member x.Select<'R>(f:System.Func<KeyValuePair<'K, 'V>, int, 'R>) =
     let newVector = vector.Select(fun loc value ->
       value |> OptionalValue.bind (fun v ->
@@ -388,20 +388,20 @@ and
     let newIndex = indexBuilder.Project(index)
     Series<'K, 'R>(newIndex, newVector, vectorBuilder, indexBuilder )
 
-  /// [category:Projection and filtering]
+  /// <category>Projection and filtering</category>
   member x.Convert<'R>(forward:System.Func<'V, 'R>, backward:System.Func<'R, 'V>) =
     let newVector = vector.Convert(forward.Invoke, backward.Invoke)
     let newIndex = indexBuilder.Project(index)
     Series<'K, 'R>(newIndex, newVector, vectorBuilder, indexBuilder )
 
-  /// [category:Projection and filtering]
+  /// <category>Projection and filtering</category>
   member x.Select<'R>(f:System.Func<KeyValuePair<'K, 'V>, 'R>) =
     x.SelectOptional(fun kvp ->
       kvp.Value |> OptionalValue.bind (fun v ->
         try OptionalValue(f.Invoke(KeyValuePair(kvp.Key, v)))
         with :? MissingValueException -> OptionalValue.Missing ))
 
-  /// [category:Projection and filtering]
+  /// <category>Projection and filtering</category>
   member x.SelectKeys<'R when 'R : equality>(f:System.Func<KeyValuePair<'K, OptionalValue<'V>>, 'R>) =
     let newKeys =
       [| for KeyValue(key, addr) in index.Mappings ->
@@ -410,7 +410,7 @@ and
     let newVector = vectorBuilder.Build(newIndex.AddressingScheme, Vectors.Return 0, [| vector |])
     Series<'R, _>(newIndex, newVector, vectorBuilder, indexBuilder )
 
-  /// [category:Projection and filtering]
+  /// <category>Projection and filtering</category>
   member x.SelectOptional<'R>(f:System.Func<KeyValuePair<'K, OptionalValue<'V>>, OptionalValue<'R>>) =
     let newVector = vector.Select(fun loc value ->
       let key = index.KeyAt(loc.Address)
@@ -418,7 +418,7 @@ and
     let newIndex = indexBuilder.Project(index)
     Series<'K, 'R>(newIndex, newVector, vectorBuilder, indexBuilder )
 
-  /// [category:Projection and filtering]
+  /// <category>Projection and filtering</category>
   member x.SelectValues<'T>(f:System.Func<'V, 'T>) =
     x.Select(fun kvp -> f.Invoke kvp.Value)
 
@@ -436,13 +436,13 @@ and
   static member ($) (f, series: Series<'K,'V>) =
     series.SelectValues(Func<_,_>(f))
 
-  /// [category:Projection and filtering]
+  /// <category>Projection and filtering</category>
   member x.Reversed =
     let newIndex = index.Keys |> Array.ofSeq |> Array.rev
     let newVector = vector.DataSequence |> Array.ofSeq |> Array.rev
     Series(Index.ofKeys newIndex, vectorBuilder.CreateMissing(newVector), vectorBuilder, indexBuilder)
 
-  /// [category:Projection and filtering]
+  /// <category>Projection and filtering</category>
   member x.ScanValues(foldFunc:System.Func<'S,'V,'S>, init) =
     let newVector = [|
       let accum = ref init
@@ -455,7 +455,7 @@ and
 
     Series(index, vectorBuilder.CreateMissing(newVector), vectorBuilder, indexBuilder)
 
-  /// [category:Projection and filtering]
+  /// <category>Projection and filtering</category>
   member x.ScanAllValues(foldFunc:System.Func<OptionalValue<'S>,OptionalValue<'V>,OptionalValue<'S>>, init) =
     let newVector = vector.DataSequence |> Seq.scan (fun x y -> foldFunc.Invoke(x, y)) init |> Seq.skip 1 |> Seq.toArray
     Series(index, vectorBuilder.CreateMissing(newVector), vectorBuilder, indexBuilder)
@@ -463,7 +463,7 @@ and
   /// Returns the current series with the same index but with values missing wherever the
   /// corresponding key exists in the other series index with an associated missing value.
   ///
-  /// [category:Projection and filtering]
+  /// <category>Projection and filtering</category>
   member x.WithMissingFrom(otherSeries: Series<'K, _>) =
     let newVec = x.ObservationsAll |> Seq.map (fun obs ->
       match otherSeries.TryGetObservation(obs.Key) with
@@ -475,7 +475,7 @@ and
   // Merging, joining etc
   // ----------------------------------------------------------------------------------------------
 
-  /// [category:Merging, joining and zipping]
+  /// <category>Merging, joining and zipping</category>
   member series.Merge(otherSeries:Series<'K, 'V>) =
     // Append the row indices and get transformation that combines two column vectors
     // (LeftOrRight - specifies that when column exist in both data frames then fail)
@@ -485,11 +485,11 @@ and
     let newVector = vectorBuilder.Build(newIndex.AddressingScheme, cmd, [| series.Vector; otherSeries.Vector |])
     Series(newIndex, newVector, vectorBuilder, indexBuilder)
 
-  /// [category:Merging, joining and zipping]
+  /// <category>Merging, joining and zipping</category>
   member series.Merge(otherSeries:seq<Series<'K, 'V>>) =
     series.Merge(Array.ofSeq otherSeries)
 
-  /// [category:Merging, joining and zipping]
+  /// <category>Merging, joining and zipping</category>
   member series.Merge([<ParamArray>] otherSeries:Series<'K, 'V>[]) =
     // Append the row indices and get transformation that combines two column vectors
     // (LeftOrRight - specifies that when column exist in both data frames then fail)
@@ -501,7 +501,7 @@ and
     let newVector = vectorBuilder.Build(newIndex.AddressingScheme, cmd, [| yield series.Vector; yield! vectors |])
     Series(newIndex, newVector, vectorBuilder, indexBuilder)
 
-  /// [category:Merging, joining and zipping]
+  /// <category>Merging, joining and zipping</category>
   member series.Merge(another:Series<'K, 'V>, behavior) =
     let newIndex, vec1, vec2 = indexBuilder.Union( (series.Index, Vectors.Return 0), (another.Index, Vectors.Return 1) )
     let transform =
@@ -520,7 +520,7 @@ and
   ///  - `keys` - An array of keys to be used for replacing of the series
   ///  - `value` - A value to replace any values for `keys`
   ///
-  /// [category:Merging, joining and zipping]
+  /// <category>Merging, joining and zipping</category>
   member series.Replace(keys:'K[], value) =
     series.Select(fun kvp ->
       if (Array.exists (fun v -> v = kvp.Key) keys) then
@@ -535,7 +535,7 @@ and
   ///  - `key` - A key to be used for replacing of the series
   ///  - `value` - A value to replace value for `key`
   ///
-  /// [category:Merging, joining and zipping]
+  /// <category>Merging, joining and zipping</category>
   member series.Replace(key:'K, value) =
     series.Select(fun kvp ->
       if kvp.Key = key then
@@ -544,7 +544,7 @@ and
         kvp.Value
     )
 
-  /// [category:Merging, joining and zipping]
+  /// <category>Merging, joining and zipping</category>
   member series.Intersect(another:Series<'K, 'V>)=
     let intersectIndex, _, _ = indexBuilder.Intersect( (series.Index, Vectors.Return 0), (another.Index, Vectors.Return 1) )
 
@@ -558,7 +558,7 @@ and
     let newVector = vectorBuilder.CreateMissing(optValues)
     Series(newIndex, newVector, vectorBuilder, indexBuilder )
 
-  /// [category:Merging, joining and zipping]
+  /// <category>Merging, joining and zipping</category>
   member series.Compare(another: Series<'K, 'V>)=
     let unionIndex, _, _ = indexBuilder.Union( (series.Index, Vectors.Return 0), (another.Index, Vectors.Return 1) )
 
@@ -578,11 +578,11 @@ and
     let newVector = vectorBuilder.Create<Diff<'V>>(optValues)
     Series(newIndex, newVector, vectorBuilder, indexBuilder )
 
-  /// [category:Merging, joining and zipping]
+  /// <category>Merging, joining and zipping</category>
   member series.Zip<'V2>(otherSeries:Series<'K, 'V2>) =
     series.Zip(otherSeries, JoinKind.Outer, Lookup.Exact)
 
-  /// [category:Merging, joining and zipping]
+  /// <category>Merging, joining and zipping</category>
   member series.Zip<'V2>(otherSeries:Series<'K, 'V2>, kind) =
     series.Zip(otherSeries, kind, Lookup.Exact)
 
@@ -596,7 +596,7 @@ and
     let rVec = vectorBuilder.Build(newIndex.AddressingScheme, otherRowCmd, [| otherSeries.Vector |])
     newIndex, lVec, rVec
 
-  /// [category:Merging, joining and zipping]
+  /// <category>Merging, joining and zipping</category>
   member series.Zip<'V2>(otherSeries:Series<'K, 'V2>, kind, lookup) : Series<'K, 'V opt * 'V2 opt> =
     let newIndex, lVec, rVec = series.ZipHelper(otherSeries, kind, lookup)
     let vecRes =
@@ -609,7 +609,7 @@ and
     let zipV = vectorBuilder.Build<'V opt * 'V2 opt>(newIndex.AddressingScheme, vecRes, args)
     Series(newIndex, zipV, vectorBuilder, indexBuilder)
 
-  /// [category:Merging, joining and zipping]
+  /// <category>Merging, joining and zipping</category>
   member series.ZipInner<'V2>(otherSeries:Series<'K, 'V2>) : Series<'K, 'V * 'V2> =
     let newIndex, lVec, rVec = series.ZipHelper(otherSeries, JoinKind.Inner, Lookup.Exact)
 
@@ -652,7 +652,7 @@ and
   /// This operation is only supported on ordered series. The method throws
   /// `InvalidOperationException` when the series is not ordered.
   ///
-  /// [category:Resampling]
+  /// <category>Resampling</category>
   member x.Resample<'TNewKey, 'R when 'TNewKey : equality>(keys, direction, valueSelector:Func<_, _, _>, keySelector:Func<_, _, _>) =
     let newIndex, newVector =
       indexBuilder.Resample
@@ -684,7 +684,7 @@ and
   /// This operation is only supported on ordered series. The method throws
   /// `InvalidOperationException` when the series is not ordered.
   ///
-  /// [category:Resampling]
+  /// <category>Resampling</category>
   member x.Resample(keys, direction, valueSelector) =
     x.Resample(keys, direction, valueSelector, fun nk _ -> nk)
 
@@ -704,7 +704,7 @@ and
   /// This operation is only supported on ordered series. The method throws
   /// `InvalidOperationException` when the series is not ordered.
   ///
-  /// [category:Resampling]
+  /// <category>Resampling</category>
   member x.Resample(keys, direction) =
     x.Resample(keys, direction, (fun k v -> v), fun nk _ -> nk)
 
@@ -731,7 +731,7 @@ and
   ///     let res = input.Pairwise()
   ///     res = series [2 => ('a', 'b'); 3 => ('b', 'c') ]
   ///
-  /// [category:Windowing, chunking and grouping]
+  /// <category>Windowing, chunking and grouping</category>
   member x.Pairwise(boundary) =
     let dir = if boundary = Boundary.AtEnding then Direction.Forward else Direction.Backward
     let newIndex, newVector =
@@ -768,7 +768,7 @@ and
   ///     let res = input.Pairwise()
   ///     res = series [2 => ('a', 'b'); 3 => ('b', 'c') ]
   ///
-  /// [category:Windowing, chunking and grouping]
+  /// <category>Windowing, chunking and grouping</category>
   member x.Pairwise() =
     x.Pairwise(Boundary.Skip).Select(fun (kvp:KeyValuePair<_, DataSegment<_>>) -> kvp.Value.Data)
 
@@ -783,7 +783,7 @@ and
   ///  - `keySelector` - A function that is called on each chunk to obtain a key.
   ///  - `valueSelector` - A value selector function that is called to aggregate each chunk or window.
   ///
-  /// [category:Windowing, chunking and grouping]
+  /// <category>Windowing, chunking and grouping</category>
   member x.Aggregate<'TNewKey, 'R when 'TNewKey : equality>
         (aggregation, keySelector:Func<_, _>, valueSelector:Func<_, _>) =
     let newIndex, newVector =
@@ -808,7 +808,7 @@ and
   ///    a discriminated union listing various chunking and windowing conditions.
   ///  - `observationSelector` - A function that is called on each chunk to obtain a key and a value.
   ///
-  /// [category:Windowing, chunking and grouping]
+  /// <category>Windowing, chunking and grouping</category>
   member x.Aggregate<'TNewKey, 'R when 'TNewKey : equality>
         (aggregation, observationSelector:Func<_, KeyValuePair<_, _>>) =
     let newIndex, newVector =
@@ -829,7 +829,7 @@ and
   ///  - `keySelector` - Generates a new key that is used for aggregation, based on the original
   ///    key and value. The new key must support equality testing.
   ///
-  /// [category:Windowing, chunking and grouping]
+  /// <category>Windowing, chunking and grouping</category>
   member x.GroupBy(keySelector:Func<_, _>) =
     let index = x.Index
     let ks key =  x.TryGet(key) |> OptionalValue.map (fun v -> keySelector.Invoke(KeyValuePair(key, v)))
@@ -847,7 +847,7 @@ and
   ///  - `keys` - Sequence of new keys that forms the index of interpolated results
   ///  - `f` - Function to do the interpolating
   ///
-  /// [category:Windowing, chunking and grouping]
+  /// <category>Windowing, chunking and grouping</category>
   member x.Interpolate(keys:'K seq, f:Func<'K, OptionalValue<KeyValuePair<'K,'V>>, OptionalValue<KeyValuePair<'K,'V>>, 'V>) =
     let newObs =
       seq {
@@ -865,7 +865,7 @@ and
   // Indexing
   // ----------------------------------------------------------------------------------------------
 
-  /// [category:Indexing]
+  /// <category>Indexing</category>
   member x.Realign(newKeys) =
     let findAll getter = seq {
       for k in newKeys ->
@@ -880,13 +880,13 @@ and
   /// The elements of the series are assigned index according to the current order, or in a
   /// non-deterministic way, if the current index is not ordered.
   ///
-  /// [category:Indexing]
+  /// <category>Indexing</category>
   member x.IndexOrdinally() =
     let newIndex = indexBuilder.Create(x.Index.Keys |> Seq.mapi (fun i _ -> i), Some true)
     let newVector = vectorBuilder.Build(newIndex.AddressingScheme, Vectors.Return 0, [| vector |])
     Series<int, _>(newIndex, newVector, vectorBuilder, indexBuilder)
 
-  /// [category:Indexing]
+  /// <category>Indexing</category>
   member x.IndexWith(keys:seq<_>) =
     let newIndex = indexBuilder.Create(keys, None)
     let vectorCmd =
@@ -943,148 +943,148 @@ and
     let vector = series1.VectorBuilder.Build<'T>(newIndex.AddressingScheme, vecRes, [| series1.Vector; series2.Vector |])
     Series(newIndex, vector, series1.VectorBuilder, series1.IndexBuilder)
 
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member (~-)(series) = Series<'K, _>.UnaryOperation<float>(series, (~-))
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member (~-)(series) = Series<'K, _>.UnaryOperation<decimal>(series, (~-))
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member (~-)(series) = Series<'K, _>.UnaryOperation<int>(series, (~-))
 
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member (+) (scalar, series) = Series<'K, _>.ScalarOperationR<int>(scalar, series, (+))
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member (+) (series, scalar) = Series<'K, _>.ScalarOperationL<int>(series, scalar, (+))
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member (-) (scalar, series) = Series<'K, _>.ScalarOperationR<int>(scalar, series, (-))
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member (-) (series, scalar) = Series<'K, _>.ScalarOperationL<int>(series, scalar, (-))
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member (*) (scalar, series) = Series<'K, _>.ScalarOperationR<int>(scalar, series, (*))
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member (*) (series, scalar) = Series<'K, _>.ScalarOperationL<int>(series, scalar, (*))
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member (/) (scalar, series) = Series<'K, _>.ScalarOperationR<int>(scalar, series, (/))
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member (/) (series, scalar) = Series<'K, _>.ScalarOperationL<int>(series, scalar, (/))
 
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member (+) (scalar, series) = Series<'K, _>.ScalarOperationR<float>(scalar, series, (+))
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member (+) (series, scalar) = Series<'K, _>.ScalarOperationL<float>(series, scalar, (+))
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member (-) (scalar, series) = Series<'K, _>.ScalarOperationR<float>(scalar, series, (-))
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member (-) (series, scalar) = Series<'K, _>.ScalarOperationL<float>(series, scalar, (-))
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member (*) (scalar, series) = Series<'K, _>.ScalarOperationR<float>(scalar, series, (*))
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member (*) (series, scalar) = Series<'K, _>.ScalarOperationL<float>(series, scalar, (*))
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member (/) (scalar, series) = Series<'K, _>.ScalarOperationR<float>(scalar, series, (/))
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member (/) (series, scalar) = Series<'K, _>.ScalarOperationL<float>(series, scalar, (/))
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member Pow (scalar, series) = Series<'K, _>.ScalarOperationR<float>(scalar, series, ( ** ))
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member Pow (series, scalar) = Series<'K, _>.ScalarOperationL<float>(series, scalar, ( ** ))
 
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member (+) (scalar, series) = Series<'K, _>.ScalarOperationR<decimal>(scalar, series, (+))
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member (+) (series, scalar) = Series<'K, _>.ScalarOperationL<decimal>(series, scalar, (+))
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member (-) (scalar, series) = Series<'K, _>.ScalarOperationR<decimal>(scalar, series, (-))
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member (-) (series, scalar) = Series<'K, _>.ScalarOperationL<decimal>(series, scalar, (-))
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member (*) (scalar, series) = Series<'K, _>.ScalarOperationR<decimal>(scalar, series, (*))
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member (*) (series, scalar) = Series<'K, _>.ScalarOperationL<decimal>(series, scalar, (*))
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member (/) (scalar, series) = Series<'K, _>.ScalarOperationR<decimal>(scalar, series, (/))
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member (/) (series, scalar) = Series<'K, _>.ScalarOperationL<decimal>(series, scalar, (/))
 
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member (+) (s1, s2) = Series<'K, _>.VectorOperation<int>(s1, s2, (+))
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member (-) (s1, s2) = Series<'K, _>.VectorOperation<int>(s1, s2, (-))
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member (*) (s1, s2) = Series<'K, _>.VectorOperation<int>(s1, s2, (*))
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member (/) (s1, s2) = Series<'K, _>.VectorOperation<int>(s1, s2, (/))
 
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member (+) (s1, s2) = Series<'K, _>.VectorOperation<float>(s1, s2, (+))
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member (-) (s1, s2) = Series<'K, _>.VectorOperation<float>(s1, s2, (-))
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member (*) (s1, s2) = Series<'K, _>.VectorOperation<float>(s1, s2, (*))
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member (/) (s1, s2) = Series<'K, _>.VectorOperation<float>(s1, s2, (/))
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member Pow(s1, s2) = Series<'K, _>.VectorOperation<float>(s1, s2, ( ** ))
 
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member (+) (s1, s2) = Series<'K, _>.VectorOperation<decimal>(s1, s2, (+))
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member (-) (s1, s2) = Series<'K, _>.VectorOperation<decimal>(s1, s2, (-))
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member (*) (s1, s2) = Series<'K, _>.VectorOperation<decimal>(s1, s2, (*))
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member (/) (s1, s2) = Series<'K, _>.VectorOperation<decimal>(s1, s2, (/))
 
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member (+) (s1, s2) = Series<'K, _>.VectorOperation<string>(s1, s2, (+))
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member (+) (series, scalar) = Series<'K, _>.ScalarOperationL<string>(series, scalar, (+))
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member (+) (scalar, series) = Series<'K, _>.ScalarOperationR<string>(scalar, series, (+))
 
   // Trigonometric
 
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member Acos(series) = Series<'K, _>.UnaryOperation<float>(series, acos)
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member Asin(series) = Series<'K, _>.UnaryOperation<float>(series, asin)
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member Atan(series) = Series<'K, _>.UnaryOperation<float>(series, atan)
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member Sin(series) = Series<'K, _>.UnaryOperation<float>(series, sin)
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member Sinh(series) = Series<'K, _>.UnaryOperation<float>(series, sinh)
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member Cos(series) = Series<'K, _>.UnaryOperation<float>(series, cos)
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member Cosh(series) = Series<'K, _>.UnaryOperation<float>(series, cosh)
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member Tan(series) = Series<'K, _>.UnaryOperation<float>(series, tan)
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member Tanh(series) = Series<'K, _>.UnaryOperation<float>(series, tanh)
 
   // Actually useful
 
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member Abs(series) = Series<'K, _>.UnaryOperation<float>(series, abs)
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member Abs(series) = Series<'K, _>.UnaryOperation<int>(series, abs)
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member Ceiling(series) = Series<'K, _>.UnaryOperation<float>(series, ceil)
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member Exp(series) = Series<'K, _>.UnaryOperation<float>(series, exp)
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member Floor(series) = Series<'K, _>.UnaryOperation<float>(series, floor)
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member Truncate(series) = Series<'K, _>.UnaryOperation<float>(series, truncate)
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member Log(series) = Series<'K, _>.UnaryOperation<float>(series, log)
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member Log10(series) = Series<'K, _>.UnaryOperation<float>(series, log10)
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member Round(series) = Series<'K, _>.UnaryOperation<float>(series, round)
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member Sign(series) = Series<'K, _>.UnaryGenericOperation<_, float, _>(series, sign)
-  /// [category:Operators]
+  /// <category>Operators</category>
   static member Sqrt(series) = Series<'K, _>.UnaryGenericOperation<_, float, _>(series, sqrt)
 
   // ----------------------------------------------------------------------------------------------
@@ -1246,7 +1246,7 @@ and
 /// such as `os.GetAs<'T>`, `os.TryGetAs<'T>` and `os.TryAs<'T>` which (attempt to) convert
 /// values to the specified type `'T`.
 ///
-/// [category:Specialized frame and series types]
+/// <category>Specialized frame and series types</category>
 type ObjectSeries<'K when 'K : equality> internal(index:IIndex<_>, vector, vectorBuilder, indexBuilder) =
   inherit Series<'K, obj>(index, vector, vectorBuilder, indexBuilder)
 
