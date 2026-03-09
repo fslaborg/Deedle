@@ -145,15 +145,12 @@ namespace Deedle
 /// ---------------------------------
 ///
 /// The functions in this group can be used to write computations over frames that may fail.
-/// They use the type `tryval<'T>` which is defined as a discriminated union:
-/// <code>
-///     type tryval&lt;'T&gt; =
-///       | Success of 'T
-///       | Error of exn
-/// </code>
-/// Using `tryval<'T>` as a value in a data frame is not generally recommended, because
+/// They use the type <c>tryval&lt;'T&gt;</c> which is defined as a discriminated union
+/// with two cases: Success containing a value, or Error containing an exception.
+///
+/// Using <c>tryval&lt;'T&gt;</c> as a value in a data frame is not generally recommended, because
 /// the type of values cannot be tracked in the type. For this reason, it is better to use
-/// `tryval<'T>` with individual series. However, `tryValues` and `fillErrorsWith` functions
+/// <c>tryval&lt;'T&gt;</c> with individual series. However, `tryValues` and `fillErrorsWith` functions
 /// can be used to get values, or fill failed values inside an entire data frame.
 ///
 /// The `tryMapRows` function is more useful. It can be used to write a transformation

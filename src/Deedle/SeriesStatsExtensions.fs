@@ -169,6 +169,7 @@ type SeriesStatsExtensions =
   /// <summary>
   /// Linearly interpolates an ordered series given a new sequence of keys.
   /// </summary>
+  /// <param name="series">The input series to interpolate</param>
   /// <param name="keys">Sequence of new keys that forms the index of interpolated results</param>
   /// <param name="keyDiff">A function representing "subtraction" between two keys</param>
   /// <category>Calculations, aggregation and statistics</category>

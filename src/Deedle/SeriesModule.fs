@@ -79,13 +79,10 @@ open Deedle.VectorHelpers
 /// ---------------------------------
 ///
 /// The functions in this group can be used to write computations over series that may fail.
-/// They use the type <c>tryval&lt;'T&gt;</c> which is defined as a discriminated union:
+/// They use the type <c>tryval&lt;&apos;T&gt;</c> which is defined as a discriminated union
+/// with two cases: Success containing a value, or Error containing an exception.
 ///
-///     type <c>tryval&lt;'T&gt;</c> =
-///       | Success of 'T
-///       | Error of exn
-///
-/// The function `tryMap` lets you create <c>Series&lt;'K, tryval&lt;'T&gt;&gt;</c> by mapping over values
+/// The function `tryMap` lets you create <c>Series&lt;&apos;K, tryval&lt;&apos;T&gt;&gt;</c> by mapping over values
 /// of an original series. You can then extract values using `tryValues`, which throws
 /// `AggregateException` if there were any errors. Functions `tryErrors` and `trySuccesses`
 /// give series containing only errors and successes. You can fill failed values with
@@ -95,7 +92,7 @@ open Deedle.VectorHelpers
 /// -----------------------------
 ///
 /// When the key of a series is tuple, the elements of the tuple can be treated
-/// as multiple levels of a index. For example <c>Series&lt;'K1 * 'K2, 'V&gt;</c> has two
+/// as multiple levels of a index. For example <c>Series&lt;&apos;K1 * &apos;K2, &apos;V&gt;</c> has two
 /// levels with keys of types <c>'K1</c> and <c>'K2</c> respectively.
 ///
 /// The functions in this cateogry provide a way for aggregating values in the

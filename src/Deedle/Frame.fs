@@ -1274,8 +1274,6 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   /// Shows the data frame content in a human-readable format. The resulting string
   /// shows all columns, but a limited number of rows.
   /// </summary>
-  /// <param name="startCount">The number of rows at the beginning to be printed</param>
-  /// <param name="endCount">The number of rows at the end of the frame to be printed</param>
   /// <param name="printTypes">When true, the types of vectors storing column data are printed</param>
   /// <category>Formatting and raw data access</category>
   member frame.Format(printTypes) =
