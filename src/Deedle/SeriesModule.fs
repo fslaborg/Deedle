@@ -1825,3 +1825,45 @@ module Series =
   let zipInto (op:'V1->'V2->'R) (series1:Series<'K, 'V1>) (series2:Series<'K, 'V2>) : Series<'K, 'R> =
     (series1, series2) ||> zipAlignInto JoinKind.Inner Lookup.Exact (fun a b ->
       match a, b with Some a, Some b -> Some (op a b) | _ -> None)
+
+  /// Returns a series containing the difference (as <c>TimeSpan</c>) between a
+  /// <c>DateTime</c> value in the original series and a <c>DateTime</c> value at the
+  /// specified offset. For example, calling <c>Series.diffDate 1 s</c> returns a series
+  /// where the previous timestamp is subtracted from the current one. In pseudo-code:
+  ///
+  ///     result[k] = series[k] - series[k - offset]
+  ///
+  /// Note: Unlike <c>Series.diff</c> for numeric types, this function handles the
+  /// heterogeneous subtraction (DateTime - DateTime = TimeSpan) by using <c>shift</c>
+  /// and <c>zipInto</c> internally.
+  ///
+  /// ## Parameters
+  ///  - `offset` - When positive, subtracts the past values from the current values;
+  ///    when negative, subtracts the future values from the current values.
+  ///  - `series` - The input series of <c>DateTime</c> values.
+  ///
+  /// [category:Series transformations]
+  [<CompiledName("DiffDate")>]
+  let diffDate offset (series:Series<'K, System.DateTime>) : Series<'K, System.TimeSpan> =
+    (series, series |> shift offset) ||> zipInto (fun curr prev -> curr - prev)
+
+  /// Returns a series containing the difference (as <c>TimeSpan</c>) between a
+  /// <c>DateTimeOffset</c> value in the original series and a <c>DateTimeOffset</c> value
+  /// at the specified offset. For example, calling <c>Series.diffDateOffset 1 s</c> returns
+  /// a series where the previous timestamp is subtracted from the current one. In pseudo-code:
+  ///
+  ///     result[k] = series[k] - series[k - offset]
+  ///
+  /// Note: Unlike <c>Series.diff</c> for numeric types, this function handles the
+  /// heterogeneous subtraction (DateTimeOffset - DateTimeOffset = TimeSpan) by using
+  /// <c>shift</c> and <c>zipInto</c> internally.
+  ///
+  /// ## Parameters
+  ///  - `offset` - When positive, subtracts the past values from the current values;
+  ///    when negative, subtracts the future values from the current values.
+  ///  - `series` - The input series of <c>DateTimeOffset</c> values.
+  ///
+  /// [category:Series transformations]
+  [<CompiledName("DiffDateOffset")>]
+  let diffDateOffset offset (series:Series<'K, System.DateTimeOffset>) : Series<'K, System.TimeSpan> =
+    (series, series |> shift offset) ||> zipInto (fun curr prev -> curr - prev)

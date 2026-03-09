@@ -309,6 +309,41 @@ let ``Can perform string concatenation operations on series of strings`` () =
 // ------------------------------------------------------------------------------------------------
 
 [<Test>]
+let ``Series.diffDate computes TimeSpan differences between consecutive DateTime values``() =
+  let t0 = System.DateTime(2024, 1, 1, 0, 0, 0)
+  let input = series [ 'a' => t0; 'b' => t0.AddHours(1.0); 'c' => t0.AddHours(2.5); 'd' => t0.AddHours(4.0) ]
+  let result = input |> Series.diffDate 1
+  result.['b'] |> shouldEqual (System.TimeSpan.FromHours(1.0))
+  result.['c'] |> shouldEqual (System.TimeSpan.FromMinutes(90.0))
+  result.['d'] |> shouldEqual (System.TimeSpan.FromMinutes(90.0))
+  result |> Series.countKeys |> shouldEqual 3
+  SeriesExtensions.Diff(input, 1) |> shouldEqual result
+
+[<Test>]
+let ``Series.diffDate with negative offset computes future differences``() =
+  let t0 = System.DateTime(2024, 1, 1)
+  let input = series [ 1 => t0; 2 => t0.AddDays(1.0); 3 => t0.AddDays(3.0) ]
+  let result = input |> Series.diffDate -1
+  result.[1] |> shouldEqual (System.TimeSpan.FromDays(-1.0))
+  result.[2] |> shouldEqual (System.TimeSpan.FromDays(-2.0))
+  result |> Series.countKeys |> shouldEqual 2
+
+[<Test>]
+let ``Series.diffDateOffset computes TimeSpan differences between DateTimeOffset values``() =
+  let t0 = System.DateTimeOffset(2024, 1, 1, 0, 0, 0, System.TimeSpan.Zero)
+  let input = series [ 'a' => t0; 'b' => t0.AddHours(2.0); 'c' => t0.AddHours(5.0) ]
+  let result = input |> Series.diffDateOffset 1
+  result.['b'] |> shouldEqual (System.TimeSpan.FromHours(2.0))
+  result.['c'] |> shouldEqual (System.TimeSpan.FromHours(3.0))
+  result |> Series.countKeys |> shouldEqual 2
+
+[<Test>]
+let ``Series.diffDate returns empty series when offset exceeds length``() =
+  let t0 = System.DateTime(2024, 1, 1)
+  let input = series [ 'a' => t0; 'b' => t0.AddDays(1.0) ]
+  input |> Series.diffDate 3 |> Series.countKeys |> shouldEqual 0
+
+[<Test>]
 let ``Series.diff and SeriesExtensions.Diff work on sample input``() =
   let input = series [ 'a' => 1; 'b' => 2; 'c' => 3 ]
   let expectedForward = series [ 'c' => 2 ]
