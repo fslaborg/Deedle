@@ -9,7 +9,7 @@ open Deedle.Vectors.ArrayVector
 
 /// Set concrete IVectorBuilder implementation
 ///
-/// [category:Vectors and indices]
+/// <category>Vectors and indices</category>
 [<AutoOpen>]
 module ``F# VectorBuilder implementation`` =
   type VectorBuilder =
@@ -20,7 +20,7 @@ module ``F# VectorBuilder implementation`` =
 /// (hard-bound to `ArrayVectorBuilder` type). In F#, the module is automatically opened
 /// using `AutoOpen`. The methods are not designed for the use from C#.
 ///
-/// [category:Vectors and indices]
+/// <category>Vectors and indices</category>
 [<AutoOpen>]
 module ``F# Vector extensions`` =
   open System
