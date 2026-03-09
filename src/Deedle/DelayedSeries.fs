@@ -341,25 +341,25 @@ open Deedle.Indices
 open Deedle.Internal
 open Deedle.Vectors.ArrayVector
 
+/// <summary>
 /// This type exposes a single static method `DelayedSeries.Create` that can be used for
-/// constructing data series (of type `Series<K, V>`) with lazily loaded data. You can
+/// constructing data series (of type <c>Series&lt;K, V&gt;</c>) with lazily loaded data. You can
 /// use this functionality to create series that represents e.g. an entire price history
 /// in a database, but only loads data that are actually needed. For more information
 /// see the [lazy data loading tutorial](../lazysource.html).
 /// </summary>
 /// <example>
-///
-/// Assuming we have a function `generate lo hi` that generates data in the specified
-/// `DateTime` range, we can create lazy series as follows:
-///
-///     let ls = DelayedSeries.Create(min, max, fun (lo, lob) (hi, hib) ->
-///       async {
-///         printfn "Query: %A - %A" (lo, lob) (hi, hib)
-///         return generate lo hi })
-///
-/// The arguments `min` and `max` specfify the complete range of the series. The
-/// function passed to `Create` is called with minimal and maximal required key
-/// (`lo` and `hi`) and with two values that specify boundary behaviour.
+/// Assuming we have a function <c>generate lo hi</c> that generates data in the specified
+/// <c>DateTime</c> range, we can create lazy series as follows:
+/// <code>
+/// let ls = DelayedSeries.Create(min, max, fun (lo, lob) (hi, hib) -&gt;
+///   async {
+///     printfn "Query: %A - %A" (lo, lob) (hi, hib)
+///     return generate lo hi })
+/// </code>
+/// The arguments <c>min</c> and <c>max</c> specify the complete range of the series. The
+/// function passed to <c>Create</c> is called with minimal and maximal required key
+/// (<c>lo</c> and <c>hi</c>) and with two values that specify boundary behaviour.
 /// </example>
 /// <category>Specialized frame and series types</category>
 type DelayedSeries =
@@ -367,7 +367,7 @@ type DelayedSeries =
   /// A C#-friendly function that creates lazily loaded series. The method requires
   /// the overall range of the series (smallest and greatest key) and a function that
   /// loads the data. In this overload, the function is a `Func` delegate taking
-  /// information about the requested range and returning `Task<T>` that produces the data.
+  /// information about the requested range and returning <c>Task&lt;T&gt;</c> that produces the data.
   /// </summary>
   /// <param name="min">The smallest key that should be present in the created series.</param>
   /// <param name="max">The greatests key that should be present in the created series.</param>

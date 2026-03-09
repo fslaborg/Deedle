@@ -22,9 +22,10 @@ open System.Collections.Specialized
 open Microsoft.FSharp.Quotations
 open VectorHelpers
 
+/// <summary>
 /// Represents the underlying (raw) data of the frame in a format that can
 /// be used for exporting data frame to other formats etc. (DataTable, CSV, Excel)
-///
+/// </summary>
 /// <category>Core frame and series types</category>
 type FrameData =
   { /// A sequence of keys for all column. Individual key is an array
@@ -40,20 +41,22 @@ type FrameData =
     /// represent missing data.
     Columns : seq<Type * IVector<obj>> }
 
-/// An empty interface that is implemented by `Frame<'R, 'C>`. The purpose of the
+/// <summary>
+/// An empty interface that is implemented by <c>Frame&lt;'R, 'C&gt;</c>. The purpose of the
 /// interface is to allow writing code that works on arbitrary data frames (you
-/// need to provide an implementation of the `IFrameOperation<'V>` which contains
+/// need to provide an implementation of the <c>IFrameOperation&lt;'V&gt;</c> which contains
 /// a generic method `Invoke` that will be called with the typed data frame).
-///
+/// </summary>
 /// <category>Specialized frame and series types</category>
 type IFrame =
   /// Calls the `Invoke` method of the specified interface `IFrameOperation<'V>`
   /// with the typed data frame as an argument
   abstract Apply : IFrameOperation<'V> -> 'V
 
-/// Represents an operation that can be invoked on `Frame<'R, 'C>`. The operation
+/// <summary>
+/// Represents an operation that can be invoked on <c>Frame&lt;'R, 'C&gt;</c>. The operation
 /// is generic in the type of row and column keys.
-///
+/// </summary>
 /// <category>Specialized frame and series types</category>
 and IFrameOperation<'V> =
   abstract Invoke : Frame<'R, 'C> -> 'V
@@ -192,7 +195,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   /// Column keys are always matched using `Lookup.Exact`, but `lookup` determines lookup for rows.
   /// The parameter `pointwise` can be specified to determine the outcome of unmatched column.
   ///
-  /// Once aligned, the call `df1.Zip<T>(df2, f)` applies the specifed function `f` on all `T` values
+  /// Once aligned, the call <c>df1.Zip&lt;T&gt;(df2, f)</c> applies the specifed function `f` on all `T` values
   /// that are available in corresponding locations in both frames. For values of other types, the
   /// value from `df1` is returned.
   /// </summary>
@@ -253,7 +256,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   /// on values of a specified type that are available in both data frames. This overload uses
   /// `JoinKind.Outer` for both columns and rows.
   ///
-  /// Once aligned, the call `df1.Zip<T>(df2, f)` applies the specifed function `f` on all `T` values
+  /// Once aligned, the call <c>df1.Zip&lt;T&gt;(df2, f)</c> applies the specifed function `f` on all `T` values
   /// that are available in corresponding locations in both frames. For values of other types, the
   /// value from `df1` is returned.
   /// </summary>
@@ -432,8 +435,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     let newData = vectorBuilder.Build(newColIndex.AddressingScheme, frameCmd, frameData)
     Frame(newRowIndex, newColIndex, newData, indexBuilder, vectorBuilder)
 
-  /// Piecewise concatenate two frames of string values
-  ///
+  /// <summary>Piecewise concatenate two frames of string values</summary>
   /// <category>Joining, merging and zipping</category>
   member frame.StrConcat(df: Frame<'TRowKey, 'TColumnKey>) =
      frame.Zip<string, string, string>(df, JoinKind.Outer, JoinKind.Outer, Lookup.Exact, true, fun a b -> (+) a b)
@@ -541,7 +543,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   /// Returns a row of the data frame that is located at the specified int offset.
   /// This does not use the row key and directly accesses the frame data. This method
   /// is generic and returns the result as a series containing values of the specified type.
-  /// To get heterogeneous series of type `ObjectSeries<'TCol>`, use the `frame.Rows` property.
+  /// To get heterogeneous series of type <c>ObjectSeries&lt;'TCol&gt;</c>, use the `frame.Rows` property.
   /// If the index is invalid, `ArgumentOutOfRangeException` is thrown. You can get the
   /// matching key at a specified index using `GetRowKeyAt`.
   /// </summary>
@@ -558,7 +560,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   /// Returns a row with the specieifed key wrapped in `OptionalValue`. When the specified key
   /// is not found, the result is `OptionalValue.Missing`. This method is generic and returns the result
   /// as a series containing values of the specified type. To get heterogeneous series of
-  /// type `ObjectSeries<'TCol>`, use the `frame.Rows` property.
+  /// type <c>ObjectSeries&lt;'TCol&gt;</c>, use the `frame.Rows` property.
   /// </summary>
   /// <param name="rowKey">Specifies the key of the row to be returned</param>
   /// <category>Accessors and slicing</category>
@@ -573,7 +575,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   /// Returns a row with the specieifed key wrapped in `OptionalValue`. When the specified key
   /// is not found, the result is `OptionalValue.Missing`. This method is generic and returns the result
   /// as a series containing values of the specified type. To get heterogeneous series of
-  /// type `ObjectSeries<'TCol>`, use the `frame.Rows` property.
+  /// type <c>ObjectSeries&lt;'TCol&gt;</c>, use the `frame.Rows` property.
   /// </summary>
   /// <param name="rowKey">Specifies the key of the row to be returned</param>
   /// <param name="lookup">Specifies how to find value in a frame with ordered rows when the key does not exactly match (look for nearest available value with the smaller/greater key).</param>
@@ -588,7 +590,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   /// <summary>
   /// Returns a row with the specieifed key. This method is generic and returns the result
   /// as a series containing values of the specified type. To get heterogeneous series of
-  /// type `ObjectSeries<'TCol>`, use the `frame.Rows` property.
+  /// type <c>ObjectSeries&lt;'TCol&gt;</c>, use the `frame.Rows` property.
   /// </summary>
   /// <param name="rowKey">Specifies the key of the row to be returned</param>
   /// <category>Accessors and slicing</category>
@@ -597,7 +599,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   /// <summary>
   /// Returns a row with the specieifed key. This method is generic and returns the result
   /// as a series containing values of the specified type. To get heterogeneous series of
-  /// type `ObjectSeries<'TCol>`, use the `frame.Rows` property.
+  /// type <c>ObjectSeries&lt;'TCol&gt;</c>, use the `frame.Rows` property.
   /// </summary>
   /// <param name="rowKey">Specifies the key of the row to be returned</param>
   /// <param name="lookup">Specifies how to find value in a frame with ordered rows when the key does not exactly match (look for nearest available value with the smaller/greater key).</param>
@@ -651,11 +653,12 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   member frame.ToArray2D<'R>(defaultValue) =
     toArray2D<'R> frame.RowCount frame.ColumnCount frame.Data (lazy defaultValue)
 
+  /// <summary>
   /// Returns data of the data frame as a 2D array. The method attempts to convert
   /// all values to the specified type 'R. If the specified type is 'float' or 'double'
   /// then the method automatically uses NaN. For other values, the default value has to
   /// be explicitly specified using another overload.
-  ///
+  /// </summary>
   /// <category>Fancy accessors</category>
   member frame.ToArray2D<'R>() =
     let defaultValue =
@@ -675,11 +678,12 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   member frame.ToJaggedArray<'R>(defaultValue) =
     toJaggedArray<'R> frame.RowCount frame.ColumnCount frame.Data (lazy defaultValue)
 
+  /// <summary>
   /// Returns data of the data frame as a jagged array. The method attempts to convert
   /// all values to the specified type 'R. If the specified type is 'float' or 'double'
   /// then the method automatically uses NaN. For other values, the default value has to
   /// be explicitly specified using another overload.
-  ///
+  /// </summary>
   /// <category>Fancy accessors</category>
   member frame.ToJaggedArray<'R>() =
     let defaultValue =
@@ -780,7 +784,6 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   /// frame columns. The operation throws if the column key is not found.
   /// </summary>
   /// <param name="column">The key (or name) to be dropped from the frame</param>
-  /// <param name="frame">Source data frame (which is not mutated by the operation)</param>
   /// <category>Series operations</category>
   member frame.DropColumn(column:'TColumnKey) =
     let newColumnIndex, colCmd = indexBuilder.DropItem( (columnIndex, Vectors.Return 0), column)
@@ -810,7 +813,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   /// frame with ordered indices.
   /// </summary>
   /// <param name="column">A key (or name) for the column to be replaced or added</param>
-  /// <param name="series">A data series to be used (the row key type has to match)</param>
+  /// <param name="data">A data series to be used (the row key type has to match)</param>
   /// <param name="lookup">Specify how to find value in the added series (look for nearest available value with the smaller/greater key).</param>
   /// <category>Series operations</category>
   member frame.ReplaceColumn(column, data:seq<'V>, lookup) =
@@ -834,7 +837,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   /// series is added.)
   /// </summary>
   /// <param name="column">A key (or name) for the column to be replaced or added</param>
-  /// <param name="series">A sequence of values to be added</param>
+  /// <param name="data">A sequence of values to be added</param>
   /// <category>Series operations</category>
   member frame.ReplaceColumn(column, data:seq<'V>) =
     frame.ReplaceColumn(column, data, Lookup.Exact)
@@ -1259,8 +1262,10 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
             yield Choice2Of3()
             for obs in ends.Rows.Observations do yield Choice1Of3(obs.Key, obs.Value) }
 
+  /// <summary>
   /// Shows the data frame content in a human-readable format. The resulting string
   /// shows all columns, but a limited number of rows.
+  /// </summary>
   /// <category>Formatting and raw data access</category>
   member frame.Format() =
     frame.Format(Formatting.RowStartItemCount, Formatting.RowEndItemCount, Formatting.ColumnStartItemCount, Formatting.ColumnEndItemCount)
@@ -1283,7 +1288,8 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   /// Shows the data frame content in a human-readable format. The resulting string
   /// shows all columns, but a limited number of rows.
   /// </summary>
-  /// <param name="count">The maximal total number of rows to be printed</param>
+  /// <param name="rowCount">The maximal number of rows to be printed</param>
+  /// <param name="columnCount">The maximal number of columns to be printed</param>
   /// <category>Formatting and raw data access</category>
   member frame.Format(rowCount, columnCount) =
     let rowHalf = rowCount / 2
@@ -1294,8 +1300,10 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   /// Shows the data frame content in a human-readable format. The resulting string
   /// shows all columns, but a limited number of rows.
   /// </summary>
-  /// <param name="startCount">The number of rows at the beginning to be printed</param>
-  /// <param name="endCount">The number of rows at the end of the frame to be printed</param>
+  /// <param name="rowStartCount">The number of rows at the beginning to be printed</param>
+  /// <param name="rowEndCount">The number of rows at the end of the frame to be printed</param>
+  /// <param name="columnStartCount">The number of columns at the beginning to be printed</param>
+  /// <param name="columnEndCount">The number of columns at the end of the frame to be printed</param>
   /// <category>Formatting and raw data access</category>
   member frame.Format(rowStartCount, rowEndCount, columnStartCount, columnEndCount) =
     frame.Format(rowStartCount, rowEndCount, columnStartCount, columnEndCount, false, false)
@@ -1402,9 +1410,12 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   /// Shows the data frame content in a human-readable format. The resulting string
   /// shows all columns, but a limited number of rows.
   /// </summary>
-  /// <param name="startCount">The number of rows at the beginning to be printed</param>
-  /// <param name="endCount">The number of rows at the end of the frame to be printed</param>
+  /// <param name="rowStartCount">The number of rows at the beginning to be printed</param>
+  /// <param name="rowEndCount">The number of rows at the end of the frame to be printed</param>
+  /// <param name="columnStartCount">The number of columns at the beginning to be printed</param>
+  /// <param name="columnEndCount">The number of columns at the end of the frame to be printed</param>
   /// <param name="printTypes">When true, the types of vectors storing column data are printed</param>
+  /// <param name="showInfo">When true, additional information about the frame is printed</param>
   /// <category>Formatting and raw data access</category>
   member frame.Format(rowStartCount, rowEndCount, columnStartCount, columnEndCount, printTypes, showInfo) =
     try
@@ -1516,7 +1527,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
 // ------------------------------------------------------------------------------------------------
 
 /// <exclude />
-/// Module with helper functions and operations that are needed by `Frame<R, C>`, but
+/// Module with helper functions and operations that are needed by <c>Frame&lt;R, C&gt;</c>, but
 /// are easier to write in a separate type (having them inside generic type
 /// can confuse the type inference in various ways).
 and FrameUtils =
@@ -1743,10 +1754,11 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
 // with new ones that re-create frames so e.g. `frame.Rows.[x .. y]` is a frame.
 // ------------------------------------------------------------------------------------------------
 
+/// <summary>
 /// Represents a series of columns from a frame. The type inherits from a series of
-/// series representing individual columns (`Series<'TColumnKey, ObjectSeries<'TRowKey>>`) but
+/// series representing individual columns (<c>Series&lt;'TColumnKey, ObjectSeries&lt;'TRowKey&gt;&gt;</c>) but
 /// hides slicing operations with new versions that return frames.
-///
+/// </summary>
 /// <category>Specialized frame and series types</category>
 and ColumnSeries<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equality>(index, vector, vectorBuilder, indexBuilder) =
   inherit Series<'TColumnKey, ObjectSeries<'TRowKey>>(index, vector, vectorBuilder, indexBuilder)
@@ -1761,10 +1773,11 @@ and ColumnSeries<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey 
   member x.Item with get(level) = x.GetByLevel(level)
 
 
+/// <summary>
 /// Represents a series of rows from a frame. The type inherits from a series of
-/// series representing individual rows (`Series<'TRowKey, ObjectSeries<'TColumnKey>>`) but
+/// series representing individual rows (<c>Series&lt;'TRowKey, ObjectSeries&lt;'TColumnKey&gt;&gt;</c>) but
 /// hides slicing operations with new versions that return frames.
-///
+/// </summary>
 /// <category>Specialized frame and series types</category>
 and [<AbstractClass>] RowSeries<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equality>
     (index:IIndex<'TRowKey>, vector:IVector<ObjectSeries<'TColumnKey>>, vectorBuilder, indexBuilder) =

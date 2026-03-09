@@ -14,9 +14,11 @@ open Deedle.Internal
 // Functions and methods for creating series
 // --------------------------------------------------------------------------------------
 
-/// Contains extensions for creating values of type `Series<'K, 'V>` including
+/// <summary>
+/// Contains extensions for creating values of type <c>Series&lt;'K, 'V&gt;</c> including
 /// a type with functions such as `Series.ofValues` and the `series` function.
 /// The module is automatically opened for all F# code that references `Deedle`.
+/// </summary>
 ///
 /// <category>Core frame and series types</category>
 [<AutoOpen>]
@@ -65,10 +67,12 @@ module ``F# Series extensions`` =
   let series observations = Series.ofObservations observations
 
 
+/// <summary>
 /// Contains C#-friendly extension methods for various instances of `IEnumerable`
-/// that can be used for creating `Series<'K, 'V>` from the `IEnumerable` value.
-/// You can create an ordinal series from `IEnumerable<'T>` or an indexed series from
-/// `IEnumerable<KeyValuePair<'K, 'V>>` or from `IEnumerable<KeyValuePair<'K, OptionalValue<'V>>>`.
+/// that can be used for creating <c>Series&lt;'K, 'V&gt;</c> from the `IEnumerable` value.
+/// You can create an ordinal series from <c>IEnumerable&lt;'T&gt;</c> or an indexed series from
+/// <c>IEnumerable&lt;KeyValuePair&lt;'K, 'V&gt;&gt;</c> or from <c>IEnumerable&lt;KeyValuePair&lt;'K, OptionalValue&lt;'V&gt;&gt;&gt;</c>.
+/// </summary>
 ///
 /// <category>Frame and series operations</category>
 [<Extension>]
@@ -98,19 +102,19 @@ type EnumerableExtensions =
 
 /// <summary>
 /// The type can be used for creating series using mutation. You can add
-/// items using `Add` and get the resulting series using the `Series` property.
+/// items using `Add` and get the resulting series using the <c>Series</c> property.
 /// </summary>
 /// <remarks>
 /// Using from C#:
 ///
 /// The type supports the C# collection builder pattern:
 ///
-///    	var s = new SeriesBuilder<string, double>
+///    	var s = new <c>SeriesBuilder&lt;string, double&gt;</c>
 ///       { { "A", 1.0 }, { "B", 2.0 }, { "C", 3.0 } }.Series;
 ///
 /// The type also supports the `dynamic` operator:
 ///
-///     dynamic sb = new SeriesBuilder<string, obj>();
+///     dynamic sb = new <c>SeriesBuilder&lt;string, obj&gt;</c>();
 ///     sb.ID = 1;
 ///     sb.Value = 3.4;
 /// </remarks>
@@ -184,8 +188,10 @@ type SeriesBuilder<'K, 'V when 'K : equality and 'V : equality>() =
             let converted = Convert.convertType<'V> ConversionKind.Flexible value
             builder.Add(unbox<'K> name, converted))
 
-/// A simple class that inherits from `SeriesBuilder<'K, obj>` and can be
-/// used instead of writing `SeriesBuilder<'K, obj>` with two type arguments.
+/// <summary>
+/// A simple class that inherits from <c>SeriesBuilder&lt;'K, obj&gt;</c> and can be
+/// used instead of writing <c>SeriesBuilder&lt;'K, obj&gt;</c> with two type arguments.
+/// </summary>
 ///
 /// <category>Specialized frame and series types</category>
 type SeriesBuilder<'K when 'K : equality>() =
@@ -195,10 +201,12 @@ type SeriesBuilder<'K when 'K : equality>() =
 // Extensions providing nice C#-friendly API
 // --------------------------------------------------------------------------------------
 
-/// The type implements C# and F# extension methods for the `Series<'K, 'V>` type.
+/// <summary>
+/// The type implements C# and F# extension methods for the <c>Series&lt;'K, 'V&gt;</c> type.
 /// The members are automatically available when you import the `Deedle` namespace.
 /// The type contains object-oriented counterparts to most of the functionality
 /// from the `Series` module.
+/// </summary>
 ///
 /// <category>Frame and series operations</category>
 [<Extension>]
@@ -387,9 +395,11 @@ type SeriesExtensions =
   /// </summary>
   /// <param name="series">An input series to be filtered</param>
   /// <example>
-  ///     let s = series [ 1 => 1.0; 2 => Double.NaN ]
-  ///     s.DropMissing()
-  ///     [fsi:val it : Series<int,float> = series [ 1 => 1]
+  /// <code>
+  /// let s = series [ 1 =&gt; 1.0; 2 =&gt; Double.NaN ]
+  /// s.DropMissing()
+  /// // val it : Series&lt;int,float&gt; = series [ 1 =&gt; 1]
+  /// </code>
   /// </example>
   /// <category>Missing values</category>
   [<Extension>]
@@ -412,15 +422,18 @@ type SeriesExtensions =
   /// Note that the series may still contain missing values after call to this
   /// function. This operation can only be used on ordered series.
   /// </summary>
+  /// <param name="series">The input series to be filled</param>
   /// <param name="direction">Specifies the direction used when searching for the nearest available value. `Backward` means that we want to look for the first value with a smaller key while `Forward` searches for the nearest greater key.</param>
   /// <example>
-  ///     let sample = Series.ofValues [ Double.NaN; 1.0; Double.NaN; 3.0 ]
+  /// <code>
+  /// let sample = Series.ofValues [ Double.NaN; 1.0; Double.NaN; 3.0 ]
   ///
-  ///     // Returns a series consisting of [1; 1; 3; 3]
-  ///     sample.FillMissing(Direction.Backward)
+  /// // Returns a series consisting of [1; 1; 3; 3]
+  /// sample.FillMissing(Direction.Backward)
   ///
-  ///     // Returns a series consisting of [<missing>; 1; 1; 3]
-  ///     sample.FillMissing(Direction.Forward)
+  /// // Returns a series consisting of [&lt;missing&gt;; 1; 1; 3]
+  /// sample.FillMissing(Direction.Forward)
+  /// </code>
   /// </example>
   /// <category>Missing values</category>
   [<Extension>]
@@ -571,7 +584,7 @@ type SeriesExtensions =
   /// <param name="series">An input series to be resampled</param>
   /// <param name="start">The initial time to be used for sampling</param>
   /// <param name="interval">The interval between the individual samples</param>
-  /// <param name="lookup">Specifies how the lookup based on keys is performed. `Exact` means that the values at exact keys will be returned; `NearestGreater` returns the nearest greater key value (starting at the first key) and `NearestSmaller` returns the nearest smaller key value (starting at most `interval` after the end of the series)</param>
+  /// <param name="dir">Specifies the direction. `Backward` means that we want to look for the first value with a smaller key while `Forward` searches for the nearest greater key.</param>
   /// <remarks>
   /// This operation is only supported on ordered series. The method throws
   /// `InvalidOperationException` when the series is not ordered.
@@ -589,7 +602,7 @@ type SeriesExtensions =
   /// <param name="series">An input series to be resampled</param>
   /// <param name="start">The initial time to be used for sampling</param>
   /// <param name="interval">The interval between the individual samples</param>
-  /// <param name="lookup">Specifies how the lookup based on keys is performed. `Exact` means that the values at exact keys will be returned; `NearestGreater` returns the nearest greater key value (starting at the first key) and `NearestSmaller` returns the nearest smaller key value (starting at most `interval` after the end of the series)</param>
+  /// <param name="dir">Specifies the direction. `Backward` means that we want to look for the first value with a smaller key while `Forward` searches for the nearest greater key.</param>
   /// <remarks>
   /// This operation is only supported on ordered series. The method throws
   /// `InvalidOperationException` when the series is not ordered.
@@ -606,7 +619,7 @@ type SeriesExtensions =
   /// </summary>
   /// <param name="series">An input series to be resampled</param>
   /// <param name="interval">The interval between the individual samples</param>
-  /// <param name="lookup">Specifies how the lookup based on keys is performed. `Exact` means that the values at exact keys will be returned; `NearestGreater` returns the nearest greater key value (starting at the first key) and `NearestSmaller` returns the nearest smaller key value (starting at most `interval` after the end of the series)</param>
+  /// <param name="dir">Specifies the direction. `Backward` means that we want to look for the first value with a smaller key while `Forward` searches for the nearest greater key.</param>
   /// <remarks>
   /// This operation is only supported on ordered series. The method throws
   /// `InvalidOperationException` when the series is not ordered.

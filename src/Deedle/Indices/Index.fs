@@ -7,11 +7,13 @@
 // Index is an interface and so you can define your own.
 // --------------------------------------------------------------------------------------
 
+/// <summary>
 /// Represents a strategy for aggregating data in an ordered series into data segments.
 /// To create a value of this type from C#, use the non-generic `Aggregation` type.
 /// Data can be aggregate using floating windows or chunks of a specified size or
 /// by specifying a condition on two keys (i.e. end a window/chunk when the condition
 /// no longer holds).
+/// </summary>
 ///
 /// <category>Parameters and results of various operations</category>
 type Aggregation<'K> =
@@ -34,9 +36,11 @@ type Aggregation<'K> =
   | ChunkWhile of ('K -> 'K -> bool)
 
 
-/// A non-generic type that simplifies the construction of `Aggregation<K>` values
+/// <summary>
+/// A non-generic type that simplifies the construction of <c>Aggregation&lt;K&gt;</c> values
 /// from C#. It provides methods for constructing different kinds of aggregation
 /// strategies for ordered series.
+/// </summary>
 ///
 /// <category>Parameters and results of various operations</category>
 type Aggregation =
@@ -61,7 +65,7 @@ type Aggregation =
   /// as the specified function returns `false` when called with the
   /// first key and the current key as arguments.
   /// </summary>
-  /// <param name="condition">A delegate that specifies when to end the current window (e.g. `(k1, k2) => k2 - k1 < 10` means that the difference between keys in each window will be less than 10.</param>
+  /// <param name="condition">A delegate that specifies when to end the current window (e.g. <c>(k1, k2) =&gt; k2 - k1 &lt; 10</c> means that the difference between keys in each window will be less than 10.</param>
   static member WindowWhile<'K>(condition:System.Func<'K, 'K, bool>) =
     WindowWhile(fun k1 k2 -> condition.Invoke(k1, k2))
 
@@ -70,7 +74,7 @@ type Aggregation =
   /// as the specified function returns `false` when called with the
   /// first key and the current key as arguments.
   /// </summary>
-  /// <param name="condition">A delegate that specifies when to end the current chunk (e.g. `(k1, k2) => k2 - k1 < 10` means that the difference between keys in each chunk will be less than 10.</param>
+  /// <param name="condition">A delegate that specifies when to end the current chunk (e.g. <c>(k1, k2) =&gt; k2 - k1 &lt; 10</c> means that the difference between keys in each chunk will be less than 10.</param>
   static member ChunkWhile<'K>(condition:System.Func<'K, 'K, bool>) =
     ChunkWhile(fun k1 k2 -> condition.Invoke(k1, k2))
 
@@ -172,15 +176,15 @@ and AsyncSeriesConstruction<'K when 'K : equality> = Async<IIndex<'K>> * VectorC
 /// as an input, apply necessary transformations to it and return a new `VectorConstruction`.
 /// </summary>
 /// <example>
-///
 /// For example, given `index`, we can say:
+/// <code>
+/// // Create an index that excludes the value 42
+/// let newIndex, vectorCmd = indexBuilder.DropItem(index, 42, VectorConstruction.Return(0))
 ///
-///     // Create an index that excludes the value 42
-///     let newIndex, vectorCmd = indexBuilder.DropItem(index, 42, VectorConstruction.Return(0))
-///
-///     // Now we can transform multiple vectors (e.g. all frame columns) using 'vectorCmd'
-///     // (the integer '0' in `Return` is an offset in the array of vector arguments)
-///     let newVector = vectorBuilder.Build(vectorCmd, [| vectorToTransform |])
+/// // Now we can transform multiple vectors (e.g. all frame columns) using 'vectorCmd'
+/// // (the integer '0' in `Return` is an offset in the array of vector arguments)
+/// let newVector = vectorBuilder.Build(vectorCmd, [| vectorToTransform |])
+/// </code>
 /// </example>
 and IIndexBuilder =
 

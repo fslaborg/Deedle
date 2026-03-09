@@ -12,9 +12,11 @@ open Deedle.Keys
 open Deedle.Vectors
 open Deedle.VectorHelpers
 
+/// <summary>
 /// This enumeration specifies the behavior of `Union` operation on series when there are
 /// overlapping keys in two series that are being unioned. The options include preferring values
 /// from the left/right series or throwing an exception when both values are available.
+/// </summary>
 ///
 /// <category>Parameters and results of various operations</category>
 type UnionBehavior =
@@ -29,9 +31,11 @@ type UnionBehavior =
 // Series
 // ------------------------------------------------------------------------------------------------
 
+/// <summary>
 /// Represents an untyped series with keys of type `K` and values of some unknown type
 /// (This type should not generally be used directly, but it can be used when you need
 /// to write code that works on a sequence of series of heterogeneous types).
+/// </summary>
 ///
 /// <category>Core frame and series types</category>
 type ISeries<'K when 'K : equality> =
@@ -44,8 +48,10 @@ type ISeries<'K when 'K : equality> =
   /// Returns the vector builder associated with this series
   abstract VectorBuilder : IVectorBuilder
 
-/// The type `Series<K, V>` represents a data series consisting of values `V` indexed by
+/// <summary>
+/// The type <c>Series&lt;K, V&gt;</c> represents a data series consisting of values `V` indexed by
 /// keys `K`. The keys of a series may or may not be ordered
+/// </summary>
 ///
 /// <category>Core frame and series types</category>
 and
@@ -75,30 +81,38 @@ and
   // Series data
   // ----------------------------------------------------------------------------------------------
 
+  /// <summary>
   /// Returns the index associated with this series. This member should not generally
   /// be accessed directly, because all functionality is exposed through series operations.
+  /// </summary>
   ///
   /// <category>Series data</category>
   member x.Index = index
 
+  /// <summary>
   /// Returns the vector associated with this series. This member should not generally
   /// be accessed directly, because all functionality is exposed through series operations.
+  /// </summary>
   ///
   /// <category>Series data</category>
   member x.Vector = vector
 
+  /// <summary>
   /// Returns a collection of keys that are defined by the index of this series.
   /// Note that the length of this sequence does not match the `Values` sequence
   /// if there are missing values. To get matching sequence, use the `Observations`
   /// property or `Series.observation`.
+  /// </summary>
   ///
   /// <category>Series data</category>
   member x.Keys = seq { for kvp in index.Mappings -> kvp.Key }
 
+  /// <summary>
   /// Returns a collection of values that are available in the series data.
   /// Note that the length of this sequence does not match the `Keys` sequence
   /// if there are missing values. To get matching sequence, use the `Observations`
   /// property or `Series.observation`.
+  /// </summary>
   ///
   /// <category>Series data</category>
   member x.Values =
@@ -107,8 +121,10 @@ and
         vector.GetValueAtLocation(KnownLocation(kvp.Value, idx))
         |> OptionalValue.asOption )
 
+  /// <summary>
   /// Returns a collection of values, including possibly missing values. Note that
   /// the length of this sequence matches the `Keys` sequence.
+  /// </summary>
   ///
   /// <category>Series data</category>
   member x.ValuesAll =
@@ -116,9 +132,11 @@ and
     |> Seq.mapl (fun idx kvp ->
         vector.GetValueAtLocation(KnownLocation(kvp.Value, idx)).ValueOrDefault)
 
+  /// <summary>
   /// Returns a collection of observations that form this series. Note that this property
-  /// skips over all missing (or NaN) values. Observations are returned as `KeyValuePair<K, V>`
+  /// skips over all missing (or NaN) values. Observations are returned as <c>KeyValuePair&lt;K, V&gt;</c>
   /// objects. For an F# alternative that uses tuples, see `Series.observations`.
+  /// </summary>
   ///
   /// <category>Series data</category>
   member x.Observations =
@@ -128,10 +146,12 @@ and
         |> OptionalValue.map (fun v -> KeyValuePair(kvp.Key, v))
         |> OptionalValue.asOption )
 
+  /// <summary>
   /// Returns a collection of observations that form this series. Note that this property
   /// includes all missing (or NaN) values. Observations are returned as
-  /// `KeyValuePair<K, OptionalValue<V>>` objects. For an F# alternative that uses tuples,
+  /// <c>KeyValuePair&lt;K, OptionalValue&lt;V&gt;&gt;</c> objects. For an F# alternative that uses tuples,
   /// see `Series.observationsAll`.
+  /// </summary>
   ///
   /// <category>Series data</category>
   member x.ObservationsAll =
@@ -140,27 +160,41 @@ and
         let v = vector.GetValueAtLocation(KnownLocation(kvp.Value, idx))
         KeyValuePair(kvp.Key, v))
 
-  ///
+  /// <summary>
+  /// Gets a value indicating whether the series is empty.
+  /// </summary>
   ///
   /// <category>Series data</category>
   member x.IsEmpty = Seq.isEmpty index.Mappings
 
+  /// <summary>
+  /// Gets a value indicating whether the series index is ordered.
+  /// </summary>
+  ///
   /// <category>Series data</category>
   member x.IsOrdered = index.IsOrdered
 
+  /// <summary>
+  /// Gets the range of keys in the series.
+  /// </summary>
+  ///
   /// <category>Series data</category>
   member x.KeyRange = index.KeyRange
 
+  /// <summary>
   /// Returns the total number of keys in the specified series. This returns
   /// the total length of the series, including keys for which there is no
   /// value available.
+  /// </summary>
   ///
   /// <category>Series data</category>
   member x.KeyCount = int index.KeyCount
 
+  /// <summary>
   /// Returns the total number of values in the specified series. This excludes
   /// missing values or not available values (such as values created from `null`,
   /// `Double.NaN`, or those that are missing due to outer join etc.).
+  /// </summary>
   ///
   /// <category>Series data</category>
   member x.ValueCount =
@@ -239,6 +273,9 @@ and
     let newVector = vectorBuilder.Build(newIndex.AddressingScheme, cmd, [| vector |])
     Series(newIndex, newVector, vectorBuilder, indexBuilder)
 
+  /// <summary>
+  /// Attempts to get the value and key at the specified lookup semantics.
+  /// </summary>
   ///
   /// <category>Accessors and slicing</category>
   member x.TryGetObservation(key, lookup) =
@@ -247,6 +284,9 @@ and
     | OptionalValue.Missing -> OptionalValue.Missing
     | OptionalValue.Present(key, addr) -> vector.GetValue(addr) |> OptionalValue.map (fun v -> KeyValuePair(key, v))
 
+  /// <summary>
+  /// Gets the value and key at the specified lookup semantics. Fails if not found.
+  /// </summary>
   ///
   /// <category>Accessors and slicing</category>
   member x.GetObservation(key, lookup) =
@@ -256,16 +296,25 @@ and
     if not value.HasValue then missingVal key
     KeyValuePair(fst mapping.Value, value.Value)
 
+  /// <summary>
+  /// Attempts to get the value at the specified key using the specified lookup semantics.
+  /// </summary>
   ///
   /// <category>Accessors and slicing</category>
   member x.TryGet(key, lookup) =
     x.TryGetObservation(key, lookup) |> OptionalValue.map (fun (KeyValue(_, v)) -> v)
 
+  /// <summary>
+  /// Gets the value at the specified key using the specified lookup semantics. Fails if not found.
+  /// </summary>
   ///
   /// <category>Accessors and slicing</category>
   member x.Get(key, lookup) =
     x.GetObservation(key, lookup).Value
 
+  /// <summary>
+  /// Performs a hierarchical lookup by applying a custom lookup on the series index.
+  /// </summary>
   ///
   /// <category>Accessors and slicing</category>
   member x.GetByLevel(key:ICustomLookup<'K>) =
@@ -273,7 +322,9 @@ and
     let newVector = vectorBuilder.Build(newIndex.AddressingScheme, levelCmd, [| vector |])
     Series(newIndex, newVector, vectorBuilder, indexBuilder)
 
+  /// <summary>
   /// Attempts to get a value at the specified 'key'
+  /// </summary>
   ///
   /// <category>Accessors and slicing</category>
   member x.TryGetObservation(key) =
@@ -283,6 +334,9 @@ and
       let value = vector.GetValue(addr)
       OptionalValue(KeyValuePair(key, value))
 
+  /// <summary>
+  /// Gets the value and key at the specified key. Fails if not found.
+  /// </summary>
   ///
   /// <category>Accessors and slicing</category>
   member x.GetObservation(key) =
@@ -292,6 +346,9 @@ and
     if not value.HasValue then missingVal key
     KeyValuePair(key, value.Value)
 
+  /// <summary>
+  /// Attempts to get the value at the specified key.
+  /// </summary>
   ///
   /// <category>Accessors and slicing</category>
   member x.TryGet(key) =
@@ -299,6 +356,9 @@ and
     if addr = Address.invalid then OptionalValue.Missing
     else x.Vector.GetValue(addr)
 
+  /// <summary>
+  /// Gets the value at the specified key. Fails if not found.
+  /// </summary>
   ///
   /// <category>Accessors and slicing</category>
   member x.Get(key) =
@@ -309,15 +369,24 @@ and
       | OptionalValue.Missing   -> missingVal key
       | OptionalValue.Present v -> v
 
+  /// <summary>
+  /// Attempts to get the value at the specified index position.
+  /// </summary>
   ///
   /// <category>Accessors and slicing</category>
   member x.TryGetAt(index : int) =
     x.Vector.GetValue(x.Index.AddressAt(int64 index))
 
+  /// <summary>
+  /// Gets the key at the specified index position.
+  /// </summary>
   /// <category>Accessors and slicing</category>
   member x.GetKeyAt(index : int) =
     x.Index.KeyAt(x.Index.AddressAt(int64 index))
 
+  /// <summary>
+  /// Gets the value at the specified index position.
+  /// </summary>
   /// <category>Accessors and slicing</category>
   member x.GetAt(index : int) =
     if x.Index.IsEmpty then
@@ -325,16 +394,28 @@ and
     else
       x.TryGetAt(index).Value
 
+  /// <summary>
+  /// Gets the value at the specified key.
+  /// </summary>
   ///
   /// <category>Accessors and slicing</category>
   member x.Item with get(a) = x.Get(a)
+  /// <summary>
+  /// Gets a series containing values at the specified keys.
+  /// </summary>
   ///
   /// <category>Accessors and slicing</category>
   member x.Item with get(items) = x.GetItems items
+  /// <summary>
+  /// Gets values by hierarchical level lookup.
+  /// </summary>
   ///
   /// <category>Accessors and slicing</category>
   member x.Item with get(a) = x.GetByLevel(a)
 
+  /// <summary>
+  /// Dynamic operator for accessing series values by key using the `?` syntax.
+  /// </summary>
   ///
   /// <category>Accessors and slicing</category>
   static member (?) (series:Series<_, _>, name:string) = series.Get(name, Lookup.Exact)
@@ -454,8 +535,10 @@ and
     let newVector = vector.DataSequence |> Seq.scan (fun x y -> foldFunc.Invoke(x, y)) init |> Seq.skip 1 |> Seq.toArray
     Series(index, vectorBuilder.CreateMissing(newVector), vectorBuilder, indexBuilder)
 
+  /// <summary>
   /// Returns the current series with the same index but with values missing wherever the
   /// corresponding key exists in the other series index with an associated missing value.
+  /// </summary>
   ///
   /// <category>Projection and filtering</category>
   member x.WithMissingFrom(otherSeries: Series<'K, _>) =
@@ -700,12 +783,13 @@ and
   /// other than `Boundary.Skip`, then the key is included in the returned series,
   /// but its value is missing.
   /// </summary>
-  /// <param name="series">The input series to be aggregated.</param>
   /// <param name="boundary">Specifies the direction in which the series is aggregated and how the corner case is handled. If the value is `Boundary.AtEnding`, then the function returns value and its successor, otherwise it returns value and its predecessor.</param>
   /// <example>
-  ///     let input = series [ 1 => 'a'; 2 => 'b'; 3 => 'c']
-  ///     let res = input.Pairwise()
-  ///     res = series [2 => ('a', 'b'); 3 => ('b', 'c') ]
+  /// <code>
+  /// let input = series [ 1 =&gt; 'a'; 2 =&gt; 'b'; 3 =&gt; 'c']
+  /// let res = input.Pairwise()
+  /// res = series [2 =&gt; ('a', 'b'); 3 =&gt; ('b', 'c') ]
+  /// </code>
   /// </example>
   /// <category>Windowing, chunking and grouping</category>
   member x.Pairwise(boundary) =
@@ -736,23 +820,24 @@ and
   /// for the first one. The returned series is one key shorter (it does not contain a
   /// value for the first key).
   /// </summary>
-  /// <param name="series">The input series to be aggregated.</param>
   /// <example>
-  ///     let input = series [ 1 => 'a'; 2 => 'b'; 3 => 'c']
-  ///     let res = input.Pairwise()
-  ///     res = series [2 => ('a', 'b'); 3 => ('b', 'c') ]
+  /// <code>
+  /// let input = series [ 1 =&gt; 'a'; 2 =&gt; 'b'; 3 =&gt; 'c']
+  /// let res = input.Pairwise()
+  /// res = series [2 =&gt; ('a', 'b'); 3 =&gt; ('b', 'c') ]
+  /// </code>
   /// </example>
   /// <category>Windowing, chunking and grouping</category>
   member x.Pairwise() =
     x.Pairwise(Boundary.Skip).Select(fun (kvp:KeyValuePair<_, DataSegment<_>>) -> kvp.Value.Data)
 
   /// <summary>
-  /// Aggregates an ordered series using the method specified by `Aggregation<K>` and then
+  /// Aggregates an ordered series using the method specified by <c>Aggregation&lt;K&gt;</c> and then
   /// applies the provided `valueSelector` on each window or chunk to produce the result
   /// which is returned as a new series. A key for each window or chunk is
   /// selected using the specified `keySelector`.
   /// </summary>
-  /// <param name="aggregation">Specifies the aggregation method using `Aggregation<K>`. This is a discriminated union listing various chunking and windowing conditions.</param>
+  /// <param name="aggregation">Specifies the aggregation method using <c>Aggregation&lt;K&gt;</c>. This is a discriminated union listing various chunking and windowing conditions.</param>
   /// <param name="keySelector">A function that is called on each chunk to obtain a key.</param>
   /// <param name="valueSelector">A value selector function that is called to aggregate each chunk or window.</param>
   /// <category>Windowing, chunking and grouping</category>
@@ -772,11 +857,11 @@ and
     Series<'TNewKey, 'R>(newIndex, newVector, vectorBuilder, indexBuilder)
 
   /// <summary>
-  /// Aggregates an ordered series using the method specified by `Aggregation<K>` and then
+  /// Aggregates an ordered series using the method specified by <c>Aggregation&lt;K&gt;</c> and then
   /// applies the provided `observationSelector` on each window or chunk to produce the result
   /// which is returned as a new series. The selector returns both the key and the value.
   /// </summary>
-  /// <param name="aggregation">Specifies the aggregation method using `Aggregation<K>`. This is a discriminated union listing various chunking and windowing conditions.</param>
+  /// <param name="aggregation">Specifies the aggregation method using <c>Aggregation&lt;K&gt;</c>. This is a discriminated union listing various chunking and windowing conditions.</param>
   /// <param name="observationSelector">A function that is called on each chunk to obtain a key and a value.</param>
   /// <category>Windowing, chunking and grouping</category>
   member x.Aggregate<'TNewKey, 'R when 'TNewKey : equality>
@@ -843,9 +928,11 @@ and
     let newVector = findAll x.Vector.GetValue |> Vector.ofOptionalValues
     Series<_,_>(newIndex, newVector, vectorBuilder, indexBuilder)
 
+  /// <summary>
   /// Replace the index of the series with ordinally generated integers starting from zero.
   /// The elements of the series are assigned index according to the current order, or in a
   /// non-deterministic way, if the current index is not ordered.
+  /// </summary>
   ///
   /// <category>Indexing</category>
   member x.IndexOrdinally() =
@@ -1207,10 +1294,12 @@ and
 // Untyped series
 // ------------------------------------------------------------------------------------------------
 
-/// Represents a series containing boxed values. This type is inherited from `Series<'K, obj>`
+/// <summary>
+/// Represents a series containing boxed values. This type is inherited from <c>Series&lt;'K, obj&gt;</c>
 /// and it adds additional operations for accessing values with unboxing. This includes operations
-/// such as `os.GetAs<'T>`, `os.TryGetAs<'T>` and `os.TryAs<'T>` which (attempt to) convert
+/// such as <c>os.GetAs&lt;'T&gt;</c>, <c>os.TryGetAs&lt;'T&gt;</c> and <c>os.TryAs&lt;'T&gt;</c> which (attempt to) convert
 /// values to the specified type `'T`.
+/// </summary>
 ///
 /// <category>Specialized frame and series types</category>
 type ObjectSeries<'K when 'K : equality> internal(index:IIndex<_>, vector, vectorBuilder, indexBuilder) =

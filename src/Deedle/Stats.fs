@@ -186,6 +186,7 @@ module StatsInternal =
   /// <param name="initState">is the initial state of the computation</param>
   /// <param name="fupdate">takes the current state and incoming observation to the next state</param>
   /// <param name="ftransf">takes the current state to the current output</param>
+  /// <param name="source">The input sequence to process</param>
   let expandingWindowFn initState fupdate ftransf (source: seq<_>) =
     source
     |> Seq.scan fupdate initState
@@ -767,6 +768,7 @@ type Stats =
   /// </summary>
   /// <param name="keys">Sequence of new keys that forms the index of interpolated results</param>
   /// <param name="f">Function to do the interpolating</param>
+  /// <param name="series">The input series to interpolate</param>
   /// <category>Series interoploation</category>
   static member interpolate keys f (series:Series<'K,'T>) =
     let liftedf k (prev:KeyValuePair<_,_> opt) (next:KeyValuePair<_,_> opt) =
@@ -783,6 +785,7 @@ type Stats =
   /// </summary>
   /// <param name="keys">Sequence of new keys that forms the index of interpolated results</param>
   /// <param name="keyDiff">A function representing "subtraction" between two keys</param>
+  /// <param name="series">The input series to interpolate</param>
   /// <category>Series interoploation</category>
   static member inline interpolateLinear keys (keyDiff:'K->'K->float) (series:Series<'K, 'V>) =
     let linearF k a b =

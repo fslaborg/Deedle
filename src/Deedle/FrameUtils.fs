@@ -22,7 +22,7 @@ module internal Reflection =
   let createTypedVectorHelper<'T> (input:seq<OptionalValue<obj>>) =
     input |> Seq.map (OptionalValue.map unbox<'T>) |> Vector.ofOptionalValues :> IVector
 
-  /// Helper function that returns contents of IDictionary<'K, 'V>
+  /// Helper function that returns contents of <c>IDictionary&lt;'K, 'V&gt;</c>
   let getDictionaryValues<'K, 'V> (input:IDictionary<'K, 'V>) =
     seq { for (KeyValue(k, v)) in input -> k.ToString(), (v.GetType(), box v) }
 
@@ -112,7 +112,7 @@ module internal Reflection =
                 if obj.HasValue then
                   yield key, (obj.Value.GetType(), obj.Value) } |> Some
     | _ ->
-    /// Get type arguments of the IDictionary<T1, T2> implementation or None
+    /// Get type arguments of the <c>IDictionary&lt;T1, T2&gt;</c> implementation or None
     let optTyArgs =
       value.GetType().GetInterfaces() |> Seq.tryPick (fun ityp ->
         if ityp.IsGenericType && ityp.GetGenericTypeDefinition() = typedefof<IDictionary<_, _>>

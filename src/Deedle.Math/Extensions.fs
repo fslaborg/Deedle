@@ -4,7 +4,7 @@ open System.Runtime.CompilerServices
 open MathNet.Numerics.LinearAlgebra
 open Deedle
 
-/// Extension of Frame<'R, 'C>
+/// Extension of <c>Frame&lt;'R, 'C&gt;</c>
 ///
 /// <category>Matrix conversions and operators</category>
 [<Extension>]
@@ -40,7 +40,7 @@ type FrameExtensions =
   static member ToMatrix (df:Frame<'R, 'C>) =
     Matrix.ofFrame df
 
-/// Extension of Series<'C, float>
+/// Extension of <c>Series&lt;'C, float&gt;</c>
 ///
 /// <category>Matrix conversions and operators</category>
 [<Extension>]
