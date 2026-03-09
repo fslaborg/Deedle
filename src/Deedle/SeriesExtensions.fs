@@ -337,6 +337,38 @@ type SeriesExtensions =
   [<Extension>]
   static member Diff(series:Series<'K, int>, offset) = series |> Series.diff offset
 
+  /// Returns a series containing the difference (as <see cref="System.TimeSpan"/>) between
+  /// a <see cref="System.DateTime"/> value in the original series and a value at the
+  /// specified offset. For example, calling <c>Diff(1)</c> returns a series where the
+  /// previous timestamp is subtracted from the current one:
+  ///
+  ///     result[k] = series[k] - series[k - offset]
+  ///
+  /// ## Parameters
+  ///  - `offset` - When positive, subtracts the past values from the current values;
+  ///    when negative, subtracts the future values from the current values.
+  ///  - `series` - The input series.
+  ///
+  [<Extension>]
+  static member Diff(series:Series<'K, System.DateTime>, offset) : Series<'K, System.TimeSpan> =
+    series |> Series.diffDate offset
+
+  /// Returns a series containing the difference (as <see cref="System.TimeSpan"/>) between
+  /// a <see cref="System.DateTimeOffset"/> value in the original series and a value at the
+  /// specified offset. For example, calling <c>Diff(1)</c> returns a series where the
+  /// previous timestamp is subtracted from the current one:
+  ///
+  ///     result[k] = series[k] - series[k - offset]
+  ///
+  /// ## Parameters
+  ///  - `offset` - When positive, subtracts the past values from the current values;
+  ///    when negative, subtracts the future values from the current values.
+  ///  - `series` - The input series.
+  ///
+  [<Extension>]
+  static member Diff(series:Series<'K, System.DateTimeOffset>, offset) : Series<'K, System.TimeSpan> =
+    series |> Series.diffDateOffset offset
+
   [<Extension>]
   static member WindowInto(series:Series<'K1, 'V>, size:int, selector:Func<Series<'K1, 'V>, KeyValuePair<'K2, 'U>>): Series<'K2, 'U> =
     series.Aggregate(WindowSize(size, Boundary.Skip), (fun ds ->

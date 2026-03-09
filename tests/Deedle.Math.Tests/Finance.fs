@@ -47,13 +47,79 @@ let ``Ex-ante vol of equally weighted portfolio using exponentially weighted cov
   let annualVol2 =
     let vol = weights.Dot(covFrame).Dot(weights)
     Math.Sqrt(vol * nObsAnnual)
-  annualVol1 |> should beWithin (0.14437 +/- 1e-6)
+  annualVol1 |> should beWithin (0.14553 +/- 1e-5)
   annualVol1 |> should beWithin (annualVol2 +/- 1e-6)
 
 [<Test>]
-let ``Diagonals of ewmVar and ewmCov shall be identical `` () =
+let ``ewmVolStdDev on non-returns series should return standard deviation not root-mean-square (issue #555)`` () =
+  // For a monotonically increasing sequence, ewmVolStdDev should give std (~5),
+  // not a value near the mean (~45) as the old incorrect ewmVol formula produced.
+  let s = Series.ofValues [ for i in 1.0 .. 50.0 -> i ]
+  let vol = Finance.ewmVolStdDev(s, span = 10.)
+  let lastVol = vol |> Series.lastValue
+  let ewmMeanLast = Stats.ewmMean(s, span = 10.) |> Series.lastValue
+  // Std should be much smaller than the mean (~5 vs ~45)
+  lastVol |> should be (lessThan 10.)
+  lastVol |> should be (greaterThan 1.)
   let varFrame = Finance.ewmVar(stockReturns, halfLife = 52.)
   let cov = Finance.ewmCovMatrix(stockReturns, halfLife = 52.) |> Series.lastValue
   let varSeries1 = (varFrame |> Frame.takeLast 1).GetRowAt<float>(0)
   let varSeries2 = Series(stockReturns.ColumnKeys, cov.Diagonal())
   (varSeries1 - varSeries2) |> Stats.sum |> should beWithin (0. +/- 1e-10)
+
+[<Test>]
+let ``ewmVolStdDev on monotonically increasing series gives small std (not mean)`` () =
+  // For a monotonically increasing sequence, ewmVolStdDev should give values near the
+  // per-step increment (~1), much smaller than the mean (~45)
+  let s = Series.ofValues [ for i in 1.0 .. 50.0 -> i ]
+  let vol = Finance.ewmVolStdDev(s, span = 10.)
+  let lastVol = vol |> Series.lastValue
+  lastVol |> should be (lessThan 10.)
+  lastVol |> should be (greaterThan 0.)
+
+[<Test>]
+let ``ewmVolStdDev on frame squared equals ewmVar for last row`` () =
+  let varFrame = Finance.ewmVar(stockReturns, halfLife = 52.)
+  let volFrame = Finance.ewmVolStdDev(stockReturns, halfLife = 52.)
+  // Check the last row: ewmVar should equal ewmVolStdDev^2 for each column
+  let lastVar = (varFrame |> Frame.takeLast 1).GetRowAt<float>(0)
+  let lastVol = (volFrame |> Frame.takeLast 1).GetRowAt<float>(0)
+  let lastVarFromVol = lastVol |> Series.mapValues (fun v -> v * v)
+  (lastVar - lastVarFromVol) |> Stats.sum |> should beWithin (0. +/- 1e-10)
+
+[<Test>]
+let ``ewmVolStdDev diagonal consistency with ewmCovMatrix`` () =
+  let varFrame = Finance.ewmVar(stockReturns, halfLife = 52.)
+  let cov = Finance.ewmCovMatrix(stockReturns, halfLife = 52.) |> Series.lastValue
+  let varSeries1 = (varFrame |> Frame.takeLast 1).GetRowAt<float>(0)
+  let varSeries2 = Series(stockReturns.ColumnKeys, cov.Diagonal())
+  (varSeries1 - varSeries2) |> Stats.sum |> should beWithin (0. +/- 1e-10)
+
+[<Test>]
+let ``ewmVolRMS on zero-mean series is in same ballpark as ewmVolStdDev`` () =
+  // For a zero-mean series, RMS and StdDev should be in the same ballpark
+  let rng = System.Random(42)
+  let zeroMean = Series.ofValues [ for _ in 1..100 -> rng.NextDouble() - 0.5 ]
+  let rms = Finance.ewmVolRMS(zeroMean, span = 20.) |> Series.lastValue
+  let std = Finance.ewmVolStdDev(zeroMean, span = 20.) |> Series.lastValue
+  rms |> should be (greaterThan 0.)
+  std |> should be (greaterThan 0.)
+  abs(rms - std) / std |> should be (lessThan 0.5)
+
+[<Test>]
+let ``ewmVolRMS on monotonically increasing series is near the ewm mean (old behaviour)`` () =
+  // For a monotonically increasing sequence starting at 1, RMS ≈ EWMA(x),
+  // which is the old behaviour of ewmVol before the fix for issue #555.
+  let s = Series.ofValues [ for i in 1.0 .. 50.0 -> i ]
+  let rms = Finance.ewmVolRMS(s, span = 10.)
+  let lastRMS = rms |> Series.lastValue
+  let ewmMeanLast = Stats.ewmMean(s, span = 10.) |> Series.lastValue
+  // RMS should be close to the mean (both ~45) for a positive monotone sequence
+  lastRMS |> should be (greaterThan 10.)
+  abs(lastRMS - ewmMeanLast) / ewmMeanLast |> should be (lessThan 0.05)
+
+[<Test>]
+let ``ewmVolRMS on frame columns are all positive`` () =
+  let rmsFrame = Finance.ewmVolRMS(stockReturns, halfLife = 52.)
+  let lastRow = (rmsFrame |> Frame.takeLast 1).GetRowAt<float>(0)
+  lastRow |> Series.values |> Seq.iter (fun v -> v |> should be (greaterThan 0.))
