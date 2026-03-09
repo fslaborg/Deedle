@@ -1657,3 +1657,33 @@ module Frame =
       |> (fun ix -> indexRowsWith ix df))
     |> Series.values
     |> mergeAll
+
+  // ----------------------------------------------------------------------------------------------
+  // JSON serialization
+  // ----------------------------------------------------------------------------------------------
+
+  /// <summary>
+  /// Serialize the data frame to a JSON string.
+  /// </summary>
+  /// <param name="orient">
+  /// Controls the JSON layout:
+  /// <c>"columns"</c> (default) produces a column-major object <c>{"col":{"row":v,...},...}</c>;
+  /// <c>"index"</c> produces a row-major object <c>{"row":{"col":v,...},...}</c>;
+  /// <c>"records"</c> produces an array of row objects <c>[{"col":v,...},...]</c>.
+  /// </param>
+  /// <param name="frame">The data frame to serialize.</param>
+  /// <category>Input and output</category>
+  [<CompiledName("ToJson")>]
+  let toJson orient (frame:Frame<'R, 'C>) =
+    FrameUtils.toJson orient frame
+
+  /// <summary>
+  /// Save the data frame as a JSON file at the specified path.
+  /// </summary>
+  /// <param name="path">The output file path.</param>
+  /// <param name="frame">The data frame to serialize.</param>
+  /// <category>Input and output</category>
+  [<CompiledName("SaveJson")>]
+  let saveJson (path:string) (frame:Frame<'R, 'C>) =
+    use writer = new System.IO.StreamWriter(path)
+    FrameUtils.writeJson writer "columns" frame
