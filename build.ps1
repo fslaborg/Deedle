@@ -20,8 +20,9 @@ $version = ([xml](Get-Content Directory.Build.props)).Project.PropertyGroup.Vers
 # Don't fail the build if API doc generation fails
 dotnet fsdocs build --eval --parameters fsdocs-package-version $version
 if ($LASTEXITCODE -ne 0) { 
-    Write-Host "Warning: API doc generation failed, but continuing build" -ForegroundColor Yellow 
-    $LASTEXITCODE = 0
+    Write-Host "Warning: API doc generation failed, but continuing build" -ForegroundColor Yellow
 }
+# Reset exit code to success - all critical build steps above already exited on failure
+$global:LASTEXITCODE = 0
 
 Write-Host "--- Build complete ---"
