@@ -6,7 +6,7 @@
 
 /// Set concrete IIndexBuilder implementation
 ///
-/// [category:Vectors and indices]
+/// <category>Vectors and indices</category>
 [<AutoOpen>]
 module ``F# IndexBuilder implementation`` =
   type IndexBuilder =
