@@ -9,10 +9,12 @@ open MathNet.Numerics.LinearAlgebra
 /// [category:Financial Analysis]
 type Finance =
 
-  /// Exponentially weighted moving volatility on series
+  /// Exponentially weighted moving volatility using standard deviation (mean-corrected).
+  /// Tracks the EWM mean and computes volatility as the sqrt of the EWM variance of
+  /// deviations from that mean.
   ///
   /// [category: Exponentially Weighted Moving]
-  static member ewmVol (x:Series<'R, float>, ?com, ?span, ?halfLife, ?alpha) =
+  static member ewmVolStdDev (x:Series<'R, float>, ?com, ?span, ?halfLife, ?alpha) =
     let alpha = StatsInternal.ewDecay(com, span, halfLife, alpha)
     let x = x |> Series.dropMissing
     if x.KeyCount < 2 then
@@ -32,20 +34,69 @@ type Finance =
         res.[i] <- Math.Sqrt(var)
       Series(x.Keys, res)
 
-  /// Exponentially weighted moving volatility on frame
+  /// Exponentially weighted moving volatility using standard deviation (mean-corrected)
+  /// applied to each column of a frame.
   ///
   /// [category: Exponentially Weighted Moving]
-  static member ewmVol (df:Frame<'R, 'C>, ?com, ?span, ?halfLife, ?alpha) =
+  static member ewmVolStdDev (df:Frame<'R, 'C>, ?com, ?span, ?halfLife, ?alpha) =
     let alpha = StatsInternal.ewDecay(com, span, halfLife, alpha)
     df
     |> Frame.getNumericCols
-    |> Series.mapValues(fun series -> Finance.ewmVol(series, alpha = alpha))
+    |> Series.mapValues(fun series -> Finance.ewmVolStdDev(series, alpha = alpha))
     |> Frame.ofColumns
+
+  /// Exponentially weighted moving volatility using root mean square (no mean correction).
+  /// Computes vol as sqrt(EWM(x²)), which equals ewmMean for strictly positive sequences.
+  /// Appropriate for returns series that are already mean-centred (e.g. zero-mean returns).
+  ///
+  /// [category: Exponentially Weighted Moving]
+  static member ewmVolRMS (x:Series<'R, float>, ?com, ?span, ?halfLife, ?alpha) =
+    let alpha = StatsInternal.ewDecay(com, span, halfLife, alpha)
+    let x = x |> Series.dropMissing
+    if x.KeyCount < 2 then
+      x |> Series.mapValues(fun _ -> nan)
+    else
+      let data = x.Values |> Array.ofSeq
+      let res = Array.zeroCreate x.KeyCount
+      let mutable meanSq = data.[0] * data.[0]
+      res.[0] <- Math.Abs(data.[0])
+      for i in 1..x.KeyCount-1 do
+        let curr = data.[i]
+        meanSq <- (1.0 - alpha) * meanSq + alpha * curr * curr
+        res.[i] <- Math.Sqrt(meanSq)
+      Series(x.Keys, res)
+
+  /// Exponentially weighted moving volatility using root mean square (no mean correction)
+  /// applied to each column of a frame.
+  ///
+  /// [category: Exponentially Weighted Moving]
+  static member ewmVolRMS (df:Frame<'R, 'C>, ?com, ?span, ?halfLife, ?alpha) =
+    let alpha = StatsInternal.ewDecay(com, span, halfLife, alpha)
+    df
+    |> Frame.getNumericCols
+    |> Series.mapValues(fun series -> Finance.ewmVolRMS(series, alpha = alpha))
+    |> Frame.ofColumns
+
+  /// Exponentially weighted moving volatility on series.
+  ///
+  /// [category: Exponentially Weighted Moving]
+  [<Obsolete("ewmVol is deprecated. Use ewmVolStdDev for mean-corrected standard deviation or ewmVolRMS for root-mean-square volatility.")>]
+  static member ewmVol (x:Series<'R, float>, ?com, ?span, ?halfLife, ?alpha) =
+    let alpha = StatsInternal.ewDecay(com, span, halfLife, alpha)
+    Finance.ewmVolStdDev(x, alpha = alpha)
+
+  /// Exponentially weighted moving volatility on frame.
+  ///
+  /// [category: Exponentially Weighted Moving]
+  [<Obsolete("ewmVol is deprecated. Use ewmVolStdDev for mean-corrected standard deviation or ewmVolRMS for root-mean-square volatility.")>]
+  static member ewmVol (df:Frame<'R, 'C>, ?com, ?span, ?halfLife, ?alpha) =
+    let alpha = StatsInternal.ewDecay(com, span, halfLife, alpha)
+    Finance.ewmVolStdDev(df, alpha = alpha)
 
   /// Exponentially weighted moving variance on series
   static member ewmVar (x:Series<'R, float>, ?com, ?span, ?halfLife, ?alpha) =
     let alpha = StatsInternal.ewDecay(com, span, halfLife, alpha)
-    Finance.ewmVol(x, alpha = alpha)
+    Finance.ewmVolStdDev(x, alpha = alpha)
     |> Series.mapValues(fun (v:float) -> v * v)
 
   /// Exponentially weighted moving variance on frame
@@ -53,7 +104,7 @@ type Finance =
   /// [category: Exponentially Weighted Moving]
   static member ewmVar (df:Frame<'R, 'C>, ?com, ?span, ?halfLife, ?alpha) =
     let alpha = StatsInternal.ewDecay(com, span, halfLife, alpha)
-    Finance.ewmVol(df, alpha = alpha)
+    Finance.ewmVolStdDev(df, alpha = alpha)
     |> Frame.mapValues(fun (v:float) -> v * v)
 
   /// Exponentially weighted moving covariance matrix
