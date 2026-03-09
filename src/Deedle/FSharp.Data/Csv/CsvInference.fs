@@ -41,7 +41,7 @@ let private nameToType =
    "string option",  (typeof<string>  , TypeWrapper.Option  )]
   |> dict
 
-let private nameAndTypeRegex = lazy Regex(@"^(?<name>.+)\((?<type>.+)\)$", RegexOptions.Compiled ||| RegexOptions.RightToLeft)
+let private nameAndTypeRegex = lazy Regex(@"^(?<name>.+)\((?<type>.+)\)$", RegexOptions.Compiled)
 let private typeAndUnitRegex = lazy Regex(@"^(?<type>.+)<(?<unit>.+)>$", RegexOptions.Compiled ||| RegexOptions.RightToLeft)
 let private overrideByNameRegex = lazy Regex(@"^(?<name>.+)(->(?<newName>.+)(=(?<type>.+))?|=(?<type>.+))$", RegexOptions.Compiled ||| RegexOptions.RightToLeft)
 

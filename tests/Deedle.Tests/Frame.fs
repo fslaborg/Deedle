@@ -93,6 +93,19 @@ let ``Can read MSFT data from CSV with explicit schema``() =
   actual |> shouldEqual ["A";"B";"C";"D";"E";"F";"G"]
 
 [<Test>]
+let ``Can read CSV with schema where column name contains parentheses``() =
+  // Regression test for issue #348: nameAndTypeRegex was using RightToLeft which caused
+  // incorrect parsing of column names containing parentheses (e.g. "Revenue (USD)(float)")
+  let csv = "Revenue (USD),Count\n100.0,1\n200.0,2"
+  use reader = new System.IO.StringReader(csv)
+  // Schema specifies type for a column whose name contains parentheses
+  let df = Frame.ReadCsv(reader, schema="Revenue (USD)(float),Count(int)")
+  let actual = List.ofSeq df.ColumnKeys
+  actual |> shouldEqual ["Revenue (USD)"; "Count"]
+  df.GetColumn<float>("Revenue (USD)") |> Series.values |> List.ofSeq |> shouldEqual [100.0; 200.0]
+  df.GetColumn<int>("Count") |> Series.values |> List.ofSeq |> shouldEqual [1; 2]
+
+[<Test>]
 let ``Can read MSFT data from CSV and rename``() =
   let df = Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/data/MSFT.csv", schema="Day,Adj Close->Adjusted")
   let actual = List.ofSeq df.ColumnKeys
@@ -180,6 +193,22 @@ col_A
   Assert.IsTrue(
     actual = [| "col_A"; "col_A\n2"; "col_B" |] ||
     actual = [| "col_A"; "col_A\r\n2"; "col_B" |] )
+
+[<Test>]
+let ``Can read space-separated file without headers`` () =
+  // Regression test for https://github.com/fslaborg/Deedle/issues/550:
+  // users expect to be able to read space-separated data using separators=" " and hasHeaders=false.
+  let data =
+    "1 2 3\n" +
+    "4 5 6\n" +
+    "7 8 9"
+  use reader = new System.IO.StringReader(data)
+  let df = Frame.ReadCsv(reader, hasHeaders=false, separators=" ", inferTypes=false)
+  df.ColumnKeys |> Seq.toArray |> shouldEqual [| "Column1"; "Column2"; "Column3" |]
+  df |> Frame.countRows |> shouldEqual 3
+  df.GetColumn<string>("Column1").GetAt(0) |> shouldEqual "1"
+  df.GetColumn<string>("Column2").GetAt(1) |> shouldEqual "5"
+  df.GetColumn<string>("Column3").GetAt(2) |> shouldEqual "9"
 
 [<Test>]
 let ``Can read CSV file with empty cell`` () =
@@ -393,6 +422,16 @@ let typedPrices () =
   [| for r in typedRows () -> r.Price |]
 
 [<Test>]
+let ``Frame.ofRecords does not create duplicate columns for F# records`` () =
+  // F# records have compiler-generated backing fields (e.g. Open@) in addition to
+  // the public properties; getExpandableFields must filter these out (issue #569).
+  let prices = typedPrices ()
+  let df = Frame.ofRecords prices
+  // Column count must match field count exactly (no duplicates like "Open@")
+  df.ColumnCount |> shouldEqual 4
+  set df.ColumnKeys |> shouldEqual (set ["Open"; "High"; "Low"; "Close"])
+
+[<Test>]
 let ``Can read simple sequence of records`` () =
   let prices = typedPrices ()
   let df = Frame.ofRecords prices
@@ -570,6 +609,27 @@ let ``Filter all rows keeps column keys`` () =
   filt.["X"] |> shouldEqual (series [])
   filt.["Y"] |> shouldEqual (series [])
   (fun () -> filt.["Z"] |> ignore) |> should throw (typeof<ArgumentException>)
+
+[<Test>]
+let ``Filter rows preserves column types when all column values are missing`` () =
+  // Regression test for https://github.com/fslaborg/Deedle/issues/516
+  // filterRows must not change ColumnTypes when the filtered result contains only
+  // missing values in a column (e.g. all-NaN float column after filtering).
+  let df = frame [ "X" => series [1 => 1.0; 2 => nan]
+                   "Y" => series [1 => nan; 2 => 2.0] ]
+  // Filter to row 1 where Y is missing (nan) — Y column type should still be float
+  let filt = df |> Frame.filterRows (fun k _ -> k = 1)
+  filt.RowCount |> shouldEqual 1
+  let colTypes = filt.ColumnTypes |> Seq.toList
+  colTypes.[0] |> shouldEqual typeof<float>
+  colTypes.[1] |> shouldEqual typeof<float>
+
+  // Same via filterRowValues — filter to row 2 where X is missing (nan)
+  let filt2 = df |> Frame.filterRowValues (fun r -> r.GetAs<float>("Y", 0.0) > 1.0)
+  filt2.RowCount |> shouldEqual 1
+  let colTypes2 = filt2.ColumnTypes |> Seq.toList
+  colTypes2.[0] |> shouldEqual typeof<float>
+  colTypes2.[1] |> shouldEqual typeof<float>
 
 [<Test>]
 let ``Filter frame rows by column value`` () =
@@ -753,6 +813,38 @@ let ``Frame.melt preserves type of values`` () =
   let res = df |> Frame.melt
   let colTypes = res.GetFrameData().Columns |> Seq.map (fun (ty,_) -> ty.Name) |> List.ofSeq
   colTypes |> shouldEqual ["Int32"; "String"; "Double"]
+
+[<Test>]
+let ``Frame.unmelt is the inverse of Frame.melt for homogeneous frames`` () =
+  // A homogeneous float frame should survive a melt/unmelt round-trip.
+  let original =
+    frame [ "A" => series [ 1 => 1.0; 2 => 2.0 ]
+            "B" => series [ 1 => 3.0; 2 => 4.0 ] ]
+  let melted = original |> Frame.melt
+  // Melted frame must have exactly the three structural columns.
+  melted.ColumnKeys |> Seq.toArray |> shouldEqual [| "Row"; "Column"; "Value" |]
+  melted |> Frame.countRows |> shouldEqual 4
+  // Round-trip: unmelt should reconstruct the original structure.
+  let roundTripped : Frame<int, string> = melted |> Frame.unmelt
+  set roundTripped.ColumnKeys |> shouldEqual (set ["A"; "B"])
+  roundTripped |> Frame.countRows |> shouldEqual 2
+
+[<Test>]
+let ``Frame.melt skips missing values and Frame.unmelt reconstructs present values`` () =
+  // melt should omit missing cells; unmelt should place values at the right (row, col) address.
+  let df =
+    frame [ "X" => series [ "r1" => 10.0; "r2" => 20.0 ]
+            "Y" => series [ "r1" => 30.0 ] ]   // "r2"/"Y" is missing
+  let melted = df |> Frame.melt
+  // Only the three present cells should appear.
+  melted |> Frame.countRows |> shouldEqual 3
+  let roundTripped : Frame<string, string> = melted |> Frame.unmelt
+  set roundTripped.ColumnKeys |> shouldEqual (set ["X"; "Y"])
+  roundTripped |> Frame.countRows |> shouldEqual 2
+  roundTripped.GetColumn<float>("X").TryGet("r1") |> shouldEqual (OptionalValue 10.0)
+  roundTripped.GetColumn<float>("X").TryGet("r2") |> shouldEqual (OptionalValue 20.0)
+  roundTripped.GetColumn<float>("Y").TryGet("r1") |> shouldEqual (OptionalValue 30.0)
+  roundTripped.GetColumn<float>("Y").TryGet("r2") |> shouldEqual OptionalValue.Missing
 
 [<Test>]
 let ``Can group 10x5k data frame by row of type string (in less than a few seconds)`` () =

@@ -12,6 +12,7 @@ open System.ComponentModel
 open System.Runtime.InteropServices
 open System.Runtime.CompilerServices
 open Deedle.Keys
+open Deedle.Vectors
 
 
 /// <summary>
@@ -1119,7 +1120,12 @@ type FrameExtensions =
   /// <param name="condition">A delegate that specifies the filtering condition.</param>
   [<Extension>]
   static member Where(frame:Frame<'TRowKey, 'TColumnKey>, condition:Func<_, _>) =
-    frame.Rows.Where(condition) |> FrameUtils.fromRowsAndColumnKeys frame.IndexBuilder frame.VectorBuilder frame.ColumnIndex.Keys
+    // Rebuild frame column-wise to preserve column ElementType when some columns are all-missing.
+    let filteredRows = frame.Rows.Where(condition)
+    let newIdx = filteredRows.Index
+    let relocs = frame.IndexBuilder.Reindex(frame.RowIndex, newIdx, Lookup.Exact, VectorConstruction.Return 0, fun _ -> true)
+    let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder newIdx.AddressingScheme relocs)
+    Frame<_, _>(newIdx, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
   /// <summary>
   /// Filters frame rows using the specified condtion. Returns a new data frame
@@ -1131,7 +1137,12 @@ type FrameExtensions =
   /// <param name="condition">A delegate that specifies the filtering condition.</param>
   [<Extension>]
   static member Where(frame:Frame<'TRowKey, 'TColumnKey>, condition:Func<_, _, _>) =
-    frame.Rows.Where(condition) |> FrameUtils.fromRowsAndColumnKeys frame.IndexBuilder frame.VectorBuilder frame.ColumnIndex.Keys
+    // Rebuild frame column-wise to preserve column ElementType when some columns are all-missing.
+    let filteredRows = frame.Rows.Where(condition)
+    let newIdx = filteredRows.Index
+    let relocs = frame.IndexBuilder.Reindex(frame.RowIndex, newIdx, Lookup.Exact, VectorConstruction.Return 0, fun _ -> true)
+    let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder newIdx.AddressingScheme relocs)
+    Frame<_, _>(newIdx, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
   [<Extension>]
   static member Select(frame:Frame<'TRowKey, 'TColumnKey>, projection:Func<_, _>) =
