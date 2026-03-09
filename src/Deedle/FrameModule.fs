@@ -4,16 +4,16 @@ namespace Deedle
 /// The `Frame` module provides an F#-friendly API for working with data frames.
 /// The module follows the usual desing for collection-processing in F#, so the
 /// functions work well with the pipelining operator (`|>`). For example, given
-/// a frame with two columns representing prices, we can use `Frame.diff` and
-/// numerical operators to calculate daily returns like this:
+/// a frame with two columns representing prices, we can use `Frame.pctChange` to
+/// calculate daily returns like this:
 ///
-///     let df = frame [ "MSFT" =&gt; prices1; "AAPL" =&gt; prices2 ]
-///     let past = df |&gt; Frame.diff 1
-///     let rets = past / df * 100.0
-///     rets |&gt; Stats.mean
+///     let df = frame [ "MSFT" => prices1; "AAPL" => prices2 ]
+///     let rets = df |> Frame.pctChange 1
+///     rets |> Stats.mean
 ///
 /// Note that the `Stats.mean` operation is overloaded and works both on series
-/// (returning a number) and on frames (returning a series).
+/// (returning a number) and on frames (returning a series). You can also use
+/// `Frame.diff` if you need absolute differences rather than relative changes.
 ///
 /// The functions in this module are designed to be used from F#. For a C#-friendly
 /// API, see the `FrameExtensions` type. For working with individual series, see the
@@ -1249,6 +1249,30 @@ module Frame =
     let newRowIndex, vectorR = frame.RowIndex.Builder.Shift((frame.RowIndex, Vectors.Return 0), offset)
     let _, vectorL = frame.RowIndex.Builder.Shift((frame.RowIndex, Vectors.Return 0), -offset)
     let cmd = Vectors.Combine(lazy newRowIndex.KeyCount, [vectorL; vectorR], BinaryTransform.Create<float>(OptionalValue.map2 (-)))
+    let newData = frame.Data.Select(function
+        | AsFloatVector vf -> VectorBuilder.Instance.Build(newRowIndex.AddressingScheme, cmd, [| vf |]) :> IVector
+        | vector -> vector)
+    Frame(newRowIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
+
+  /// <summary>
+  /// Returns a frame where each value is the percentage change relative to the value at the
+  /// specified offset. For example, calling <c>Frame.pctChange 1 df</c> returns a frame where
+  /// each value represents the relative change from the previous row's value. In pseudo-code:
+  ///
+  ///     result[k] = (frame[k] - frame[k - offset]) / frame[k - offset]
+  ///
+  /// Columns that cannot be converted to <c>float</c> are left without a change.
+  /// This is commonly used in financial analysis to compute returns (e.g. daily stock returns).
+  /// </summary>
+  /// <param name="offset">When positive, computes change from past values; when negative, computes change relative to future values.</param>
+  /// <param name="frame">The input frame containing at least some <c>float</c> columns.</param>
+  /// <category>Frame transformations</category>
+  [<CompiledName("PctChange")>]
+  let pctChange offset (frame:Frame<'R, 'C>) =
+    let vectorBuilder = VectorBuilder.Instance
+    let newRowIndex, vectorR = frame.RowIndex.Builder.Shift((frame.RowIndex, Vectors.Return 0), offset)
+    let _, vectorL = frame.RowIndex.Builder.Shift((frame.RowIndex, Vectors.Return 0), -offset)
+    let cmd = Vectors.Combine(lazy newRowIndex.KeyCount, [vectorL; vectorR], BinaryTransform.Create<float>(OptionalValue.map2 (fun l r -> (l - r) / r)))
     let newData = frame.Data.Select(function
         | AsFloatVector vf -> VectorBuilder.Instance.Build(newRowIndex.AddressingScheme, cmd, [| vf |]) :> IVector
         | vector -> vector)

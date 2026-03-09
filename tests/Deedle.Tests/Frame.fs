@@ -840,9 +840,22 @@ let ``Frame.diff and Frame.shift correctly return empty frames`` () =
   single |> Frame.shift -2 |> Frame.countRows |> shouldEqual 0
   single |> Frame.diff -1 |> shouldEqual <| empty
 
-// ------------------------------------------------------------------------------------------------
-// tryVal related
-// ------------------------------------------------------------------------------------------------
+[<Test>]
+let ``Frame.pctChange computes percentage change on sample input`` () =
+  let df = frame [ "A" => series [ 1 => 100.0; 2 => 110.0; 3 => 99.0 ]
+                   "B" => series [ 1 => 50.0;  2 => 60.0;  3 => 45.0 ] ]
+  let result = df |> Frame.pctChange 1
+  result.["A"] |> Series.observations |> List.ofSeq
+  |> shouldEqual [ 2, 0.1; 3, (99.0-110.0)/110.0 ]
+  result.["B"] |> Series.observations |> List.ofSeq
+  |> shouldEqual [ 2, (60.0-50.0)/50.0; 3, (45.0-60.0)/60.0 ]
+
+[<Test>]
+let ``Frame.pctChange correctly returns empty frames`` () =
+  let empty : Frame<int, string> = frame [ "A" => (series [] : Series<int, float>) ]
+  empty |> Frame.pctChange 1 |> shouldEqual <| empty
+
+
 
 [<Test>]
 let ``Can use tryval and get inner exceptions when there are any`` () =

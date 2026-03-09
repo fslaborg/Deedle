@@ -366,7 +366,29 @@ let ``Series.diff and Series.shift correctly return empty series`` () =
   single |> Series.diff -2 |> shouldEqual <| series []
 
 [<Test>]
-let ``Series.diff correctly handles missing values``() =
+let ``Series.pctChange computes percentage change on sample input`` () =
+  let input = series [ 'a' => 100.0; 'b' => 110.0; 'c' => 99.0; 'd' => 132.0 ]
+  // pctChange 1: result[k] = (s[k] - s[k-1]) / s[k-1]
+  let expected1 = series [ 'b' => 0.1; 'c' => (99.0-110.0)/110.0; 'd' => (132.0-99.0)/99.0 ]
+  input |> Series.pctChange 1 |> shouldEqual expected1
+  // pctChange 2: result[k] = (s[k] - s[k-2]) / s[k-2]
+  let expected2 = series [ 'c' => (99.0-100.0)/100.0; 'd' => (132.0-110.0)/110.0 ]
+  input |> Series.pctChange 2 |> shouldEqual expected2
+
+[<Test>]
+let ``Series.pctChange returns empty series for offset exceeding length`` () =
+  let empty : Series<int, float> = series []
+  empty |> Series.pctChange 1 |> shouldEqual <| series []
+  let single = series [ 1 => 10.0 ]
+  single |> Series.pctChange 2 |> shouldEqual <| series []
+
+[<Test>]
+let ``Series.pctChange propagates missing values`` () =
+  let s = Series.ofValues [ 100.0; Double.NaN; 110.0 ]
+  let actual = s |> Series.pctChange 1 |> Series.observationsAll |> List.ofSeq
+  actual |> shouldEqual [(1, None); (2, None)]
+
+
   let s = Series.ofValues [ 0.0; Double.NaN; Double.NaN; 0.0; 2.0 ]
   let actual1 = s |> Series.diff -1 |> Series.observationsAll |> List.ofSeq
   actual1 |> shouldEqual [(0, None); (1, None); (2, None); (3, Some -2.0)]
