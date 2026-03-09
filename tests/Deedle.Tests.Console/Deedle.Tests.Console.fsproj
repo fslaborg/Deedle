@@ -1,12 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFramework>net9.0</TargetFramework>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System.Runtime" />
-  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Deedle\Deedle.fsproj" />
   </ItemGroup>
@@ -15,10 +11,12 @@
     <None Include="paket.references" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Deedle.CSharp.Tests\Deedle.CSharp.Tests.csproj"></ProjectReference>
-    <ProjectReference Include="..\Deedle.PerfTests\Deedle.PerfTests.fsproj"></ProjectReference>
-    <ProjectReference Include="..\Deedle.RPlugin.Tests\Deedle.RPlugin.Tests.fsproj"></ProjectReference>
-    <ProjectReference Include="..\Deedle.Tests\Deedle.Tests.fsproj"></ProjectReference>
+    <ProjectReference Include="..\Deedle.CSharp.Tests\Deedle.CSharp.Tests.csproj">
+    </ProjectReference>
+    <ProjectReference Include="..\Deedle.PerfTests\Deedle.PerfTests.fsproj">
+    </ProjectReference>
+    <ProjectReference Include="..\Deedle.Tests\Deedle.Tests.fsproj">
+    </ProjectReference>
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

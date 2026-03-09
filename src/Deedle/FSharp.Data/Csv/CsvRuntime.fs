@@ -203,7 +203,7 @@ module private CsvHelpers =
 
 // --------------------------------------------------------------------------------------
 
-/// [omit]
+/// <exclude />
 type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, disposer:IDisposable, rows:seq<'RowType>, headers, numberOfColumns, separators, quote) =
 
   /// The rows with data
@@ -220,20 +220,20 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
   interface IDisposable with
     member __.Dispose() = disposer.Dispose()
 
-  /// [omit]
+  /// <exclude />
   [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
   [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
   static member CreateEmpty (rowToStringArray, rows:seq<'RowType>, headers, numberOfColumns, separators, quote) =
     new CsvFile<'RowType>(rowToStringArray, { new IDisposable with member x.Dispose() = () }, rows, headers, numberOfColumns, separators, quote)
 
-  /// [omit]
+  /// <exclude />
   [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
   [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
   static member Create (stringArrayToRow, rowToStringArray, reader:TextReader, separators, quote, hasHeaders, ignoreErrors, skipRows, cacheRows) =
     let uncachedCsv = new CsvFile<'RowType>(stringArrayToRow, rowToStringArray, Func<_>(fun _ -> reader), separators, quote, hasHeaders, ignoreErrors, skipRows)
     if cacheRows then uncachedCsv.Cache() else uncachedCsv
 
-  /// [omit]
+  /// <exclude />
   [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
   [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
   static member ParseRows (text, stringArrayToRow: Func<obj,string[],'RowType>, separators, quote, ignoreErrors) =
@@ -241,7 +241,7 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
     let csv = CsvFile<_>.Create (stringArrayToRow, null, reader, separators, quote, hasHeaders=false, ignoreErrors=ignoreErrors, skipRows=0, cacheRows=false)
     csv.Rows |> Seq.toArray
 
-  /// [omit]
+  /// <exclude />
   new (stringArrayToRow:Func<obj,string[],'RowType>, rowToStringArray, readerFunc:Func<TextReader>, separators, quote, hasHeaders, ignoreErrors, skipRows) as this =
 
     // Track created Readers so that we can dispose of all of them

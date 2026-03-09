@@ -71,7 +71,7 @@ open Deedle.Internal
 open Deedle.Vectors.Virtual
 open Deedle.Indices.Virtual
 
-/// [omit]
+/// <exclude />
 ///
 /// Helper that is invoked via Reflection to create generic virtual vectors.
 type VirtualVectorHelper =

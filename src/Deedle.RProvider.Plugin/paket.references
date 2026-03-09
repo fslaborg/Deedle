@@ -1,4 +1,0 @@
-group RProviderPlugin
-    FSharp.Core
-    System.ComponentModel.Composition
-    RProvider

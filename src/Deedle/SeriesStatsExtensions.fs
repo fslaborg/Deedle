@@ -6,7 +6,7 @@ open System.Runtime.CompilerServices
 /// The type implements C# and F# extension methods that add numerical operations
 /// to Deedle series.
 ///
-/// [category:Frame and series operations]
+/// <category>Frame and series operations</category>
 [<Extension>]
 type SeriesStatsExtensions =
 
@@ -15,12 +15,12 @@ type SeriesStatsExtensions =
   // ----------------------------------------------------------------------------------------------
 
   /// Returns the sum of the elements of the series of float values.
-  /// [category:Statistics]
+  /// <category>Statistics</category>
   [<Extension>]
   static member inline Sum(series:Series<'K, 'V>) = Stats.sum series
 
   /// Returns the sum of the elements of the series of numeric values.
-  /// [category:Statistics]
+  /// <category>Statistics</category>
   [<Extension>]
   static member inline NumSum(series:Series<'K, 'V>) = Stats.numSum series
 
@@ -29,7 +29,7 @@ type SeriesStatsExtensions =
   /// Throws a `FormatException` or an `InvalidCastException` if the value type of the series
   /// is not convertible to floating point number.
   ///
-  /// [category:Statistics]
+  /// <category>Statistics</category>
   [<Extension>]
   static member inline Min(series: Series<'K, 'V>) = Stats.min series
 
@@ -38,39 +38,39 @@ type SeriesStatsExtensions =
   /// Throws a `FormatException` or an `InvalidCastException` if the value type of the series
   /// is not convertible to floating point number.
   ///
-  /// [category:Statistics]
+  /// <category>Statistics</category>
   [<Extension>]
   static member inline Max(series: Series<'K, 'V>) = Stats.max series
 
   /// Returns the minimum of the values in a series. The result is an option value.
   /// When the series contains no values, the result is `None`.
-  /// [category:Statistics]
+  /// <category>Statistics</category>
   [<Extension>]
   static member inline TryMin(series: Series<'K, 'V>) = Stats.tryMin series
 
   /// Returns the maximum of the values in a series. The result is an option value.
   /// When the series contains no values, the result is `None`.
-  /// [category:Statistics]
+  /// <category>Statistics</category>
   [<Extension>]
   static member inline TryMax(series: Series<'K, 'V>) = Stats.tryMax series
 
   /// Returns the mean of the elements of the series.
-  /// [category:Statistics]
+  /// <category>Statistics</category>
   [<Extension>]
   static member inline Mean(series:Series<'K, 'V>) = Stats.mean series
 
   /// Returns the standard deviation of the elements of the series.
-  /// [category:Statistics]
+  /// <category>Statistics</category>
   [<Extension>]
   static member inline StdDev(series:Series<'K, 'V>) = Stats.stdDev series
 
   /// Returns the skewness of the elements of the series.
-  /// [category:Statistics]
+  /// <category>Statistics</category>
   [<Extension>]
   static member inline Skewness(series:Series<'K, 'V>) = Stats.skew series
 
   /// Returns the kurtosis of the elements of the series.
-  /// [category:Statistics]
+  /// <category>Statistics</category>
   [<Extension>]
   static member inline Kurtosis(series:Series<'K, 'V>) = Stats.kurt series
 
@@ -79,7 +79,7 @@ type SeriesStatsExtensions =
   static member inline StandardDeviation(series:Series<'K, 'V>) = Stats.stdDev series
 
   /// Returns the median of the elements of the series.
-  /// [category:Statistics]
+  /// <category>Statistics</category>
   [<Extension>]
   static member inline Median(series:Series<'K, 'V>) = Stats.median series
 
@@ -93,7 +93,7 @@ type SeriesStatsExtensions =
   ///  - `series` - A series of values that are used to calculate the means
   ///  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
   ///
-  /// [category:Statistics]
+  /// <category>Statistics</category>
   [<Extension>]
   static member inline MeanLevel(series:Series<'K1, 'V>, groupSelector:Func<'K1, 'K2>) =
     Series.applyLevel groupSelector.Invoke Stats.mean series
@@ -108,7 +108,7 @@ type SeriesStatsExtensions =
   ///  - `series` - A series of values that are used to calculate the standard deviations
   ///  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
   ///
-  /// [category:Statistics]
+  /// <category>Statistics</category>
   static member inline StdDevLevel(series:Series<'K1, 'V>, groupSelector:Func<'K1, 'K2>) =
     Series.applyLevel groupSelector.Invoke Stats.stdDev series
 
@@ -122,7 +122,7 @@ type SeriesStatsExtensions =
   ///  - `series` - A series of values that are used to calculate the medians
   ///  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
   ///
-  /// [category:Statistics]
+  /// <category>Statistics</category>
   [<Extension>]
   static member inline MedianLevel(series:Series<'K1, 'V>, groupSelector:Func<'K1, 'K2>) =
       Series.applyLevel groupSelector.Invoke Stats.median series
@@ -137,7 +137,7 @@ type SeriesStatsExtensions =
   ///  - `series` - A series of values that are used to calculate the sums
   ///  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
   ///
-  /// [category:Statistics]
+  /// <category>Statistics</category>
   [<Extension>]
   static member inline SumLevel(series:Series<'K1, 'V>, groupSelector:Func<'K1, 'K2>) =
     Series.applyLevel groupSelector.Invoke Stats.sum series
@@ -152,7 +152,7 @@ type SeriesStatsExtensions =
   ///  - `series` - A series of values that are used to calculate the smallest elements
   ///  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
   ///
-  /// [category:Statistics]
+  /// <category>Statistics</category>
   [<Extension>]
   static member inline MinLevel(series:Series<'K1, 'V>, groupSelector:Func<'K1, 'K2>) =
     Series.applyLevelOptional groupSelector.Invoke Stats.tryMin series
@@ -167,7 +167,7 @@ type SeriesStatsExtensions =
   ///  - `series` - A series of values that are used to calculate the greatest elements
   ///  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
   ///
-  /// [category:Statistics]
+  /// <category>Statistics</category>
   [<Extension>]
   static member inline MaxLevel(series:Series<'K1, 'V>, groupSelector:Func<'K1, 'K2>) =
     Series.applyLevelOptional groupSelector.Invoke Stats.tryMax series
@@ -178,7 +178,7 @@ type SeriesStatsExtensions =
   ///  - `keys` - Sequence of new keys that forms the index of interpolated results
   ///  - `keyDiff` - A function representing "subtraction" between two keys
   ///
-  /// [category:Calculations, aggregation and statistics]
+  /// <category>Calculations, aggregation and statistics</category>
   [<Extension>]
   static member inline InterpolateLinear(series:Series<'K, 'V>, keys:'K seq, keyDiff:Func<'K,'K,float>): Series<'K,float> =
     series |> Stats.interpolateLinear keys (fun a b -> keyDiff.Invoke(a,b))
