@@ -526,16 +526,12 @@ module Series =
     series.SelectOptional(fun kvp ->
       f kvp.Key (OptionalValue.asOption kvp.Value) |> OptionalValue.ofOption)
 
+  /// <summary>
   /// Returns a new series with values replaced by missing where the predicate returns `true`.
   /// The predicate is called with both the key and an optional value (to handle missing values).
   /// This is the complement of `filterAll`: instead of dropping matching entries the values are
   /// replaced with missing so that the key alignment of the series is preserved.
-  ///
-  /// ## Parameters
-  ///  - `f` - A function that is called with the key and `Some value` (or `None` for missing)
-  ///    and returns `true` for entries that should be masked (replaced with missing).
-  ///  - `series` - The input series.
-  ///
+  /// </summary>
   /// <category>Series transformations</category>
   [<CompiledName("MaskAll")>]
   let maskAll f (series:Series<'K, 'T>) =
@@ -543,14 +539,10 @@ module Series =
       if f kvp.Key (OptionalValue.asOption kvp.Value) then OptionalValue.Missing
       else kvp.Value)
 
+  /// <summary>
   /// Returns a new series with values replaced by missing where the predicate returns `true`.
-  /// The predicate is called with the value only (missing values are never masked by this function).
-  ///
-  /// ## Parameters
-  ///  - `f` - A function that receives a value and returns `true` for values that should be masked
-  ///    (replaced with missing).
-  ///  - `series` - The input series.
-  ///
+  /// The predicate is called with the value only; missing values are never masked by this function.
+  /// </summary>
   /// <category>Series transformations</category>
   [<CompiledName("MaskValues")>]
   let maskValues f (series:Series<'K, 'T>) =
