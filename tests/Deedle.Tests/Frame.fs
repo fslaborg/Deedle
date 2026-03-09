@@ -93,6 +93,19 @@ let ``Can read MSFT data from CSV with explicit schema``() =
   actual |> shouldEqual ["A";"B";"C";"D";"E";"F";"G"]
 
 [<Test>]
+let ``Can read CSV with schema where column name contains parentheses``() =
+  // Regression test for issue #348: nameAndTypeRegex was using RightToLeft which caused
+  // incorrect parsing of column names containing parentheses (e.g. "Revenue (USD)(float)")
+  let csv = "Revenue (USD),Count\n100.0,1\n200.0,2"
+  use reader = new System.IO.StringReader(csv)
+  // Schema specifies type for a column whose name contains parentheses
+  let df = Frame.ReadCsv(reader, schema="Revenue (USD)(float),Count(int)")
+  let actual = List.ofSeq df.ColumnKeys
+  actual |> shouldEqual ["Revenue (USD)"; "Count"]
+  df.GetColumn<float>("Revenue (USD)") |> Series.values |> List.ofSeq |> shouldEqual [100.0; 200.0]
+  df.GetColumn<int>("Count") |> Series.values |> List.ofSeq |> shouldEqual [1; 2]
+
+[<Test>]
 let ``Can read MSFT data from CSV and rename``() =
   let df = Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/data/MSFT.csv", schema="Day,Adj Close->Adjusted")
   let actual = List.ofSeq df.ColumnKeys
