@@ -536,8 +536,8 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   /// </summary>
   /// <param name="index">Offset (integer) of the row key to be returned</param>
   /// <category>Accessors and slicing</category>
-  member frame.GetRowKeyAt(index) =
-    frame.RowIndex.KeyAt(frame.RowIndex.AddressAt index)
+  member frame.GetRowKeyAt(index: int) =
+    frame.RowIndex.KeyAt(frame.RowIndex.AddressAt(int64 index))
 
   /// <summary>
   /// Returns a row of the data frame that is located at the specified int offset.
