@@ -1,15 +1,21 @@
 <Project>
   <PropertyGroup>
-    <Version>4.0.0</Version>
-    <AssemblyVersion>4.0.0</AssemblyVersion>
-    <FileVersion>4.0.0</FileVersion>
+    <_ReleaseNotes>$([System.IO.File]::ReadAllText('$(MSBuildThisFileDirectory)RELEASE_NOTES.md'))</_ReleaseNotes>
+    <!-- Full version (including pre-release suffix) from the first ## heading in RELEASE_NOTES.md -->
+    <Version>$([System.Text.RegularExpressions.Regex]::Match($(_ReleaseNotes), '(?m)^## (\S+)').Groups[1].Value)</Version>
+    <!-- AssemblyVersion and FileVersion use only the numeric major.minor.patch part -->
+    <AssemblyVersion>$([System.Text.RegularExpressions.Regex]::Match($(_ReleaseNotes), '(?m)^## (\d+\.\d+\.\d+)').Groups[1].Value)</AssemblyVersion>
+    <FileVersion>$(AssemblyVersion)</FileVersion>
     <RepositoryUrl>https://github.com/fslaborg/Deedle</RepositoryUrl>
+    <FsDocsLogoSource>img/logo.png</FsDocsLogoSource>
     <FsDocsLicenseLink>https://github.com/fslaborg/Deedle/blob/master/LICENSE.md</FsDocsLicenseLink>
     <FsDocsReleaseNotesLink>https://github.com/fslaborg/Deedle/blob/master/RELEASE_NOTES.md</FsDocsReleaseNotesLink>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>logo.png</PackageIcon>
     <WarnOn>3390</WarnOn>
   </PropertyGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)README.md" Pack="true" PackagePath="\" />
+    <None Include="$(MSBuildThisFileDirectory)misc/logo.png" Pack="true" PackagePath="\" />
   </ItemGroup>
 </Project>
