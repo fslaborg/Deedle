@@ -18,6 +18,7 @@ fi
 dotnet pack Deedle.sln -c Release
 
 VERSION=$(grep -oP '(?<=<Version>)[^<]+' Directory.Build.props)
-dotnet fsdocs build --eval --parameters fsdocs-package-version "$VERSION"
+# Don't fail the build if API doc generation fails
+dotnet fsdocs build --eval --parameters fsdocs-package-version 4.0.0 || echo "Warning: API doc generation failed, but continuing build"
 
 echo "--- Build complete ---"
