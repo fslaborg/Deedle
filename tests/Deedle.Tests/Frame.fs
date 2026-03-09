@@ -1211,6 +1211,28 @@ let ``Can fill missing values in a frame containing decimals`` () =
   let df2 = df1 |> Frame.fillMissingWith 0.1
   df2?A |> shouldEqual <| series [1 => 0.1; 2 => 0.2]
 
+[<Test>]
+let ``indexRowsWith with more keys than rows produces missing values for extra rows (issue 498)`` () =
+  // Regression test: indexRowsWith previously produced a frame with an inconsistent
+  // row index / vector length, causing fillMissingWith to throw or silently no-op.
+  let df =
+    [ {| Value1 = 1.0; Value2 = 2.0 |}
+      {| Value1 = 2.0; Value2 = 3.0 |} ]
+    |> Frame.ofRecords
+  let dfi = df |> Frame.indexRowsWith [0..2]
+  // Row 2 should exist with missing values
+  dfi.RowCount |> shouldEqual 3
+  dfi.TryGetRow(2).HasValue |> shouldEqual true
+  dfi?Value1.TryGet(2).HasValue |> shouldEqual false
+  // fillMissingWith should fill the missing row without throwing
+  let filled = dfi |> Frame.fillMissingWith 0.0
+  filled.RowCount |> shouldEqual 3
+  filled?Value1.[2] |> shouldEqual 0.0
+  filled?Value2.[2] |> shouldEqual 0.0
+  // Original rows should be unchanged
+  filled?Value1.[0] |> shouldEqual 1.0
+  filled?Value2.[1] |> shouldEqual 3.0
+
 // ------------------------------------------------------------------------------------------------
 // Operations - join & zip (handling missing values)
 // ------------------------------------------------------------------------------------------------

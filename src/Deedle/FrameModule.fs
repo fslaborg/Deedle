@@ -783,8 +783,20 @@ module Frame =
   [<CompiledName("IndexRowsWith")>]
   let indexRowsWith (keys:seq<'R2>) (frame:Frame<'R1, 'C>) =
     let newRowIndex = frame.IndexBuilder.Create(keys, None)
-    let range = RangeRestriction.Fixed(frame.RowIndex.AddressAt(0L), frame.RowIndex.AddressAt(frame.RowIndex.KeyCount-1L))
-    let cmd = VectorConstruction.GetRange(Vectors.Return 0, range)
+    let newCount = newRowIndex.KeyCount
+    let existingCount = frame.RowIndex.KeyCount
+    // Build a vector command that covers exactly `newCount` rows.
+    // When newCount > existingCount the extra rows are filled with missing values.
+    let cmd =
+      if existingCount = 0L then
+        VectorConstruction.Empty newCount
+      else
+        let range = RangeRestriction.Fixed(frame.RowIndex.AddressAt(0L), frame.RowIndex.AddressAt(existingCount - 1L))
+        let existing = VectorConstruction.GetRange(Vectors.Return 0, range)
+        if newCount > existingCount then
+          VectorConstruction.Append(existing, VectorConstruction.Empty(newCount - existingCount))
+        else
+          existing
     let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder newRowIndex.AddressingScheme cmd)
     Frame<_, _>(newRowIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
