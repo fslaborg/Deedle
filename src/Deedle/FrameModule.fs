@@ -1021,6 +1021,29 @@ module Frame =
     Frame<_, _>(newRowIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
 
+  /// Returns a new data frame containing only the rows of the input frame that have
+  /// distinct values in the specified columns. When multiple rows have the same values
+  /// in those columns, only the first row (in index order) is preserved.
+  ///
+  /// ## Parameters
+  ///  - `columns` - A sequence of column keys used to determine row uniqueness
+  ///  - `frame` - Input data frame to be transformed
+  ///
+  /// ## Example
+  ///
+  ///     // Keep only the first row for each unique combination of "Category" and "Region"
+  ///     df |> Frame.distinctRowsBy ["Category"; "Region"]
+  ///
+  /// [category:Frame transformations]
+  [<CompiledName("DistinctRowsBy")>]
+  let distinctRowsBy (columns: 'C seq) (frame: Frame<'R, 'C>) =
+    let cols = Seq.toArray columns
+    let seen = System.Collections.Generic.HashSet<obj list>()
+    frame |> filterRows (fun _ row ->
+      let key = [ for c in cols -> row.TryGet(c).ValueOrDefault ]
+      seen.Add(key))
+
+
   /// Builds a new data frame whose rows are the results of applying the specified
   /// function on the rows of the input data frame. The function is called
   /// with the row key and object series that represents the row data.

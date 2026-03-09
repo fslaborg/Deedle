@@ -580,6 +580,28 @@ let ``Filter frame rows by column value`` () =
   (df |> Frame.filterRowsBy "Y" 4).GetColumn<bool>("X") |> shouldEqual <| series [ "a" => true; "f" => false ]
   df.FilterRowsBy("Y", 4).GetColumn<bool>("X") |> shouldEqual <| series [ "a" => true; "f" => false ]
 
+[<Test>]
+let ``distinctRowsBy keeps first occurrence of each unique column combination`` () =
+  // Rows 1 and 3 have the same "A", row 2 is unique, row 4 duplicates row 2 in "A"
+  let colA = series [| 1 => "x"; 2 => "y"; 3 => "x"; 4 => "y" |]
+  let colC = series [| 1 => 10; 2 => 20; 3 => 30; 4 => 40 |]
+  let df = frame [ "A" => (colA |> Series.mapValues box); "C" => (colC |> Series.mapValues box) ]
+  let result = df |> Frame.distinctRowsBy ["A"]
+  // Should keep rows 1 and 2 (first of each group)
+  result.RowCount |> shouldEqual 2
+
+[<Test>]
+let ``distinctRowsBy with all unique rows returns full frame`` () =
+  let df = frame [ "X" => series [| "a" => 1; "b" => 2; "c" => 3 |] ]
+  let result = df |> Frame.distinctRowsBy ["X"]
+  result.RowCount |> shouldEqual 3
+
+[<Test>]
+let ``distinctRowsBy with all duplicate rows returns one row`` () =
+  let df = frame [ "X" => series [| "a" => 1; "b" => 1; "c" => 1 |] ]
+  let result = df |> Frame.distinctRowsBy ["X"]
+  result.RowCount |> shouldEqual 1
+
 // ------------------------------------------------------------------------------------------------
 // Slices
 // ------------------------------------------------------------------------------------------------
