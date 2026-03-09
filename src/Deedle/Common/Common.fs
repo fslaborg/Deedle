@@ -447,9 +447,10 @@ open Deedle
 open System.Collections.Generic
 open System.Collections.ObjectModel
 
+/// <summary>
 /// An internal exception that is used to handle the case when comparison fails
 /// (even though the type implements IComparable and everything...)
-///
+/// </summary>
 /// <exclude />
 type ComparisonFailedException() =
   inherit Exception()
