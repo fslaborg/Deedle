@@ -341,67 +341,57 @@ open Deedle.Indices
 open Deedle.Internal
 open Deedle.Vectors.ArrayVector
 
+/// <summary>
 /// This type exposes a single static method `DelayedSeries.Create` that can be used for
-/// constructing data series (of type `Series<K, V>`) with lazily loaded data. You can
+/// constructing data series (of type <c>Series&lt;K, V&gt;</c>) with lazily loaded data. You can
 /// use this functionality to create series that represents e.g. an entire price history
 /// in a database, but only loads data that are actually needed. For more information
 /// see the [lazy data loading tutorial](../lazysource.html).
-///
-/// ## Example
-///
-/// Assuming we have a function `generate lo hi` that generates data in the specified
-/// `DateTime` range, we can create lazy series as follows:
-///
-///     let ls = DelayedSeries.Create(min, max, fun (lo, lob) (hi, hib) ->
-///       async {
-///         printfn "Query: %A - %A" (lo, lob) (hi, hib)
-///         return generate lo hi })
-///
-/// The arguments `min` and `max` specfify the complete range of the series. The
-/// function passed to `Create` is called with minimal and maximal required key
-/// (`lo` and `hi`) and with two values that specify boundary behaviour.
-///
+/// </summary>
+/// <example>
+/// Assuming we have a function <c>generate lo hi</c> that generates data in the specified
+/// <c>DateTime</c> range, we can create lazy series as follows:
+/// <code>
+/// let ls = DelayedSeries.Create(min, max, fun (lo, lob) (hi, hib) -&gt;
+///   async {
+///     printfn "Query: %A - %A" (lo, lob) (hi, hib)
+///     return generate lo hi })
+/// </code>
+/// The arguments <c>min</c> and <c>max</c> specify the complete range of the series. The
+/// function passed to <c>Create</c> is called with minimal and maximal required key
+/// (<c>lo</c> and <c>hi</c>) and with two values that specify boundary behaviour.
+/// </example>
 /// <category>Specialized frame and series types</category>
 type DelayedSeries =
+  /// <summary>
   /// A C#-friendly function that creates lazily loaded series. The method requires
   /// the overall range of the series (smallest and greatest key) and a function that
   /// loads the data. In this overload, the function is a `Func` delegate taking
-  /// information about the requested range and returning `Task<T>` that produces the data.
-  ///
-  /// ## Parameters
-  ///
-  ///  - `min` - The smallest key that should be present in the created series.
-  ///  - `min` - The greatests key that should be present in the created series.
-  ///  - `loader` - A delegate which returns a task that loads the data in a specified
-  ///    range. The delegate is called with four arguments specifying the minimal and
-  ///    maximal key and two `BoundaryBehavior` values specifying whether the low and
-  ///    high ranges are inclusive or exclusive.
-  ///
-  /// ## Remarks
-  ///
+  /// information about the requested range and returning <c>Task&lt;T&gt;</c> that produces the data.
+  /// </summary>
+  /// <param name="min">The smallest key that should be present in the created series.</param>
+  /// <param name="max">The greatests key that should be present in the created series.</param>
+  /// <param name="loader">A delegate which returns a task that loads the data in a specified range. The delegate is called with four arguments specifying the minimal and maximal key and two `BoundaryBehavior` values specifying whether the low and high ranges are inclusive or exclusive.</param>
+  /// <remarks>
   /// For more information see the [lazy data loading tutorial](../lazysource.html).
   /// The operation calls `loader` (and so creates the tasks) on the thread that is
   /// requesting the result.
+  /// </remarks>
   static member FromValueLoader(min, max, loader:Func<_, _, _, _, Task<seq<KeyValuePair<'K, 'V>>>>) : Series<'K, 'V> =
     DelayedSeries.FromValueLoader(min, max, fun (l, lb) (h, hb)-> Async.AwaitTask (loader.Invoke(l,lb,h,hb)))
 
+  /// <summary>
   /// An F#-friendly function that creates lazily loaded series. The method requires
   /// the overall range of the series (smallest and greatest key) and a function that
   /// loads the data. The function is called with two tuples that specify lower and upper
   /// boundary. It returns an asynchronous workflow that produces the data.
-  ///
-  /// ## Parameters
-  ///
-  ///  - `min` - The smallest key that should be present in the created series.
-  ///  - `min` - The greatests key that should be present in the created series.
-  ///  - `loader` - A function which returns an asynchronous workflow that loads the data in a
-  ///    specified range. The function is called with two tuples consisting of key and
-  ///    `BoundaryBehavior` values. The keys specify lower and upper boundary and
-  ///    `BoundaryBehavior` values can be either `Inclusive` or `Exclusive`.
-  ///
-  /// ## Remarks
-  ///
+  /// </summary>
+  /// <param name="min">The smallest key that should be present in the created series.</param>
+  /// <param name="max">The greatests key that should be present in the created series.</param>
+  /// <param name="loader">A function which returns an asynchronous workflow that loads the data in a specified range. The function is called with two tuples consisting of key and `BoundaryBehavior` values. The keys specify lower and upper boundary and `BoundaryBehavior` values can be either `Inclusive` or `Exclusive`.</param>
+  /// <remarks>
   /// For more information see the [lazy data loading tutorial](../lazysource.html).
+  /// </remarks>
   static member FromValueLoader(min, max, loader:_ -> _ -> Async<seq<KeyValuePair<'K, 'V>>>) : Series<'K, 'V> =
     let vectorBuilder = VectorBuilder.Instance
     let indexBuilder = IndexBuilder.Instance

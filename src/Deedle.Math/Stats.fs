@@ -32,7 +32,7 @@ type StatsInternal =
 
 /// Correlation method (Pearson or Spearman)
 ///
-/// [category:Statistical Analysis]
+/// <category>Statistical Analysis</category>
 type CorrelationMethod =
   /// Pearson correlation
   | Pearson = 0
@@ -41,11 +41,11 @@ type CorrelationMethod =
 
 /// Statistical analysis using MathNet.Numerics
 ///
-/// [category:Statistical Analysis]
+/// <category>Statistical Analysis</category>
 type Stats =
   /// Exponentially weighted moving average on series
   ///
-  /// [category: Exponentially Weighted Moving]
+  /// <category>Exponentially Weighted Moving</category>
   static member ewmMean (x:Series<'R, float>, ?com, ?span, ?halfLife, ?alpha) =
     let alpha = StatsInternal.ewDecay(com, span, halfLife, alpha)
     let data =
@@ -70,7 +70,7 @@ type Stats =
 
   /// Exponentially weighted moving average on frame
   ///
-  /// [category: Exponentially Weighted Moving]
+  /// <category>Exponentially Weighted Moving</category>
   static member ewmMean (df:Frame<'R, 'C>, ?com, ?span, ?halfLife, ?alpha) =
     let alpha = StatsInternal.ewDecay(com, span, halfLife, alpha)
     df
@@ -80,7 +80,7 @@ type Stats =
 
   /// Convert covariance matrix to standard deviation series and correlation frame
   ///
-  /// [category: Correlation and Covariance]
+  /// <category>Correlation and Covariance</category>
   static member cov2Corr (covFrame:Frame<'C, 'C>) =
     let cov = Matrix.ofFrame covFrame
     let keys = covFrame.RowKeys |> Array.ofSeq
@@ -95,7 +95,7 @@ type Stats =
 
   /// Convert standard deviation series and correlation frame to covariance frame
   ///
-  /// [category: Correlation and Covariance]
+  /// <category>Correlation and Covariance</category>
   static member corr2Cov(sigmaSeries:Series<'C, float>, corrFrame:Frame<'C, 'C>) =
     let sigma = sigmaSeries.ToVector()
     let corr = corrFrame.ToMatrix()
@@ -105,7 +105,7 @@ type Stats =
 
   /// Correlation matrix
   ///
-  /// [category: Correlation and Covariance]
+  /// <category>Correlation and Covariance</category>
   static member corrMatrix (df:Frame<'R, 'C>, ?method:CorrelationMethod) =
     let method = defaultArg method CorrelationMethod.Pearson
     let arr =
@@ -120,7 +120,7 @@ type Stats =
 
   /// Correlation frame
   ///
-  /// [category: Correlation and Covariance]
+  /// <category>Correlation and Covariance</category>
   static member corr (df:Frame<'R, 'C>, ?method:CorrelationMethod) =
     let method = defaultArg method CorrelationMethod.Pearson
     Stats.corrMatrix(df, method)
@@ -128,7 +128,7 @@ type Stats =
 
   /// Correlation of two series
   ///
-  /// [category: Correlation and Covariance]
+  /// <category>Correlation and Covariance</category>
   static member corr (s1:Series<'K, float>, s2:Series<'K, float>, ?method:CorrelationMethod) =
     let method = defaultArg method CorrelationMethod.Pearson
     let df = [1, s1; 2, s2] |> Frame.ofColumns
@@ -136,7 +136,7 @@ type Stats =
 
   /// Covariance matrix
   ///
-  /// [category: Correlation and Covariance]
+  /// <category>Correlation and Covariance</category>
   static member covMatrix (df:Frame<'R, 'C>) =
     // Treat nan as zero, the same as MATLAB
     let corr = Stats.corrMatrix(df) |> Matrix.map(fun x -> if Double.IsNaN x then 0. else x)
@@ -146,7 +146,7 @@ type Stats =
 
   /// Covariance frame
   ///
-  /// [category: Correlation and Covariance]
+  /// <category>Correlation and Covariance</category>
   static member cov (df:Frame<'R, 'C>) =
     df
     |> Stats.covMatrix
@@ -154,7 +154,7 @@ type Stats =
 
   /// Quantile
   ///
-  /// [category: Descriptive Statistics]
+  /// <category>Descriptive Statistics</category>
   static member inline quantile (series:Series<'R, 'V>, tau:float, ?definition:QuantileDefinition) =
     let definition = defaultArg definition QuantileDefinition.Excel
     series.Values
@@ -164,7 +164,7 @@ type Stats =
 
   /// Ranks of Series
   ///
-  /// [category: Descriptive Statistics]
+  /// <category>Descriptive Statistics</category>
   static member inline ranks (series:Series<'R, 'V>, ?rankDefinition:RankDefinition) =
     let rankDefinition = defaultArg rankDefinition RankDefinition.Average
     series.Values
@@ -177,7 +177,7 @@ type Stats =
 
   /// Median of Series
   ///
-  /// [category: Descriptive Statistics]
+  /// <category>Descriptive Statistics</category>
   static member inline median (series:Series<'R, 'V>) =
     series.Values
     |> Seq.map float
@@ -186,7 +186,7 @@ type Stats =
 
   /// Median of Frame
   ///
-  /// [category: Descriptive Statistics]
+  /// <category>Descriptive Statistics</category>
   static member median (df:Frame<'R, 'C>) =
     df
     |> Frame.getNumericCols
@@ -194,7 +194,7 @@ type Stats =
 
   /// Quantile of Frame
   ///
-  /// [category: Descriptive Statistics]
+  /// <category>Descriptive Statistics</category>
   static member quantile (df:Frame<'R, 'C>, tau:float, ?definition:QuantileDefinition) =
     let definition = defaultArg definition QuantileDefinition.Excel
     df
@@ -203,7 +203,7 @@ type Stats =
 
   /// Ranks of Frame
   ///
-  /// [category: Descriptive Statistics]
+  /// <category>Descriptive Statistics</category>
   static member ranks (df:Frame<'R, 'C>, ?rankDefinition:RankDefinition) =
     let rankDefinition = defaultArg rankDefinition RankDefinition.Average
     df
@@ -213,7 +213,7 @@ type Stats =
 
   /// Moving standard deviation (parallel implementation)
   ///
-  /// [category: Moving statistics]
+  /// <category>Moving statistics</category>
   static member movingStdDevParallel window (df:Frame<'R, 'C>) =
     let rowKeys = df.RowKeys |> Array.ofSeq
     let len = rowKeys |> Array.length
@@ -226,7 +226,7 @@ type Stats =
 
   /// Moving variance of frame (parallel implementation)
   ///
-  /// [category: Moving statistics]
+  /// <category>Moving statistics</category>
   static member movingVarianceParallel window (df:Frame<'R, 'C>) =
     let rowKeys = df.RowKeys |> Array.ofSeq
     let len = rowKeys |> Array.length
@@ -239,7 +239,7 @@ type Stats =
 
   /// Moving covariance of frame (parallel implementation)
   ///
-  /// [category: Moving statistics]
+  /// <category>Moving statistics</category>
   static member movingCovarianceParallel window (df:Frame<'R, 'C>) =
     let rowKeys = df.RowKeys |> Array.ofSeq
     let len = rowKeys |> Array.length
