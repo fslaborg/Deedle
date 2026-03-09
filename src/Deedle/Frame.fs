@@ -1578,7 +1578,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
 // ------------------------------------------------------------------------------------------------
 
 /// <exclude />
-/// Module with helper functions and operations that are needed by Frame<R, C>, but
+/// Module with helper functions and operations that are needed by `Frame<R, C>`, but
 /// are easier to write in a separate type (having them inside generic type
 /// can confuse the type inference in various ways).
 and FrameUtils =

@@ -6,7 +6,7 @@ open Deedle
 
 /// Extension of Frame<'R, 'C>
 ///
-/// [category:Matrix conversions and operators]
+/// <category>Matrix conversions and operators</category>
 [<Extension>]
 type FrameExtensions =
 
@@ -42,7 +42,7 @@ type FrameExtensions =
 
 /// Extension of Series<'C, float>
 ///
-/// [category:Matrix conversions and operators]
+/// <category>Matrix conversions and operators</category>
 [<Extension>]
 type SeriesExtensions =
   /// series multiply frame
@@ -77,7 +77,7 @@ type SeriesExtensions =
 
 /// Extension of Matrix<float>
 ///
-/// [category:Matrix conversions and operators]
+/// <category>Matrix conversions and operators</category>
 [<Extension>]
 type MatrixExtensions =
   /// matrix multiply frame
@@ -112,7 +112,7 @@ type MatrixExtensions =
 
 /// Extension of Vector<float>
 ///
-/// [category:Vector conversions and operators]
+/// <category>Vector conversions and operators</category>
 [<Extension>]
 type VectorExtensions =
   /// vector multiply frame
