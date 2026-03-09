@@ -25,10 +25,10 @@ open Deedle.Vectors.Virtual
 /// Time zone offset used for all dates in this test
 let tzOffset = TimeSpan.FromHours 5.
 /// Helper function for creating data from partiton/offset
-let date part idx =
+let date (part: int) (idx: int) =
   DateTimeOffset(DateTime(2000 + part, 1, 1).AddHours(float idx), tzOffset)
 /// Helper to create DateTimeOffset without too much typing
-let dateOffs y m d =
+let dateOffs (y: int) (m: int) (d: int) =
   DateTimeOffset(DateTime(y, m, d), tzOffset)
 /// Helper to create TimeSpan
 let mins m = TimeSpan(0, m, 0)

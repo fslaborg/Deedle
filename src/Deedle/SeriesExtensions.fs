@@ -18,7 +18,7 @@ open Deedle.Internal
 /// a type with functions such as `Series.ofValues` and the `series` function.
 /// The module is automatically opened for all F# code that references `Deedle`.
 ///
-/// [category:Core frame and series types]
+/// <category>Core frame and series types</category>
 [<AutoOpen>]
 module ``F# Series extensions`` =
   open System
@@ -69,7 +69,7 @@ module ``F# Series extensions`` =
 /// You can create an ordinal series from `IEnumerable<'T>` or an indexed series from
 /// `IEnumerable<KeyValuePair<'K, 'V>>` or from `IEnumerable<KeyValuePair<'K, OptionalValue<'V>>>`.
 ///
-/// [category:Frame and series operations]
+/// <category>Frame and series operations</category>
 [<Extension>]
 type EnumerableExtensions =
   /// Convert the `IEnumerable` to a `Series`, using the keys and values of
@@ -111,7 +111,7 @@ type EnumerableExtensions =
 ///     sb.ID = 1;
 ///     sb.Value = 3.4;
 ///
-/// [category:Specialized frame and series types]
+/// <category>Specialized frame and series types</category>
 type SeriesBuilder<'K, 'V when 'K : equality and 'V : equality>() =
   let mutable keys = []
   let mutable values = []
@@ -184,7 +184,7 @@ type SeriesBuilder<'K, 'V when 'K : equality and 'V : equality>() =
 /// A simple class that inherits from `SeriesBuilder<'K, obj>` and can be
 /// used instead of writing `SeriesBuilder<'K, obj>` with two type arguments.
 ///
-/// [category:Specialized frame and series types]
+/// <category>Specialized frame and series types</category>
 type SeriesBuilder<'K when 'K : equality>() =
   inherit SeriesBuilder<'K, obj>()
 
@@ -197,7 +197,7 @@ type SeriesBuilder<'K when 'K : equality>() =
 /// The type contains object-oriented counterparts to most of the functionality
 /// from the `Series` module.
 ///
-/// [category:Frame and series operations]
+/// <category>Frame and series operations</category>
 [<Extension>]
 type SeriesExtensions =
 
@@ -398,7 +398,7 @@ type SeriesExtensions =
   ///     s.DropMissing()
   ///     [fsi:val it : Series<int,float> = series [ 1 => 1]
   ///
-  /// [category:Missing values]
+  /// <category>Missing values</category>
   [<Extension>]
   static member DropMissing(series:Series<'K, 'V>) =
     Series.dropMissing series
@@ -409,7 +409,7 @@ type SeriesExtensions =
   ///  - `series` - An input series that is to be filled
   ///  - `value` - A constant value that is used to fill all missing values
   ///
-  /// [category:Missing values]
+  /// <category>Missing values</category>
   [<Extension>]
   static member FillMissing(series:Series<'K, 'T>, value:'T) =
     Series.fillMissingWith value series
@@ -435,7 +435,7 @@ type SeriesExtensions =
   ///    look for the first value with a smaller key while `Forward` searches
   ///    for the nearest greater key.
   ///
-  /// [category:Missing values]
+  /// <category>Missing values</category>
   [<Extension>]
   static member FillMissing(series:Series<'K, 'T>, [<Optional>] direction) =
     Series.fillMissing direction series
@@ -458,7 +458,7 @@ type SeriesExtensions =
   /// This function can be used to implement more complex interpolation.
   /// For example see [handling missing values in the tutorial](../frame.html#missing)
   ///
-  /// [category:Missing values]
+  /// <category>Missing values</category>
   [<Extension>]
   static member FillMissing(series:Series<'K, 'T>, filler:Func<_, _>) =
     Series.fillMissingUsing filler.Invoke series
@@ -472,7 +472,7 @@ type SeriesExtensions =
   /// ## Parameters
   ///  - `series` - An input series to be used
   ///
-  /// [category:Data structure manipulation]
+  /// <category>Data structure manipulation</category>
   [<Extension>]
   static member SortByKey(series:Series<'K, 'T>) =
     Series.sortByKey series
@@ -496,7 +496,7 @@ type SeriesExtensions =
   /// `InvalidOperationException` when the series is not ordered. For unordered
   /// series, similar functionality can be implemented using `GroupBy`.
   ///
-  /// [category:Lookup, resampling and scaling]
+  /// <category>Lookup, resampling and scaling</category>
   [<Extension>]
   static member ResampleEquivalence(series:Series<'K, 'V>, keyProj:Func<_, _>) =
     Series.resampleEquiv keyProj.Invoke series
@@ -518,7 +518,7 @@ type SeriesExtensions =
   /// `InvalidOperationException` when the series is not ordered. For unordered
   /// series, similar functionality can be implemented using `GroupBy`.
   ///
-  /// [category:Lookup, resampling and scaling]
+  /// <category>Lookup, resampling and scaling</category>
   [<Extension>]
   static member ResampleEquivalence(series:Series<'K, 'V>, keyProj:Func<_, _>, aggregate:Func<_, _>) =
     Series.resampleEquivInto keyProj.Invoke aggregate.Invoke series
@@ -543,7 +543,7 @@ type SeriesExtensions =
   /// This operation is only supported on ordered series. The method throws
   /// `InvalidOperationException` when the series is not ordered.
   ///
-  /// [category:Lookup, resampling and scaling]
+  /// <category>Lookup, resampling and scaling</category>
   [<Extension>]
   static member ResampleUniform(series:Series<'K, 'V>, keyProj:Func<_, _>, nextKey:Func<_, _>) =
     Series.resampleUniformInto Lookup.ExactOrSmaller keyProj.Invoke nextKey.Invoke Series.tryLastValue series |> Series.flatten
@@ -570,7 +570,7 @@ type SeriesExtensions =
   /// This operation is only supported on ordered series. The method throws
   /// `InvalidOperationException` when the series is not ordered.
   ///
-  /// [category:Lookup, resampling and scaling]
+  /// <category>Lookup, resampling and scaling</category>
   [<Extension>]
   static member ResampleUniform(series:Series<'K1, 'V>, keyProj:Func<'K1, 'K2>, nextKey:Func<'K2, 'K2>, fillMode:Lookup) =
     Series.resampleUniformInto fillMode keyProj.Invoke nextKey.Invoke Series.tryLastValue series |> Series.flatten
@@ -586,7 +586,7 @@ type SeriesExtensions =
   /// This operation is only supported on ordered series. The method throws
   /// `InvalidOperationException` when the series is not ordered.
   ///
-  /// [category:Lookup, resampling and scaling]
+  /// <category>Lookup, resampling and scaling</category>
   [<Extension>]
   static member Sample<'K, 'V when 'K : equality>(series:Series<'K, 'V>, keys) =
     series |> Series.sample keys
@@ -608,7 +608,7 @@ type SeriesExtensions =
   /// This operation is only supported on ordered series. The method throws
   /// `InvalidOperationException` when the series is not ordered.
   ///
-  /// [category:Lookup, resampling and scaling]
+  /// <category>Lookup, resampling and scaling</category>
   [<Extension>]
   static member Sample<'V>(series:Series<DateTime, 'V>, start:DateTime, interval:TimeSpan, dir) =
     series |> Series.Implementation.lookupTimeInternal (+) (Some start) interval dir Lookup.ExactOrSmaller
@@ -630,7 +630,7 @@ type SeriesExtensions =
   /// This operation is only supported on ordered series. The method throws
   /// `InvalidOperationException` when the series is not ordered.
   ///
-  /// [category:Lookup, resampling and scaling]
+  /// <category>Lookup, resampling and scaling</category>
   [<Extension>]
   static member Sample<'V>(series:Series<DateTimeOffset, 'V>, start:DateTimeOffset, interval:TimeSpan, dir) =
     series |> Series.Implementation.lookupTimeInternal (+) (Some start) interval dir Lookup.ExactOrSmaller
@@ -651,7 +651,7 @@ type SeriesExtensions =
   /// This operation is only supported on ordered series. The method throws
   /// `InvalidOperationException` when the series is not ordered.
   ///
-  /// [category:Lookup, resampling and scaling]
+  /// <category>Lookup, resampling and scaling</category>
   [<Extension>]
   static member Sample<'V>(series:Series<DateTime, 'V>, interval:TimeSpan, dir) =
     series |> Series.Implementation.lookupTimeInternal (+) None interval dir Lookup.ExactOrSmaller
@@ -673,7 +673,7 @@ type SeriesExtensions =
   /// This operation is only supported on ordered series. The method throws
   /// `InvalidOperationException` when the series is not ordered.
   ///
-  /// [category:Lookup, resampling and scaling]
+  /// <category>Lookup, resampling and scaling</category>
   [<Extension>]
   static member Sample<'V>(series:Series<DateTimeOffset, 'V>, interval:TimeSpan, dir) =
     series |> Series.Implementation.lookupTimeInternal (+) None interval dir Lookup.ExactOrSmaller
@@ -691,7 +691,7 @@ type SeriesExtensions =
   /// This operation is only supported on ordered series. The method throws
   /// `InvalidOperationException` when the series is not ordered.
   ///
-  /// [category:Lookup, resampling and scaling]
+  /// <category>Lookup, resampling and scaling</category>
   [<Extension>]
   static member Sample<'V>(series:Series<DateTime, 'V>, interval:TimeSpan) =
     SeriesExtensions.Sample(series, interval, Direction.Backward)
@@ -709,7 +709,7 @@ type SeriesExtensions =
   /// This operation is only supported on ordered series. The method throws
   /// `InvalidOperationException` when the series is not ordered.
   ///
-  /// [category:Lookup, resampling and scaling]
+  /// <category>Lookup, resampling and scaling</category>
   [<Extension>]
   static member Sample<'V>(series:Series<DateTimeOffset, 'V>, interval:TimeSpan) =
     SeriesExtensions.Sample(series, interval, Direction.Backward)
@@ -731,7 +731,7 @@ type SeriesExtensions =
   /// This operation is only supported on ordered series. The method throws
   /// `InvalidOperationException` when the series is not ordered.
   ///
-  /// [category:Lookup, resampling and scaling]
+  /// <category>Lookup, resampling and scaling</category>
   [<Extension>]
   static member SampleInto<'V>(series:Series<DateTime, 'V>, interval:TimeSpan, dir, aggregate:Func<_, _>) =
     series |> Series.Implementation.sampleTimeIntoInternal (+) None interval dir aggregate.Invoke
@@ -753,7 +753,7 @@ type SeriesExtensions =
   /// This operation is only supported on ordered series. The method throws
   /// `InvalidOperationException` when the series is not ordered.
   ///
-  /// [category:Lookup, resampling and scaling]
+  /// <category>Lookup, resampling and scaling</category>
   [<Extension>]
   static member SampleInto<'V>(series:Series<DateTimeOffset, 'V>, interval:TimeSpan, dir, aggregate:Func<_, _>) =
     series |> Series.Implementation.sampleTimeIntoInternal (+) None interval dir aggregate.Invoke
