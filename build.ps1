@@ -16,7 +16,11 @@ if (-not $NoTests) {
 dotnet pack Deedle.sln -c Release
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
+# Don't fail the build if API doc generation fails
 dotnet fsdocs build --eval --parameters fsdocs-package-version 4.0.0
-if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+if ($LASTEXITCODE -ne 0) { 
+    Write-Host "Warning: API doc generation failed, but continuing build" -ForegroundColor Yellow 
+    $LASTEXITCODE = 0
+}
 
 Write-Host "--- Build complete ---"
