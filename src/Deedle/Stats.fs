@@ -93,10 +93,22 @@ module StatsInternal =
   /// Throws a `FormatException` or an `InvalidCastException` if the value type
   /// is not convertible to floating point number.
   let inline initSumsSparse moment (init: 'V opt []) =
-    init
-    |> Array.choose OptionalValue.asOption
-    |> Array.map toFloat
-    |> initSumsDense moment
+    let mutable nobs = 0.0
+    let mutable sum = 0.0
+    let mutable sump2 = 0.0
+    let mutable sump3 = 0.0
+    let mutable sump4 = 0.0
+    for v in init do
+      match OptionalValue.asOption v with
+      | Some x ->
+        let f = toFloat x
+        nobs <- nobs + 1.0
+        if moment >= 1 then sum <- sum + f
+        if moment >= 2 then sump2 <- sump2 + f * f
+        if moment >= 3 then sump3 <- sump3 + f * f * f
+        if moment >= 4 then sump4 <- sump4 + f * f * f * f
+      | None -> ()
+    { nobs = nobs; sum = sum; sump2 = sump2; sump3 = sump3; sump4 = sump4 }
 
   /// Update `Sums` value using `updateSumsDense`, but handle the case
   /// when removing/adding value that is missing (`OptionalValue.Missing`)
@@ -180,12 +192,13 @@ module StatsInternal =
   // Implementation internals - expanding windows
   // ------------------------------------------------------------------------------------
 
+  /// <summary>
   /// Helper for expanding window calculations
-  ///
-  /// ## Parameters
-  ///  - `initState` is the initial state of the computation
-  //   - `fupdate` takes the current state and incoming observation to the next state
-  //   - `ftransf` takes the current state to the current output
+  /// </summary>
+  /// <param name="initState">is the initial state of the computation</param>
+  /// <param name="fupdate">takes the current state and incoming observation to the next state</param>
+  /// <param name="ftransf">takes the current state to the current output</param>
+  /// <param name="source">The input sequence to process</param>
   let expandingWindowFn initState fupdate ftransf (source: seq<_>) =
     source
     |> Seq.scan fupdate initState
@@ -297,6 +310,7 @@ module StatsInternal =
 
 open StatsInternal
 
+/// <summary>
 /// The `Stats` type contains functions for fast calculation of statistics over
 /// series and frames as well as over a moving and an expanding window in a series.
 ///
@@ -304,51 +318,52 @@ open StatsInternal
 /// no values, or missing values, different functions behave in different ways.
 /// Statistics (e.g. mean) return missing value when any value is missing, while min/max
 /// functions return the minimal/maximal element (skipping over missing values).
-///
-/// ## Series statistics
-///
+/// </summary>
+/// <remarks>
+/// <para>Series statistics:</para>
+/// <para>
 /// Functions such as `count`, `mean`, `kurt` etc. return the
 /// statistics calculated over all values of a series. The calculation skips
 /// over missing values (or `nan` values), so for example `mean` returns the
 /// average of all _present_ values.
-///
-/// ## Frame statistics
-///
+/// </para>
+/// <para>Frame statistics:</para>
+/// <para>
 /// The standard functions are exposed as static members and are
-/// overloaded. This means that they can be applied to both `Series<'K, float>` and
-/// to `Frame<'R, 'C>`. When applied to data frame, the functions apply the
+/// overloaded. This means that they can be applied to both `Series&lt;'K, float&gt;` and
+/// to `Frame&lt;'R, 'C&gt;`. When applied to data frame, the functions apply the
 /// statistical calculation to all numerical columns of the frame.
-///
-/// ## Moving windows
-///
+/// </para>
+/// <para>Moving windows:</para>
+/// <para>
 /// Moving window means that the window has a fixed size and moves over the series.
 /// In this case, the result of the statisitcs is always attached to the last key
 /// of the window. The function names are prefixed with `moving`.
-///
-/// ## Expanding windows
-///
+/// </para>
+/// <para>Expanding windows:</para>
+/// <para>
 /// Expanding window means that the window starts as a single-element sized window
 /// and expands as it moves over the series. In this case, statistics is calculated
 /// for all values up to the current key. This means that the result is attached
 /// to the key at the end of the window. The function names are prefixed
 /// with `expanding`.
-///
-/// ## Multi-level statistics
-///
+/// </para>
+/// <para>Multi-level statistics:</para>
+/// <para>
 /// For a series with multi-level (hierarchical) index, the
 /// functions prefixed with `level` provide a way to apply statistical operation on
 /// a single level of the index. (For example you can sum values along the `'K1` keys
-/// in a series `Series<'K1 * 'K2, float>` and get `Series<'K1, float>` as the result.)
-///
-/// ## Remarks
-///
+/// in a series `Series&lt;'K1 * 'K2, float&gt;` and get `Series&lt;'K1, float&gt;` as the result.)
+/// </para>
+/// <para>
 /// The windowing functions in the `Stats` type support calculations over a fixed-size
 /// windows specified by the size of the window. If you need more complex windowing
 /// behavior (such as window based on the distance between keys), different handling
 /// of boundary, or chunking (calculation over adjacent chunks), you can use chunking and
 /// windowing functions from the `Series` module such as `Series.windowSizeInto` or
 /// `Series.chunkSizeInto`.
-///
+/// </para>
+/// </remarks>
 /// <category>Frame and series operations</category>
 type Stats =
 
@@ -530,11 +545,16 @@ type Stats =
   ///
   /// <category>Expanding windows</category>
   static member inline expandingMin (series:Series<'K, 'V>) : Series<'K, float> =
-    let minFn s v =
-      match v with
-      | OptionalValue.Present x -> if System.Double.IsNaN(s) then x else min x s
-      | OptionalValue.Missing   -> s
-    applySeriesProj ((Seq.scan minFn nan) >> (Seq.skip 1) >> Array.ofSeq) (series |> Series.mapValues toFloat)
+    let calcSparse (source: float opt seq) =
+      let res = ResizeArray<float>()
+      let mutable m = nan
+      for v in source do
+        match v with
+        | OptionalValue.Present x -> if System.Double.IsNaN(m) then m <- x else m <- min x m
+        | OptionalValue.Missing -> ()
+        res.Add(m)
+      res.ToArray()
+    applySeriesProj calcSparse (series |> Series.mapValues toFloat)
 
   /// Returns a series that contains maximum over an expanding window. The value
   /// for a key _k_ in the returned series is the maximum from all elements with
@@ -544,11 +564,16 @@ type Stats =
   ///
   /// <category>Expanding windows</category>
   static member inline expandingMax (series:Series<'K, 'V>) : Series<'K, float> =
-    let maxFn s v =
-      match v with
-      | OptionalValue.Present x -> if System.Double.IsNaN(s) then x else max x s
-      | OptionalValue.Missing   -> s
-    applySeriesProj ((Seq.scan maxFn nan) >> (Seq.skip 1) >> Array.ofSeq) (series |> Series.mapValues toFloat)
+    let calcSparse (source: float opt seq) =
+      let res = ResizeArray<float>()
+      let mutable m = nan
+      for v in source do
+        match v with
+        | OptionalValue.Present x -> if System.Double.IsNaN(m) then m <- x else m <- max x m
+        | OptionalValue.Missing -> ()
+        res.Add(m)
+      res.ToArray()
+    applySeriesProj calcSparse (series |> Series.mapValues toFloat)
 
 
   // ------------------------------------------------------------------------------------
@@ -758,14 +783,14 @@ type Stats =
   // Series interpolation
   // ------------------------------------------------------------------------------------
 
+  /// <summary>
   /// Interpolates an ordered series given a new sequence of keys. The function iterates through
   /// each new key, and invokes a function on the current key, the nearest smaller and larger valid
   /// observations from the series argument. The function must return a new valid float.
-  ///
-  /// ## Parameters
-  ///  - `keys` - Sequence of new keys that forms the index of interpolated results
-  ///  - `f` - Function to do the interpolating
-  ///
+  /// </summary>
+  /// <param name="keys">Sequence of new keys that forms the index of interpolated results</param>
+  /// <param name="f">Function to do the interpolating</param>
+  /// <param name="series">The input series to interpolate</param>
   /// <category>Series interoploation</category>
   static member interpolate keys f (series:Series<'K,'T>) =
     let liftedf k (prev:KeyValuePair<_,_> opt) (next:KeyValuePair<_,_> opt) =
@@ -775,14 +800,14 @@ type Stats =
 
     series.Interpolate(keys, Func<_,_,_,_>(liftedf))
 
+  /// <summary>
   /// Linearly interpolates an ordered series given a new sequence of keys.
-  ///
-  /// ## Parameters
-  ///  - `keys` - Sequence of new keys that forms the index of interpolated results
-  ///  - `keyDiff` - A function representing "subtraction" between two keys
   /// Throws a `FormatException` or an `InvalidCastException` if the value type of the series
   /// is not convertible to floating point number.
-  ///
+  /// </summary>
+  /// <param name="keys">Sequence of new keys that forms the index of interpolated results</param>
+  /// <param name="keyDiff">A function representing "subtraction" between two keys</param>
+  /// <param name="series">The input series to interpolate</param>
   /// <category>Series interoploation</category>
   static member inline interpolateLinear keys (keyDiff:'K->'K->float) (series:Series<'K, 'V>) =
     let linearF k a b =

@@ -16,8 +16,9 @@ if (-not $NoTests) {
 dotnet pack Deedle.sln -c Release
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
+$version = ([xml](Get-Content Directory.Build.props)).Project.PropertyGroup.Version
 # Don't fail the build if API doc generation fails
-dotnet fsdocs build --eval --parameters fsdocs-package-version 4.0.0
+dotnet fsdocs build --eval --parameters fsdocs-package-version $version
 if ($LASTEXITCODE -ne 0) { 
     Write-Host "Warning: API doc generation failed, but continuing build" -ForegroundColor Yellow
 }

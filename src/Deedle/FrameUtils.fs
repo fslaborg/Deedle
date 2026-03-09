@@ -22,7 +22,7 @@ module internal Reflection =
   let createTypedVectorHelper<'T> (input:seq<OptionalValue<obj>>) =
     input |> Seq.map (OptionalValue.map unbox<'T>) |> Vector.ofOptionalValues :> IVector
 
-  /// Helper function that returns contents of IDictionary<'K, 'V>
+  /// Helper function that returns contents of <c>IDictionary&lt;'K, 'V&gt;</c>
   let getDictionaryValues<'K, 'V> (input:IDictionary<'K, 'V>) =
     seq { for (KeyValue(k, v)) in input -> k.ToString(), (v.GetType(), box v) }
 
@@ -77,11 +77,22 @@ module internal Reflection =
       cache.GetOrAdd(typ, valueFactory)
 
   let getExpandableProperties (ty:Type) =
-    ty.GetProperties(BindingFlags.Instance ||| BindingFlags.Public)
-    |> Seq.filter (fun p -> p.CanRead && p.GetIndexParameters().Length = 0)
+    ty.GetProperties(BindingFlags.Instance ||| BindingFlags.Public ||| BindingFlags.NonPublic)
+    |> Seq.filter (fun p ->
+        p.CanRead && p.GetIndexParameters().Length = 0
+        // Exclude explicit interface implementations (name contains '.')
+        && not (p.Name.Contains('.'))
+        // Exclude private members; allow public or assembly-visible (internal) ones
+        && (let getter = p.GetGetMethod(nonPublic=true)
+            getter <> null && (getter.IsPublic || getter.IsAssembly)))
 
   let getExpandableFields (ty:Type) =
-    ty.GetFields(BindingFlags.Instance ||| BindingFlags.Public)
+    ty.GetFields(BindingFlags.Instance ||| BindingFlags.Public ||| BindingFlags.NonPublic)
+    |> Seq.filter (fun f ->
+        // Include public or assembly-visible (internal) fields only
+        (f.IsPublic || f.IsAssembly)
+        // Exclude compiler-generated backing fields (e.g. F# record backing fields like 'Field@')
+        && f.GetCustomAttribute<System.Runtime.CompilerServices.CompilerGeneratedAttribute>() = null)
 
   /// Given System.Type for some .NET object, get a sequence of projections
   /// that return the values of all readonly properties (together with their name & type)
@@ -91,7 +102,7 @@ module internal Reflection =
          let propTy = p.PropertyType
          // Build: fun recd -> recd.get_<Prop>
          let recd = Expression.Parameter(recdTy)
-         let call = Expression.Call(recd, p.GetGetMethod())
+         let call = Expression.Call(recd, p.GetGetMethod(nonPublic=true))
          yield p.Name, propTy, Expression.Lambda(call, [recd])
 
        let flds = getExpandableFields recdTy
@@ -112,7 +123,7 @@ module internal Reflection =
                 if obj.HasValue then
                   yield key, (obj.Value.GetType(), obj.Value) } |> Some
     | _ ->
-    /// Get type arguments of the IDictionary<T1, T2> implementation or None
+    /// Get type arguments of the <c>IDictionary&lt;T1, T2&gt;</c> implementation or None
     let optTyArgs =
       value.GetType().GetInterfaces() |> Seq.tryPick (fun ityp ->
         if ityp.IsGenericType && ityp.GetGenericTypeDefinition() = typedefof<IDictionary<_, _>>
@@ -248,6 +259,7 @@ module internal FrameUtils =
   open System.Data
   open System.Globalization
   open System.IO
+  open System.Reflection
   open FSharp.Data
   open FSharp.Data.Runtime
   open FSharp.Data.Runtime.CsvInference
@@ -312,8 +324,24 @@ module internal FrameUtils =
           // default of 100ns fractional second precision
           dt.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffzzz", ci) ) ] |> dict
 
-    // Format optional value, using
+    // Unwrap OptionalValue<T> column types so the inner value is formatted with the
+    // correct culture. Without this, OptionalValue<float> columns fall through to
+    // value.ToString() which ignores the CultureInfo passed to SaveCsv. See #544.
+    let optionalValueTypeDef = typedefof<OptionalValue<_>>
+    let unwrapOptionalValue (typ:Type) (opt:obj option) =
+      if typ.IsGenericType && typ.GetGenericTypeDefinition() = optionalValueTypeDef then
+        let innerType = typ.GetGenericArguments().[0]
+        match opt with
+        | None | Some null -> innerType, None
+        | Some ov ->
+            let hasValue = typ.GetProperty("HasValue").GetValue(ov) :?> bool
+            if hasValue then innerType, Some (typ.GetProperty("Value").GetValue(ov))
+            else innerType, None
+      else typ, opt
+
+    // Format optional value, applying CultureInfo for IFormattable types.
     let formatOptional (typ, opt:obj option) =
+      let typ, opt = unwrapOptionalValue typ opt
       match opt, formatters.TryGetValue(typ) with
       | Some null, _ | None, _ -> ""
       | Some value, (true, formatter) -> formatter value

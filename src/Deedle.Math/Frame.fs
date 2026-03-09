@@ -4,7 +4,7 @@ open MathNet.Numerics.LinearAlgebra
 
 /// Frame to matrix conversion
 ///
-/// [category:Matrix conversions and operators]
+/// <category>Matrix conversions and operators</category>
 type Frame =
   /// Convert matrix to frame
   ///

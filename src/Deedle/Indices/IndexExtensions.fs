@@ -4,7 +4,9 @@
 // F# friendly operations for creating vectors
 // ------------------------------------------------------------------------------------------------
 
+/// <summary>
 /// Set concrete IIndexBuilder implementation
+/// </summary>
 ///
 /// <category>Vectors and indices</category>
 [<AutoOpen>]
