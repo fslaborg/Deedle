@@ -520,7 +520,28 @@ let mapFrameRowVector
       member x.Data =
         seq { for i in Seq.range 0L (length-1L) -> (x :> IVector<_>).GetValue(addressAt i) }
         |> VectorData.Sequence
-      member x.Select(g) =  failwith "mapFrameRowVector: Select not supported"
+      member x.Select(g) =
+        { new IVector<'TNew> with
+            member y.GetValue(a) = g (KnownLocation(a, int64 a)) (x.GetValue(a))
+            member y.GetValueAtLocation(l) = g l (x.GetValueAtLocation(l))
+            member y.Data =
+              seq { for i in Seq.range 0L (length-1L) ->
+                      g (KnownLocation(addressAt i, i)) (x.GetValue(addressAt i)) }
+              |> VectorData.Sequence
+            // Chain selects back through the original data to avoid deep wrapping
+            member y.Select(g2) = x.Select(fun loc v -> g2 loc (g loc v))
+            member y.Convert(h, g2) = failwith "mapFrameRowVector mapped: Convert not supported"
+          interface IVector with
+            member y.AddressingScheme = (x :> IVector).AddressingScheme
+            member y.Length = length
+            member y.ObjectSequence =
+              seq { for i in Seq.range 0L (length-1L) ->
+                      g (KnownLocation(addressAt i, i)) (x.GetValue(addressAt i))
+                      |> OptionalValue.map box }
+            member y.SuppressPrinting = false
+            member y.ElementType = typeof<'TNew>
+            member y.GetObject(i) = (y :?> IVector<'TNew>).GetValue(i) |> OptionalValue.map box
+            member y.Invoke(site) = failwith "mapFrameRowVector mapped: Invoke not supported" }
       member x.Convert(h, g) = failwith "mapFrameRowVector: Convert not supported"
     interface IVector with
       member x.AddressingScheme =
