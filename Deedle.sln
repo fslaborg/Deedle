@@ -6,54 +6,26 @@ Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Deedle", "src\Deedle\Deedle
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{245F1283-32FA-4B38-AC76-448B8AE5F7AC}"
 	ProjectSection(SolutionItems) = preProject
-		docs\content\csharpframe.md = docs\content\csharpframe.md
-		docs\content\csharpintro.md = docs\content\csharpintro.md
-		docs\content\csharpseries.md = docs\content\csharpseries.md
-		docs\content\design.fsx = docs\content\design.fsx
-		docs\content\frame.fsx = docs\content\frame.fsx
-		docs\content\index.fsx = docs\content\index.fsx
-		docs\content\lazysource.fsx = docs\content\lazysource.fsx
-		docs\content\rinterop.fsx = docs\content\rinterop.fsx
-		docs\content\series.fsx = docs\content\series.fsx
-		docs\content\stats.fsx = docs\content\stats.fsx
-		docs\content\tutorial.fsx = docs\content\tutorial.fsx
+		docs\design.fsx = docs\design.fsx
+		docs\frame.fsx = docs\frame.fsx
+		docs\index.fsx = docs\index.fsx
+		docs\lazysource.fsx = docs\lazysource.fsx
+		docs\series.fsx = docs\series.fsx
+		docs\stats.fsx = docs\stats.fsx
+		docs\tutorial.fsx = docs\tutorial.fsx
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "project", "project", "{B6AFD701-8A05-4A18-A3F3-EDAF8D7530E8}"
 	ProjectSection(SolutionItems) = preProject
-		build.fsx = build.fsx
 		nuget\Deedle.Excel.nuspec = nuget\Deedle.Excel.nuspec
 		nuget\Deedle.Interactive.nuspec = nuget\Deedle.Interactive.nuspec
 		nuget\Deedle.nuspec = nuget\Deedle.nuspec
-		nuget\Deedle.RPlugin.nuspec = nuget\Deedle.RPlugin.nuspec
 		README.md = README.md
 		RELEASE_NOTES.md = RELEASE_NOTES.md
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{8BD8876A-28FC-4B7D-89E4-09AC07794D0E}"
-	ProjectSection(SolutionItems) = preProject
-		docs\content\samples\historyvol.fsx = docs\content\samples\historyvol.fsx
-		docs\content\samples\missing.fsx = docs\content\samples\missing.fsx
-		docs\content\samples\presidents.fsx = docs\content\samples\presidents.fsx
-		docs\content\samples\timestats.fsx = docs\content\samples\timestats.fsx
-		docs\content\samples\titanic.fsx = docs\content\samples\titanic.fsx
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{C45F5ABF-7BCD-4C3A-BD51-81E0769E0F29}"
-	ProjectSection(SolutionItems) = preProject
-		docs\tools\formatters.fsx = docs\tools\formatters.fsx
-		docs\tools\generate.fsx = docs\tools\generate.fsx
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "templates", "templates", "{839C977B-55D4-4EFC-8B81-290357C836D3}"
-	ProjectSection(SolutionItems) = preProject
-		docs\tools\templates\template.cshtml = docs\tools\templates\template.cshtml
-	EndProjectSection
-EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Deedle.RProvider.Plugin", "src\Deedle.RProvider.Plugin\Deedle.RProvider.Plugin.fsproj", "{57951E3F-AC36-4AE5-A5F5-D1B86ACA4854}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharp.DocSnippets", "docs\csharp\CSharp.DocSnippets.csproj", "{1700F933-C7B2-48E6-80F3-E1C1B677BA6D}"
-EndProject
+
+
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Deedle.Excel", "src\Deedle.Excel\Deedle.Excel.fsproj", "{8C50057D-29EF-41AD-B91A-84B49CDBD047}"
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Deedle.Math", "src\Deedle.Math\Deedle.Math.fsproj", "{62ED9851-0A38-43DF-8C35-78F84EB13CB9}"
@@ -62,13 +34,11 @@ Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Deedle.Tests", "tests\Deedl
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Deedle.Math.Tests", "tests\Deedle.Math.Tests\Deedle.Math.Tests.fsproj", "{AD811C67-091A-4B03-A483-9FA3B1A8CE55}"
 EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Deedle.Documentation.Tests", "tests\Deedle.Documentation.Tests\Deedle.Documentation.Tests.fsproj", "{C438ED5D-2F80-499F-9CAC-653187201B51}"
-EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Deedle.RPlugin.Tests", "tests\Deedle.RPlugin.Tests\Deedle.RPlugin.Tests.fsproj", "{3332DF71-8B84-4C24-9E02-84FFBC9CAAD8}"
-EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Deedle.PerfTests", "tests\Deedle.PerfTests\Deedle.PerfTests.fsproj", "{B8224BD3-4B55-485D-AF3F-54B189D8541E}"
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Deedle.Interactive", "src\Deedle.Interactive\Deedle.Interactive.fsproj", "{D71C0930-C2A3-4EDF-82A9-9EE6B431EC0D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Deedle.CSharp.Tests", "tests\Deedle.CSharp.Tests\Deedle.CSharp.Tests.csproj", "{B0584275-6E9D-4DB8-A35D-4F37B623F97E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -80,14 +50,6 @@ Global
 		{22729065-4C30-4E43-A63F-4F3338A03878}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{22729065-4C30-4E43-A63F-4F3338A03878}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{22729065-4C30-4E43-A63F-4F3338A03878}.Release|Any CPU.Build.0 = Release|Any CPU
-		{57951E3F-AC36-4AE5-A5F5-D1B86ACA4854}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{57951E3F-AC36-4AE5-A5F5-D1B86ACA4854}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{57951E3F-AC36-4AE5-A5F5-D1B86ACA4854}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{57951E3F-AC36-4AE5-A5F5-D1B86ACA4854}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1700F933-C7B2-48E6-80F3-E1C1B677BA6D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1700F933-C7B2-48E6-80F3-E1C1B677BA6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1700F933-C7B2-48E6-80F3-E1C1B677BA6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1700F933-C7B2-48E6-80F3-E1C1B677BA6D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8C50057D-29EF-41AD-B91A-84B49CDBD047}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8C50057D-29EF-41AD-B91A-84B49CDBD047}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8C50057D-29EF-41AD-B91A-84B49CDBD047}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -104,14 +66,6 @@ Global
 		{AD811C67-091A-4B03-A483-9FA3B1A8CE55}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AD811C67-091A-4B03-A483-9FA3B1A8CE55}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AD811C67-091A-4B03-A483-9FA3B1A8CE55}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C438ED5D-2F80-499F-9CAC-653187201B51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C438ED5D-2F80-499F-9CAC-653187201B51}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C438ED5D-2F80-499F-9CAC-653187201B51}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C438ED5D-2F80-499F-9CAC-653187201B51}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3332DF71-8B84-4C24-9E02-84FFBC9CAAD8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3332DF71-8B84-4C24-9E02-84FFBC9CAAD8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3332DF71-8B84-4C24-9E02-84FFBC9CAAD8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3332DF71-8B84-4C24-9E02-84FFBC9CAAD8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B8224BD3-4B55-485D-AF3F-54B189D8541E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B8224BD3-4B55-485D-AF3F-54B189D8541E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B8224BD3-4B55-485D-AF3F-54B189D8541E}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -120,15 +74,15 @@ Global
 		{D71C0930-C2A3-4EDF-82A9-9EE6B431EC0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D71C0930-C2A3-4EDF-82A9-9EE6B431EC0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D71C0930-C2A3-4EDF-82A9-9EE6B431EC0D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B0584275-6E9D-4DB8-A35D-4F37B623F97E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B0584275-6E9D-4DB8-A35D-4F37B623F97E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B0584275-6E9D-4DB8-A35D-4F37B623F97E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B0584275-6E9D-4DB8-A35D-4F37B623F97E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{8BD8876A-28FC-4B7D-89E4-09AC07794D0E} = {245F1283-32FA-4B38-AC76-448B8AE5F7AC}
-		{C45F5ABF-7BCD-4C3A-BD51-81E0769E0F29} = {245F1283-32FA-4B38-AC76-448B8AE5F7AC}
-		{839C977B-55D4-4EFC-8B81-290357C836D3} = {C45F5ABF-7BCD-4C3A-BD51-81E0769E0F29}
-		{1700F933-C7B2-48E6-80F3-E1C1B677BA6D} = {245F1283-32FA-4B38-AC76-448B8AE5F7AC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8478A9AB-3D08-49DF-BE6D-D01341EB3067}

@@ -31,7 +31,7 @@ let ordered = series [ 1 => "hi"; 2 => "bye"; 3 => "ciao"; 5 => "nazdar" ]
 let missing = series [ 1 => "hi"; 2 => null; 3 => "ciao"; 5 => "nazdar" ]
 let empty:Series<string,int> = Series([])
 let usCulture = CultureInfo.GetCultureInfo("en-us")
-let parseDateUSA s = DateTime.Parse(s,usCulture)
+let parseDateUSA (s: string) = DateTime.Parse(s, usCulture)
 
 let ascending = series [ 1 => 1.0; 2 => 2.0; 3 => 3.0 ]
 let descending = series [ 3 => 3.0; 2 => 2.0; 1 => 1.0 ]
