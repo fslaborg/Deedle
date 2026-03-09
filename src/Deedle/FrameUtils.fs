@@ -50,7 +50,7 @@ module internal Reflection =
 
   /// Mutable collection of additional primitive types that we want to skip
   let additionalPrimitiveTypes =
-    HashSet [ typeof<string>; typeof<DateTimeOffset>; typeof<DateTime>;
+    HashSet [ typeof<string>; typeof<decimal>; typeof<DateTimeOffset>; typeof<DateTime>;
               typeof<Nullable<float>>; typeof<Nullable<int>>; typeof<Nullable<float32>>;
               typeof<Nullable<bool>>; typeof<Nullable<int64>>; typeof<obj> ]
   /// Mutable collections of interfaces that we want to ignore

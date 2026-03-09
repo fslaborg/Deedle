@@ -651,7 +651,7 @@ open System.Collections.ObjectModel
 /// (hard-bound to `LinearIndexBuilder` type). In F#, the module is automatically opened
 /// using `AutoOpen`. The methods are not designed for the use from C#.
 ///
-/// [category:Vectors and indices]
+/// <category>Vectors and indices</category>
 [<AutoOpen>]
 module ``F# Index extensions`` =
   open System
@@ -688,7 +688,7 @@ module ``F# Index extensions`` =
 
 /// Type that provides access to creating indices (represented as `LinearIndex` values)
 ///
-/// [category:Vectors and indices]
+/// <category>Vectors and indices</category>
 type Index =
   /// Create an index from a sequence of keys and check if they are sorted or not
   [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
