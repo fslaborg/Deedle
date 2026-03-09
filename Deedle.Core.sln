@@ -18,11 +18,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deedle.CSharp.Tests", "test
 		{22729065-4C30-4E43-A63F-4F3338A03878} = {22729065-4C30-4E43-A63F-4F3338A03878}
 	EndProjectSection
 EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Deedle.Documentation.Tests", "tests\Deedle.Documentation.Tests\Deedle.Documentation.Tests.fsproj", "{79F004B4-093B-49C8-B7BF-7B3EF7CC829E}"
-	ProjectSection(ProjectDependencies) = postProject
-		{22729065-4C30-4E43-A63F-4F3338A03878} = {22729065-4C30-4E43-A63F-4F3338A03878}
-	EndProjectSection
-EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Deedle", "src\Deedle\Deedle.fsproj", "{22729065-4C30-4E43-A63F-4F3338A03878}"
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Deedle.PerfTest.Core", "tests\PerformanceTools\Deedle.PerfTest.Core\Deedle.PerfTest.Core.fsproj", "{D1E7603A-AA82-4517-8605-360DC708B0E9}"
@@ -53,10 +48,6 @@ Global
 		{B0584275-6E9D-4DB8-A35D-4F37B623F97E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B0584275-6E9D-4DB8-A35D-4F37B623F97E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B0584275-6E9D-4DB8-A35D-4F37B623F97E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{79F004B4-093B-49C8-B7BF-7B3EF7CC829E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{79F004B4-093B-49C8-B7BF-7B3EF7CC829E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{79F004B4-093B-49C8-B7BF-7B3EF7CC829E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{79F004B4-093B-49C8-B7BF-7B3EF7CC829E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{22729065-4C30-4E43-A63F-4F3338A03878}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{22729065-4C30-4E43-A63F-4F3338A03878}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{22729065-4C30-4E43-A63F-4F3338A03878}.Release|Any CPU.ActiveCfg = Release|Any CPU

@@ -23,7 +23,7 @@ open System.Linq.Expressions
 ///    `AddressOperations` that specifies how to use it (tests use linear
 ///    offset and partitioned representation)
 ///
-/// [category:Vectors and indices]
+/// <category>Vectors and indices</category>
 module Addressing =
 
   /// Address is `int64<address>`. We use unit of measure annotation
@@ -156,7 +156,7 @@ open Deedle
 open Deedle.Addressing
 open System.Runtime.CompilerServices
 
-/// [omit]
+/// <exclude />
 [<AutoOpen>]
 module AddressingExtensions =
   [<Extension>]

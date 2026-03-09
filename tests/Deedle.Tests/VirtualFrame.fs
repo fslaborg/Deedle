@@ -159,7 +159,7 @@ type TrackingSource =
     let asDto ticks = start.AddTicks(ticks * 123456789L)
     TrackingSource<DateTimeOffset>([lo, hi], asDto, (fun dto -> dto.UtcTicks), HasMissing=false)
 
-let date y m d = DateTimeOffset(DateTime(y, m, d), TimeSpan.FromHours(-1.0))
+let date (y: int) (m: int) (d: int) = DateTimeOffset(DateTime(y, m, d), TimeSpan.FromHours(-1.0))
 let ith i = (date 2000 1 1).AddTicks(i * 123456789L)
 let fromTicks (t:int64) = DateTimeOffset(t, TimeSpan.FromHours(0.0)).ToOffset(TimeSpan.FromHours(8.0))
 let toTicks (dto:DateTimeOffset) = dto.UtcTicks
