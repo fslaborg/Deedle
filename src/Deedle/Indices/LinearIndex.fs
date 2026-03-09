@@ -647,9 +647,11 @@ open Deedle.Indices.Linear
 open System.Collections.Generic
 open System.Collections.ObjectModel
 
+/// <summary>
 /// Defines non-generic `Index` type that provides functions for building indices
 /// (hard-bound to `LinearIndexBuilder` type). In F#, the module is automatically opened
 /// using `AutoOpen`. The methods are not designed for the use from C#.
+/// </summary>
 ///
 /// <category>Vectors and indices</category>
 [<AutoOpen>]
@@ -686,7 +688,9 @@ module ``F# Index extensions`` =
     static member ofUnorderedKeys<'T when 'T : equality>(keys:'T list) =
       Index.ofUnorderedKeys(ReadOnlyCollection.ofSeq keys)
 
+/// <summary>
 /// Type that provides access to creating indices (represented as `LinearIndex` values)
+/// </summary>
 ///
 /// <category>Vectors and indices</category>
 type Index =

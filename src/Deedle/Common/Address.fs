@@ -8,6 +8,7 @@ open System.Linq.Expressions
 // Address type and operations
 // --------------------------------------------------------------------------------------
 
+/// <summary>
 /// An `Address` value is used as an interface between vectors and indices. The index maps
 /// keys of various types to address, which is then used to get a value from the vector.
 ///
@@ -22,6 +23,7 @@ open System.Linq.Expressions
 ///  - In the BigDeedle representation, address is abstracted and comes with
 ///    `AddressOperations` that specifies how to use it (tests use linear
 ///    offset and partitioned representation)
+/// </summary>
 ///
 /// <category>Vectors and indices</category>
 module Addressing =
@@ -31,7 +33,6 @@ module Addressing =
   type Address = int64<address>
   and [<Measure>] address
 
-  [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
   module Address =
     /// Represents an invalid address (which is returned from
     /// optimized lookup functions when they fail)

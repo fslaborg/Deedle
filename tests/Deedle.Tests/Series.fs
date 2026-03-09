@@ -176,6 +176,34 @@ let ``Series.windowSizeInto with AtEnding boundary works correctly on sample inp
   actual |> shouldEqual expected
 
 [<Test>]
+let ``Series.windowSize with AtBeginning does not throw when size exceeds series length`` () =
+  // Regression test for https://github.com/fslaborg/Deedle/issues/559
+  let empty : Series<int, int> = Series.ofValues []
+  let result1 = empty |> Series.windowSizeInto (1, Boundary.AtBeginning) (fun s -> s.Data.KeyCount)
+  result1 |> shouldEqual (series [])
+  let result2 = empty |> Series.windowSizeInto (2, Boundary.AtBeginning) (fun s -> s.Data.KeyCount)
+  result2 |> shouldEqual (series [])
+  // Series shorter than window size - 1
+  let short = series [0 => 10]
+  let result3 = short |> Series.windowSizeInto (3, Boundary.AtBeginning) (fun s -> s.Data.KeyCount)
+  let expected3 = series [0 => 1]
+  result3 |> shouldEqual expected3
+
+[<Test>]
+let ``Series.windowSize with AtEnding does not throw when size exceeds series length`` () =
+  // Regression test for https://github.com/fslaborg/Deedle/issues/559
+  let empty : Series<int, int> = Series.ofValues []
+  let result1 = empty |> Series.windowSizeInto (1, Boundary.AtEnding) (fun s -> s.Data.KeyCount)
+  result1 |> shouldEqual (series [])
+  let result2 = empty |> Series.windowSizeInto (2, Boundary.AtEnding) (fun s -> s.Data.KeyCount)
+  result2 |> shouldEqual (series [])
+  // Series shorter than window size - 1
+  let short = series [0 => 10]
+  let result3 = short |> Series.windowSizeInto (3, Boundary.AtEnding) (fun s -> s.Data.KeyCount)
+  let expected3 = series [0 => 1]
+  result3 |> shouldEqual expected3
+
+[<Test>]
 let ``Series.chunkInto works correctly on sample input`` () =
   let actual = letters 10 |> Series.chunkInto 4 (fun s -> new String(Array.ofSeq s.Values))
   let expected = series [0 => "ABCD"; 4 => "EFGH" ]
@@ -970,3 +998,62 @@ let ``Masking works as expected`` () =
   let s = series [ 0 => 1.0; 1 => nan; 2 => 3.0 ]
   let t = series [ 1 => 5.0; 2 => 3.0; 4 => 4.0 ]
   (t |> Series.withMissingFrom s) |> shouldEqual (series [ 1 => nan; 2 => 3.0; 4 => 4.0 ])
+
+// ------------------------------------------------------------------------------------------------
+// Scanning, folding and reducing
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Series.scanValues accumulates running sum correctly`` () =
+  let s = series [ 1 => 1.0; 2 => 2.0; 3 => 3.0; 4 => 4.0 ]
+  let result = s |> Series.scanValues (+) 0.0
+  result |> shouldEqual (series [ 1 => 1.0; 2 => 3.0; 3 => 6.0; 4 => 10.0 ])
+
+[<Test>]
+let ``Series.scanValues skips missing values and leaves them missing`` () =
+  let s = Series.ofOptionalObservations [ 1, Some 1.0; 2, None; 3, Some 3.0 ]
+  let result = s |> Series.scanValues (+) 0.0
+  result.TryGet(1) |> shouldEqual (OptionalValue(1.0))
+  result.TryGet(2).HasValue |> shouldEqual false
+  // After a missing value, accumulation continues from the last good accumulator
+  result.TryGet(3) |> shouldEqual (OptionalValue(4.0))
+
+[<Test>]
+let ``Series.foldValues computes running product correctly`` () =
+  let s = series [ "a" => 2.0; "b" => 3.0; "c" => 4.0 ]
+  let result = s |> Series.foldValues (*) 1.0
+  result |> shouldEqual 24.0
+
+[<Test>]
+let ``Series.foldValues skips missing values`` () =
+  let s = Series.ofOptionalObservations [ 1, Some 2.0; 2, None; 3, Some 5.0 ]
+  let result = s |> Series.foldValues (*) 1.0
+  result |> shouldEqual 10.0
+
+[<Test>]
+let ``Series.reduceValues computes sum of series`` () =
+  let s = series [ "x" => 10.0; "y" => 20.0; "z" => 30.0 ]
+  let result = s |> Series.reduceValues (+)
+  result |> shouldEqual 60.0
+
+[<Test>]
+let ``Series.reduceValues skips missing values`` () =
+  let s = Series.ofOptionalObservations [ 1, Some 10.0; 2, None; 3, Some 30.0 ]
+  let result = s |> Series.reduceValues (+)
+  result |> shouldEqual 40.0
+
+[<Test>]
+let ``Series.scanAllValues sees missing values and can carry forward`` () =
+  // scanAllValues receives option wrappers and lets the user decide how to handle them
+  let s = Series.ofOptionalObservations [ 1, Some 1.0; 2, None; 3, Some 3.0 ]
+  // Carry forward the last present value when current is missing
+  let foldFunc (acc:float option) (v:float option) =
+    match acc, v with
+    | Some a, Some x -> Some (a + x)
+    | Some a, None   -> Some a  // carry forward
+    | None, Some x   -> Some x
+    | None, None     -> None
+  let result = s |> Series.scanAllValues foldFunc None
+  result.TryGet(1) |> shouldEqual (OptionalValue(1.0))
+  result.TryGet(2) |> shouldEqual (OptionalValue(1.0))  // carried forward
+  result.TryGet(3) |> shouldEqual (OptionalValue(4.0))

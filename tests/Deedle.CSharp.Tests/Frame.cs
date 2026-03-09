@@ -237,4 +237,56 @@ namespace Deedle.CSharp.Tests
 			}
 		}
     }
+
+    /* ----------------------------------------------------------------------------------
+    * Tests for GetRowsAs with C# interfaces (issue #503)
+    * --------------------------------------------------------------------------------*/
+
+    public interface INamedRow
+    {
+        string Name { get; }
+        double Value { get; }
+    }
+
+    public interface IRowWithSetter
+    {
+        string Name { get; set; }
+        double Value { get; }
+    }
+
+    public class GetRowsAsTests
+    {
+        [Test]
+        public static void CanGetRowsAsReadOnlyCSharpInterface()
+        {
+            var df = Frame.FromRecords(new[] {
+                new { Name = "Alice", Value = 1.0 },
+                new { Name = "Bob",   Value = 2.0 }
+            });
+            var rows = df.GetRowsAs<INamedRow>();
+            Assert.AreEqual("Alice", rows[0].Name);
+            Assert.AreEqual(2.0, rows[1].Value);
+        }
+
+        [Test]
+        public static void CanGetRowsAsCSharpInterfaceWithSetter()
+        {
+            // Only the getter properties should be used as columns;
+            // the setter stub should not be accessible via this path.
+            var df = Frame.FromRecords(new[] {
+                new { Name = "Alice", Value = 1.0 },
+                new { Name = "Bob",   Value = 2.0 }
+            });
+            var rows = df.GetRowsAs<IRowWithSetter>();
+            Assert.AreEqual("Alice", rows[0].Name);
+            Assert.AreEqual(1.0, rows[0].Value);
+        }
+
+        [Test]
+        public static void GetRowsAsThrowsForNonInterfaceType()
+        {
+            var df = Frame.FromRecords(new[] { new { Name = "Alice", Value = 1.0 } });
+            Assert.Throws<InvalidOperationException>(() => df.GetRowsAs<string>());
+        }
+    }
 }

@@ -4,9 +4,11 @@ namespace Deedle
 open System
 open System.Runtime.CompilerServices
 
+/// <summary>
 /// Represents different kinds of type conversions that can be used by Deedle internally.
-/// This is used, for example, when converting `ObjectSeries<'K>` to `Series<'K, 'T>` -
+/// This is used, for example, when converting <c>ObjectSeries&lt;'K&gt;</c> to <c>Series&lt;'K, 'T&gt;</c> -
 /// The conversion kind can be specified as an argument to allow certain conversions.
+/// </summary>
 ///
 /// <category>Parameters and results of various operations</category>
 type ConversionKind =
@@ -21,9 +23,11 @@ type ConversionKind =
   | Flexible = 2
 
 
+/// <summary>
 /// Thrown when a value at the specified index does not exist in the data frame or series.
 /// This exception is thrown only when the key is defined, but the value is not available,
 /// in other situations `KeyNotFoundException` is thrown
+/// </summary>
 ///
 /// <category>Primitive types and values</category>
 type MissingValueException(key:obj, message) =
@@ -41,16 +45,18 @@ type Diff<'T> =
     | Remove v -> sprintf "-%A" v
     | Add v -> sprintf "+%A" v
 
+/// <summary>
 /// Value type that represents a potentially missing value. This is similar to
-/// `System.Nullable<T>`, but does not restrict the contained value to be a value
+/// <c>System.Nullable&lt;T&gt;</c>, but does not restrict the contained value to be a value
 /// type, so it can be used for storing values of any types. When obtained from
-/// `DataFrame<R, C>` or `Series<K, T>`, the `Value` will never be `Double.NaN` or `null`
+/// <c>DataFrame&lt;R, C&gt;</c> or <c>Series&lt;K, T&gt;</c>, the <c>Value</c> will never be <c>Double.NaN</c> or <c>null</c>
 /// (but this is not, in general, checked when constructing the value).
 ///
 /// The type is only used in C#-friendly API. F# operations generally use expose
-/// standard F# `option<T>` type instead. However, there the `OptionalValue` module
-/// contains helper functions for using this type from F# as well as `Missing` and
-/// `Present` active patterns.
+/// standard F# <c>option&lt;T&gt;</c> type instead. However, there the <c>OptionalValue</c> module
+/// contains helper functions for using this type from F# as well as <c>Missing</c> and
+/// <c>Present</c> active patterns.
+/// </summary>
 ///
 /// <category>Primitive types and values</category>
 [<Struct; CustomEquality; NoComparison>]
@@ -99,17 +105,19 @@ type OptionalValue<'T> private (hasValue:bool, value:'T) =
         | _ -> false
     | _ -> false
 
-/// Non-generic type that makes it easier to create `OptionalValue<T>` values
+/// <summary>
+/// Non-generic type that makes it easier to create <c>OptionalValue&lt;T&gt;</c> values
 /// from C# by benefiting the type inference for generic method invocations.
+/// </summary>
 ///
 /// <category>Primitive types and values</category>
 type OptionalValue =
-  /// Creates an `OptionalValue<T>` from a nullable value of type `T?`
+  /// Creates an <c>OptionalValue&lt;T&gt;</c> from a nullable value of type <c>T?</c>
   [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
   static member OfNullable(v:Nullable<'T>) =
     if v.HasValue then OptionalValue(v.Value) else OptionalValue<'T>.Missing
 
-  /// Creates an `OptionalValue<'T>` that contains a value `v`
+  /// Creates an <c>OptionalValue&lt;'T&gt;</c> that contains a value <c>v</c>
   [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
   static member Create(v) =
     OptionalValue(v)
@@ -118,11 +126,13 @@ type OptionalValue =
   [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
   static member Empty<'T>() = OptionalValue<'T>.Missing
 
+/// <summary>
 /// Represents a value or an exception. This type is used by functions such as
 /// `Series.tryMap` and `Frame.tryMap` to capture the result of a lambda function,
 /// which may be either a value or an exception. The type is a discriminated union,
 /// so it can be processed using F# pattern matching, or using `Value`, `HasValue`
 /// and `Exception` properties
+/// </summary>
 ///
 /// <category>Primitive types and values</category>
 type TryValue<'T> =
@@ -148,18 +158,23 @@ type TryValue<'T> =
   override x.ToString() =
     match x with Success v -> v.ToString() | _ -> "<error>"
 
-/// A type alias for the `TryValue<T>` type. The type alias can be used
+/// <summary>
+/// A type alias for the <c>TryValue&lt;T&gt;</c> type. The type alias can be used
 /// to make F# type declarations that explcitly handle exceptions more succinct.
+/// </summary>
 ///
 /// <category>Primitive types and values</category>
 type 'T tryval = TryValue<'T>
 
-/// A type alias for the `OptionalValue<T>` type. The type alias can be used
+/// <summary>
+/// A type alias for the <c>OptionalValue&lt;T&gt;</c> type. The type alias can be used
 /// to make F# type definitions that use optional values directly more succinct.
+/// </summary>
 ///
 /// <category>Primitive types and values</category>
 type 'T opt = OptionalValue<'T>
 
+/// <summary>
 /// Represents different behaviors of key lookup in series. For unordered series,
 /// the only available option is `Lookup.Exact` which finds the exact key - methods
 /// fail or return missing value if the key is not available in the index. For ordered
@@ -167,6 +182,7 @@ type 'T opt = OptionalValue<'T>
 /// a value. `Lookup.Smaller` searches for the first smaller key. The options
 /// `Lookup.ExactOrGreater` and `Lookup.ExactOrSmaller` finds the exact key (if it is
 /// present) and otherwise search for the nearest larger or smaller key, respectively.
+/// </summary>
 ///
 /// <category>Parameters and results of various operations</category>
 [<System.Flags>]
@@ -196,34 +212,37 @@ type Lookup =
   | Smaller = 4
 
 
+/// <summary>
 /// Specifies in which direction should we look when performing operations such as
 /// `Series.Pairwise`.
+/// </summary>
+/// <example>
+/// <code>
+/// let abc =
+///   [ 1 =&gt; "a"; 2 =&gt; "b"; 3 =&gt; "c" ]
+///   |&gt; Series.ofObservations
 ///
-/// ## Example
+/// // Using 'Forward' the key of the first element is used
+/// abc.Pairwise(direction=Direction.Forward)
+/// // [ 1 =&gt; ("a", "b"); 2 =&gt; ("b", "c") ]
 ///
-///     let abc =
-///       [ 1 => "a"; 2 => "b"; 3 => "c" ]
-///       |> Series.ofObservations
-///
-///     // Using 'Forward' the key of the first element is used
-///     abc.Pairwise(direction=Direction.Forward)
-///     [fsi:[ 1 => ("a", "b"); 2 => ("b", "c") ]]
-///
-///     // Using 'Backward' the key of the second element is used
-///     abc.Pairwise(direction=Direction.Backward)
-///     [fsi:[ 2 => ("a", "b"); 3 => ("b", "c") ]]
-///
-///
+/// // Using 'Backward' the key of the second element is used
+/// abc.Pairwise(direction=Direction.Backward)
+/// // [ 2 =&gt; ("a", "b"); 3 =&gt; ("b", "c") ]
+/// </code>
+/// </example>
 /// <category>Parameters and results of various operations</category>
 type Direction =
   | Backward = 0
   | Forward = 1
 
+/// <summary>
 /// Represents boundary behaviour for operations such as floating window. The type
 /// specifies whether incomplete windows (of smaller than required length) should be
 /// produced at the beginning (`AtBeginning`) or at the end (`AtEnding`) or
 /// skipped (`Skip`). For chunking, combinations are allowed too - to skip incomplete
 /// chunk at the beginning, use `Boundary.Skip ||| Boundary.AtBeginning`.
+/// </summary>
 ///
 /// <category>Parameters and results of various operations</category>
 [<Flags>]
@@ -232,31 +251,34 @@ type Boundary =
   | AtEnding = 2
   | Skip = 4
 
-/// Represents a kind of `DataSegment<T>`. See that type for more information.
+/// <summary>
+/// Represents a kind of <c>DataSegment&lt;T&gt;</c>. See that type for more information.
+/// </summary>
 ///
 /// <category>Parameters and results of various operations</category>
 type DataSegmentKind = Complete | Incomplete
 
+/// <summary>
 /// Represents a segment of a series or sequence. The value is returned from
 /// various functions that aggregate data into chunks or floating windows. The
 /// `Complete` case represents complete segment (e.g. of the specified size) and
 /// `Boundary` represents segment at the boundary (e.g. smaller than the required
 /// size).
-///
-/// ## Example
-///
+/// </summary>
+/// <example>
 /// For example (using internal `windowed` function):
+/// <code>
+/// open Deedle.Internal
 ///
-///     open Deedle.Internal
-///
-///     Seq.windowedWithBounds 3 Boundary.AtBeginning [ 1; 2; 3; 4 ]
-///     [fsi:  [| DataSegment(Incomplete, [| 1 |])         ]
-///     [fsi:       DataSegment(Incomplete, [| 1; 2 |])    ]
-///     [fsi:       DataSegment(Complete [| 1; 2; 3 |])    ]
-///     [fsi:       DataSegment(Complete [| 2; 3; 4 |]) |] ]
-///
+/// Seq.windowedWithBounds 3 Boundary.AtBeginning [ 1; 2; 3; 4 ]
+/// // [| DataSegment(Incomplete, [| 1 |])         ]
+/// //    DataSegment(Incomplete, [| 1; 2 |])    ]
+/// //    DataSegment(Complete [| 1; 2; 3 |])    ]
+/// //    DataSegment(Complete [| 2; 3; 4 |]) |]
+/// </code>
 /// If you do not need to distinguish the two cases, you can use the `Data` property
 /// to get the array representing the segment data.
+/// </example>
 ///
 /// <category>Parameters and results of various operations</category>
 type DataSegment<'T> =
@@ -275,7 +297,9 @@ type DataSegment<'T> =
     else sprintf "DataSegment(%s, %s)" (if x.Kind = Complete then "Complete" else "Incomplete") s
 
 
+/// <summary>
 /// Provides helper functions and active patterns for working with `DataSegment` values
+/// </summary>
 ///
 /// <category>Parameters and results of various operations</category>
 module DataSegment =
@@ -311,9 +335,11 @@ module DataSegment =
 // OptionalValue module (to be used from F#)
 // --------------------------------------------------------------------------------------
 
+/// <summary>
 /// Extension methods for working with optional values from C#. These make
 /// it easier to provide default values and convert optional values to
 /// `Nullable` (when the contained value is value type)
+/// </summary>
 ///
 /// <category>Primitive types and values</category>
 [<Extension>]
@@ -331,16 +357,17 @@ type OptionalValueExtensions =
   static member OrDefault(opt:OptionalValue<'T>, defaultValue) =
     if opt.HasValue then opt.Value else defaultValue
 
-/// Provides various helper functions for using the `OptionalValue<T>` type from F#
-/// (The functions are similar to those in the standard `Option` module).
+/// <summary>
+/// Provides various helper functions for using the <c>OptionalValue&lt;T&gt;</c> type from F#
+/// (The functions are similar to those in the standard <c>Option</c> module).
+/// </summary>
 ///
 /// <category>Primitive types and values</category>
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module OptionalValue =
 
-  /// If the `OptionalValue<T>` does not contain a value, then returns a new
-  /// `OptionalValue<R>.Empty`. Otherwise, returns the result of applying the
-  /// function `f` to the value contained in the provided optional value.
+  /// If the <c>OptionalValue&lt;T&gt;</c> does not contain a value, then returns a new
+  /// <c>OptionalValue&lt;R&gt;.Empty</c>. Otherwise, returns the result of applying the
+  /// function <c>f</c> to the value contained in the provided optional value.
   [<CompiledName("Bind")>]
   let inline bind f (input:OptionalValue<'T>) : OptionalValue<'R> =
     if input.HasValue then f input.Value
@@ -420,9 +447,10 @@ open Deedle
 open System.Collections.Generic
 open System.Collections.ObjectModel
 
+/// <summary>
 /// An internal exception that is used to handle the case when comparison fails
 /// (even though the type implements IComparable and everything...)
-///
+/// </summary>
 /// <exclude />
 type ComparisonFailedException() =
   inherit Exception()
@@ -935,15 +963,19 @@ module Seq =
   /// as a pair (0, 0).
   let windowRangesWithBounds size boundary length = seq {
     // If we want incomplete windows at the beginning,
-    // generate "size - 1" windows always starting from 0
+    // generate up to "size - 1" windows always starting from 0, but cap at
+    // 'length' to avoid generating out-of-bounds indices when the series is
+    // shorter than the window size.
     if boundary = Boundary.AtBeginning then
-      for i in 1L .. size - 1L do yield DataSegmentKind.Incomplete, 0L, i - 1L
+      for i in 1L .. min (size - 1L) length do yield DataSegmentKind.Incomplete, 0L, i - 1L
     // Generate all windows in the middle. There is always length - size + 1 of those
     for i in 0L .. length - size do yield DataSegmentKind.Complete, i, i + size - 1L
     // If we want incomplete windows at the ending
-    // gneerate "size - 1" windows, always ending with length-1
+    // generate up to "size - 1" windows always ending with length-1, but skip
+    // windows whose start index would be negative when the series is shorter
+    // than the window size.
     if boundary = Boundary.AtEnding then
-      for i in 1L .. size - 1L do yield DataSegmentKind.Incomplete, length - size + i, length - 1L }
+      for i in max 1L (size - length) .. size - 1L do yield DataSegmentKind.Incomplete, length - size + i, length - 1L }
 
 
   /// Generates addresses of windows in a collection of size 'length'. For example, consider
@@ -1350,8 +1382,8 @@ type IFsiFormattable =
 
 /// <exclude />
 /// An interface implemented by frames that support nice formatting for .NET interactive notebooks
-/// This seems to be needed as you cannot register formatters for Frame<_,_> in .NET interactive
-/// (The `Deedle.Interactive` packages uses this interface for registering custom formatters.)
+/// This seems to be needed as you cannot register formatters for <c>Frame&lt;_,_&gt;</c> in .NET interactive
+/// (The <c>Deedle.Interactive</c> packages uses this interface for registering custom formatters.)
 type IFrameFormattable =
   abstract InteractiveFormat : nRows:int * nCols:int * showColumnTypes:bool -> string [] []
   abstract GetColLevels : unit -> int
@@ -1361,7 +1393,7 @@ type IFrameFormattable =
 
 /// <exclude />
 /// An interface implemented by series that support nice formatting for .NET interactive notebooks
-/// This seems to be needed as you cannot register formatters for Series<_,_> in .NET interactive
+/// This seems to be needed as you cannot register formatters for <c>Series&lt;_,_&gt;</c> in .NET interactive
 /// (The `Deedle.Interactive` packages uses this interface for registering custom formatters.)
 type ISeriesFormattable =
   abstract InteractiveFormat : int -> string [] []

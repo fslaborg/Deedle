@@ -6,14 +6,14 @@ open MathNet.Numerics.LinearAlgebra
 
 /// Financial analysis
 ///
-/// [category:Financial Analysis]
+/// <category>Financial Analysis</category>
 type Finance =
 
   /// Exponentially weighted moving volatility using standard deviation (mean-corrected).
   /// Tracks the EWM mean and computes volatility as the sqrt of the EWM variance of
   /// deviations from that mean.
   ///
-  /// [category: Exponentially Weighted Moving]
+  /// <category>Exponentially Weighted Moving</category>
   static member ewmVolStdDev (x:Series<'R, float>, ?com, ?span, ?halfLife, ?alpha) =
     let alpha = StatsInternal.ewDecay(com, span, halfLife, alpha)
     let x = x |> Series.dropMissing
@@ -37,7 +37,7 @@ type Finance =
   /// Exponentially weighted moving volatility using standard deviation (mean-corrected)
   /// applied to each column of a frame.
   ///
-  /// [category: Exponentially Weighted Moving]
+  /// <category>Exponentially Weighted Moving</category>
   static member ewmVolStdDev (df:Frame<'R, 'C>, ?com, ?span, ?halfLife, ?alpha) =
     let alpha = StatsInternal.ewDecay(com, span, halfLife, alpha)
     df
@@ -101,7 +101,7 @@ type Finance =
 
   /// Exponentially weighted moving variance on frame
   ///
-  /// [category: Exponentially Weighted Moving]
+  /// <category>Exponentially Weighted Moving</category>
   static member ewmVar (df:Frame<'R, 'C>, ?com, ?span, ?halfLife, ?alpha) =
     let alpha = StatsInternal.ewDecay(com, span, halfLife, alpha)
     Finance.ewmVolStdDev(df, alpha = alpha)
@@ -109,7 +109,7 @@ type Finance =
 
   /// Exponentially weighted moving covariance matrix
   ///
-  /// [category: Exponentially Weighted Moving]
+  /// <category>Exponentially Weighted Moving</category>
   static member ewmCovMatrix (df:Frame<'R, 'C>, ?com, ?span, ?halfLife, ?alpha) =
     let alpha = StatsInternal.ewDecay(com, span, halfLife, alpha)
     let nCol = df.ColumnCount
@@ -130,7 +130,7 @@ type Finance =
 
   /// Exponentially weighted moving covariance frame
   ///
-  /// [category: Exponentially Weighted Moving]
+  /// <category>Exponentially Weighted Moving</category>
   static member ewmCov (df:Frame<'R, 'C>, ?com, ?span, ?halfLife, ?alpha) =
     let alpha = StatsInternal.ewDecay(com, span, halfLife, alpha)
     Finance.ewmCovMatrix(df, alpha = alpha)
@@ -138,7 +138,7 @@ type Finance =
 
   /// Exponentially weighted moving correlation matrix
   ///
-  /// [category: Exponentially Weighted Moving]
+  /// <category>Exponentially Weighted Moving</category>
   static member ewmCorrMatrix (df:Frame<'R, 'C>, ?com, ?span, ?halfLife, ?alpha) =
     let alpha = StatsInternal.ewDecay(com, span, halfLife, alpha)
     Finance.ewmCov(df, alpha = alpha)
@@ -146,7 +146,7 @@ type Finance =
 
   /// Exponentially weighted moving correlation frame
   ///
-  /// [category: Exponentially Weighted Moving]
+  /// <category>Exponentially Weighted Moving</category>
   static member ewmCorr (df:Frame<'R, 'C>, ?com, ?span, ?halfLife, ?alpha) =
     let alpha = StatsInternal.ewDecay(com, span, halfLife, alpha)
     Finance.ewmCov(df, alpha = alpha)
