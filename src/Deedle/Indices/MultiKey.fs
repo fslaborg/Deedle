@@ -8,7 +8,7 @@
 /// in an index. A key type `K` can come with associated `ICustomLookup<K>` to provide
 /// customized pattern matching (equality testing)
 ///
-/// [category:Parameters and results of various operations]
+/// <category>Parameters and results of various operations</category>
 type ICustomLookup<'K> =
   /// Tests whether a specified key matches the current key (for example, in hierarchical indexing
   /// based on tuples, if the current key represents a pair (1, _) then the value (1, 42) would match).
@@ -113,7 +113,7 @@ open Deedle.Keys
 
 /// F#-friendly functions for creating multi-level keys and lookups
 ///
-/// [category:Parameters and results of various operations]
+/// <category>Parameters and results of various operations</category>
 [<AutoOpen>]
 module MultiKeyExtensions =
 
@@ -165,7 +165,7 @@ module MultiKeyExtensions =
 
 /// Module with helper functions for extracting values from hierarchical tuples
 ///
-/// [category:Primitive types and values]
+/// <category>Primitive types and values</category>
 module Pair =
   /// Returns the first value of a two-level hierarchical tuple
   let get1Of2(v, _) = v
