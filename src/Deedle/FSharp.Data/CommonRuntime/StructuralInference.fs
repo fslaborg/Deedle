@@ -9,7 +9,7 @@ open FSharp.Data
 open FSharp.Data.Runtime
 open FSharp.Data.Runtime.StructuralTypes
 
-/// [omit]
+/// <exclude />
 module List =
     /// Merge two sequences by pairing elements for which
     /// the specified predicate returns the same key
