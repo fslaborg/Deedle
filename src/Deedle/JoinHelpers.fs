@@ -13,7 +13,7 @@ open Deedle.Vectors
 /// missing values), inner join takes the intersection of keys; left and
 /// right joins take the keys of the first or the second series/frame.
 ///
-/// [category:Parameters and results of various operations]
+/// <category>Parameters and results of various operations</category>
 type JoinKind =
   /// Combine the keys available in both structures, align the values that
   /// are available in both of them and mark the remaining values as missing.
@@ -35,7 +35,7 @@ type JoinKind =
 // Helpers related to join implementations
 // --------------------------------------------------------------------------------------
 
-/// [omit]
+/// <exclude />
 /// Implements various helpers that are used by Join operations
 module internal JoinHelpers =
   open Deedle.Internal
