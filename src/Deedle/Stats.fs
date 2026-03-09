@@ -361,7 +361,7 @@ open StatsInternal
 /// windowing functions from the `Series` module such as `Series.windowSizeInto` or
 /// `Series.chunkSizeInto`.
 ///
-/// [category:Frame and series operations]
+/// <category>Frame and series operations</category>
 type Stats =
 
   // ------------------------------------------------------------------------------------
@@ -374,7 +374,7 @@ type Stats =
   /// Throws a `FormatException` or an `InvalidCastException` if the value type of the specified series
   /// is not convertible to floating point number.
   ///
-  /// [category:Moving windows]
+  /// <category>Moving windows</category>
   static member inline movingCount size (series:Series<'K, 'V>) : Series<'K, float> =
     applyMovingSumsTransform 0 size (fun s -> s.nobs) series
 
@@ -384,7 +384,7 @@ type Stats =
   /// Throws a `FormatException` or an `InvalidCastException` if the value type of the specified series
   /// is notconvertible to floating point number.
   ///
-  /// [category:Moving windows]
+  /// <category>Moving windows</category>
   static member inline movingSum size (series:Series<'K, 'V>) : Series<'K, float> =
     applyMovingSumsTransform 1 size (fun s -> s.sum) series
 
@@ -394,7 +394,7 @@ type Stats =
   /// Throws a `FormatException` or an `InvalidCastException` if the value type of the specified series
   /// is not convertible to floating point number.
   ///
-  /// [category:Moving windows]
+  /// <category>Moving windows</category>
   static member inline movingMean size (series:Series<'K, 'V>) : Series<'K, float> =
     applyMovingSumsTransform 1 size (fun s -> s.sum / s.nobs) series
 
@@ -404,7 +404,7 @@ type Stats =
   /// Throws a `FormatException` or an `InvalidCastException` if the value type of the specified series
   /// is not convertible to floating point number.
   ///
-  /// [category:Moving windows]
+  /// <category>Moving windows</category>
   static member inline movingVariance size (series:Series<'K, 'V>) : Series<'K, float> =
     applyMovingSumsTransform 2 size varianceSums series
 
@@ -414,7 +414,7 @@ type Stats =
   /// Throws a `FormatException` or an `InvalidCastException` if the value type of the specified series
   /// is not convertible to floating point number.
   ///
-  /// [category:Moving windows]
+  /// <category>Moving windows</category>
   static member inline movingStdDev size (series:Series<'K, 'V>) : Series<'K, float> =
     applyMovingSumsTransform 2 size (varianceSums >> sqrt) series
 
@@ -424,7 +424,7 @@ type Stats =
   /// Throws a `FormatException` or an `InvalidCastException` if the value type of the specified series
   /// is not convertible to floating point number.
   ///
-  /// [category:Moving windows]
+  /// <category>Moving windows</category>
   static member inline movingSkew size (series:Series<'K, 'V>) : Series<'K, float> =
     applyMovingSumsTransform 3 size skewSums series
 
@@ -434,7 +434,7 @@ type Stats =
   /// Throws a `FormatException` or an `InvalidCastException` if the value type of the specified series
   /// is not convertible to floating point number.
   ///
-  /// [category:Moving windows]
+  /// <category>Moving windows</category>
   static member inline movingKurt size (series:Series<'K, 'V>) : Series<'K, float> =
     applyMovingSumsTransform 4 size kurtSums series
 
@@ -444,7 +444,7 @@ type Stats =
   /// Throws a `FormatException` or an `InvalidCastException` if the value type of the series
   /// is not convertible to floating point number.
   ///
-  /// [category:Moving windows]
+  /// <category>Moving windows</category>
   static member inline movingMin size (series:Series<'K, 'V>) : Series<'K, float> =
     applySeriesProj (movingMinMaxHelper size (>=)) (series |> Series.mapValues toFloat)
 
@@ -454,7 +454,7 @@ type Stats =
   /// Throws a `FormatException` or an `InvalidCastException` if the value type of the series
   /// is not convertible to floating point number.
   ///
-  /// [category:Moving windows]
+  /// <category>Moving windows</category>
   static member inline movingMax size (series:Series<'K, 'V>) : Series<'K, float> =
     applySeriesProj (movingMinMaxHelper size (<=)) (series |> Series.mapValues toFloat)
 
@@ -465,7 +465,7 @@ type Stats =
   /// Returns a series that contains counts over expanding windows (the value for
   /// a given key is calculated from all elements with smaller keys).
   ///
-  /// [category:Expanding windows]
+  /// <category>Expanding windows</category>
   static member inline expandingCount (series:Series<'K, 'V>) : Series<'K, float> =
     applyExpandingMomentsTransform (fun w -> w.nobs) series
 
@@ -473,7 +473,7 @@ type Stats =
   /// a given key is calculated from all elements with smaller keys); If the
   /// entire window contains no values, the result is 0.
   ///
-  /// [category:Expanding windows]
+  /// <category>Expanding windows</category>
   static member inline expandingSum (series:Series<'K, 'V>) : Series<'K, float> =
     applyExpandingMomentsTransform (fun w -> w.sum) series
 
@@ -481,7 +481,7 @@ type Stats =
   /// a given key is calculated from all elements with smaller keys); If the
   /// entire window contains no values, the result is missing.
   ///
-  /// [category:Expanding windows]
+  /// <category>Expanding windows</category>
   static member inline expandingMean (series:Series<'K, 'V>) : Series<'K, float> =
     applyExpandingMomentsTransform (fun w ->
       if w.nobs < 1.0 then nan else w.M1) series
@@ -490,7 +490,7 @@ type Stats =
   /// a given key is calculated from all elements with smaller keys); If the
   /// entire window contains fewer than 2 values, the result is missing.
   ///
-  /// [category:Expanding windows]
+  /// <category>Expanding windows</category>
   static member inline expandingVariance (series:Series<'K, 'V>) : Series<'K, float> =
     let toVar w =
       if w.nobs < 2.0 then nan
@@ -501,7 +501,7 @@ type Stats =
   /// value for a given key is calculated from all elements with smaller keys); If the
   /// entire window contains fewer than 2 values, the result is missing.
   ///
-  /// [category:Expanding windows]
+  /// <category>Expanding windows</category>
   static member inline expandingStdDev (series:Series<'K, 'V>) : Series<'K, float> =
     let toStdDev w =
       if w.nobs < 2.0 then nan
@@ -512,7 +512,7 @@ type Stats =
   /// a given key is calculated from all elements with smaller keys); If the
   /// entire window contains fewer than 3 values, the result is missing.
   ///
-  /// [category:Expanding windows]
+  /// <category>Expanding windows</category>
   static member inline expandingSkew (series:Series<'K, 'V>) : Series<'K, float> =
     // population -> sample estimate
     let toEstSkew w =
@@ -525,7 +525,7 @@ type Stats =
   /// a given key is calculated from all elements with smaller keys); If the
   /// entire window contains fewer than 4 values, the result is missing.
   ///
-  /// [category:Expanding windows]
+  /// <category>Expanding windows</category>
   static member inline expandingKurt (series:Series<'K, 'V>) : Series<'K, float> =
     // population -> sample estimate
     let toEstKurt w =
@@ -540,7 +540,7 @@ type Stats =
   /// Throws a `FormatException` or an `InvalidCastException` if the value type of the series
   /// is not convertible to floating point number.
   ///
-  /// [category:Expanding windows]
+  /// <category>Expanding windows</category>
   static member inline expandingMin (series:Series<'K, 'V>) : Series<'K, float> =
     let calcSparse (source: float opt seq) =
       let res = ResizeArray<float>()
@@ -559,7 +559,7 @@ type Stats =
   /// Throws a `FormatException` or an `InvalidCastException` if the value type of the series
   /// is not convertible to floating point number.
   ///
-  /// [category:Expanding windows]
+  /// <category>Expanding windows</category>
   static member inline expandingMax (series:Series<'K, 'V>) : Series<'K, float> =
     let calcSparse (source: float opt seq) =
       let res = ResizeArray<float>()
@@ -580,7 +580,7 @@ type Stats =
   /// Returns the number of the values in a series. This excludes missing values
   /// and values created from `Double.NaN` etc.
   ///
-  /// [category:Series statistics]
+  /// <category>Series statistics</category>
   static member inline count (series:Series<'K, 'V>) = series.ValueCount
 
   /// Returns the sum of the values in a series. The function skips over missing values
@@ -588,7 +588,7 @@ type Stats =
   /// Throws a `FormatException` or an `InvalidCastException` if the value type of the series
   /// is not convertible to floating point number.
   ///
-  /// [category:Series statistics]
+  /// <category>Series statistics</category>
   static member inline sum (series:Series<'K, 'V>) =
     series.Values |> Seq.fold (fun sum v ->
       if Double.IsNaN sum then toFloat v else sum + toFloat v) nan
@@ -596,7 +596,7 @@ type Stats =
   /// Sum that operates only any appropriate numeric type. When there are no available
   /// values, the result is zero of the approriate numeric type.
   ///
-  /// [category:Series statistics]
+  /// <category>Series statistics</category>
   static member inline numSum (series:Series<'K, 'V>) =
     series.Values |> Seq.sum
 
@@ -605,7 +605,7 @@ type Stats =
   /// Throws a `FormatException` or an `InvalidCastException` if the value type of the series
   /// is not convertible to floating point number.
   ///
-  /// [category:Series statistics]
+  /// <category>Series statistics</category>
   static member inline mean (series:Series<'K, 'V>) =
     let sums = initSumsSparse 1 (valuesAllOpt series)
     sums.sum / sums.nobs
@@ -615,7 +615,7 @@ type Stats =
   /// Throws a `FormatException` or an `InvalidCastException` if the value type of the series
   /// is not convertible to floating point number.
   ///
-  /// [category:Series statistics]
+  /// <category>Series statistics</category>
   static member inline variance (series:Series<'K, 'V>) =
     varianceSums (initSumsSparse 2 (valuesAllOpt series))
 
@@ -624,7 +624,7 @@ type Stats =
   /// Throws a `FormatException` or an `InvalidCastException` if the value type of the series
   /// is not convertible to floating point number.
   ///
-  /// [category:Series statistics]
+  /// <category>Series statistics</category>
   static member inline stdDev (series:Series<'K, 'V>) =
     sqrt (varianceSums (initSumsSparse 2 (valuesAllOpt series)))
 
@@ -633,28 +633,28 @@ type Stats =
   /// Throws a `FormatException` or an `InvalidCastException` if the value type of the series
   /// is not convertible to floating point number.
   ///
-  /// [category:Series statistics]
+  /// <category>Series statistics</category>
   static member inline skew (series:Series<'K, 'V>) =
     skewSums (initSumsSparse 3 (valuesAllOpt series))
 
   /// Returns the kurtosis of the values in a series. The function skips over missing
   /// values and `NaN` values. When there are less than 4 values, the result is NaN.
   ///
-  /// [category:Series statistics]
+  /// <category>Series statistics</category>
   static member inline kurt (series:Series<'K, 'V>) =
     kurtSums (initSumsSparse 4 (valuesAllOpt series))
 
   /// Returns the minimum of the values in a series. The result is an option value.
   /// When the series contains no values, the result is `None`.
   ///
-  /// [category:Series statistics]
+  /// <category>Series statistics</category>
   static member inline tryMin (series:Series<'K, 'V>) =
     trySeriesExtreme min series
 
   /// Returns the maximum of the values in a series. The result is an option value.
   /// When the series contains no values, the result is `None`.
   ///
-  /// [category:Series statistics]
+  /// <category>Series statistics</category>
   static member inline tryMax (series:Series<'K, 'V>) =
     trySeriesExtreme max series
 
@@ -663,7 +663,7 @@ type Stats =
   /// Throws a `FormatException` or an `InvalidCastException` if the value type of the series
   /// is not convertible to floating point number.
   ///
-  /// [category:Series statistics]
+  /// <category>Series statistics</category>
   static member inline min (series:Series<'K, 'V>) =
     let values = series.Values
     if values |> Seq.isEmpty then
@@ -676,7 +676,7 @@ type Stats =
   /// Throws a `FormatException` or an `InvalidCastException` if the value type of the series
   /// is not convertible to floating point number.
   ///
-  /// [category:Series statistics]
+  /// <category>Series statistics</category>
   static member inline max (series:Series<'K, 'V>) =
     let values = series.Values
     if values |> Seq.isEmpty then
@@ -691,7 +691,7 @@ type Stats =
   /// Returns the key and value of the greatest element in the series. The result
   /// is an optional value. When the series contains no values, the result is `None`.
   ///
-  /// [category:Series statistics]
+  /// <category>Series statistics</category>
   static member inline maxBy f (series:Series<'K, 'T>) =
     if series.ValueCount = 0 then None
     else Some(series |> Series.observations |> Seq.maxBy (snd >> f))
@@ -699,7 +699,7 @@ type Stats =
   /// Returns the key and value of the least element in the series. The result
   /// is an optional value. When the series contains no values, the result is `None`.
   ///
-  /// [category:Series statistics]
+  /// <category>Series statistics</category>
   static member inline minBy f (series:Series<'K, 'T>) =
     if series.ValueCount = 0 then None
     else Some(series |> Series.observations |> Seq.minBy (snd >> f))
@@ -708,7 +708,7 @@ type Stats =
   /// Throws a `FormatException` or an `InvalidCastException` if the value type of the series
   /// is not convertible to floating point number.
   ///
-  /// [category:Series statistics]
+  /// <category>Series statistics</category>
   static member inline median (series:Series<'K, 'V>) =
     let values = Array.ofSeq series.Values |> Array.map toFloat
     let mid = values.Length / 2
@@ -724,7 +724,7 @@ type Stats =
   /// Throws a `FormatException` or an `InvalidCastException` if the value type of the series
   /// is not convertible to floating point number.
   ///
-  /// [category:Series statistics]
+  /// <category>Series statistics</category>
   static member inline quantile (quantiles:float[], series:Series<'K, 'V>) =
     let vals = series.Values |> Seq.toArray |> Array.map toFloat |> Array.sort
     let valsLength = vals |> Array.length
@@ -758,7 +758,7 @@ type Stats =
   /// Throws a `FormatException` or an `InvalidCastException` if the value type of the series
   /// is not convertible to floating point number.
   ///
-  /// [category:Series statistics]
+  /// <category>Series statistics</category>
   static member inline describe (series:Series<'K, 'V>) =
     let quantileResult = Stats.quantile ([|0.25; 0.5; 0.75|], series)
 
@@ -788,7 +788,7 @@ type Stats =
   ///  - `keys` - Sequence of new keys that forms the index of interpolated results
   ///  - `f` - Function to do the interpolating
   ///
-  /// [category:Series interoploation]
+  /// <category>Series interoploation</category>
   static member interpolate keys f (series:Series<'K,'T>) =
     let liftedf k (prev:KeyValuePair<_,_> opt) (next:KeyValuePair<_,_> opt) =
       let t1 = prev |> OptionalValue.map (fun kvp -> kvp.Key, kvp.Value) |> OptionalValue.asOption
@@ -805,7 +805,7 @@ type Stats =
   /// Throws a `FormatException` or an `InvalidCastException` if the value type of the series
   /// is not convertible to floating point number.
   ///
-  /// [category:Series interoploation]
+  /// <category>Series interoploation</category>
   static member inline interpolateLinear keys (keyDiff:'K->'K->float) (series:Series<'K, 'V>) =
     let linearF k a b =
       match a, b with
@@ -824,7 +824,7 @@ type Stats =
   /// For each column, returns the number of the values in the column.
   /// This excludes missing values and values created from `Double.NaN` etc.
   ///
-  /// [category:Frame statistics]
+  /// <category>Frame statistics</category>
   static member count (frame:Frame<'R, 'C>) =
     frame.Columns |> Series.map (fun _ -> Stats.count)
 
@@ -832,7 +832,7 @@ type Stats =
   /// The function skips over missing values and `NaN` values. When there are no
   /// available values, the result is 0.
   ///
-  /// [category:Frame statistics]
+  /// <category>Frame statistics</category>
   static member sum (frame:Frame<'R, 'C>) =
     frame.GetColumns<float>() |> Series.map (fun _ -> Stats.sum)
 
@@ -840,13 +840,13 @@ type Stats =
   /// The function skips over missing values and `NaN` values. When there are
   /// no available values, the result is NaN.
   ///
-  /// [category:Frame statistics]
+  /// <category>Frame statistics</category>
   static member mean (frame:Frame<'R, 'C>) =
     frame.GetColumns<float>() |> Series.map (fun _ -> Stats.mean)
 
   /// For each numerical column, returns the median of the values in the column.
   ///
-  /// [category:Frame statistics]
+  /// <category>Frame statistics</category>
   static member median (frame:Frame<'R, 'C>) =
     frame.GetColumns<float>() |> Series.map (fun _ -> Stats.median)
 
@@ -854,7 +854,7 @@ type Stats =
   /// The function skips over missing values and `NaN` values. When there are less than 2 values,
   /// the result is NaN.
   ///
-  /// [category:Frame statistics]
+  /// <category>Frame statistics</category>
   static member stdDev (frame:Frame<'R, 'C>) =
     frame.GetColumns<float>() |> Series.map (fun _ -> Stats.stdDev)
 
@@ -862,7 +862,7 @@ type Stats =
   /// The function skips over missing values and `NaN` values. When there are less
   /// than 2 values, the result is NaN.
   ///
-  /// [category:Frame statistics]
+  /// <category>Frame statistics</category>
   static member variance (frame:Frame<'R, 'C>) =
     frame.GetColumns<float>() |> Series.map (fun _ -> Stats.variance)
 
@@ -870,7 +870,7 @@ type Stats =
   /// The function skips over missing values and `NaN` values. When there are less than 3 values,
   /// the result is NaN.
   ///
-  /// [category:Frame statistics]
+  /// <category>Frame statistics</category>
   static member skew (frame:Frame<'R, 'C>) =
     frame.GetColumns<float>() |> Series.map (fun _ -> Stats.skew)
 
@@ -878,7 +878,7 @@ type Stats =
   /// The function skips over missing values and `NaN` values. When there are less than 4 values,
   /// the result is NaN.
   ///
-  /// [category:Frame statistics]
+  /// <category>Frame statistics</category>
   static member kurt (frame:Frame<'R, 'C>) =
     frame.GetColumns<float>() |> Series.map (fun _ -> Stats.kurt)
 
@@ -886,7 +886,7 @@ type Stats =
   /// The function skips over missing and `NaN` values. When there are no values,
   /// the result is `NaN`.
   ///
-  /// [category:Frame statistics]
+  /// <category>Frame statistics</category>
   static member min (frame:Frame<'R, 'C>) =
     frame.GetColumns<float>() |> Series.map (fun _ s -> Stats.min s)
 
@@ -894,7 +894,7 @@ type Stats =
   /// The function skips over missing and `NaN` values. When there are no values,
   /// the result is `NaN`.
   ///
-  /// [category:Frame statistics]
+  /// <category>Frame statistics</category>
   static member max (frame:Frame<'R, 'C>) =
     frame.GetColumns<float>() |> Series.map (fun _ s -> Stats.max s)
 
@@ -910,7 +910,7 @@ type Stats =
   /// returns the number of the values in the group. This excludes missing
   /// values and values created from `Double.NaN` etc.
   ///
-  /// [category:Multi-level statistics]
+  /// <category>Multi-level statistics</category>
   static member inline levelCount (level:'K -> 'L) (series:Series<'K, 'V>) =
     Series.applyLevel level Stats.count series
 
@@ -920,7 +920,7 @@ type Stats =
   /// Throws a `FormatException` or an `InvalidCastException` if the value type of the series
   /// is not convertible to floating point number.
   ///
-  /// [category:Multi-level statistics]
+  /// <category>Multi-level statistics</category>
   static member inline levelSum (level:'K -> 'L) (series:Series<'K, 'V>) =
     Series.applyLevel level Stats.sum series
 
@@ -930,7 +930,7 @@ type Stats =
   /// Throws a `FormatException` or an `InvalidCastException` if the value type of the series
   /// is not convertible to floating point number.
   ///
-  /// [category:Multi-level statistics]
+  /// <category>Multi-level statistics</category>
   static member inline levelMean (level:'K -> 'L) (series:Series<'K, 'V>) =
     Series.applyLevel level Stats.mean series
 
@@ -939,7 +939,7 @@ type Stats =
   /// Throws a `FormatException` or an `InvalidCastException` if the value type of the series
   /// is not convertible to floating point number.
   ///
-  /// [category:Multi-level statistics]
+  /// <category>Multi-level statistics</category>
   static member inline levelMedian (level:'K -> 'L) (series:Series<'K, 'V>) =
     Series.applyLevel level Stats.median series
 
@@ -949,7 +949,7 @@ type Stats =
   /// Throws a `FormatException` or an `InvalidCastException` if the value type of the series
   /// is not convertible to floating point number.
   ///
-  /// [category:Multi-level statistics]
+  /// <category>Multi-level statistics</category>
   static member inline levelStdDev (level:'K -> 'L) (series:Series<'K, 'V>) =
     Series.applyLevel level Stats.stdDev series
 
@@ -959,7 +959,7 @@ type Stats =
   /// Throws a `FormatException` or an `InvalidCastException` if the value type of the series
   /// is not convertible to floating point number.
   ///
-  /// [category:Multi-level statistics]
+  /// <category>Multi-level statistics</category>
   static member inline levelVariance (level:'K -> 'L) (series:Series<'K, 'V>) =
     Series.applyLevel level Stats.variance series
 
@@ -969,7 +969,7 @@ type Stats =
   /// Throws a `FormatException` or an `InvalidCastException` if the value type of the series
   /// is not convertible to floating point number.
   ///
-  /// [category:Multi-level statistics]
+  /// <category>Multi-level statistics</category>
   static member inline levelSkew (level:'K -> 'L) (series:Series<'K, 'V>) =
     Series.applyLevel level Stats.skew series
 
@@ -979,6 +979,6 @@ type Stats =
   /// Throws a `FormatException` or an `InvalidCastException` if the value type of the series
   /// is not convertible to floating point number.
   ///
-  /// [category:Multi-level statistics]
+  /// <category>Multi-level statistics</category>
   static member inline levelKurt (level:'K -> 'L) (series:Series<'K, 'V>) =
     Series.applyLevel level Stats.kurt series
