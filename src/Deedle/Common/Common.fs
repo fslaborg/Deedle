@@ -196,10 +196,11 @@ type Lookup =
   | Smaller = 4
 
 
+/// <summary>
 /// Specifies in which direction should we look when performing operations such as
 /// `Series.Pairwise`.
-///
-/// ## Example
+/// </summary>
+/// <example>
 ///
 ///     let abc =
 ///       [ 1 => "a"; 2 => "b"; 3 => "c" ]
@@ -212,8 +213,7 @@ type Lookup =
 ///     // Using 'Backward' the key of the second element is used
 ///     abc.Pairwise(direction=Direction.Backward)
 ///     [fsi:[ 2 => ("a", "b"); 3 => ("b", "c") ]]
-///
-///
+/// </example>
 /// <category>Parameters and results of various operations</category>
 type Direction =
   | Backward = 0
@@ -237,13 +237,14 @@ type Boundary =
 /// <category>Parameters and results of various operations</category>
 type DataSegmentKind = Complete | Incomplete
 
+/// <summary>
 /// Represents a segment of a series or sequence. The value is returned from
 /// various functions that aggregate data into chunks or floating windows. The
 /// `Complete` case represents complete segment (e.g. of the specified size) and
 /// `Boundary` represents segment at the boundary (e.g. smaller than the required
 /// size).
-///
-/// ## Example
+/// </summary>
+/// <example>
 ///
 /// For example (using internal `windowed` function):
 ///
@@ -257,6 +258,7 @@ type DataSegmentKind = Complete | Incomplete
 ///
 /// If you do not need to distinguish the two cases, you can use the `Data` property
 /// to get the array representing the segment data.
+/// </example>
 ///
 /// <category>Parameters and results of various operations</category>
 type DataSegment<'T> =

@@ -91,14 +91,13 @@ type VirtualAddressingScheme =
 // ------------------------------------------------------------------------------------------------
 
 
-/// In BigDeedle, we often use `Ranges<'T>` to represent the address range obtained as a result
-/// of slicing and merging frames & series. This implements `IAddressOperations` for `Ranges<'T>`.
-///
-/// ## Parameters
-///  - `ranges` - ranges containing any key that we are wrapping
-///  - `asAddress` - converts the key to an address
-///  - `ofAddress` - converts address to a key
-///
+/// <summary>
+/// In BigDeedle, we often use `Ranges&lt;'T&gt;` to represent the address range obtained as a result
+/// of slicing and merging frames &amp; series. This implements `IAddressOperations` for `Ranges&lt;'T&gt;`.
+/// </summary>
+/// <param name="ranges">Ranges containing any key that we are wrapping</param>
+/// <param name="asAddress">Converts the key to an address</param>
+/// <param name="ofAddress">Converts address to a key</param>
 type RangesAddressOperations<'TKey when 'TKey : equality>
       ( ranges:Ranges<'TKey>,
         asAddress:System.Func<'TKey, Address>,

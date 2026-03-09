@@ -62,17 +62,20 @@ and IFrameOperation<'V> =
 // Data frame
 // --------------------------------------------------------------------------------------
 
+/// <summary>
 /// A frame is the key Deedle data structure (together with series). It represents a
 /// data table (think spreadsheet or CSV file) with multiple rows and columns. The frame
 /// consists of row index, column index and data. The indices are used for efficient
 /// lookup when accessing data by the row key `'TRowKey` or by the column key
 /// `'TColumnKey`. Deedle frames are optimized for the scenario when all values in a given
 /// column are of the same type (but types of different columns can differ).
-///
-/// ## Joining, zipping and appending
+/// </summary>
+/// <remarks>
+/// <para>Joining, zipping and appending:</para>
+/// <para>
 /// More info
-///
-///
+/// </para>
+/// </remarks>
 /// <category>Core frame and series types</category>
 and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equality>
     ( rowIndex:IIndex<'TRowKey>, columnIndex:IIndex<'TColumnKey>,
@@ -182,6 +185,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   // Note - this has to be actual member and not an extension so that C# callers can specify
   // generic type arguments using `df.Zip<double, double, double>(...)` (doesn't work for extensions)
 
+  /// <summary>
   /// Aligns two data frames using both column index and row index and apply the specified operation
   /// on values of a specified type that are available in both data frames. The parameters `columnKind`,
   /// and `rowKind` can be specified to determine how the alginment works (similarly to `Join`).
@@ -191,19 +195,13 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   /// Once aligned, the call `df1.Zip<T>(df2, f)` applies the specifed function `f` on all `T` values
   /// that are available in corresponding locations in both frames. For values of other types, the
   /// value from `df1` is returned.
-  ///
-  /// ## Parameters
-  ///  - `otherFrame` - Other frame to be aligned and zipped with the current instance
-  ///  - `columnKind` - Specifies how to align columns (inner, outer, left or right join)
-  ///  - `rowKind` - Specifies how to align rows (inner, outer, left or right join)
-  ///  - `lookup` - Specifies how to find matching value for a row (when using left or right join on rows)
-  ///    Supported values are `Lookup.Exact`, `Lookup.ExactOrSmaller` and `Lookup.ExactOrGreater`.
-  ///  - `pointwise` - Specifies how to handle columns that are not matched. Set true to make unmatched
-  ///    column missing. Set false to left unmatched column unchanged.
-  ///  - `op` - A function that is applied to aligned values. The `Zip` operation is generic
-  ///    in the type of this function and the type of function is used to determine which
-  ///    values in the frames are zipped and which are left unchanged.
-  ///
+  /// </summary>
+  /// <param name="otherFrame">Other frame to be aligned and zipped with the current instance</param>
+  /// <param name="columnKind">Specifies how to align columns (inner, outer, left or right join)</param>
+  /// <param name="rowKind">Specifies how to align rows (inner, outer, left or right join)</param>
+  /// <param name="lookup">Specifies how to find matching value for a row (when using left or right join on rows) Supported values are `Lookup.Exact`, `Lookup.ExactOrSmaller` and `Lookup.ExactOrGreater`.</param>
+  /// <param name="pointwise">Specifies how to handle columns that are not matched. Set true to make unmatched column missing. Set false to left unmatched column unchanged.</param>
+  /// <param name="op">A function that is applied to aligned values. The `Zip` operation is generic in the type of this function and the type of function is used to determine which values in the frames are zipped and which are left unchanged.</param>
   /// <category>Joining, zipping and appending</category>
   member frame1.Zip<'V1, 'V2, 'V3>(otherFrame:Frame<'TRowKey, 'TColumnKey>, columnKind, rowKind, lookup, pointwise, op:Func<'V1, 'V2, 'V3>) =
 
@@ -250,6 +248,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
         | _ -> failwith "zipAlignInto: join failed." )
     Frame<_, _>(rowIndex, newColumns.Index, newColumns.Vector, indexBuilder, vectorBuilder)
 
+  /// <summary>
   /// Aligns two data frames using both column index and row index and apply the specified operation
   /// on values of a specified type that are available in both data frames. This overload uses
   /// `JoinKind.Outer` for both columns and rows.
@@ -257,34 +256,23 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   /// Once aligned, the call `df1.Zip<T>(df2, f)` applies the specifed function `f` on all `T` values
   /// that are available in corresponding locations in both frames. For values of other types, the
   /// value from `df1` is returned.
-  ///
-  /// ## Parameters
-  ///  - `otherFrame` - Other frame to be aligned and zipped with the current instance
-  ///  - `op` - A function that is applied to aligned values. The `Zip` operation is generic
-  ///    in the type of this function and the type of function is used to determine which
-  ///    values in the frames are zipped and which are left unchanged.
-  ///
+  /// </summary>
+  /// <param name="otherFrame">Other frame to be aligned and zipped with the current instance</param>
+  /// <param name="op">A function that is applied to aligned values. The `Zip` operation is generic in the type of this function and the type of function is used to determine which values in the frames are zipped and which are left unchanged.</param>
   /// <category>Joining, zipping and appending</category>
   member frame1.Zip<'V1, 'V2, 'V3>(otherFrame:Frame<'TRowKey, 'TColumnKey>, op:Func<'V1, 'V2, 'V3>) =
     frame1.Zip<'V1, 'V2, 'V3>(otherFrame, JoinKind.Outer, JoinKind.Outer, Lookup.Exact, false, op)
 
+  /// <summary>
   /// Join two data frames. The columns of the joined frames must not overlap and their
   /// rows are aligned and transformed according to the specified join kind.
   /// When the index of both frames is ordered, it is possible to specify `lookup`
   /// in order to align indices from other frame to the indices of the main frame
   /// (typically, to find the nearest key with available value for a key).
-  ///
-  /// ## Parameters
-  ///  - `otherFrame` - Other frame (right) to be joined with the current instance (left)
-  ///  - `kind` - Specifies the joining behavior on row indices. Use `JoinKind.Outer` and
-  ///    `JoinKind.Inner` to get the union and intersection of the row keys, respectively.
-  ///    Use `JoinKind.Left` and `JoinKind.Right` to use the current key of the left/right
-  ///    data frame.
-  ///  - `lookup` - When `kind` is `Left` or `Right` and the two frames have ordered row index,
-  ///    this parameter can be used to specify how to find value for a key when there is no
-  ///    exactly matching key or when there are missing values.
-  ///    Supported values are `Lookup.Exact`, `Lookup.ExactOrSmaller` and `Lookup.ExactOrGreater`.
-  ///
+  /// </summary>
+  /// <param name="otherFrame">Other frame (right) to be joined with the current instance (left)</param>
+  /// <param name="kind">Specifies the joining behavior on row indices. Use `JoinKind.Outer` and `JoinKind.Inner` to get the union and intersection of the row keys, respectively. Use `JoinKind.Left` and `JoinKind.Right` to use the current key of the left/right data frame.</param>
+  /// <param name="lookup">When `kind` is `Left` or `Right` and the two frames have ordered row index, this parameter can be used to specify how to find value for a key when there is no exactly matching key or when there are missing values. Supported values are `Lookup.Exact`, `Lookup.ExactOrSmaller` and `Lookup.ExactOrGreater`.</param>
   /// <category>Joining, zipping and appending</category>
   member frame.Join(otherFrame:Frame<'TRowKey, 'TColumnKey>, kind, lookup) =
     // Union/intersect/align row indices and get transformations to apply to left/right vectors
@@ -302,82 +290,66 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     let newData = vectorBuilder.Build(newColumnIndex.AddressingScheme, colCmd, [| newThisData; newOtherData |])
     Frame(newRowIndex, newColumnIndex, newData, indexBuilder, vectorBuilder)
 
+  /// <summary>
   /// Join two data frames. The columns of the joined frames must not overlap and their
   /// rows are aligned and transformed according to the specified join kind.
   /// For more alignment options on ordered frames, see overload taking `lookup`.
-  ///
-  /// ## Parameters
-  ///  - `otherFrame` - Other frame (right) to be joined with the current instance (left)
-  ///  - `kind` - Specifies the joining behavior on row indices. Use `JoinKind.Outer` and
-  ///    `JoinKind.Inner` to get the union and intersection of the row keys, respectively.
-  ///    Use `JoinKind.Left` and `JoinKind.Right` to use the current key of the left/right
-  ///    data frame.
-  ///
+  /// </summary>
+  /// <param name="otherFrame">Other frame (right) to be joined with the current instance (left)</param>
+  /// <param name="kind">Specifies the joining behavior on row indices. Use `JoinKind.Outer` and `JoinKind.Inner` to get the union and intersection of the row keys, respectively. Use `JoinKind.Left` and `JoinKind.Right` to use the current key of the left/right data frame.</param>
   /// <category>Joining, zipping and appending</category>
   member frame.Join(otherFrame:Frame<'TRowKey, 'TColumnKey>, kind) =
     frame.Join(otherFrame, kind, Lookup.Exact)
 
+  /// <summary>
   /// Performs outer join on two data frames. The columns of the joined frames must not
   /// overlap and their rows are aligned. The unavailable values are marked as missing.
-  ///
-  /// ## Parameters
-  ///  - `otherFrame` - Other frame (right) to be joined with the current instance (left)
-  ///
+  /// </summary>
+  /// <param name="otherFrame">Other frame (right) to be joined with the current instance (left)</param>
   /// <category>Joining, zipping and appending</category>
   member frame.Join(otherFrame:Frame<'TRowKey, 'TColumnKey>) =
     frame.Join(otherFrame, JoinKind.Outer, Lookup.Exact)
 
+  /// <summary>
   /// Join data frame and a series. The column key for the joined series must not occur in the
   /// current data frame. The rows are aligned and transformed according to the specified join kind.
   /// When the index of both objects is ordered, it is possible to specify `lookup`
   /// in order to align indices from other frame to the indices of the main frame
   /// (typically, to find the nearest key with available value for a key).
-  ///
-  /// ## Parameters
-  ///  - `colKey` - Column key to be used for the joined series
-  ///  - `series` - Series to be joined with the current data frame
-  ///  - `kind` - Specifies the joining behavior on row indices. Use `JoinKind.Outer` and
-  ///    `JoinKind.Inner` to get the union and intersection of the row keys, respectively.
-  ///    Use `JoinKind.Left` and `JoinKind.Right` to use the current key of the left/right
-  ///    data frame.
-  ///  - `lookup` - When `kind` is `Left` or `Right` and the two frames have ordered row index,
-  ///    this parameter can be used to specify how to find value for a key when there is no
-  ///    exactly matching key or when there are missing values.
-  ///    Supported values are `Lookup.Exact`, `Lookup.ExactOrSmaller` and `Lookup.ExactOrGreater`.
-  ///
+  /// </summary>
+  /// <param name="colKey">Column key to be used for the joined series</param>
+  /// <param name="series">Series to be joined with the current data frame</param>
+  /// <param name="kind">Specifies the joining behavior on row indices. Use `JoinKind.Outer` and `JoinKind.Inner` to get the union and intersection of the row keys, respectively. Use `JoinKind.Left` and `JoinKind.Right` to use the current key of the left/right data frame.</param>
+  /// <param name="lookup">When `kind` is `Left` or `Right` and the two frames have ordered row index, this parameter can be used to specify how to find value for a key when there is no exactly matching key or when there are missing values. Supported values are `Lookup.Exact`, `Lookup.ExactOrSmaller` and `Lookup.ExactOrGreater`.</param>
   /// <category>Joining, zipping and appending</category>
   member frame.Join<'V>(colKey, series:Series<'TRowKey, 'V>, kind, lookup) =
     let otherFrame = Frame([colKey], [series])
     frame.Join(otherFrame, kind, lookup)
 
+  /// <summary>
   /// Join data frame and a series. The column key for the joined series must not occur in the
   /// current data frame. The rows are aligned and transformed according to the specified join kind.
-  ///
-  /// ## Parameters
-  ///  - `colKey` - Column key to be used for the joined series
-  ///  - `series` - Series to be joined with the current data frame
-  ///  - `kind` - Specifies the joining behavior on row indices. Use `JoinKind.Outer` and
-  ///    `JoinKind.Inner` to get the union and intersection of the row keys, respectively.
-  ///    Use `JoinKind.Left` and `JoinKind.Right` to use the current key of the left/right
-  ///    data frame.
-  ///
+  /// </summary>
+  /// <param name="colKey">Column key to be used for the joined series</param>
+  /// <param name="series">Series to be joined with the current data frame</param>
+  /// <param name="kind">Specifies the joining behavior on row indices. Use `JoinKind.Outer` and `JoinKind.Inner` to get the union and intersection of the row keys, respectively. Use `JoinKind.Left` and `JoinKind.Right` to use the current key of the left/right data frame.</param>
   /// <category>Joining, zipping and appending</category>
   member frame.Join<'V>(colKey, series:Series<'TRowKey, 'V>, kind) =
     frame.Join(colKey, series, kind, Lookup.Exact)
 
+  /// <summary>
   /// Performs outer join on data frame and a series. The column key for the joined
   /// series must not occur in the current data frame. The rows are automatically aligned
   /// and unavailable values are marked as missing.
-  ///
-  /// ## Parameters
-  ///  - `colKey` - Column key to be used for the joined series
-  ///  - `series` - Series to be joined with the current data frame
-  ///
+  /// </summary>
+  /// <param name="colKey">Column key to be used for the joined series</param>
+  /// <param name="series">Series to be joined with the current data frame</param>
   /// <category>Joining, zipping and appending</category>
   member frame.Join<'V>(colKey, series:Series<'TRowKey, 'V>) =
     frame.Join(colKey, series, JoinKind.Outer, Lookup.Exact)
 
 
+  /// <summary>
   /// Merge two data frames with non-overlapping values. The operation takes the union of columns
   /// and rows of the source data frames and then unions the values. An exception is thrown when
   /// both data frames define value for a column/row location, but the operation succeeds if one
@@ -386,14 +358,13 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   /// Note that the rows are *not* automatically reindexed to avoid overlaps. This means that when
   /// a frame has rows indexed with ordinal numbers, you may need to explicitly reindex the row
   /// keys before calling append.
-  ///
-  /// ## Parameters
-  ///  - `otherFrame` - The other frame to be appended (combined) with the current instance
-  ///
+  /// </summary>
+  /// <param name="otherFrame">The other frame to be appended (combined) with the current instance</param>
   /// <category>Joining, zipping and appending</category>
   member frame.Merge(otherFrame:Frame<'TRowKey, 'TColumnKey>) =
     frame.Merge([| otherFrame |])
 
+  /// <summary>
   /// Merge multiple data frames with non-overlapping values. The operation takes the union of columns
   /// and rows of the source data frames and then unions the values. An exception is thrown when
   /// both data frames define value for a column/row location, but the operation succeeds if one
@@ -402,15 +373,13 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   /// Note that the rows are *not* automatically reindexed to avoid overlaps. This means that when
   /// a frame has rows indexed with ordinal numbers, you may need to explicitly reindex the row
   /// keys before calling append.
-  ///
-  /// ## Parameters
-  ///  - `otherFrames` - A collection containing other data frame to be appended
-  ///    (combined) with the current instance
-  ///
+  /// </summary>
+  /// <param name="otherFrames">A collection containing other data frame to be appended (combined) with the current instance</param>
   /// <category>Joining, zipping and appending</category>
   member frame.Merge(otherFrames:seq<Frame<'TRowKey, 'TColumnKey>>) =
     frame.Merge(Array.ofSeq otherFrames)
 
+  /// <summary>
   /// Merge multiple data frames with non-overlapping values. The operation takes the union of columns
   /// and rows of the source data frames and then unions the values. An exception is thrown when
   /// both data frames define value for a column/row location, but the operation succeeds if one
@@ -419,11 +388,8 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   /// Note that the rows are *not* automatically reindexed to avoid overlaps. This means that when
   /// a frame has rows indexed with ordinal numbers, you may need to explicitly reindex the row
   /// keys before calling append.
-  ///
-  /// ## Parameters
-  ///  - `otherFrames` - A collection containing other data frame to be appended
-  ///    (combined) with the current instance
-  ///
+  /// </summary>
+  /// <param name="otherFrames">A collection containing other data frame to be appended (combined) with the current instance</param>
   /// <category>Joining, zipping and appending</category>
   member frame.Merge([<ParamArray>] otherFrames:Frame<'TRowKey, 'TColumnKey>[]) =
 
@@ -561,27 +527,25 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   // Accessing frame rows
   // ----------------------------------------------------------------------------------------------
 
+  /// <summary>
   /// Returns the row key that is located at the specified int offset.
   /// If the index is invalid, `ArgumentOutOfRangeException` is thrown.
   /// You can get the corresponding row using `GetRowAt`.
-  ///
-  /// ## Parameters
-  ///  - `index` - Offset (integer) of the row key to be returned
-  ///
+  /// </summary>
+  /// <param name="index">Offset (integer) of the row key to be returned</param>
   /// <category>Accessors and slicing</category>
   member frame.GetRowKeyAt(index) =
     frame.RowIndex.KeyAt(frame.RowIndex.AddressAt index)
 
+  /// <summary>
   /// Returns a row of the data frame that is located at the specified int offset.
   /// This does not use the row key and directly accesses the frame data. This method
   /// is generic and returns the result as a series containing values of the specified type.
   /// To get heterogeneous series of type `ObjectSeries<'TCol>`, use the `frame.Rows` property.
   /// If the index is invalid, `ArgumentOutOfRangeException` is thrown. You can get the
   /// matching key at a specified index using `GetRowKeyAt`.
-  ///
-  /// ## Parameters
-  ///  - `index` - Offset (integer) of the row to be returned
-  ///
+  /// </summary>
+  /// <param name="index">Offset (integer) of the row to be returned</param>
   /// <category>Accessors and slicing</category>
   member frame.GetRowAt<'T>(index) : Series<_, 'T> =
     if index < 0 || int64 index >= rowIndex.KeyCount then
@@ -590,14 +554,13 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     let vector = createRowReader data vectorBuilder rowAddress columnIndex.AddressAt
     Series(columnIndex, vector, vectorBuilder, indexBuilder)
 
+  /// <summary>
   /// Returns a row with the specieifed key wrapped in `OptionalValue`. When the specified key
   /// is not found, the result is `OptionalValue.Missing`. This method is generic and returns the result
   /// as a series containing values of the specified type. To get heterogeneous series of
   /// type `ObjectSeries<'TCol>`, use the `frame.Rows` property.
-  ///
-  /// ## Parameters
-  ///  - `rowKey` - Specifies the key of the row to be returned
-  ///
+  /// </summary>
+  /// <param name="rowKey">Specifies the key of the row to be returned</param>
   /// <category>Accessors and slicing</category>
   member frame.TryGetRow<'T>(rowKey) : OptionalValue<Series<_, 'T>> =
     let rowAddress = rowIndex.Locate(rowKey)
@@ -606,16 +569,14 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
       let vector = createRowReader data vectorBuilder rowAddress columnIndex.AddressAt
       OptionalValue(Series(columnIndex, vector, vectorBuilder, indexBuilder))
 
+  /// <summary>
   /// Returns a row with the specieifed key wrapped in `OptionalValue`. When the specified key
   /// is not found, the result is `OptionalValue.Missing`. This method is generic and returns the result
   /// as a series containing values of the specified type. To get heterogeneous series of
   /// type `ObjectSeries<'TCol>`, use the `frame.Rows` property.
-  ///
-  /// ## Parameters
-  ///  - `rowKey` - Specifies the key of the row to be returned
-  ///  - `lookup` - Specifies how to find value in a frame with ordered rows when the key does
-  ///               not exactly match (look for nearest available value with the smaller/greater key).
-  ///
+  /// </summary>
+  /// <param name="rowKey">Specifies the key of the row to be returned</param>
+  /// <param name="lookup">Specifies how to find value in a frame with ordered rows when the key does not exactly match (look for nearest available value with the smaller/greater key).</param>
   /// <category>Accessors and slicing</category>
   member frame.TryGetRow<'T>(rowKey, lookup) : OptionalValue<Series<_, 'T>> =
     let rowAddress = rowIndex.Lookup(rowKey, lookup, fun _ -> true)
@@ -624,37 +585,32 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
       let vector = createRowReader data vectorBuilder (snd rowAddress.Value) columnIndex.AddressAt
       OptionalValue(Series(columnIndex, vector, vectorBuilder, indexBuilder))
 
+  /// <summary>
   /// Returns a row with the specieifed key. This method is generic and returns the result
   /// as a series containing values of the specified type. To get heterogeneous series of
   /// type `ObjectSeries<'TCol>`, use the `frame.Rows` property.
-  ///
-  /// ## Parameters
-  ///  - `rowKey` - Specifies the key of the row to be returned
-  ///
+  /// </summary>
+  /// <param name="rowKey">Specifies the key of the row to be returned</param>
   /// <category>Accessors and slicing</category>
   member frame.GetRow<'T>(rowKey) : Series<_, 'T> = frame.TryGetRow(rowKey).Value
 
+  /// <summary>
   /// Returns a row with the specieifed key. This method is generic and returns the result
   /// as a series containing values of the specified type. To get heterogeneous series of
   /// type `ObjectSeries<'TCol>`, use the `frame.Rows` property.
-  ///
-  /// ## Parameters
-  ///  - `rowKey` - Specifies the key of the row to be returned
-  ///  - `lookup` - Specifies how to find value in a frame with ordered rows when the key does
-  ///               not exactly match (look for nearest available value with the smaller/greater key).
-  ///
+  /// </summary>
+  /// <param name="rowKey">Specifies the key of the row to be returned</param>
+  /// <param name="lookup">Specifies how to find value in a frame with ordered rows when the key does not exactly match (look for nearest available value with the smaller/greater key).</param>
   /// <category>Accessors and slicing</category>
   member frame.GetRow<'T>(rowKey, lookup) : Series<_, 'T> =  frame.TryGetRow(rowKey, lookup).Value
 
+  /// <summary>
   /// Try to find a row with the specified row key, or using the specified `lookup` parameter,
   /// and return the found row together with its actual key in case `lookup` was used. In case the
   /// row is not found, `OptionalValue.Missing` is returned.
-  ///
-  /// ## Parameters
-  ///  - `rowKey` - Specifies the key of the row to be returned
-  ///  - `lookup` - Specifies how to find value in a frame with ordered rows when the key does
-  ///               not exactly match (look for nearest available value with the smaller/greater key).
-  ///
+  /// </summary>
+  /// <param name="rowKey">Specifies the key of the row to be returned</param>
+  /// <param name="lookup">Specifies how to find value in a frame with ordered rows when the key does not exactly match (look for nearest available value with the smaller/greater key).</param>
   /// <category>Accessors and slicing</category>
   member frame.TryGetRowObservation<'T>(rowKey, lookup) : OptionalValue<KeyValuePair<_, Series<_, 'T>>> =
     let rowAddress = rowIndex.Lookup(rowKey, lookup, fun _ -> true)
@@ -685,13 +641,12 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   member frame.GetAllValues<'R>(strict) =
     seq { for (KeyValue(_, v)) in frame.GetAllColumns<'R>() do yield! v |> Series.values }
 
+  /// <summary>
   /// Returns data of the data frame as a 2D array. The method attempts to convert
   /// all values to the specified type 'R. When a value is missing, the specified
   /// `defaultValue` is used.
-  ///
-  /// ## Parameters
-  ///  - `defaultValue` - Default value used to fill all missing values
-  ///
+  /// </summary>
+  /// <param name="defaultValue">Default value used to fill all missing values</param>
   /// <category>Fancy accessors</category>
   member frame.ToArray2D<'R>(defaultValue) =
     toArray2D<'R> frame.RowCount frame.ColumnCount frame.Data (lazy defaultValue)
@@ -710,13 +665,12 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     toArray2D frame.RowCount frame.ColumnCount frame.Data defaultValue
 
 
+  /// <summary>
   /// Returns data of the data frame as a jagged array. The method attempts to convert
   /// all values to the specified type 'R. When a value is missing, the specified
   /// `defaultValue` is used.
-  ///
-  /// ## Parameters
-  ///  - `defaultValue` - Default value used to fill all missing values
-  ///
+  /// </summary>
+  /// <param name="defaultValue">Default value used to fill all missing values</param>
   /// <category>Fancy accessors</category>
   member frame.ToJaggedArray<'R>(defaultValue) =
     toJaggedArray<'R> frame.RowCount frame.ColumnCount frame.Data (lazy defaultValue)
@@ -738,44 +692,40 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   // Series related operations - add, drop, get, ?, ?<-, etc.
   // ----------------------------------------------------------------------------------------------
 
+  /// <summary>
   /// Mutates the data frame by adding an additional data series
   /// as a new column with the specified column key. The sequence is
   /// aligned to the data frame based on ordering. If it is longer, it is
   /// trimmed and if it is shorter, missing values will be added.
-  ///
-  /// ## Parameters
-  ///  - `column` - A key (or name) for the newly added column
-  ///  - `series` - A sequence of values to be added
-  ///
+  /// </summary>
+  /// <param name="column">A key (or name) for the newly added column</param>
+  /// <param name="series">A sequence of values to be added</param>
   /// <category>Series operations</category>
   member frame.AddColumn(column:'TColumnKey, series:seq<_>) =
     frame.AddColumn(column, series, Lookup.Exact)
 
+  /// <summary>
   /// Mutates the data frame by adding an additional data series
   /// as a new column with the specified column key. The operation
   /// uses left join and aligns new series to the existing frame keys.
-  ///
-  /// ## Parameters
-  ///  - `series` - A data series to be added (the row key type has to match)
-  ///  - `column` - A key (or name) for the newly added column
-  ///
+  /// </summary>
+  /// <param name="series">A data series to be added (the row key type has to match)</param>
+  /// <param name="column">A key (or name) for the newly added column</param>
   /// <category>Series operations</category>
   member frame.AddColumn(column:'TColumnKey, series:ISeries<_>) =
     frame.AddColumn(column, series, Lookup.Exact)
 
+  /// <summary>
   /// Mutates the data frame by adding an additional data series
   /// as a new column with the specified column key. The sequence is
   /// aligned to the data frame based on ordering. If it is longer, it is
   /// trimmed and if it is shorter, missing values will be added.
   /// A parameter `lookup` can be used to specify how to find a value in the
   /// added series (if the sequence contains invalid values like `null` or `NaN`).
-  ///
-  /// ## Parameters
-  ///  - `column` - A key (or name) for the newly added column
-  ///  - `series` - A sequence of values to be added
-  ///  - `lookup` - Specify how to find value in the added series (look for
-  ///    nearest available value with the smaller/greater key).
-  ///
+  /// </summary>
+  /// <param name="column">A key (or name) for the newly added column</param>
+  /// <param name="series">A sequence of values to be added</param>
+  /// <param name="lookup">Specify how to find value in the added series (look for nearest available value with the smaller/greater key).</param>
   /// <category>Series operations</category>
   member frame.AddColumn(column:'TColumnKey, series:seq<'V>, lookup) =
     if isEmpty then
@@ -798,19 +748,17 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
       let series = Series(frame.RowIndex, vector, vectorBuilder, indexBuilder)
       frame.AddColumn(column, series, lookup)
 
+  /// <summary>
   /// Mutates the data frame by adding an additional data series
   /// as a new column with the specified column key. The operation
   /// uses left join and aligns new series to the existing frame keys.
   /// A parameter `lookup` can be used to specify how to find a value in the
   /// added series (if an exact key is not available). The `lookup` parameter
   /// can only be used with ordered indices.
-  ///
-  /// ## Parameters
-  ///  - `series` - A data series to be added (the row key type has to match)
-  ///  - `column` - A key (or name) for the newly added column
-  ///  - `lookup` - Specify how to find value in the added series (look for
-  ///    nearest available value with the smaller/greater key).
-  ///
+  /// </summary>
+  /// <param name="series">A data series to be added (the row key type has to match)</param>
+  /// <param name="column">A key (or name) for the newly added column</param>
+  /// <param name="lookup">Specify how to find value in the added series (look for nearest available value with the smaller/greater key).</param>
   /// <category>Series operations</category>
   member frame.AddColumn<'V>(column:'TColumnKey, series:ISeries<'TRowKey>, lookup) =
     if isEmpty then
@@ -827,73 +775,66 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
       data <- joined.Data
       frame.setColumnIndex joined.ColumnIndex
 
+  /// <summary>
   /// Mutates the data frame by removing the specified series from the
   /// frame columns. The operation throws if the column key is not found.
-  ///
-  /// ## Parameters
-  ///  - `column` - The key (or name) to be dropped from the frame
-  ///  - `frame` - Source data frame (which is not mutated by the operation)
-  ///
+  /// </summary>
+  /// <param name="column">The key (or name) to be dropped from the frame</param>
+  /// <param name="frame">Source data frame (which is not mutated by the operation)</param>
   /// <category>Series operations</category>
   member frame.DropColumn(column:'TColumnKey) =
     let newColumnIndex, colCmd = indexBuilder.DropItem( (columnIndex, Vectors.Return 0), column)
     data <- vectorBuilder.Build(newColumnIndex.AddressingScheme, colCmd, [| data |])
     frame.setColumnIndex newColumnIndex
 
+  /// <summary>
   /// Mutates the data frame by replacing the specified series with
   /// a new series. (If the series does not exist, only the new series is added.)
   /// When adding a series, the specified `lookup` parameter is used for matching
   /// keys. The parameter can only be used for frame with ordered indices.
-  ///
-  /// ## Parameters
-  ///  - `column` - A key (or name) for the column to be replaced or added
-  ///  - `series` - A data series to be used (the row key type has to match)
-  ///  - `lookup` - Specify how to find value in the added series (look for
-  ///    nearest available value with the smaller/greater key).
-  ///
+  /// </summary>
+  /// <param name="column">A key (or name) for the column to be replaced or added</param>
+  /// <param name="series">A data series to be used (the row key type has to match)</param>
+  /// <param name="lookup">Specify how to find value in the added series (look for nearest available value with the smaller/greater key).</param>
   /// <category>Series operations</category>
   member frame.ReplaceColumn(column:'TColumnKey, series:ISeries<_>, lookup) =
     if columnIndex.Lookup(column, Lookup.Exact, fun _ -> true).HasValue then
       frame.DropColumn(column)
     frame.AddColumn(column, series, lookup)
 
+  /// <summary>
   /// Mutates the data frame by replacing the specified series with
   /// a new data sequence. (If the series does not exist, only the new series is added.)
   /// When adding a series, the specified `lookup` parameter is used for filling
   /// missing values (e.g. `null` or `NaN`). The parameter can only be used for
   /// frame with ordered indices.
-  ///
-  /// ## Parameters
-  ///  - `column` - A key (or name) for the column to be replaced or added
-  ///  - `series` - A data series to be used (the row key type has to match)
-  ///  - `lookup` - Specify how to find value in the added series (look for
-  ///    nearest available value with the smaller/greater key).
-  ///
+  /// </summary>
+  /// <param name="column">A key (or name) for the column to be replaced or added</param>
+  /// <param name="series">A data series to be used (the row key type has to match)</param>
+  /// <param name="lookup">Specify how to find value in the added series (look for nearest available value with the smaller/greater key).</param>
   /// <category>Series operations</category>
   member frame.ReplaceColumn(column, data:seq<'V>, lookup) =
     let newSeries = Series(frame.RowIndex, Vector.ofValues data, vectorBuilder, indexBuilder)
     frame.ReplaceColumn(column, newSeries, lookup)
 
+  /// <summary>
   /// Mutates the data frame by replacing the specified series with
   /// a new series. (If the series does not exist, only the new
   /// series is added.)
-  ///
-  /// ## Parameters
-  ///  - `column` - A key (or name) for the column to be replaced or added
-  ///  - `series` - A data series to be used (the row key type has to match)
-  ///
+  /// </summary>
+  /// <param name="column">A key (or name) for the column to be replaced or added</param>
+  /// <param name="series">A data series to be used (the row key type has to match)</param>
   /// <category>Series operations</category>
   member frame.ReplaceColumn(column:'TColumnKey, series:ISeries<_>) =
     frame.ReplaceColumn(column, series, Lookup.Exact)
 
+  /// <summary>
   /// Mutates the data frame by replacing the specified series with
   /// a new data sequence . (If the series does not exist, only the new
   /// series is added.)
-  ///
-  /// ## Parameters
-  ///  - `column` - A key (or name) for the column to be replaced or added
-  ///  - `series` - A sequence of values to be added
-  ///
+  /// </summary>
+  /// <param name="column">A key (or name) for the column to be replaced or added</param>
+  /// <param name="series">A sequence of values to be added</param>
   /// <category>Series operations</category>
   member frame.ReplaceColumn(column, data:seq<'V>) =
     frame.ReplaceColumn(column, data, Lookup.Exact)
@@ -1324,13 +1265,13 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   member frame.Format() =
     frame.Format(Formatting.RowStartItemCount, Formatting.RowEndItemCount, Formatting.ColumnStartItemCount, Formatting.ColumnEndItemCount)
 
+  /// <summary>
   /// Shows the data frame content in a human-readable format. The resulting string
   /// shows all columns, but a limited number of rows.
-  ///
-  /// ## Parameters
-  ///  - `startCount` - The number of rows at the beginning to be printed
-  ///  - `endCount` - The number of rows at the end of the frame to be printed
-  ///  - `printTypes` - When true, the types of vectors storing column data are printed
+  /// </summary>
+  /// <param name="startCount">The number of rows at the beginning to be printed</param>
+  /// <param name="endCount">The number of rows at the end of the frame to be printed</param>
+  /// <param name="printTypes">When true, the types of vectors storing column data are printed</param>
   /// <category>Formatting and raw data access</category>
   member frame.Format(printTypes) =
     frame.Format(Formatting.RowStartItemCount, Formatting.RowEndItemCount, Formatting.ColumnStartItemCount, Formatting.ColumnEndItemCount, printTypes, false)
@@ -1338,25 +1279,23 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   member frame.Format(printTypes, showInfo) =
     frame.Format(Formatting.RowStartItemCount, Formatting.RowEndItemCount, Formatting.ColumnStartItemCount, Formatting.ColumnEndItemCount, printTypes, showInfo)
 
+  /// <summary>
   /// Shows the data frame content in a human-readable format. The resulting string
   /// shows all columns, but a limited number of rows.
-  ///
-  /// ## Parameters
-  ///  - `count` - The maximal total number of rows to be printed
-  ///
+  /// </summary>
+  /// <param name="count">The maximal total number of rows to be printed</param>
   /// <category>Formatting and raw data access</category>
   member frame.Format(rowCount, columnCount) =
     let rowHalf = rowCount / 2
     let colHalf = columnCount / 2
     frame.Format(rowHalf, rowHalf, colHalf, colHalf)
 
+  /// <summary>
   /// Shows the data frame content in a human-readable format. The resulting string
   /// shows all columns, but a limited number of rows.
-  ///
-  /// ## Parameters
-  ///  - `startCount` - The number of rows at the beginning to be printed
-  ///  - `endCount` - The number of rows at the end of the frame to be printed
-  ///
+  /// </summary>
+  /// <param name="startCount">The number of rows at the beginning to be printed</param>
+  /// <param name="endCount">The number of rows at the end of the frame to be printed</param>
   /// <category>Formatting and raw data access</category>
   member frame.Format(rowStartCount, rowEndCount, columnStartCount, columnEndCount) =
     frame.Format(rowStartCount, rowEndCount, columnStartCount, columnEndCount, false, false)
@@ -1459,14 +1398,13 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
               |> takeColSlices (columnStartCount + rowLevels + 1) columnEndCount
             |]
 
+  /// <summary>
   /// Shows the data frame content in a human-readable format. The resulting string
   /// shows all columns, but a limited number of rows.
-  ///
-  /// ## Parameters
-  ///  - `startCount` - The number of rows at the beginning to be printed
-  ///  - `endCount` - The number of rows at the end of the frame to be printed
-  ///  - `printTypes` - When true, the types of vectors storing column data are printed
-  ///
+  /// </summary>
+  /// <param name="startCount">The number of rows at the beginning to be printed</param>
+  /// <param name="endCount">The number of rows at the end of the frame to be printed</param>
+  /// <param name="printTypes">When true, the types of vectors storing column data are printed</param>
   /// <category>Formatting and raw data access</category>
   member frame.Format(rowStartCount, rowEndCount, columnStartCount, columnEndCount, printTypes, showInfo) =
     try
@@ -1732,14 +1670,13 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     else
         frame.GroupByLabels labels frame.RowCount
 
+  /// <summary>
   /// Returns a data frame whose rows are grouped by `groupBy` and whose columns specified
   /// in `aggBy` are aggregated according to `aggFunc`.
-  ///
-  /// ## Parameters
-  ///  - `groupBy` - sequence of columns to group by
-  ///  - `aggBy` - sequence of columns to apply aggFunc to
-  ///  - `aggFunc` - invoked in order to aggregate values
-  ///
+  /// </summary>
+  /// <param name="groupBy">sequence of columns to group by</param>
+  /// <param name="aggBy">sequence of columns to apply aggFunc to</param>
+  /// <param name="aggFunc">invoked in order to aggregate values</param>
   /// <category>Windowing, chunking and grouping</category>
   member frame.AggregateRowsBy(groupBy:seq<_>, aggBy:seq<_>, aggFunc:Func<_,_>) =
     let keySet = HashSet(groupBy)
@@ -1761,15 +1698,13 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     |> Series.indexOrdinally
     |> FrameUtils.fromRows frame.IndexBuilder frame.VectorBuilder
 
+  /// <summary>
   /// Returns a data frame whose rows are indexed based on the specified column of the original
   /// data frame. The generic type parameter is (typically) needed to specify the type of the
   /// values in the required index column.
-  ///
-  /// ## Parameters
-  ///  - `column` - The name of a column in the original data frame that will be used for the new
-  ///    index. Note that the values in the column need to be unique.
-  ///  - `keepColumn` - Specifies whether the column used as an index should be kept in the frame.
-  ///
+  /// </summary>
+  /// <param name="column">The name of a column in the original data frame that will be used for the new index. Note that the values in the column need to be unique.</param>
+  /// <param name="keepColumn">Specifies whether the column used as an index should be kept in the frame.</param>
   /// <category>Indexing</category>
   member frame.IndexRows<'TNewRowIndex when 'TNewRowIndex : equality>(column, keepColumn) : Frame<'TNewRowIndex, _> =
     let columnVec = frame.GetColumn<'TNewRowIndex>(column)
@@ -1787,17 +1722,15 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
         .Select(VectorHelpers.transformColumn frame.VectorBuilder newRowIndex.AddressingScheme rowCmd)
     Frame<'TNewRowIndex, 'TColumnKey>(newRowIndex, newColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
+  /// <summary>
   /// Returns a data frame whose rows are indexed based on the specified column of the original
   /// data frame. The generic type parameter is (typically) needed to specify the type of the
   /// values in the required index column.
   ///
   /// The resulting frame will *not* contain the specified column. If you want to preserve the
   /// column, use the overload that takes `keepColumn` parameter.
-  ///
-  /// ## Parameters
-  ///  - `column` - The name of a column in the original data frame that will be used for the new
-  ///    index. Note that the values in the column need to be unique.
-  ///
+  /// </summary>
+  /// <param name="column">The name of a column in the original data frame that will be used for the new index. Note that the values in the column need to be unique.</param>
   /// <category>Indexing</category>
   member frame.IndexRows<'TNewRowIndex when 'TNewRowIndex : equality>(column) : Frame<'TNewRowIndex, _> =
     frame.IndexRows<'TNewRowIndex>(column, false)

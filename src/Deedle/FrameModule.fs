@@ -72,47 +72,52 @@ namespace Deedle
 ///
 /// Sorting and index manipulation
 /// ------------------------------
-///
+/// <summary>
 /// A frame is indexed by row keys and column keys. Both of these indices can be sorted
 /// (by the keys). A frame that is sorted allows a number of additional operations (such
 /// as lookup using the `Lookp.ExactOrSmaller` lookup behavior). The functions in this
 /// category provide ways for manipulating the indices. It is expected that most operations
 /// are done on rows and so more functions are available in a row-wise way. A frame can
 /// alwyas be transposed using `Frame.transpose`.
-///
-/// ### Index operations
-///
+/// </summary>
+/// <remarks>
+/// <para>Index operations:</para>
+/// <para>
 /// The existing row/column keys can be replaced by a sequence of new keys using the
 /// `indexColsWith` and `indexRowsWith` functions. Row keys can also be replaced by
 /// ordinal numbers using `indexRowsOrdinally`.
-///
+/// </para>
+/// <para>
 /// The function `indexRows` uses the specified column of the original frame as the
 /// index. It removes the column from the resulting frame (to avoid this, use overloaded
 /// `IndexRows` method). This function infers the type of row keys from the context, so it
 /// is usually more convenient to use `indexRows[Date|String|Int|...]` functions. Finally,
 /// if you want to calculate the index value based on multiple columns of the row, you
 /// can use `indexRowsUsing`.
-///
-/// ### Sorting frame rows
-///
+/// </para>
+/// <para>Sorting frame rows:</para>
+/// <para>
 /// Frame rows can be sorted according to the value of a specified column using the
 /// `sortRows` function; `sortRowsBy` takes a projection function which lets you
 /// transform the value of a column (e.g. to project a part of the value).
-///
+/// </para>
+/// <para>
 /// The functions `sortRowsByKey` and `sortColsByKey` sort the rows or columns
 /// using the default ordering on the key values. The result is a frame with ordered
 /// index.
-///
-/// ### Expanding columns
-///
+/// </para>
+/// <para>Expanding columns:</para>
+/// <para>
 /// When the frame contains a series with complex .NET objects such as F# records or
 /// C# classes, it can be useful to "expand" the column. This operation looks at the
 /// type of the objects, gets all properties of the objects (recursively) and
 /// generates multiple series representing the properties as columns.
-///
+/// </para>
+/// <para>
 /// The function `expandCols` expands the specified columns while `expandAllCols`
 /// applies the expansion to all columns of the data frame.
-///
+/// </para>
+/// </remarks>
 /// Frame transformations
 /// ---------------------
 ///
@@ -395,43 +400,40 @@ module Frame =
     |> sliceCols columns
     |> sliceRows rows
 
+  /// <summary>
   /// Creates a new data frame that contains all data from
   /// the original data frame, together with an additional series.
   /// The operation uses left join and aligns new series to the
   /// existing frame keys.
-  ///
-  /// ## Parameters
-  ///  - `column` - A key (or name) for the newly added column
-  ///  - `series` - A data series to be added (the row key type has to match)
-  ///  - `frame` - Source data frame (which is not mutated by the operation)
-  ///
+  /// </summary>
+  /// <param name="column">A key (or name) for the newly added column</param>
+  /// <param name="series">A data series to be added (the row key type has to match)</param>
+  /// <param name="frame">Source data frame (which is not mutated by the operation)</param>
   /// <category>Accessing frame data and lookup</category>
   [<CompiledName("AddColumn")>]
   let addCol column (series:Series<_, 'V>) (frame:Frame<'R, 'C>) =
     let f = frame.Clone() in f.AddColumn(column, series); f
 
+  /// <summary>
   /// Creates a new data frame that contains all data from the original
   /// data frame without the specified series (column). The operation throws
   /// if the column key is not found.
-  ///
-  /// ## Parameters
-  ///  - `column` - The key (or name) to be dropped from the frame
-  ///  - `frame` - Source data frame (which is not mutated by the operation)
-  ///
+  /// </summary>
+  /// <param name="column">The key (or name) to be dropped from the frame</param>
+  /// <param name="frame">Source data frame (which is not mutated by the operation)</param>
   /// <category>Accessing frame data and lookup</category>
   [<CompiledName("DropColumn")>]
   let dropCol column (frame:Frame<'R, 'C>) =
     let f = frame.Clone() in f.DropColumn(column); f
 
+  /// <summary>
   /// Creates a new data frame where the specified column is replaced
   /// with a new series. (If the series does not exist, only the new
   /// series is added.)
-  ///
-  /// ## Parameters
-  ///  - `column` - A key (or name) for the column to be replaced or added
-  ///  - `series` - A data series to be used (the row key type has to match)
-  ///  - `frame` - Source data frame (which is not mutated by the operation)
-  ///
+  /// </summary>
+  /// <param name="column">A key (or name) for the column to be replaced or added</param>
+  /// <param name="series">A data series to be used (the row key type has to match)</param>
+  /// <param name="frame">Source data frame (which is not mutated by the operation)</param>
   /// <category>Accessing frame data and lookup</category>
   [<CompiledName("ReplaceColumn")>]
   let replaceCol column series (frame:Frame<'R, 'C>) =
@@ -512,14 +514,13 @@ module Frame =
   let groupRowsByIndex (keySelector:_ -> 'K) (frame:Frame<'R,'C>) =
     frame.GroupRowsByIndex (Func<_,_>(keySelector))
 
+  /// <summary>
   /// Returns a data frame whose rows are grouped by `groupBy` and whose columns specified
   /// in `aggBy` are aggregated according to `aggFunc`.
-  ///
-  /// ## Parameters
-  ///  - `groupBy` - sequence of columns to group by
-  ///  - `aggBy` - sequence of columns to apply aggFunc to
-  ///  - `aggFunc` - invoked in order to aggregate values
-  ///
+  /// </summary>
+  /// <param name="groupBy">sequence of columns to group by</param>
+  /// <param name="aggBy">sequence of columns to apply aggFunc to</param>
+  /// <param name="aggFunc">invoked in order to aggregate values</param>
   /// <category>Grouping, windowing and chunking</category>
   [<CompiledName("AggregateRowsBy")>]
   let aggregateRowsBy groupBy aggBy (aggFunc:Series<'R, 'V1> -> 'V2) (frame:Frame<'R,'C>) =
@@ -529,17 +530,16 @@ module Frame =
   // Pivot table
   // ----------------------------------------------------------------------------------------------
 
+  /// <summary>
   /// Creates a new data frame resulting from a 'pivot' operation. Consider a denormalized data
   /// frame representing a table: column labels are field names & table values are observations
   /// of those fields. pivotTable buckets the rows along two axes, according to the results of
   /// the functions `rowGrp` and `colGrp`; and then computes a value for the frame of rows that
   /// land in each bucket.
-  ///
-  /// ## Parameters
-  ///  - `rowGrp` - A function from rowkey & row to group value for the resulting row index
-  ///  - `colGrp` - A function from rowkey & row to group value for the resulting col index
-  ///  - `op` - A function computing a value from the corresponding bucket frame
-  ///
+  /// </summary>
+  /// <param name="rowGrp">A function from rowkey & row to group value for the resulting row index</param>
+  /// <param name="colGrp">A function from rowkey & row to group value for the resulting col index</param>
+  /// <param name="op">A function computing a value from the corresponding bucket frame</param>
   /// <category>Grouping, windowing and chunking</category>
   [<CompiledName("PivotTable")>]
   let pivotTable (rowGrp:'R -> ObjectSeries<'C> -> 'RNew) (colGrp:'R -> ObjectSeries<'C> -> 'CNew) (op:Frame<'R, 'C> -> 'T) (frame:Frame<'R, 'C>): Frame<'RNew, 'CNew> =
@@ -550,29 +550,27 @@ module Frame =
     |> Series.mapValues (Series.mapValues (fromRows >> op))                       // -> Series<'CNew, Series<'RNew, 'T>>
     |> FrameUtils.fromColumns frame.IndexBuilder frame.VectorBuilder              // -> Frame<'RNew, 'CNew, 'T>
 
+  /// <summary>
   /// Creates a sliding window using the specified size. The result is a series
   /// containing data frames that represent individual windows.
   /// This function skips incomplete chunks.
-  ///
-  /// ## Parameters
-  ///  - `size` - The size of the sliding window.
-  ///  - `frame` - The input frame to be aggregated.
-  ///
+  /// </summary>
+  /// <param name="size">The size of the sliding window.</param>
+  /// <param name="frame">The input frame to be aggregated.</param>
   /// <category>Grouping, windowing and chunking</category>
   [<CompiledName("Window")>]
   let window size (frame:Frame<'R, 'C>) =
     let fromRows rs = rs |> FrameUtils.fromRowsAndColumnKeys frame.IndexBuilder frame.VectorBuilder frame.ColumnIndex.Keys
     frame.Rows |> Series.windowInto size fromRows
 
+  /// <summary>
   /// Creates a sliding window using the specified size and then applies the provided
   /// value selector `f` on each window to produce the result which is returned as a new series.
   /// This function skips incomplete chunks.
-  ///
-  /// ## Parameters
-  ///  - `size` - The size of the sliding window.
-  ///  - `frame` - The input frame to be aggregated.
-  ///  - `f` - A function that is called on each created window.
-  ///
+  /// </summary>
+  /// <param name="size">The size of the sliding window.</param>
+  /// <param name="frame">The input frame to be aggregated.</param>
+  /// <param name="f">A function that is called on each created window.</param>
   /// <category>Grouping, windowing and chunking</category>
   [<CompiledName("WindowInto")>]
   let windowInto size f (frame:Frame<'R, 'C>) =
@@ -656,15 +654,13 @@ module Frame =
   // Sorting and index manipulation
   // ----------------------------------------------------------------------------------------------
 
+  /// <summary>
   /// Align the existing data to a specified collection of row keys. Values in the data frame
   /// that do not match any new key are dropped, new keys (that were not in the original data
   /// frame) are assigned missing values.
-  ///
-  /// ## Parameters
-  ///  - `frame` - Source data frame that is to be realigned.
-  ///  - `keys` - A sequence of new row keys. The keys must have the same type as the original
-  ///    frame keys (because the rows are realigned).
-  ///
+  /// </summary>
+  /// <param name="frame">Source data frame that is to be realigned.</param>
+  /// <param name="keys">A sequence of new row keys. The keys must have the same type as the original frame keys (because the rows are realigned).</param>
   /// <category>Sorting and index manipulation</category>
   [<CompiledName("RealignRows")>]
   let realignRows keys (frame:Frame<'R, 'C>) =
@@ -674,111 +670,97 @@ module Frame =
     let cmd v =  VectorHelpers.transformColumn frame.VectorBuilder newIdx.AddressingScheme relocs v
     Frame<_, _>(newIdx, frame.ColumnIndex, frame.Data.Select(cmd), frame.IndexBuilder, frame.VectorBuilder)
 
+  /// <summary>
   /// Returns a data frame whose rows are indexed based on the specified column of the original
   /// data frame. The generic type parameter is specifies the type of the values in the required
   /// index column (and usually needs to be specified using a type annotation). The specified
   /// column is removed from the resulting frame.
-  ///
-  /// ## Parameters
-  ///  - `frame` - Source data frame whose row index is to be replaced.
-  ///  - `column` - The name of a column in the original data frame that will be used for the new
-  ///    index. Note that the values in the column need to be unique.
-  ///
+  /// </summary>
+  /// <param name="frame">Source data frame whose row index is to be replaced.</param>
+  /// <param name="column">The name of a column in the original data frame that will be used for the new index. Note that the values in the column need to be unique.</param>
   /// <category>Sorting and index manipulation</category>
   [<CompiledName("IndexRows")>]
   let indexRows column (frame:Frame<'R1, 'C>) : Frame<'R2, _> = frame.IndexRows<'R2>(column)
 
+  /// <summary>
   /// Returns a data frame whose rows are indexed based on the specified column of the original
   /// data frame. This function casts (or converts) the column key to values of type `obj`
   /// (a generic variant that may require some type annotation is `Frame.indexRows`)
   /// The specified column is removed from the resulting frame.
-  ///
-  /// ## Parameters
-  ///  - `frame` - Source data frame whose row index is to be replaced.
-  ///  - `column` - The name of a column in the original data frame that will be used for the new
-  ///    index. Note that the values in the column need to be unique.
-  ///
+  /// </summary>
+  /// <param name="frame">Source data frame whose row index is to be replaced.</param>
+  /// <param name="column">The name of a column in the original data frame that will be used for the new index. Note that the values in the column need to be unique.</param>
   /// <category>Sorting and index manipulation</category>
   [<CompiledName("IndexRowsByObject")>]
   let indexRowsObj column (frame:Frame<'R1, 'C>) : Frame<obj, _> = indexRows column frame
 
+  /// <summary>
   /// Returns a data frame whose rows are indexed based on the specified column of the original
   /// data frame. This function casts (or converts) the column key to values of type `int`
   /// (a generic variant that may require some type annotation is `Frame.indexRows`)
   /// The specified column is removed from the resulting frame.
-  ///
-  /// ## Parameters
-  ///  - `frame` - Source data frame whose row index is to be replaced.
-  ///  - `column` - The name of a column in the original data frame that will be used for the new
-  ///    index. Note that the values in the column need to be unique.
-  ///
+  /// </summary>
+  /// <param name="frame">Source data frame whose row index is to be replaced.</param>
+  /// <param name="column">The name of a column in the original data frame that will be used for the new index. Note that the values in the column need to be unique.</param>
   /// <category>Sorting and index manipulation</category>
   [<CompiledName("IndexRowsByInt")>]
   let indexRowsInt column (frame:Frame<'R1, 'C>) : Frame<int, _> = indexRows column frame
 
+  /// <summary>
   /// Returns a data frame whose rows are indexed based on the specified column of the original
   /// data frame. This function casts (or converts) the column key to values of type `DateTime`
   /// (a generic variant that may require some type annotation is `Frame.indexRows`)
   /// The specified column is removed from the resulting frame.
-  ///
-  /// ## Parameters
-  ///  - `frame` - Source data frame whose row index is to be replaced.
-  ///  - `column` - The name of a column in the original data frame that will be used for the new
-  ///    index. Note that the values in the column need to be unique.
-  ///
+  /// </summary>
+  /// <param name="frame">Source data frame whose row index is to be replaced.</param>
+  /// <param name="column">The name of a column in the original data frame that will be used for the new index. Note that the values in the column need to be unique.</param>
   /// <category>Sorting and index manipulation</category>
   [<CompiledName("IndexRowsByDateTime")>]
   let indexRowsDate column (frame:Frame<'R1, 'C>) : Frame<DateTime, _> = indexRows column frame
 
+  /// <summary>
   /// Returns a data frame whose rows are indexed based on the specified column of the original
   /// data frame. This function casts (or converts) the column key to values of type `DateTimeOffset`
   /// (a generic variant that may require some type annotation is `Frame.indexRows`)
   /// The specified column is removed from the resulting frame.
-  ///
-  /// ## Parameters
-  ///  - `frame` - Source data frame whose row index is to be replaced.
-  ///  - `column` - The name of a column in the original data frame that will be used for the new
-  ///    index. Note that the values in the column need to be unique.
-  ///
+  /// </summary>
+  /// <param name="frame">Source data frame whose row index is to be replaced.</param>
+  /// <param name="column">The name of a column in the original data frame that will be used for the new index. Note that the values in the column need to be unique.</param>
   /// <category>Sorting and index manipulation</category>
   [<CompiledName("IndexRowsByDateTimeOffset")>]
   let indexRowsDateOffs column (frame:Frame<'R1, 'C>) : Frame<DateTimeOffset, _> = indexRows column frame
 
+  /// <summary>
   /// Returns a data frame whose rows are indexed based on the specified column of the original
   /// data frame. This function casts (or converts) the column key to values of type `string`
   /// (a generic variant that may require some type annotation is `Frame.indexRows`)
   /// The specified column is removed from the resulting frame.
-  ///
-  /// ## Parameters
-  ///  - `frame` - Source data frame whose row index is to be replaced.
-  ///  - `column` - The name of a column in the original data frame that will be used for the new
-  ///    index. Note that the values in the column need to be unique.
-  ///
+  /// </summary>
+  /// <param name="frame">Source data frame whose row index is to be replaced.</param>
+  /// <param name="column">The name of a column in the original data frame that will be used for the new index. Note that the values in the column need to be unique.</param>
   /// <category>Sorting and index manipulation</category>
   [<CompiledName("IndexRowsByString")>]
   let indexRowsString column (frame:Frame<'R1, 'C>) : Frame<string, _> = indexRows column frame
 
+  /// <summary>
   /// Replace the column index of the frame with the provided sequence of column keys.
   /// The columns of the frame are assigned keys according to the provided order.
   /// The specified column is removed from the resulting frame.
-  ///
-  /// ## Parameters
-  ///  - `frame` - Source data frame whose column index are to be replaced.
-  ///  - `keys` - A collection of new column keys.
-  ///
+  /// </summary>
+  /// <param name="frame">Source data frame whose column index are to be replaced.</param>
+  /// <param name="keys">A collection of new column keys.</param>
   /// <category>Sorting and index manipulation</category>
   [<CompiledName("IndexColumnsWith")>]
   let indexColsWith (keys:seq<'C2>) (frame:Frame<'R, 'C1>) =
     if Seq.length frame.ColumnKeys <> Seq.length keys then invalidArg "keys" "New keys do not match current column index length"
     Frame<_, _>(frame.RowIndex, Index.ofKeys (ReadOnlyCollection.ofSeq keys), frame.Data, frame.IndexBuilder, frame.VectorBuilder)
 
+  /// <summary>
   /// Replace the row index of the frame with the provided sequence of row keys.
   /// The rows of the frame are assigned keys according to the provided order.
-  ///
-  /// ## Parameters
-  ///  - `frame` - Source data frame whose row index are to be replaced.
-  ///  - `keys` - A collection of new row keys.
-  ///
+  /// </summary>
+  /// <param name="frame">Source data frame whose row index are to be replaced.</param>
+  /// <param name="keys">A collection of new row keys.</param>
   /// <category>Sorting and index manipulation</category>
   [<CompiledName("IndexRowsWith")>]
   let indexRowsWith (keys:seq<'R2>) (frame:Frame<'R1, 'C>) =
@@ -797,13 +779,12 @@ module Frame =
   let indexRowsOrdinally (frame:Frame<'TRowKey, 'TColumnKey>) =
     frame |> indexRowsWith [0 .. frame.RowCount-1]
 
+  /// <summary>
   /// Replace the row index of the frame with a sequence of row keys generated using
   /// a function invoked on each row.
-  ///
-  /// ## Parameters
-  ///  - `frame` - Source data frame whose row index are to be replaced.
-  ///  - `f` - A function from row (as object series) to new row key value
-  ///
+  /// </summary>
+  /// <param name="frame">Source data frame whose row index are to be replaced.</param>
+  /// <param name="f">A function from row (as object series) to new row key value</param>
   /// <category>Sorting and index manipulation</category>
   [<CompiledName("IndexRowsUsing")>]
   let indexRowsUsing (f: ObjectSeries<'C> -> 'R2) (frame:Frame<'R1,'C>) =
@@ -871,37 +852,37 @@ module Frame =
     let newData = frame.VectorBuilder.Build(newColIndex.AddressingScheme, colCmd, [| frame.Data |])
     Frame<_, _>(frame.RowIndex, newColIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
+  /// <summary>
   /// Creates a new data frame where all columns are expanded based on runtime
   /// structure of the objects they store. The expansion is performed recrusively
   /// to the specified depth. A column can be expanded if it is `Series<string, T>`
   /// or `IDictionary<K, V>` or if it is any .NET object with readable
   /// properties.
-  ///
-  /// ## Parameters
-  ///  - `nesting` - The nesting level for expansion. When set to 0, nothing is done.
-  ///  - `frame` - Input data frame whose columns will be expanded
-  ///
+  /// </summary>
+  /// <param name="nesting">The nesting level for expansion. When set to 0, nothing is done.</param>
+  /// <param name="frame">Input data frame whose columns will be expanded</param>
   /// <category>Sorting and index manipulation</category>
   [<CompiledName("ExpandAllColumns")>]
   let expandAllCols nesting (frame:Frame<'R, string>) =
     FrameUtils.expandVectors nesting false frame
 
+  /// <summary>
   /// Creates a new data frame where the specified columns are expanded based on runtime
   /// structure of the objects they store. A column can be expanded if it is
   /// `Series<string, T>` or `IDictionary<K, V>` or if it is any .NET object with readable
   /// properties.
-  ///
-  /// ## Example
+  /// </summary>
+  /// <param name="names">Names of columns in the original data frame to be expanded</param>
+  /// <param name="frame">Input data frame whose columns will be expanded</param>
+  /// <remarks>
+  /// <example>
   /// Given a data frame with a series that contains tuples, you can expand the
   /// tuple members and get a frame with columns `S.Item1` and `S.Item2`:
   ///
   ///     let df = frame [ "S" => series [ 1 => (1, "One"); 2 => (2, "Two") ] ]
   ///     df |> Frame.expandCols ["S"]
-  ///
-  /// ## Parameters
-  ///  - `names` - Names of columns in the original data frame to be expanded
-  ///  - `frame` - Input data frame whose columns will be expanded
-  ///
+  /// </example>
+  /// </remarks>
   /// <category>Sorting and index manipulation</category>
   [<CompiledName("ExpandColumns")>]
   let expandCols names (frame:Frame<'R, string>) =
@@ -972,45 +953,40 @@ module Frame =
       invalidArg "count" "Must be greater than zero and less than the number of keys."
     getRange (frame.RowIndex.AddressAt(0L)) (frame.RowIndex.AddressAt((frame.RowCount-1-count) |> int64))  frame
 
+  /// <summary>
   /// Returns a new data frame containing only the rows of the input frame
   /// for which the specified predicate returns `true`. The predicate is called
   /// with the row key and object series that represents the row data.
-  ///
-  /// ## Parameters
-  ///  - `frame` - Input data frame to be transformed
-  ///  - `f` - Function of two arguments that defines the predicate
-  ///
+  /// </summary>
+  /// <param name="frame">Input data frame to be transformed</param>
+  /// <param name="f">Function of two arguments that defines the predicate</param>
   /// <category>Frame transformations</category>
   [<CompiledName("WhereRows")>]
   let filterRows f (frame:Frame<'R, 'C>) =
     frame.Rows |> Series.filter f |> FrameUtils.fromRowsAndColumnKeys frame.IndexBuilder frame.VectorBuilder frame.ColumnIndex.Keys
 
+  /// <summary>
   /// Returns a new data frame containing only the rows of the input frame
   /// for which the specified predicate returns `true`. The predicate is called
   /// with an object series that represents the row data (use `filterRows`
   /// if you need to access the row key).
-  ///
-  /// ## Parameters
-  ///  - `frame` - Input data frame to be transformed
-  ///  - `f` - Function of one argument that defines the predicate
-  ///
+  /// </summary>
+  /// <param name="frame">Input data frame to be transformed</param>
+  /// <param name="f">Function of one argument that defines the predicate</param>
   /// <category>Frame transformations</category>
   [<CompiledName("WhereRowValues")>]
   let filterRowValues f (frame:Frame<'R, 'C>) =
     frame.Rows |> Series.filterValues f |> FrameUtils.fromRowsAndColumnKeys frame.IndexBuilder frame.VectorBuilder frame.ColumnIndex.Keys
 
 
+  /// <summary>
   /// Returns a new data frame containing only the rows of the input frame
   /// for which the specified `column` has the specified `value`. The operation
   /// may be implemented via an index for virtualized Deedle frames.
-  ///
-  /// ## Parameters
-  ///  - `frame` - Input data frame to be transformed
-  ///  - `column` - The name of the column to be matched
-  ///  - `value` - Required value of the column. Note that the function
-  ///    is generic and no conversions are performed, so the value has
-  ///    to match including the actual type.
-  ///
+  /// </summary>
+  /// <param name="frame">Input data frame to be transformed</param>
+  /// <param name="column">The name of the column to be matched</param>
+  /// <param name="value">Required value of the column. Note that the function is generic and no conversions are performed, so the value has to match including the actual type.</param>
   /// <category>Frame transformations</category>
   [<CompiledName("WhereRowsBy")>]
   let filterRowsBy column (value:'V) (frame:Frame<'R, 'C>) =
@@ -1021,40 +997,37 @@ module Frame =
     Frame<_, _>(newRowIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
 
+  /// <summary>
   /// Builds a new data frame whose rows are the results of applying the specified
   /// function on the rows of the input data frame. The function is called
   /// with the row key and object series that represents the row data.
-  ///
-  /// ## Parameters
-  ///  - `frame` - Input data frame to be transformed
-  ///  - `f` - Function of two arguments that defines the row mapping
-  ///
+  /// </summary>
+  /// <param name="frame">Input data frame to be transformed</param>
+  /// <param name="f">Function of two arguments that defines the row mapping</param>
   /// <category>Frame transformations</category>
   [<CompiledName("SelectRows")>]
   let inline mapRows (f:_ -> _ -> 'V) (frame:Frame<'R, 'C>) =
     frame.Rows |> Series.map f
 
+  /// <summary>
   /// Builds a new data frame whose rows are the results of applying the specified
   /// function on the rows of the input data frame. The function is called
   /// with an object series that represents the row data (use `mapRows`
   /// if you need to access the row key).
-  ///
-  /// ## Parameters
-  ///  - `frame` - Input data frame to be transformed
-  ///  - `f` - Function of one argument that defines the row mapping
-  ///
+  /// </summary>
+  /// <param name="frame">Input data frame to be transformed</param>
+  /// <param name="f">Function of one argument that defines the row mapping</param>
   /// <category>Frame transformations</category>
   [<CompiledName("SelectRowValues")>]
   let inline mapRowValues (f:_ -> 'V) (frame:Frame<'R, 'C>) =
     frame.Rows |> Series.mapValues f
 
+  /// <summary>
   /// Builds a new data frame whose row keys are the results of applying the
   /// specified function on the row keys of the original data frame.
-  ///
-  /// ## Parameters
-  ///  - `frame` - Input data frame to be transformed
-  ///  - `f` - Function of one argument that defines the row key mapping
-  ///
+  /// </summary>
+  /// <param name="frame">Input data frame to be transformed</param>
+  /// <param name="f">Function of one argument that defines the row key mapping</param>
   /// <category>Frame transformations</category>
   [<CompiledName("SelectRowKeys")>]
   let mapRowKeys (f:'R1 -> 'R2) (frame:Frame<_, 'C>) =
@@ -1062,67 +1035,62 @@ module Frame =
     let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder newRowIndex.AddressingScheme (Vectors.Return 0))
     Frame(newRowIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
+  /// <summary>
   /// Returns a new data frame containing only the columns of the input frame
   /// for which the specified predicate returns `true`. The predicate is called
   /// with the column key and object series that represents the column data.
-  ///
-  /// ## Parameters
-  ///  - `frame` - Input data frame to be transformed
-  ///  - `f` - Function of two arguments that defines the predicate
-  ///
+  /// </summary>
+  /// <param name="frame">Input data frame to be transformed</param>
+  /// <param name="f">Function of two arguments that defines the predicate</param>
   /// <category>Frame transformations</category>
   [<CompiledName("WhereColumns")>]
   let filterCols f (frame:Frame<'R, 'C>) =
     frame.Columns |> Series.filter f |> FrameUtils.fromColumns frame.IndexBuilder frame.VectorBuilder
 
+  /// <summary>
   /// Returns a new data frame containing only the columns of the input frame
   /// for which the specified predicate returns `true`. The predicate is called
   /// with an object series that represents the column data (use `filterCols`
   /// if you need to access the column key).
-  ///
-  /// ## Parameters
-  ///  - `frame` - Input data frame to be transformed
-  ///  - `f` - Function of one argument that defines the predicate
-  ///
+  /// </summary>
+  /// <param name="frame">Input data frame to be transformed</param>
+  /// <param name="f">Function of one argument that defines the predicate</param>
   /// <category>Frame transformations</category>
   [<CompiledName("WhereColumnValues")>]
   let filterColValues f (frame:Frame<'R, 'C>) =
     frame.Columns |> Series.filterValues f |> FrameUtils.fromColumns frame.IndexBuilder frame.VectorBuilder
 
+  /// <summary>
   /// Builds a new data frame whose columns are the results of applying the specified
   /// function on the columns of the input data frame. The function is called
   /// with the column key and object series that represents the column data.
-  ///
-  /// ## Parameters
-  ///  - `frame` - Input data frame to be transformed
-  ///  - `f` - Function of two arguments that defines the column mapping
-  ///
+  /// </summary>
+  /// <param name="frame">Input data frame to be transformed</param>
+  /// <param name="f">Function of two arguments that defines the column mapping</param>
   /// <category>Frame transformations</category>
   [<CompiledName("SelectColumns")>]
   let mapCols f (frame:Frame<'R, 'C>) =
     frame.Columns |> Series.map f |> FrameUtils.fromColumns frame.IndexBuilder frame.VectorBuilder
 
+  /// <summary>
   /// Builds a new data frame whose columns are the results of applying the specified
   /// function on the columns of the input data frame. The function is called
   /// with an object series that represents the column data (use `mapCols`
   /// if you need to access the column key).
-  ///
-  /// ## Parameters
-  ///  - `frame` - Input data frame to be transformed
-  ///  - `f` - Function of one argument that defines the column mapping
-  ///
+  /// </summary>
+  /// <param name="frame">Input data frame to be transformed</param>
+  /// <param name="f">Function of one argument that defines the column mapping</param>
   /// <category>Frame transformations</category>
   [<CompiledName("SelectColumnValues")>]
   let mapColValues f (frame:Frame<'R, 'C>) =
     frame.Columns |> Series.mapValues f |> FrameUtils.fromColumns frame.IndexBuilder frame.VectorBuilder
 
+  /// <summary>
   /// Builds a new data frame whose column keys are the results of applying the
   /// specified function on the column keys of the original data frame.
-  ///
-  /// ## Parameters
-  ///  - `frame` - Input data frame to be transformed
-  ///  - `f` - Function of one argument that defines the column key mapping
-  ///
+  /// </summary>
+  /// <param name="frame">Input data frame to be transformed</param>
+  /// <param name="f">Function of one argument that defines the column key mapping</param>
   /// <category>Frame transformations</category>
   [<CompiledName("SelectColumnKeys")>]
   let mapColKeys f (frame:Frame<'R, 'C>) =
@@ -1130,41 +1098,40 @@ module Frame =
     let newData = frame.VectorBuilder.Build(newColIndex.AddressingScheme, Vectors.Return 0, [| frame.Data |])
     Frame(frame.RowIndex, newColIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
+  /// <summary>
   /// Builds a new data frame whose values are the results of applying the specified
   /// function on these values, but only for those columns which can be converted
   /// to the appropriate type for input to the mapping function (use `map` if you need
   //// to access the row and column keys).
-  ///
-  /// ## Parameters
-  ///  - `frame` - Input data frame to be transformed
-  ///  - `f` - Function that defines the mapping
-  ///
+  /// </summary>
+  /// <param name="frame">Input data frame to be transformed</param>
+  /// <param name="f">Function that defines the mapping</param>
   /// <category>Frame transformations</category>
   [<CompiledName("MapValues")>]
   let mapValues f (frame:Frame<'R, 'C>) = frame.SelectValues(Func<_,_>(f))
 
+  /// <summary>
   /// Builds a new data frame whose values are the results of applying the specified
   /// function on these values, but only for those columns which can be converted
   /// to the appropriate type for input to the mapping function.
-  ///
-  /// ## Parameters
-  ///  - `frame` - Input data frame to be transformed
-  ///  - `f` - Function that defines the mapping
-  ///
+  /// </summary>
+  /// <param name="frame">Input data frame to be transformed</param>
+  /// <param name="f">Function that defines the mapping</param>
   /// <category>Frame transformations</category>
   let map f (frame:Frame<'R, 'C>) = frame.Select(Func<_,_,_,_>(f))
 
+  /// <summary>
   /// Returns a series that contains the results of aggregating each column
   /// to a single value. The function takes columns that can be converted to
   /// the type expected by the specified `op` function and reduces the values
   /// in each column using `Series.reduceValues`.
-  ///
-  /// ## Example
+  /// </summary>
+  /// <example>
   /// The following sums the values in each column that can be converted to
   /// `float` and returns the result as a new series:
   ///
   ///     df |> Frame.reduceValues (fun (a:float) b -> a + b)
-  ///
+  /// </example>
   /// <category>Frame transformations</category>
   [<CompiledName("ReduceValues")>]
   let reduceValues (op:'T -> 'T -> 'T) (frame:Frame<'R, 'C>) =
@@ -1190,21 +1157,20 @@ module Frame =
   let inline minRowBy column (frame:Frame<'R, 'C>) =
     frame.Rows |> Stats.minBy (fun row -> row.GetAs<float>(column))
 
+  /// <summary>
   /// Returns a frame with columns shifted by the specified offset. When the offset is
   /// positive, the values are shifted forward and first `offset` keys are dropped. When the
   /// offset is negative, the values are shifted backwards and the last `offset` keys are dropped.
   /// Expressed in pseudo-code:
   ///
   ///     result[k] = series[k - offset]
-  ///
-  /// ## Parameters
-  ///  - `offset` - Can be both positive and negative number.
-  ///  - `frame` - The input frame whose columns are to be shifted.
-  ///
-  /// ## Remarks
+  /// </summary>
+  /// <param name="offset">Can be both positive and negative number.</param>
+  /// <param name="frame">The input frame whose columns are to be shifted.</param>
+  /// <remarks>
   /// If you want to calculate the difference, e.g. `df - (Frame.shift 1 df)`, you can
   /// use `Frame.diff` which will be a little bit faster.
-  ///
+  /// </remarks>
   /// <category>Frame transformations</category>
   [<CompiledName("Shift")>]
   let shift offset (frame:Frame<'R, 'C>) =
@@ -1213,6 +1179,7 @@ module Frame =
     let newData = frame.Data.Select(VectorHelpers.transformColumn vectorBuilder newRowIndex.AddressingScheme cmd)
     Frame(newRowIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
+  /// <summary>
   /// Returns a frame with columns containing difference between an original value and
   /// a value at the specified offset. For example, calling `Frame.diff 1 s` returns a
   /// frame where previous column values is subtracted from the current ones. In pseudo-code, the
@@ -1221,12 +1188,9 @@ module Frame =
   ///     result[k] = series[k] - series[k - offset]
   ///
   /// Columns that cannot be converted to `float` are left without a change.
-  ///
-  /// ## Parameters
-  ///  - `offset` - When positive, subtracts the past values from the current values;
-  ///    when negative, subtracts the future values from the current values.
-  ///  - `frame` - The input frame containing at least some `float` columns.
-  ///
+  /// </summary>
+  /// <param name="offset">When positive, subtracts the past values from the current values; when negative, subtracts the future values from the current values.</param>
+  /// <param name="frame">The input frame containing at least some `float` columns.</param>
   /// <category>Frame transformations</category>
   [<CompiledName("Diff")>]
   let diff offset (frame:Frame<'R, 'C>) =
@@ -1287,34 +1251,29 @@ module Frame =
   // Missing values
   // ----------------------------------------------------------------------------------------------
 
+  /// <summary>
   /// Fill missing values of a given type in the frame with a constant value.
   /// The operation is only applied to columns (series) that contain values of the
   /// same type as the provided filling value. The operation does not attempt to
   /// convert between numeric values (so a series containing `float` will not be
   /// converted to a series of `int`).
-  ///
-  /// ## Parameters
-  ///  - `frame` - An input data frame that is to be filled
-  ///  - `value` - A constant value that is used to fill all missing values
-  ///
+  /// </summary>
+  /// <param name="frame">An input data frame that is to be filled</param>
+  /// <param name="value">A constant value that is used to fill all missing values</param>
   /// <category>Missing values</category>
   [<CompiledName("FillMissingWith")>]
   let fillMissingWith (value:'T) (frame:Frame<'R, 'C>) =
     frame.ColumnApply(ConversionKind.Safe, fun (s:Series<_, 'T>) -> Series.fillMissingWith value s :> ISeries<_>)
 
+  /// <summary>
   /// Fill missing values in the data frame with the nearest available value
   /// (using the specified direction). Note that the frame may still contain
   /// missing values after call to this function (e.g. if the first value is not available
   /// and we attempt to fill series with previous values). This operation can only be
   /// used on ordered frames.
-  ///
-  /// ## Parameters
-  ///  - `frame` - An input data frame that is to be filled
-  ///  - `direction` - Specifies the direction used when searching for
-  ///    the nearest available value. `Backward` means that we want to
-  ///    look for the first value with a smaller key while `Forward` searches
-  ///    for the nearest greater key.
-  ///
+  /// </summary>
+  /// <param name="frame">An input data frame that is to be filled</param>
+  /// <param name="direction">Specifies the direction used when searching for the nearest available value. `Backward` means that we want to look for the first value with a smaller key while `Forward` searches for the nearest greater key.</param>
   /// <category>Missing values</category>
   [<CompiledName("FillMissing")>]
   let fillMissing direction (frame:Frame<'R, 'C>) =
@@ -1322,6 +1281,7 @@ module Frame =
     let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder frame.RowIndex.AddressingScheme fillCmd)
     Frame<_, _>(frame.RowIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
+  /// <summary>
   /// Fill missing values in the frame using the specified function. The specified
   /// function is called with all series and keys for which the frame does not
   /// contain value and the result of the call is used in place of the missing value.
@@ -1330,13 +1290,9 @@ module Frame =
   /// same type as the return type of the provided filling function. The operation
   /// does not attempt to convert between numeric values (so a series containing
   /// `float` will not be converted to a series of `int`).
-  ///
-  /// ## Parameters
-  ///  - `frame` - An input data frame that is to be filled
-  ///  - `f` - A function that takes a series `Series<R, T>` together with a key `K`
-  ///    in the series and generates a value to be used in a place where the original
-  ///    series contains a missing value.
-  ///
+  /// </summary>
+  /// <param name="frame">An input data frame that is to be filled</param>
+  /// <param name="f">A function that takes a series `Series<R, T>` together with a key `K` in the series and generates a value to be used in a place where the original series contains a missing value.</param>
   /// <category>Missing values</category>
   [<CompiledName("FillMissingUsing")>]
   let fillMissingUsing (f:Series<'R, 'T> -> 'R -> 'T) (frame:Frame<'R, 'C>) =
@@ -1458,39 +1414,29 @@ module Frame =
   // Joining, merging and zipping
   // ----------------------------------------------------------------------------------------------
 
+  /// <summary>
   /// Join two data frames. The columns of the joined frames must not overlap and their
   /// rows are aligned and transformed according to the specified join kind.
   /// For more alignment options on ordered frames, see `joinAlign`.
-  ///
-  /// ## Parameters
-  ///  - `frame1` - First data frame (left) to be used in the joining
-  ///  - `frame2` - Other frame (right) to be joined with `frame1`
-  ///  - `kind` - Specifies the joining behavior on row indices. Use `JoinKind.Outer` and
-  ///    `JoinKind.Inner` to get the union and intersection of the row keys, respectively.
-  ///    Use `JoinKind.Left` and `JoinKind.Right` to use the current key of the left/right
-  ///    data frame.
-  ///
+  /// </summary>
+  /// <param name="frame1">First data frame (left) to be used in the joining</param>
+  /// <param name="frame2">Other frame (right) to be joined with `frame1`</param>
+  /// <param name="kind">Specifies the joining behavior on row indices. Use `JoinKind.Outer` and `JoinKind.Inner` to get the union and intersection of the row keys, respectively. Use `JoinKind.Left` and `JoinKind.Right` to use the current key of the left/right data frame.</param>
   /// <category>Joining, merging and zipping</category>
   [<CompiledName("Join")>]
   let join kind (frame1:Frame<'R, 'C>) frame2 = frame1.Join(frame2, kind)
 
+  /// <summary>
   /// Join two data frames. The columns of the joined frames must not overlap and their
   /// rows are aligned and transformed according to the specified join kind.
   /// When the index of both frames is ordered, it is possible to specify `lookup`
   /// in order to align indices from other frame to the indices of the main frame
   /// (typically, to find the nearest key with available value for a key).
-  ///
-  /// ## Parameters
-  ///  - `frame1` - First data frame (left) to be used in the joining
-  ///  - `frame2` - Other frame (right) to be joined with `frame1`
-  ///  - `kind` - Specifies the joining behavior on row indices. Use `JoinKind.Outer` and
-  ///    `JoinKind.Inner` to get the union and intersection of the row keys, respectively.
-  ///    Use `JoinKind.Left` and `JoinKind.Right` to use the current key of the left/right
-  ///    data frame.
-  ///  - `lookup` - When `kind` is `Left` or `Right` and the two frames have ordered row index,
-  ///    this parameter can be used to specify how to find value for a key when there is no
-  ///    exactly matching key or when there are missing values.
-  ///
+  /// </summary>
+  /// <param name="frame1">First data frame (left) to be used in the joining</param>
+  /// <param name="frame2">Other frame (right) to be joined with `frame1`</param>
+  /// <param name="kind">Specifies the joining behavior on row indices. Use `JoinKind.Outer` and `JoinKind.Inner` to get the union and intersection of the row keys, respectively. Use `JoinKind.Left` and `JoinKind.Right` to use the current key of the left/right data frame.</param>
+  /// <param name="lookup">When `kind` is `Left` or `Right` and the two frames have ordered row index, this parameter can be used to specify how to find value for a key when there is no exactly matching key or when there are missing values.</param>
   /// <category>Joining, merging and zipping</category>
   [<CompiledName("JoinAlign")>]
   let joinAlign kind lookup (frame1:Frame<'R, 'C>) frame2 = frame1.Join(frame2, kind, lookup)
@@ -1513,6 +1459,7 @@ module Frame =
       let head = frames |> Seq.head
       head.Merge(frames |> Seq.skip 1)
 
+  /// <summary>
   /// Append two data frames with non-overlapping values. The operation takes the union of columns
   /// and rows of the source data frames and then unions the values. An exception is thrown when
   /// both data frames define value for a column/row location, but the operation succeeds if one
@@ -1521,15 +1468,14 @@ module Frame =
   /// Note that the rows are *not* automatically reindexed to avoid overlaps. This means that when
   /// a frame has rows indexed with ordinal numbers, you may need to explicitly reindex the row
   /// keys before calling append.
-  ///
-  /// ## Parameters
-  ///  - `frame1` - First of the two frames to be merged (combined)
-  ///  - `frame2` - The other frame to be merged (combined) with the first instance
-  ///
+  /// </summary>
+  /// <param name="frame1">First of the two frames to be merged (combined)</param>
+  /// <param name="frame2">The other frame to be merged (combined) with the first instance</param>
   /// <category>Joining, merging and zipping</category>
   [<CompiledName("Merge")>]
   let merge (frame1:Frame<'R, 'C>) frame2 = mergeAll [frame1; frame2]
 
+  /// <summary>
   /// Aligns two data frames using both column index and row index and apply the specified operation
   /// on values of a specified type that are available in both data frames. The parameters `columnKind`,
   /// and `rowKind` can be specified to determine how the alginment works (similarly to `Join`).
@@ -1538,22 +1484,19 @@ module Frame =
   /// Once aligned, the call `df1.Zip<T>(df2, f)` applies the specifed function `f` on all `T` values
   /// that are available in corresponding locations in both frames. For values of other types, the
   /// value from `df1` is returned.
-  ///
-  /// ## Parameters
-  ///  - `frame1` - First frame to be aligned and zipped with the other instance
-  ///  - `frame2` - Other frame to be aligned and zipped with the first  instance
-  ///  - `columnKind` - Specifies how to align columns (inner, outer, left or right join)
-  ///  - `rowKind` - Specifies how to align rows (inner, outer, left or right join)
-  ///  - `lookup` - Specifies how to find matching value for a row (when using left or right join on rows)
-  ///  - `op` - A function that is applied to aligned values. The `Zip` operation is generic
-  ///    in the type of this function and the type of function is used to determine which
-  ///    values in the frames are zipped and which are left unchanged.
-  ///
+  /// </summary>
+  /// <param name="frame1">First frame to be aligned and zipped with the other instance</param>
+  /// <param name="frame2">Other frame to be aligned and zipped with the first  instance</param>
+  /// <param name="columnKind">Specifies how to align columns (inner, outer, left or right join)</param>
+  /// <param name="rowKind">Specifies how to align rows (inner, outer, left or right join)</param>
+  /// <param name="lookup">Specifies how to find matching value for a row (when using left or right join on rows)</param>
+  /// <param name="op">A function that is applied to aligned values. The `Zip` operation is generic in the type of this function and the type of function is used to determine which values in the frames are zipped and which are left unchanged.</param>
   /// <category>Joining, merging and zipping</category>
   [<CompiledName("ZipAlignInto")>]
   let zipAlign columnKind rowKind lookup (op:'V1->'V2->'V) (frame1:Frame<'R, 'C>) (frame2:Frame<'R, 'C>) : Frame<'R, 'C> =
     frame1.Zip<'V1, 'V2, 'V>(frame2, columnKind, rowKind, lookup, false, fun a b -> op a b)
 
+  /// <summary>
   /// Aligns two data frames using both column index and row index and apply the specified operation
   /// on values of a specified type that are available in both data frames. This overload uses
   /// `JoinKind.Outer` for both columns and rows.
@@ -1561,17 +1504,13 @@ module Frame =
   /// Once aligned, the call `df1.Zip<T>(df2, f)` applies the specifed function `f` on all `T` values
   /// that are available in corresponding locations in both frames. For values of other types, the
   /// value from `df1` is returned.
-  ///
-  /// ## Parameters
-  ///  - `frame1` - First frame to be aligned and zipped with the other instance
-  ///  - `frame2` - Other frame to be aligned and zipped with the first  instance
-  ///  - `columnKind` - Specifies how to align columns (inner, outer, left or right join)
-  ///  - `rowKind` - Specifies how to align rows (inner, outer, left or right join)
-  ///  - `lookup` - Specifies how to find matching value for a row (when using left or right join on rows)
-  ///  - `op` - A function that is applied to aligned values. The `Zip` operation is generic
-  ///    in the type of this function and the type of function is used to determine which
-  ///    values in the frames are zipped and which are left unchanged.
-  ///
+  /// </summary>
+  /// <param name="frame1">First frame to be aligned and zipped with the other instance</param>
+  /// <param name="frame2">Other frame to be aligned and zipped with the first  instance</param>
+  /// <param name="columnKind">Specifies how to align columns (inner, outer, left or right join)</param>
+  /// <param name="rowKind">Specifies how to align rows (inner, outer, left or right join)</param>
+  /// <param name="lookup">Specifies how to find matching value for a row (when using left or right join on rows)</param>
+  /// <param name="op">A function that is applied to aligned values. The `Zip` operation is generic in the type of this function and the type of function is used to determine which values in the frames are zipped and which are left unchanged.</param>
   /// <category>Joining, merging and zipping</category>
   [<CompiledName("ZipInto")>]
   let zip (op:'V1->'V2->'V) (frame1:Frame<'R, 'C>) (frame2:Frame<'R, 'C>) : Frame<'R, 'C> =
@@ -1590,20 +1529,21 @@ module Frame =
   // ----------------------------------------------------------------------------------------------
 
   /// Reduce the values in each series according to the specified level of a hierarchical row key.
+  /// <summary>
   /// For each group of rows as specified by `levelSel`, the function reduces the values in each series
   /// using the preovided function `op` by applying `Series.reduceLevel`. Columns that cannot be
   /// converted to a type required by `op` are skipped.
-  ///
-  /// ## Example
+  /// </summary>
+  /// <example>
   /// To sum the values in all numerical columns according to the first component of a two level
   /// row key `'K1 * 'K2`, you can use the following:
   ///
   ///     df |> Frame.reduceLevel fst (fun (a:float) b -> a + b)
-  //
-  /// ## Remarks
+  /// </example>
+  /// <remarks>
   /// This function reduces values using a function `'T -> 'T -> 'T`. If you want to process
   /// an entire group of values at once, you can use `applyLevel` instead.
-  ///
+  /// </remarks>
   /// <category>Hierarchical index operations</category>
   [<CompiledName("ReduceLevel")>]
   let reduceLevel (levelSel:_ -> 'K) (op:'T -> 'T -> 'T) (frame:Frame<'R, 'C>) =
@@ -1611,22 +1551,23 @@ module Frame =
     |> Series.map (fun _ -> Series.reduceLevel levelSel op)
     |> FrameUtils.fromColumns frame.IndexBuilder frame.VectorBuilder
 
+  /// <summary>
   /// Apply a specified function to a group of values in each series according to the specified
   /// level of a hierarchical row key. For each group of rows as specified by `levelSel`, the function
   /// applies the specified function `op` to all columns. Columns that cannot be converted to a
   /// type required by `op` are skipped.
-  ///
-  /// ## Example
+  /// </summary>
+  /// <example>
   /// To get the standard deviation of values in all numerical columns according to the first
   /// component of a two level row key `'K1 * 'K2`, you can use the following:
   ///
   ///     df |> Frame.applyLevel fst Stats.stdDev
-  //
-  /// ## Remarks
+  /// </example>
+  /// <remarks>
   /// This function reduces a series of values using a function `Series<'R, 'T> -> 'T`. If
   /// you want to reduce values using a simpler function `'T -> 'T -> 'T`, you can use
   /// `Frame.reduceLevel` instead.
-  ///
+  /// </remarks>/
   /// <category>Hierarchical index operations</category>
   [<CompiledName("ApplyLevel")>]
   let applyLevel (levelSel:_ -> 'K) (op:_ -> 'T) (frame:Frame<'R, 'C>) =

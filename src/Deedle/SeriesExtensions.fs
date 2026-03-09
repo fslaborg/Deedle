@@ -52,15 +52,16 @@ module ``F# Series extensions`` =
       Series(Seq.map fst observations, Seq.map snd observations)
         .SelectOptional(fun kvp -> OptionalValue.bind OptionalValue.ofOption kvp.Value)
 
+  /// <summary>
   /// Create a series from a sequence of key-value pairs that represent
   /// the observations of the series. This function can be used together
   /// with the `=>` operator to create key-value pairs.
-  ///
-  /// ## Example
+  /// </summary>
+  /// <example>
   ///
   ///     // Creates a series with squares of numbers
   ///     let sqs = series [ 1 => 1.0; 2 => 4.0; 3 => 9.0 ]
-  ///
+  /// </example>
   let series observations = Series.ofObservations observations
 
 
@@ -95,10 +96,12 @@ type EnumerableExtensions =
 // Series builder
 // --------------------------------------------------------------------------------------
 
+/// <summary>
 /// The type can be used for creating series using mutation. You can add
 /// items using `Add` and get the resulting series using the `Series` property.
-///
-/// ## Using from C#
+/// </summary>
+/// <remarks>
+/// Using from C#:
 ///
 /// The type supports the C# collection builder pattern:
 ///
@@ -110,7 +113,7 @@ type EnumerableExtensions =
 ///     dynamic sb = new SeriesBuilder<string, obj>();
 ///     sb.ID = 1;
 ///     sb.Value = 3.4;
-///
+/// </remarks>
 /// <category>Specialized frame and series types</category>
 type SeriesBuilder<'K, 'V when 'K : equality and 'V : equality>() =
   let mutable keys = []
@@ -223,20 +226,20 @@ type SeriesExtensions =
   [<Extension>]
   static member Log(series:Series<'K, float>) = log series
 
+  /// <summary>
   /// Returns a series with values shifted by the specified offset. When the offset is
   /// positive, the values are shifted forward and first `offset` keys are dropped. When the
   /// offset is negative, the values are shifted backwards and the last `offset` keys are dropped.
   /// Expressed in pseudo-code:
   ///
   ///     result[k] = series[k - offset]
-  ///
-  /// ## Parameters
-  ///  - `offset` - Can be both positive and negative number.
-  ///  - `series` - The input series to be shifted.
-  ///
-  /// ## Remarks
+  /// </summary>
+  /// <param name="offset">Can be both positive and negative number.</param>
+  /// <param name="series">The input series to be shifted.</param>
+  /// <remarks>
   /// If you want to calculate the difference, e.g. `s - (Series.shift 1 s)`, you can
   /// use `Series.diff` which will be a little bit faster.
+  /// </remarks>
   [<Extension>]
   static member Shift(series:Series<'K, 'V>, offset) = Series.shift offset series
 
@@ -286,51 +289,43 @@ type SeriesExtensions =
   // static member Where(series:Series<'K, 'T>, f:System.Func<KeyValuePair<'K, 'V>, bool>) =
 
 
+  /// <summary>
   /// Returns a series containing difference between a value in the original series and
   /// a value at the specified offset. For example, calling `Series.diff 1 s` returns a
   /// series where previous value is subtracted from the current one.
-  ///
-  /// ## Parameters
-  ///  - `offset` - When positive, subtracts the past values from the current values;
-  ///    when negative, subtracts the future values from the current values.
-  ///  - `series` - The input series.
-  ///
+  /// </summary>
+  /// <param name="offset">When positive, subtracts the past values from the current values; when negative, subtracts the future values from the current values.</param>
+  /// <param name="series">The input series.</param>
   [<Extension>]
   static member Diff(series:Series<'K, float>, offset) = series |> Series.diff offset
 
+  /// <summary>
   /// Returns a series containing difference between a value in the original series and
   /// a value at the specified offset. For example, calling `Series.diff 1 s` returns a
   /// series where previous value is subtracted from the current one.
-  ///
-  /// ## Parameters
-  ///  - `offset` - When positive, subtracts the past values from the current values;
-  ///    when negative, subtracts the future values from the current values.
-  ///  - `series` - The input series.
-  ///
+  /// </summary>
+  /// <param name="offset">When positive, subtracts the past values from the current values; when negative, subtracts the future values from the current values.</param>
+  /// <param name="series">The input series.</param>
   [<Extension>]
   static member Diff(series:Series<'K, float32>, offset) = series |> Series.diff offset
 
+  /// <summary>
   /// Returns a series containing difference between a value in the original series and
   /// a value at the specified offset. For example, calling `Series.diff 1 s` returns a
   /// series where previous value is subtracted from the current one.
-  ///
-  /// ## Parameters
-  ///  - `offset` - When positive, subtracts the past values from the current values;
-  ///    when negative, subtracts the future values from the current values.
-  ///  - `series` - The input series.
-  ///
+  /// </summary>
+  /// <param name="offset">When positive, subtracts the past values from the current values; when negative, subtracts the future values from the current values.</param>
+  /// <param name="series">The input series.</param>
   [<Extension>]
   static member Diff(series:Series<'K, decimal>, offset) = series |> Series.diff offset
 
+  /// <summary>
   /// Returns a series containing difference between a value in the original series and
   /// a value at the specified offset. For example, calling `Series.diff 1 s` returns a
   /// series where previous value is subtracted from the current one.
-  ///
-  /// ## Parameters
-  ///  - `offset` - When positive, subtracts the past values from the current values;
-  ///    when negative, subtracts the future values from the current values.
-  ///  - `series` - The input series.
-  ///
+  /// </summary>
+  /// <param name="offset">When positive, subtracts the past values from the current values; when negative, subtracts the future values from the current values.</param>
+  /// <param name="series">The input series.</param>
   [<Extension>]
   static member Diff(series:Series<'K, int>, offset) = series |> Series.diff offset
 
@@ -386,41 +381,39 @@ type SeriesExtensions =
   // Missing values
   // ----------------------------------------------------------------------------------------------
 
+  /// <summary>
   /// Drop missing values from the specified series. The returned series contains
   /// only those keys for which there is a value available in the original one.
-  ///
-  /// ## Parameters
-  ///  - `series` - An input series to be filtered
-  ///
-  /// ## Example
-  ///
+  /// </summary>
+  /// <param name="series">An input series to be filtered</param>
+  /// <example>
   ///     let s = series [ 1 => 1.0; 2 => Double.NaN ]
   ///     s.DropMissing()
   ///     [fsi:val it : Series<int,float> = series [ 1 => 1]
-  ///
+  /// </example>
   /// <category>Missing values</category>
   [<Extension>]
   static member DropMissing(series:Series<'K, 'V>) =
     Series.dropMissing series
 
+  /// <summary>
   /// Fill missing values in the series with a constant value.
-  ///
-  /// ## Parameters
-  ///  - `series` - An input series that is to be filled
-  ///  - `value` - A constant value that is used to fill all missing values
-  ///
+  /// </summary>
+  /// <param name="series">An input series that is to be filled</param>
+  /// <param name="value">A constant value that is used to fill all missing values</param>
   /// <category>Missing values</category>
   [<Extension>]
   static member FillMissing(series:Series<'K, 'T>, value:'T) =
     Series.fillMissingWith value series
 
+  /// <summary>
   /// Fill missing values in the series with the nearest available value
   /// (using the specified direction). The default direction is `Direction.Backward`.
   /// Note that the series may still contain missing values after call to this
   /// function. This operation can only be used on ordered series.
-  ///
-  /// ## Example
-  ///
+  /// </summary>
+  /// <param name="direction">Specifies the direction used when searching for the nearest available value. `Backward` means that we want to look for the first value with a smaller key while `Forward` searches for the nearest greater key.</param>
+  /// <example>
   ///     let sample = Series.ofValues [ Double.NaN; 1.0; Double.NaN; 3.0 ]
   ///
   ///     // Returns a series consisting of [1; 1; 3; 3]
@@ -428,13 +421,7 @@ type SeriesExtensions =
   ///
   ///     // Returns a series consisting of [<missing>; 1; 1; 3]
   ///     sample.FillMissing(Direction.Forward)
-  ///
-  /// ## Parameters
-  ///  - `direction` - Specifies the direction used when searching for
-  ///    the nearest available value. `Backward` means that we want to
-  ///    look for the first value with a smaller key while `Forward` searches
-  ///    for the nearest greater key.
-  ///
+  /// </example>
   /// <category>Missing values</category>
   [<Extension>]
   static member FillMissing(series:Series<'K, 'T>, [<Optional>] direction) =
@@ -444,20 +431,18 @@ type SeriesExtensions =
   static member FillMissing(series:Series<'K, 'T>, startKey, endKey, [<Optional>] direction) =
     Series.fillMissingBetween (startKey, endKey) direction series
 
+  /// <summary>
   /// Fill missing values in the series using the specified function.
   /// The specified function is called with all keys for which the series
   /// does not contain value and the result of the call is used in place
   /// of the missing value.
-  ///
-  /// ## Parameters
-  ///  - `series` - An input series that is to be filled
-  ///  - `filler` - A function that takes key `K` and generates a value to be
-  ///    used in a place where the original series contains a missing value.
-  ///
-  /// ## Remarks
+  /// </summary>
+  /// <param name="series">An input series that is to be filled</param>
+  /// <param name="filler">A function that takes key `K` and generates a value to be used in a place where the original series contains a missing value.</param>
+  /// <remarks>
   /// This function can be used to implement more complex interpolation.
   /// For example see [handling missing values in the tutorial](../frame.html#missing)
-  ///
+  /// </remarks>
   /// <category>Missing values</category>
   [<Extension>]
   static member FillMissing(series:Series<'K, 'T>, filler:Func<_, _>) =
@@ -467,11 +452,10 @@ type SeriesExtensions =
   // Sorting
   // ----------------------------------------------------------------------------------------------
 
+  /// <summary>
   /// Returns a new series whose entries are reordered according to index order
-  ///
-  /// ## Parameters
-  ///  - `series` - An input series to be used
-  ///
+  /// </summary>
+  /// <param name="series">An input series to be used</param>
   /// <category>Data structure manipulation</category>
   [<Extension>]
   static member SortByKey(series:Series<'K, 'T>) =
@@ -481,48 +465,44 @@ type SeriesExtensions =
   // Lookup, resampling and scaling
   // ----------------------------------------------------------------------------------------------
 
+  /// <summary>
   /// Resample the series based on equivalence class on the keys. A specified function
   /// `keyProj` is used to project keys to another space and the observations for which the
   /// projected keys are equivalent are grouped into chunks. The chunks are then returned
   /// as nested series.
-  ///
-  /// ## Parameters
-  ///  - `series` - An input series to be resampled
-  ///  - `keyProj` - A function that transforms keys from original space to a new
-  ///    space (which is then used for grouping based on equivalence)
-  ///
-  /// ## Remarks
+  /// </summary>
+  /// <param name="series">An input series to be resampled</param>
+  /// <param name="keyProj">A function that transforms keys from original space to a new space (which is then used for grouping based on equivalence)</param>
+  /// <remarks>
   /// This operation is only supported on ordered series. The method throws
   /// `InvalidOperationException` when the series is not ordered. For unordered
   /// series, similar functionality can be implemented using `GroupBy`.
-  ///
+  /// </remarks>
   /// <category>Lookup, resampling and scaling</category>
   [<Extension>]
   static member ResampleEquivalence(series:Series<'K, 'V>, keyProj:Func<_, _>) =
     Series.resampleEquiv keyProj.Invoke series
 
+  /// <summary>
   /// Resample the series based on equivalence class on the keys. A specified function
   /// `keyProj` is used to project keys to another space and the observations for which the
   /// projected keys are equivalent are grouped into chunks. The chunks are then transformed
   /// to values using the provided function `f`.
-  ///
-  /// ## Parameters
-  ///  - `series` - An input series to be resampled
-  ///  - `keyProj` - A function that transforms keys from original space to a new
-  ///    space (which is then used for grouping based on equivalence)
-  ///  - `aggregate` - A function that is used to collapse a generated chunk into a
-  ///    single value.
-  ///
-  /// ## Remarks
+  /// </summary>
+  /// <param name="series">An input series to be resampled</param>
+  /// <param name="keyProj">A function that transforms keys from original space to a new space (which is then used for grouping based on equivalence)</param>
+  /// <param name="aggregate">A function that is used to collapse a generated chunk into a single value.</param>
+  /// <remarks>
   /// This operation is only supported on ordered series. The method throws
   /// `InvalidOperationException` when the series is not ordered. For unordered
   /// series, similar functionality can be implemented using `GroupBy`.
-  ///
+  /// </remarks>
   /// <category>Lookup, resampling and scaling</category>
   [<Extension>]
   static member ResampleEquivalence(series:Series<'K, 'V>, keyProj:Func<_, _>, aggregate:Func<_, _>) =
     Series.resampleEquivInto keyProj.Invoke aggregate.Invoke series
 
+  /// <summary>
   /// Resample the series based on equivalence class on the keys and also generate values
   /// for all keys of the target space that are between the minimal and maximal key of the
   /// specified series (e.g. generate value for all days in the range covered by the series).
@@ -532,22 +512,20 @@ type SeriesExtensions =
   ///
   /// When there are no values for a (generated) key, then the function attempts to get the
   /// greatest value from the previous smaller chunk (i.e. value for the previous date time).
-  ///
-  /// ## Parameters
-  ///  - `series` - An input series to be resampled
-  ///  - `keyProj` - A function that transforms keys from original space to a new
-  ///    space (which is then used for grouping based on equivalence)
-  ///  - `nextKey` - A function that gets the next key in the transformed space
-  ///
-  /// ## Remarks
+  /// </summary>
+  /// <param name="series">An input series to be resampled</param>
+  /// <param name="keyProj">A function that transforms keys from original space to a new space (which is then used for grouping based on equivalence)</param>
+  /// <param name="nextKey">A function that gets the next key in the transformed space</param>
+  /// <remarks>
   /// This operation is only supported on ordered series. The method throws
   /// `InvalidOperationException` when the series is not ordered.
-  ///
+  /// </remarks>
   /// <category>Lookup, resampling and scaling</category>
   [<Extension>]
   static member ResampleUniform(series:Series<'K, 'V>, keyProj:Func<_, _>, nextKey:Func<_, _>) =
     Series.resampleUniformInto Lookup.ExactOrSmaller keyProj.Invoke nextKey.Invoke Series.tryLastValue series |> Series.flatten
 
+  /// <summary>
   /// Resample the series based on equivalence class on the keys and also generate values
   /// for all keys of the target space that are between the minimal and maximal key of the
   /// specified series (e.g. generate value for all days in the range covered by the series).
@@ -556,203 +534,172 @@ type SeriesExtensions =
   ///
   /// When there are no values for a (generated) key, then the function attempts to get the
   /// greatest value from the previous smaller chunk (i.e. value for the previous date time).
-  ///
-  /// ## Parameters
-  ///  - `series` - An input series to be resampled
-  ///  - `fillMode` - When set to `Lookup.NearestSmaller` or `Lookup.NearestGreater`,
-  ///     the function searches for a nearest available observation in an neighboring chunk.
-  ///     Otherwise, the function `f` is called with an empty series as an argument.
-  ///  - `keyProj` - A function that transforms keys from original space to a new
-  ///    space (which is then used for grouping based on equivalence)
-  ///  - `nextKey` - A function that gets the next key in the transformed space
-  ///
-  /// ## Remarks
+  /// </summary>
+  /// <param name="series">An input series to be resampled</param>
+  /// <param name="fillMode">When set to `Lookup.NearestSmaller` or `Lookup.NearestGreater`, the function searches for a nearest available observation in an neighboring chunk. Otherwise, the function `f` is called with an empty series as an argument.</param>
+  /// <param name="keyProj">A function that transforms keys from original space to a new space (which is then used for grouping based on equivalence)</param>
+  /// <param name="nextKey">A function that gets the next key in the transformed space</param>
+  /// <remarks>
   /// This operation is only supported on ordered series. The method throws
   /// `InvalidOperationException` when the series is not ordered.
-  ///
+  /// </remarks>
   /// <category>Lookup, resampling and scaling</category>
   [<Extension>]
   static member ResampleUniform(series:Series<'K1, 'V>, keyProj:Func<'K1, 'K2>, nextKey:Func<'K2, 'K2>, fillMode:Lookup) =
     Series.resampleUniformInto fillMode keyProj.Invoke nextKey.Invoke Series.tryLastValue series |> Series.flatten
 
+  /// <summary>
   /// Sample an (ordered) series by finding the value at the exact or closest prior key
   /// for some new sequence of keys.
-  ///
-  /// ## Parameters
-  ///  - `series` - An input series to be sampled
-  ///  - `keys`   - The keys at which to sample
-  ///
-  /// ## Remarks
+  /// </summary>
+  /// <param name="series">An input series to be sampled</param>
+  /// <param name="keys">The keys at which to sample</param>
+  /// <remarks>
   /// This operation is only supported on ordered series. The method throws
   /// `InvalidOperationException` when the series is not ordered.
-  ///
+  /// </remarks>
   /// <category>Lookup, resampling and scaling</category>
   [<Extension>]
   static member Sample<'K, 'V when 'K : equality>(series:Series<'K, 'V>, keys) =
     series |> Series.sample keys
 
+  /// <summary>
   /// Finds values at, or near, the specified times in a given series. The operation generates
   /// keys starting at the specified `start` time, using the specified `interval`
   /// and then finds nearest smaller values close to such keys according to `dir`.
-  ///
-  /// ## Parameters
-  ///  - `series` - An input series to be resampled
-  ///  - `start` - The initial time to be used for sampling
-  ///  - `interval` - The interval between the individual samples
-  ///  - `lookup` - Specifies how the lookup based on keys is performed. `Exact` means that the
-  ///    values at exact keys will be returned; `NearestGreater` returns the nearest greater key value
-  ///    (starting at the first key) and `NearestSmaller` returns the nearest smaller key value
-  ///    (starting at most `interval` after the end of the series)
-  ///
-  /// ## Remarks
+  /// </summary>
+  /// <param name="series">An input series to be resampled</param>
+  /// <param name="start">The initial time to be used for sampling</param>
+  /// <param name="interval">The interval between the individual samples</param>
+  /// <param name="lookup">Specifies how the lookup based on keys is performed. `Exact` means that the values at exact keys will be returned; `NearestGreater` returns the nearest greater key value (starting at the first key) and `NearestSmaller` returns the nearest smaller key value (starting at most `interval` after the end of the series)</param>
+  /// <remarks>
   /// This operation is only supported on ordered series. The method throws
   /// `InvalidOperationException` when the series is not ordered.
-  ///
+  /// </remarks>
   /// <category>Lookup, resampling and scaling</category>
   [<Extension>]
   static member Sample<'V>(series:Series<DateTime, 'V>, start:DateTime, interval:TimeSpan, dir) =
     series |> Series.Implementation.lookupTimeInternal (+) (Some start) interval dir Lookup.ExactOrSmaller
 
+  /// <summary>
   /// Finds values at, or near, the specified times in a given series. The operation generates
   /// keys starting at the specified `start` time, using the specified `interval`
   /// and then finds nearest smaller values close to such keys according to `dir`.
-  ///
-  /// ## Parameters
-  ///  - `series` - An input series to be resampled
-  ///  - `start` - The initial time to be used for sampling
-  ///  - `interval` - The interval between the individual samples
-  ///  - `lookup` - Specifies how the lookup based on keys is performed. `Exact` means that the
-  ///    values at exact keys will be returned; `NearestGreater` returns the nearest greater key value
-  ///    (starting at the first key) and `NearestSmaller` returns the nearest smaller key value
-  ///    (starting at most `interval` after the end of the series)
-  ///
-  /// ## Remarks
+  /// </summary>
+  /// <param name="series">An input series to be resampled</param>
+  /// <param name="start">The initial time to be used for sampling</param>
+  /// <param name="interval">The interval between the individual samples</param>
+  /// <param name="lookup">Specifies how the lookup based on keys is performed. `Exact` means that the values at exact keys will be returned; `NearestGreater` returns the nearest greater key value (starting at the first key) and `NearestSmaller` returns the nearest smaller key value (starting at most `interval` after the end of the series)</param>
+  /// <remarks>
   /// This operation is only supported on ordered series. The method throws
   /// `InvalidOperationException` when the series is not ordered.
-  ///
+  /// </remarks>
   /// <category>Lookup, resampling and scaling</category>
   [<Extension>]
   static member Sample<'V>(series:Series<DateTimeOffset, 'V>, start:DateTimeOffset, interval:TimeSpan, dir) =
     series |> Series.Implementation.lookupTimeInternal (+) (Some start) interval dir Lookup.ExactOrSmaller
 
+  /// <summary>
   /// Finds values at, or near, the specified times in a given series. The operation generates
   /// keys starting from the smallest key of the original series, using the specified `interval`
   /// and then finds nearest smaller values close to such keys according to `dir`.
-  ///
-  /// ## Parameters
-  ///  - `series` - An input series to be resampled
-  ///  - `interval` - The interval between the individual samples
-  ///  - `lookup` - Specifies how the lookup based on keys is performed. `Exact` means that the
-  ///    values at exact keys will be returned; `NearestGreater` returns the nearest greater key value
-  ///    (starting at the first key) and `NearestSmaller` returns the nearest smaller key value
-  ///    (starting at most `interval` after the end of the series)
-  ///
-  /// ## Remarks
+  /// </summary>
+  /// <param name="series">An input series to be resampled</param>
+  /// <param name="interval">The interval between the individual samples</param>
+  /// <param name="lookup">Specifies how the lookup based on keys is performed. `Exact` means that the values at exact keys will be returned; `NearestGreater` returns the nearest greater key value (starting at the first key) and `NearestSmaller` returns the nearest smaller key value (starting at most `interval` after the end of the series)</param>
+  /// <remarks>
   /// This operation is only supported on ordered series. The method throws
   /// `InvalidOperationException` when the series is not ordered.
-  ///
+  /// </remarks>
   /// <category>Lookup, resampling and scaling</category>
   [<Extension>]
   static member Sample<'V>(series:Series<DateTime, 'V>, interval:TimeSpan, dir) =
     series |> Series.Implementation.lookupTimeInternal (+) None interval dir Lookup.ExactOrSmaller
 
+  /// <summary>
   /// Finds values at, or near, the specified times in a given series. The operation generates
   /// keys starting from the smallest key of the original series, using the specified `interval`
   /// and then finds nearest smaller values close to such keys according to `dir`.
-  ///
-  /// ## Parameters
-  ///  - `series` - An input series to be resampled
-  ///  - `interval` - The interval between the individual samples
-  ///  - `dir` - Specifies how the keys should be generated. `Direction.Forward` means that the
-  ///    key is the smallest value of each chunk (and so first key of the series is returned and
-  ///    the last is not, unless it matches exactly _start + k*interval_); `Direction.Backward`
-  ///    means that the first key is skipped and sample is generated at, or just before the end
-  ///    of interval and at the end of the series.
-  ///
-  /// ## Remarks
+  /// </summary>
+  /// <param name="series">An input series to be resampled</param>
+  /// <param name="interval">The interval between the individual samples</param>
+  /// <param name="dir">Specifies how the keys should be generated. `Direction.Forward` means that the key is the smallest value of each chunk (and so first key of the series is returned and the last is not, unless it matches exactly _start + k*interval_); `Direction.Backward` means that the first key is skipped and sample is generated at, or just before the end of interval and at the end of the series.</param>
+  /// <remarks>
   /// This operation is only supported on ordered series. The method throws
   /// `InvalidOperationException` when the series is not ordered.
-  ///
+  /// </remarks>
   /// <category>Lookup, resampling and scaling</category>
   [<Extension>]
   static member Sample<'V>(series:Series<DateTimeOffset, 'V>, interval:TimeSpan, dir) =
     series |> Series.Implementation.lookupTimeInternal (+) None interval dir Lookup.ExactOrSmaller
 
+  /// <summary>
   /// Finds values at, or near, the specified times in a given series. The operation generates
   /// keys starting from the smallest key of the original series, using the specified `interval`
   /// and then finds nearest smaller values close to such keys. The function generates samples
   /// at, or just before the end of an interval and at, or after, the end of the series.
-  ///
-  /// ## Parameters
-  ///  - `series` - An input series to be resampled
-  ///  - `interval` - The interval between the individual samples
-  ///
-  /// ## Remarks
+  /// </summary>
+  /// <param name="series">An input series to be resampled</param>
+  /// <param name="interval">The interval between the individual samples</param>
+  /// <remarks>
   /// This operation is only supported on ordered series. The method throws
   /// `InvalidOperationException` when the series is not ordered.
-  ///
+  /// </remarks>
   /// <category>Lookup, resampling and scaling</category>
   [<Extension>]
   static member Sample<'V>(series:Series<DateTime, 'V>, interval:TimeSpan) =
     SeriesExtensions.Sample(series, interval, Direction.Backward)
 
+  /// <summary>
   /// Finds values at, or near, the specified times in a given series. The operation generates
   /// keys starting from the smallest key of the original series, using the specified `interval`
   /// and then finds nearest smaller values close to such keys. The function generates samples
   /// at, or just before the end of an interval and at, or after, the end of the series.
-  ///
-  /// ## Parameters
-  ///  - `series` - An input series to be resampled
-  ///  - `interval` - The interval between the individual samples
-  ///
-  /// ## Remarks
+  /// </summary>
+  /// <param name="series">An input series to be resampled</param>
+  /// <param name="interval">The interval between the individual samples</param>
+  /// <remarks>
   /// This operation is only supported on ordered series. The method throws
   /// `InvalidOperationException` when the series is not ordered.
-  ///
+  /// </remarks>
   /// <category>Lookup, resampling and scaling</category>
   [<Extension>]
   static member Sample<'V>(series:Series<DateTimeOffset, 'V>, interval:TimeSpan) =
     SeriesExtensions.Sample(series, interval, Direction.Backward)
 
+  /// <summary>
   /// Performs sampling by time and aggregates chunks obtained by time-sampling into a single
   /// value using a specified function. The operation generates keys starting at the first
   /// key in the source series, using the specified `interval` and then obtains chunks based on
   /// these keys in a fashion similar to the `Series.resample` function.
-  ///
-  /// ## Parameters
-  ///  - `series` - An input series to be resampled
-  ///  - `interval` - The interval between the individual samples
-  ///  - `dir` - If this parameter is `Direction.Forward`, then each key is
-  ///    used as the smallest key in a chunk; for `Direction.Backward`, the keys are
-  ///    used as the greatest keys in a chunk.
-  ///  - `aggregate` - A function that is called to aggregate each chunk into a single value.
-  ///
-  /// ## Remarks
+  /// </summary>
+  /// <param name="series">An input series to be resampled</param>
+  /// <param name="interval">The interval between the individual samples</param>
+  /// <param name="dir">If this parameter is `Direction.Forward`, then each key is used as the smallest key in a chunk; for `Direction.Backward`, the keys are used as the greatest keys in a chunk.</param>
+  /// <param name="aggregate">A function that is called to aggregate each chunk into a single value.</param>
+  /// <remarks>
   /// This operation is only supported on ordered series. The method throws
   /// `InvalidOperationException` when the series is not ordered.
-  ///
+  /// </remarks>
   /// <category>Lookup, resampling and scaling</category>
   [<Extension>]
   static member SampleInto<'V>(series:Series<DateTime, 'V>, interval:TimeSpan, dir, aggregate:Func<_, _>) =
     series |> Series.Implementation.sampleTimeIntoInternal (+) None interval dir aggregate.Invoke
 
+  /// <summary>
   /// Performs sampling by time and aggregates chunks obtained by time-sampling into a single
   /// value using a specified function. The operation generates keys starting at the first
   /// key in the source series, using the specified `interval` and then obtains chunks based on
   /// these keys in a fashion similar to the `Series.resample` function.
-  ///
-  /// ## Parameters
-  ///  - `series` - An input series to be resampled
-  ///  - `interval` - The interval between the individual samples
-  ///  - `dir` - If this parameter is `Direction.Forward`, then each key is
-  ///    used as the smallest key in a chunk; for `Direction.Backward`, the keys are
-  ///    used as the greatest keys in a chunk.
-  ///  - `aggregate` - A function that is called to aggregate each chunk into a single value.
-  ///
-  /// ## Remarks
+  /// </summary>
+  /// <param name="series">An input series to be resampled</param>
+  /// <param name="interval">The interval between the individual samples</param>
+  /// <param name="dir">If this parameter is `Direction.Forward`, then each key is used as the smallest key in a chunk; for `Direction.Backward`, the keys are used as the greatest keys in a chunk.</param>
+  /// <param name="aggregate">A function that is called to aggregate each chunk into a single value.</param>
+  /// <remarks>
   /// This operation is only supported on ordered series. The method throws
   /// `InvalidOperationException` when the series is not ordered.
-  ///
+  /// </remarks>
   /// <category>Lookup, resampling and scaling</category>
   [<Extension>]
   static member SampleInto<'V>(series:Series<DateTimeOffset, 'V>, interval:TimeSpan, dir, aggregate:Func<_, _>) =
