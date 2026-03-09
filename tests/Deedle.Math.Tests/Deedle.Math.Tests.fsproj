@@ -1,15 +1,11 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFramework>net9.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Deedle\Deedle.fsproj" />
     <ProjectReference Include="..\..\src\Deedle.Math\Deedle.Math.fsproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="System.Runtime" />
-    <Reference Include="System.Reflection" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="PCA.fs" />

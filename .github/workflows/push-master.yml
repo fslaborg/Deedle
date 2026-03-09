@@ -1,56 +1,59 @@
-name: Build and Test PR
+name: Build and Publish
 
 on:
   push:
     branches:
       - master
 
-jobs:
-  build-windows:
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v1
-      - uses: r-lib/actions/setup-r@v1
-        name: Setup R environment
-        with:
-            r-version: '4.0.2'
-      - name: Set R environment variables (for RProvider)
-        run: echo "R_HOME=$(R RHOME)" >> "$GITHUB_ENV"
-        shell: bash
-      - name: Install R package dependencies
-        run: Rscript -e "install.packages(c('zoo'), repos = 'http://cran.us.r-project.org')"
-        shell: bash
-      - name: Setup .NET Core
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: 5.0.103
-      - name: Restore .NET local tools
-        run: dotnet tool restore
-      - name: Restore packages
-        run: dotnet paket restore
-      - name: Build and test
-        run: dotnet fake build
+permissions:
+  id-token: write
+  contents: write
 
-  build-ubuntu:
-    runs-on: ubuntu-latest
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            build: ./build.sh
+          - os: windows-latest
+            build: .\build.ps1
+    runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v1
-      - name: Set R environment variables (for RProvider)
-        run:  |
-          mkdir -p ~/.local/lib/R
-          echo "R_LIBS_USER=~/.local/lib/R" >> "$GITHUB_ENV"
-          echo "R_HOME=$(R RHOME)" >> "$GITHUB_ENV"
-        shell: bash
-      - name: Install R package dependencies
-        run: Rscript -e "install.packages(c('zoo'))"
-        shell: bash
-      - name: Setup .NET Core
-        uses: actions/setup-dotnet@v1
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 5.0.103
+          dotnet-version: '9.0.x'
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('paket.lock') }}
+          restore-keys: ${{ runner.os }}-nuget-
       - name: Restore .NET local tools
         run: dotnet tool restore
       - name: Restore packages
         run: dotnet paket restore
       - name: Build and test
-        run: dotnet fake build
+        run: ${{ matrix.build }}
+      - name: Deploy docs
+        if: runner.os == 'Linux'
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          personal_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./output
+          publish_branch: gh-pages
+          force_orphan: true
+      - name: Obtain NuGet key
+        if: runner.os == 'Linux'
+        # this hash is v1.1.0
+        uses: NuGet/login@d22cc5f58ff5b88bf9bd452535b4335137e24544
+        id: login
+        with:
+          user: dsyme
+      - name: Publish NuGets (if this version not published before)
+        if: runner.os == 'Linux'
+        continue-on-error: true
+        run: dotnet nuget push ./bin/*.nupkg -s https://www.nuget.org/api/v2/package -k ${{ steps.login.outputs.NUGET_API_KEY }} --skip-duplicate
+
