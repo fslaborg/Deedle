@@ -8,7 +8,7 @@ open System.Runtime.CompilerServices
 /// This is used, for example, when converting `ObjectSeries<'K>` to `Series<'K, 'T>` -
 /// The conversion kind can be specified as an argument to allow certain conversions.
 ///
-/// [category:Parameters and results of various operations]
+/// <category>Parameters and results of various operations</category>
 type ConversionKind =
   /// Specifies that the type has to match exactly and no conversions are performed.
   | Exact = 0
@@ -25,7 +25,7 @@ type ConversionKind =
 /// This exception is thrown only when the key is defined, but the value is not available,
 /// in other situations `KeyNotFoundException` is thrown
 ///
-/// [category:Primitive types and values]
+/// <category>Primitive types and values</category>
 type MissingValueException(key:obj, message) =
   inherit Exception(message)
   /// The key that has been accessed
@@ -52,7 +52,7 @@ type Diff<'T> =
 /// contains helper functions for using this type from F# as well as `Missing` and
 /// `Present` active patterns.
 ///
-/// [category:Primitive types and values]
+/// <category>Primitive types and values</category>
 [<Struct; CustomEquality; NoComparison>]
 type OptionalValue<'T> private (hasValue:bool, value:'T) =
   /// Gets a value indicating whether the current `OptionalValue<T>` has a value
@@ -102,7 +102,7 @@ type OptionalValue<'T> private (hasValue:bool, value:'T) =
 /// Non-generic type that makes it easier to create `OptionalValue<T>` values
 /// from C# by benefiting the type inference for generic method invocations.
 ///
-/// [category:Primitive types and values]
+/// <category>Primitive types and values</category>
 type OptionalValue =
   /// Creates an `OptionalValue<T>` from a nullable value of type `T?`
   [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
@@ -124,7 +124,7 @@ type OptionalValue =
 /// so it can be processed using F# pattern matching, or using `Value`, `HasValue`
 /// and `Exception` properties
 ///
-/// [category:Primitive types and values]
+/// <category>Primitive types and values</category>
 type TryValue<'T> =
   | Success of 'T
   | Error of exn
@@ -151,13 +151,13 @@ type TryValue<'T> =
 /// A type alias for the `TryValue<T>` type. The type alias can be used
 /// to make F# type declarations that explcitly handle exceptions more succinct.
 ///
-/// [category:Primitive types and values]
+/// <category>Primitive types and values</category>
 type 'T tryval = TryValue<'T>
 
 /// A type alias for the `OptionalValue<T>` type. The type alias can be used
 /// to make F# type definitions that use optional values directly more succinct.
 ///
-/// [category:Primitive types and values]
+/// <category>Primitive types and values</category>
 type 'T opt = OptionalValue<'T>
 
 /// Represents different behaviors of key lookup in series. For unordered series,
@@ -168,7 +168,7 @@ type 'T opt = OptionalValue<'T>
 /// `Lookup.ExactOrGreater` and `Lookup.ExactOrSmaller` finds the exact key (if it is
 /// present) and otherwise search for the nearest larger or smaller key, respectively.
 ///
-/// [category:Parameters and results of various operations]
+/// <category>Parameters and results of various operations</category>
 [<System.Flags>]
 type Lookup =
   /// Lookup a value associated with the exact specified key.
@@ -214,7 +214,7 @@ type Lookup =
 ///     [fsi:[ 2 => ("a", "b"); 3 => ("b", "c") ]]
 ///
 ///
-/// [category:Parameters and results of various operations]
+/// <category>Parameters and results of various operations</category>
 type Direction =
   | Backward = 0
   | Forward = 1
@@ -225,7 +225,7 @@ type Direction =
 /// skipped (`Skip`). For chunking, combinations are allowed too - to skip incomplete
 /// chunk at the beginning, use `Boundary.Skip ||| Boundary.AtBeginning`.
 ///
-/// [category:Parameters and results of various operations]
+/// <category>Parameters and results of various operations</category>
 [<Flags>]
 type Boundary =
   | AtBeginning = 1
@@ -234,7 +234,7 @@ type Boundary =
 
 /// Represents a kind of `DataSegment<T>`. See that type for more information.
 ///
-/// [category:Parameters and results of various operations]
+/// <category>Parameters and results of various operations</category>
 type DataSegmentKind = Complete | Incomplete
 
 /// Represents a segment of a series or sequence. The value is returned from
@@ -258,7 +258,7 @@ type DataSegmentKind = Complete | Incomplete
 /// If you do not need to distinguish the two cases, you can use the `Data` property
 /// to get the array representing the segment data.
 ///
-/// [category:Parameters and results of various operations]
+/// <category>Parameters and results of various operations</category>
 type DataSegment<'T> =
   | DataSegment of DataSegmentKind * 'T
   /// Returns the data associated with the segment
@@ -277,7 +277,7 @@ type DataSegment<'T> =
 
 /// Provides helper functions and active patterns for working with `DataSegment` values
 ///
-/// [category:Parameters and results of various operations]
+/// <category>Parameters and results of various operations</category>
 module DataSegment =
   /// A complete active pattern that extracts the kind and data from a `DataSegment`
   /// value. This makes it easier to write functions that only need data:
@@ -315,7 +315,7 @@ module DataSegment =
 /// it easier to provide default values and convert optional values to
 /// `Nullable` (when the contained value is value type)
 ///
-/// [category:Primitive types and values]
+/// <category>Primitive types and values</category>
 [<Extension>]
 type OptionalValueExtensions =
 
@@ -334,7 +334,7 @@ type OptionalValueExtensions =
 /// Provides various helper functions for using the `OptionalValue<T>` type from F#
 /// (The functions are similar to those in the standard `Option` module).
 ///
-/// [category:Primitive types and values]
+/// <category>Primitive types and values</category>
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module OptionalValue =
 
@@ -423,13 +423,13 @@ open System.Collections.ObjectModel
 /// An internal exception that is used to handle the case when comparison fails
 /// (even though the type implements IComparable and everything...)
 ///
-/// [omit]
+/// <exclude />
 type ComparisonFailedException() =
   inherit Exception()
 
 /// Simple helper functions for throwing exceptions
 ///
-/// [omit]
+/// <exclude />
 [<AutoOpen>]
 module internal ExceptionHelpers =
   /// Throws `MissingValueException` with a nicely formatted error message for the specified key
@@ -441,7 +441,7 @@ module internal ExceptionHelpers =
     raise (new KeyNotFoundException(sprintf "The key %O is not present in the index" key))
 
 /// Pattern matching helpers
-/// [omit]
+/// <exclude />
 [<AutoOpen>]
 module internal MatchingHelpers =
   /// Helper that lets us define parameters in pattern matching; for example
@@ -496,7 +496,7 @@ module MissingValues =
 // Internals - various functions for working with collections
 // --------------------------------------------------------------------------------------
 
-/// [omit]
+/// <exclude />
 [<AutoOpen>]
 module ReadOnlyCollectionExtensions =
   type ReadOnlyCollection<'T> with
@@ -1346,14 +1346,14 @@ module Seq =
 // Misc - formatting
 // --------------------------------------------------------------------------------------
 
-/// [omit]
+/// <exclude />
 /// An interface implemented by types that support nice formatting for F# Interactive
 /// (The `FSharp.DataFrame.fsx` file registers an FSI printer using this interface.)
 type IFsiFormattable =
   abstract Format : unit -> string
   abstract FormatWithInfo : unit -> string
 
-/// [omit]
+/// <exclude />
 /// An interface implemented by frames that support nice formatting for .NET interactive notebooks
 /// This seems to be needed as you cannot register formatters for Frame<_,_> in .NET interactive
 /// (The `Deedle.Interactive` packages uses this interface for registering custom formatters.)
@@ -1364,7 +1364,7 @@ type IFrameFormattable =
   abstract GetDimensions : unit -> int*int
   abstract GetMissingValueCount: unit -> int
 
-/// [omit]
+/// <exclude />
 /// An interface implemented by series that support nice formatting for .NET interactive notebooks
 /// This seems to be needed as you cannot register formatters for Series<_,_> in .NET interactive
 /// (The `Deedle.Interactive` packages uses this interface for registering custom formatters.)
@@ -1374,7 +1374,7 @@ type ISeriesFormattable =
   abstract GetKeyCount : unit -> int
   abstract GetKeyLevels : unit -> int
 
-/// [omit]
+/// <exclude />
 /// Contains helper functions and configuration constants for pretty printing
 module Formatting =
   /// Maximal number of rows to be printed at the beginning of a series/frame
@@ -1418,7 +1418,7 @@ module Formatting =
 // Type conversions
 // --------------------------------------------------------------------------------------
 
-/// [omit]
+/// <exclude />
 module Convert =
   let private nullableType = typedefof<System.Nullable<_>>
 
@@ -1502,7 +1502,7 @@ module Convert =
 // Support for C# dynamic
 // --------------------------------------------------------------------------------------
 
-/// [omit]
+/// <exclude />
 /// Module that implements various helpers for supporting C# dynamic type.
 /// (this takes care of some of the complexity around building `DynamicMetaObject`
 /// and it is used by `SeriesBuilder` and `Frame`)

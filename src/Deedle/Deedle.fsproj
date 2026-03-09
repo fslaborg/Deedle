@@ -1,51 +1,45 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <OutputPath>../../bin/</OutputPath>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <DisableImplicitFSharpCoreReference>true</DisableImplicitFSharpCoreReference>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System.Runtime" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="FSharp.Data\Net\Http.fs" />
-    <Compile Include="FSharp.Data\CommonRuntime\TextConversions.fsi" />
-    <Compile Include="FSharp.Data\CommonRuntime\TextRuntime.fsi" />
-    <Compile Include="FSharp.Data\CommonRuntime\StructuralTypes.fsi" />
-    <Compile Include="FSharp.Data\CommonRuntime\StructuralInference.fsi" />
-    <Compile Include="FSharp.Data\CommonRuntime\IO.fs" />
-    <Compile Include="FSharp.Data\CommonRuntime\Pluralizer.fs" />
-    <Compile Include="FSharp.Data\CommonRuntime\NameUtils.fs" />
-    <Compile Include="FSharp.Data\CommonRuntime\TextConversions.fs" />
-    <Compile Include="FSharp.Data\CommonRuntime\TextRuntime.fs" />
-    <Compile Include="FSharp.Data\CommonRuntime\StructuralTypes.fs" />
-    <Compile Include="FSharp.Data\CommonRuntime\StructuralInference.fs" />
-    <Compile Include="FSharp.Data\Csv\CsvRuntime.fsi" />
-    <Compile Include="FSharp.Data\Csv\CsvFile.fsi" />
-    <Compile Include="FSharp.Data\Csv\CsvInference.fsi" />
-    <Compile Include="FSharp.Data\Csv\CsvRuntime.fs" />
-    <Compile Include="FSharp.Data\Csv\CsvFile.fs" />
-    <Compile Include="FSharp.Data\Csv\CsvInference.fs" />
-    <Compile Include="Common\AssemblyInfo.fs" />
-    <Compile Include="Common\Attributes.fs" />
-    <Compile Include="Common\BinomialHeap.fs" />
-    <Compile Include="Common\Common.fs" />
-    <Compile Include="Common\Address.fs" />
-    <Compile Include="Common\Deque.fs" />
-    <Compile Include="Common\Ranges.fs" />
-    <Compile Include="Vectors\Vector.fs" />
-    <Compile Include="Vectors\VectorHelpers.fs" />
-    <Compile Include="Vectors\ArrayVector.fs" />
-    <Compile Include="Vectors\VectorExtensions.fs" />
-    <Compile Include="Vectors\VirtualVector.fs" />
-    <Compile Include="Indices\MultiKey.fs" />
-    <Compile Include="Indices\Index.fs" />
-    <Compile Include="Indices\LinearIndex.fs" />
-    <Compile Include="Indices\IndexExtensions.fs" />
-    <Compile Include="Indices\VirtualIndex.fs" />
+    <Compile Include="FSharp.Data/Net/Http.fs" />
+    <Compile Include="FSharp.Data/CommonRuntime/TextConversions.fsi" />
+    <Compile Include="FSharp.Data/CommonRuntime/TextRuntime.fsi" />
+    <Compile Include="FSharp.Data/CommonRuntime/StructuralTypes.fsi" />
+    <Compile Include="FSharp.Data/CommonRuntime/StructuralInference.fsi" />
+    <Compile Include="FSharp.Data/CommonRuntime/IO.fs" />
+    <Compile Include="FSharp.Data/CommonRuntime/Pluralizer.fs" />
+    <Compile Include="FSharp.Data/CommonRuntime/NameUtils.fs" />
+    <Compile Include="FSharp.Data/CommonRuntime/TextConversions.fs" />
+    <Compile Include="FSharp.Data/CommonRuntime/TextRuntime.fs" />
+    <Compile Include="FSharp.Data/CommonRuntime/StructuralTypes.fs" />
+    <Compile Include="FSharp.Data/CommonRuntime/StructuralInference.fs" />
+    <Compile Include="FSharp.Data/Csv/CsvRuntime.fsi" />
+    <Compile Include="FSharp.Data/Csv/CsvFile.fsi" />
+    <Compile Include="FSharp.Data/Csv/CsvInference.fsi" />
+    <Compile Include="FSharp.Data/Csv/CsvRuntime.fs" />
+    <Compile Include="FSharp.Data/Csv/CsvFile.fs" />
+    <Compile Include="FSharp.Data/Csv/CsvInference.fs" />
+    <Compile Include="Common/Attributes.fs" />
+    <Compile Include="Common/BinomialHeap.fs" />
+    <Compile Include="Common/Common.fs" />
+    <Compile Include="Common/Address.fs" />
+    <Compile Include="Common/Deque.fs" />
+    <Compile Include="Common/Ranges.fs" />
+    <Compile Include="Vectors/Vector.fs" />
+    <Compile Include="Vectors/VectorHelpers.fs" />
+    <Compile Include="Vectors/ArrayVector.fs" />
+    <Compile Include="Vectors/VectorExtensions.fs" />
+    <Compile Include="Vectors/VirtualVector.fs" />
+    <Compile Include="Indices/MultiKey.fs" />
+    <Compile Include="Indices/Index.fs" />
+    <Compile Include="Indices/LinearIndex.fs" />
+    <Compile Include="Indices/IndexExtensions.fs" />
+    <Compile Include="Indices/VirtualIndex.fs" />
     <Compile Include="JoinHelpers.fs" />
     <Compile Include="Series.fs" />
     <Compile Include="SeriesModule.fs" />
