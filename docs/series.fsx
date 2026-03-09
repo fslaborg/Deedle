@@ -358,7 +358,7 @@ adjust $ sample.Diff(1)
 
 Many of the time series operations can be applied to entire data frames as well:
 *)
-/// Multiply all numeric columns by a given constant
+// Multiply all numeric columns by a given constant
 alignedDf * 0.65
 
 // Sum each column and divide results by a constant

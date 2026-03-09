@@ -4,9 +4,9 @@ open System.Runtime.CompilerServices
 open MathNet.Numerics.LinearAlgebra
 open Deedle
 
-/// Extension of Frame<'R, 'C>
+/// Extension of <c>Frame&lt;'R, 'C&gt;</c>
 ///
-/// [category:Matrix conversions and operators]
+/// <category>Matrix conversions and operators</category>
 [<Extension>]
 type FrameExtensions =
 
@@ -40,9 +40,9 @@ type FrameExtensions =
   static member ToMatrix (df:Frame<'R, 'C>) =
     Matrix.ofFrame df
 
-/// Extension of Series<'C, float>
+/// Extension of <c>Series&lt;'C, float&gt;</c>
 ///
-/// [category:Matrix conversions and operators]
+/// <category>Matrix conversions and operators</category>
 [<Extension>]
 type SeriesExtensions =
   /// series multiply frame
@@ -77,7 +77,7 @@ type SeriesExtensions =
 
 /// Extension of Matrix<float>
 ///
-/// [category:Matrix conversions and operators]
+/// <category>Matrix conversions and operators</category>
 [<Extension>]
 type MatrixExtensions =
   /// matrix multiply frame
@@ -112,7 +112,7 @@ type MatrixExtensions =
 
 /// Extension of Vector<float>
 ///
-/// [category:Vector conversions and operators]
+/// <category>Vector conversions and operators</category>
 [<Extension>]
 type VectorExtensions =
   /// vector multiply frame

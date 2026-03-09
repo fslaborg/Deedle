@@ -520,7 +520,28 @@ let mapFrameRowVector
       member x.Data =
         seq { for i in Seq.range 0L (length-1L) -> (x :> IVector<_>).GetValue(addressAt i) }
         |> VectorData.Sequence
-      member x.Select(g) =  failwith "mapFrameRowVector: Select not supported"
+      member x.Select(g) =
+        { new IVector<'TNew> with
+            member y.GetValue(a) = g (KnownLocation(a, int64 a)) (x.GetValue(a))
+            member y.GetValueAtLocation(l) = g l (x.GetValueAtLocation(l))
+            member y.Data =
+              seq { for i in Seq.range 0L (length-1L) ->
+                      g (KnownLocation(addressAt i, i)) (x.GetValue(addressAt i)) }
+              |> VectorData.Sequence
+            // Chain selects back through the original data to avoid deep wrapping
+            member y.Select(g2) = x.Select(fun loc v -> g2 loc (g loc v))
+            member y.Convert(h, g2) = failwith "mapFrameRowVector mapped: Convert not supported"
+          interface IVector with
+            member y.AddressingScheme = (x :> IVector).AddressingScheme
+            member y.Length = length
+            member y.ObjectSequence =
+              seq { for i in Seq.range 0L (length-1L) ->
+                      g (KnownLocation(addressAt i, i)) (x.GetValue(addressAt i))
+                      |> OptionalValue.map box }
+            member y.SuppressPrinting = false
+            member y.ElementType = typeof<'TNew>
+            member y.GetObject(i) = (y :?> IVector<'TNew>).GetValue(i) |> OptionalValue.map box
+            member y.Invoke(site) = failwith "mapFrameRowVector mapped: Invoke not supported" }
       member x.Convert(h, g) = failwith "mapFrameRowVector: Convert not supported"
     interface IVector with
       member x.AddressingScheme =
@@ -557,10 +578,19 @@ let createTypedRowCreator<'TRow> columnKeys =
   | true, (ctor, meta) ->
       unbox<Func<IVector[], Address, 'TRow>> ctor, meta
   | false, _ ->
-      // Check that the interface has only property getters
-      for m in rowType.GetMethods() do
-        if not m.IsSpecialName || not (m.Name.StartsWith("get_")) then
-          raise (new InvalidOperationException("Only readonly properties are supported in the interface!"))
+      // Require an interface type; classes, structs and records are not supported
+      if not rowType.IsInterface then
+        raise (new InvalidOperationException(
+          sprintf "GetRowsAs requires an interface type, but '%s' is not an interface. \
+                   Define an interface with read-only property getters and use that as the type parameter."
+                  rowType.FullName))
+
+      // Collect all methods and isolate the property getters; any non-getter methods
+      // (setters, void methods inherited from other interfaces, etc.) will receive
+      // stub implementations that throw NotImplementedException.
+      let allMethods = rowType.GetMethods()
+      let propGetterMethods =
+        allMethods |> Array.filter (fun m -> m.IsSpecialName && m.Name.StartsWith("get_"))
 
       // Define a type named ImpleIInterface@1
       incr typeCounter
@@ -569,14 +599,14 @@ let createTypedRowCreator<'TRow> columnKeys =
         typedRowModule.Value.DefineType
           (typeName, TypeAttributes.Public, typeof<obj>, [| rowType |])
 
-      // For every property of type `T`, define a field of type `IVector<T>`
+      // For every property getter of type `T`, define a field of type `IVector<T>`
       // (this stores reference to the typed vector) and define a field
       // `address` storing the current row address of the `'TRow` value.
       //
       // When the property has a type `OptionalValue<T>` then we expect that
       // the column has a type `T`, but the user wants to see missing values
       let columnTypes =
-        [ for m in rowType.GetMethods() ->
+        [ for m in propGetterMethods ->
             if m.ReturnType.IsGenericType && m.ReturnType.GetGenericTypeDefinition() = Reflection.optTyp
               then true, typedefof<IVector<_>>.MakeGenericType(m.ReturnType.GetGenericArguments().[0])
               else false, typedefof<IVector<_>>.MakeGenericType(m.ReturnType) ]
@@ -614,8 +644,8 @@ let createTypedRowCreator<'TRow> columnKeys =
       ilgen.Emit(OpCodes.Ret)
 
 
-      // For every property in the interface, define a method that overrides the getter
-      for m, ((isOptional, typ), fld) in Seq.zip (rowType.GetMethods()) (Seq.zip columnTypes vecFields) do
+      // For every property getter in the interface, define a method that overrides the getter
+      for m, ((isOptional, typ), fld) in Seq.zip propGetterMethods (Seq.zip columnTypes vecFields) do
         // if `isOptional`, i.e. the return type is `OptionalValue<T>` then
         //
         //   override this.get_Something() =
@@ -648,6 +678,21 @@ let createTypedRowCreator<'TRow> columnKeys =
         ilgen.Emit(OpCodes.Ret)
 
         rowImpl.DefineMethodOverride(impl, m)
+
+      // For any non-getter methods in the interface (setters, plain methods from
+      // inherited interfaces, etc.), provide stub implementations that throw
+      // NotImplementedException so that the generated type satisfies the interface contract.
+      let notImplCtor = typeof<System.NotImplementedException>.GetConstructor([| |])
+      for m in allMethods |> Array.filter (fun m -> not (m.IsSpecialName && m.Name.StartsWith("get_"))) do
+        let paramTypes = m.GetParameters() |> Array.map (fun p -> p.ParameterType)
+        let stub =
+          rowImpl.DefineMethod
+            ( m.Name, MethodAttributes.Public ||| MethodAttributes.Virtual,
+              m.ReturnType, paramTypes)
+        let ilgen = stub.GetILGenerator()
+        ilgen.Emit(OpCodes.Newobj, notImplCtor)
+        ilgen.Emit(OpCodes.Throw)
+        rowImpl.DefineMethodOverride(stub, m)
 
       // Finish building the type
       let rowImplType = rowImpl.CreateTypeInfo()
@@ -693,7 +738,7 @@ let createTypedRowCreator<'TRow> columnKeys =
       // We return information about the structure - a list of property names
       // & types that we are expecting in the incoming IVector<IVector>
       let meta =
-        Seq.zip (rowType.GetMethods()) columnTypes
+        Seq.zip propGetterMethods columnTypes
         |> Seq.map (fun (m, (_, t)) -> m.Name.Substring(4), t.GetGenericArguments().[0])
         |> List.ofSeq
 
