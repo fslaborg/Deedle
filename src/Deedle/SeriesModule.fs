@@ -199,6 +199,23 @@ open Deedle.VectorHelpers
 module Series =
 
   // ------------------------------------------------------------------------------------
+  // Creating series
+  // ------------------------------------------------------------------------------------
+
+  /// <summary>
+  /// Returns an empty series with no keys or values.
+  /// </summary>
+  /// <typeparam name="K">The type of the series keys.</typeparam>
+  /// <typeparam name="V">The type of the series values.</typeparam>
+  /// <returns>An empty series of type <c>Series&lt;'K, 'V&gt;</c>.</returns>
+  /// <example>
+  ///   let s : Series&lt;int, float&gt; = Series.empty
+  /// </example>
+  /// <category>Creating series</category>
+  [<CompiledName("Empty")>]
+  let empty<'K, 'V when 'K : equality> : Series<'K, 'V> = Series([], [])
+
+  // ------------------------------------------------------------------------------------
   // Accessing series data and lookup
   // ------------------------------------------------------------------------------------
 

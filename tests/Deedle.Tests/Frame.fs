@@ -1904,3 +1904,21 @@ let ``Saving CSV to a stream via the extension method closes the stream when com
   let expected = msft()
   FrameExtensions.SaveCsv (expected, stream, true, ["Date"], ';', cz)
   stream.CanWrite |> shouldEqual false
+
+// ------------------------------------------------------------------------------------------------
+// Creating frames
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Frame.empty returns an empty frame with no rows or columns`` () =
+  let df : Frame<int, string> = Frame.empty
+  df.RowCount |> shouldEqual 0
+  df.ColumnCount |> shouldEqual 0
+
+[<Test>]
+let ``Frame.empty can have columns added to it`` () =
+  let df : Frame<int, string> = Frame.empty
+  let s = series [ 1 => 1.0; 2 => 2.0 ]
+  let result = df |> Frame.addCol "A" s
+  result.ColumnCount |> shouldEqual 1
+  result.RowCount |> shouldEqual 2

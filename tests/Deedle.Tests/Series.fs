@@ -1057,3 +1057,27 @@ let ``Series.scanAllValues sees missing values and can carry forward`` () =
   result.TryGet(1) |> shouldEqual (OptionalValue(1.0))
   result.TryGet(2) |> shouldEqual (OptionalValue(1.0))  // carried forward
   result.TryGet(3) |> shouldEqual (OptionalValue(4.0))
+
+// ------------------------------------------------------------------------------------------------
+// Creating series
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Series.empty returns an empty series with no keys`` () =
+  let s : Series<int, float> = Series.empty
+  s.KeyCount |> shouldEqual 0
+  s.ValueCount |> shouldEqual 0
+
+[<Test>]
+let ``Series.empty can be merged with another series`` () =
+  let empty : Series<int, float> = Series.empty
+  let s = series [ 1 => 1.0; 2 => 2.0 ]
+  let result = Series.merge empty s
+  result |> shouldEqual s
+
+[<Test>]
+let ``Series.empty is distinct per type instantiation`` () =
+  let si : Series<int, float> = Series.empty
+  let ss : Series<string, int> = Series.empty
+  si.KeyCount |> shouldEqual 0
+  ss.KeyCount |> shouldEqual 0

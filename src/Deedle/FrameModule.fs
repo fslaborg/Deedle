@@ -216,6 +216,23 @@ module Frame =
   open Deedle.Vectors
 
   // ----------------------------------------------------------------------------------------------
+  // Creating frames
+  // ----------------------------------------------------------------------------------------------
+
+  /// <summary>
+  /// Returns an empty data frame with no rows or columns.
+  /// </summary>
+  /// <typeparam name="R">The type of the row keys.</typeparam>
+  /// <typeparam name="C">The type of the column keys.</typeparam>
+  /// <returns>An empty frame of type <c>Frame&lt;'R, 'C&gt;</c>.</returns>
+  /// <example>
+  ///   let df : Frame&lt;int, string&gt; = Frame.empty
+  /// </example>
+  /// <category>Creating frames</category>
+  [<CompiledName("Empty")>]
+  let empty<'R, 'C when 'R : equality and 'C : equality> : Frame<'R, 'C> = Frame([], [])
+
+  // ----------------------------------------------------------------------------------------------
   // Accessing frame data and lookup
   // ----------------------------------------------------------------------------------------------
 
