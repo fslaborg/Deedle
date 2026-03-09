@@ -93,10 +93,22 @@ module StatsInternal =
   /// Throws a `FormatException` or an `InvalidCastException` if the value type
   /// is not convertible to floating point number.
   let inline initSumsSparse moment (init: 'V opt []) =
-    init
-    |> Array.choose OptionalValue.asOption
-    |> Array.map toFloat
-    |> initSumsDense moment
+    let mutable nobs = 0.0
+    let mutable sum = 0.0
+    let mutable sump2 = 0.0
+    let mutable sump3 = 0.0
+    let mutable sump4 = 0.0
+    for v in init do
+      match OptionalValue.asOption v with
+      | Some x ->
+        let f = toFloat x
+        nobs <- nobs + 1.0
+        if moment >= 1 then sum <- sum + f
+        if moment >= 2 then sump2 <- sump2 + f * f
+        if moment >= 3 then sump3 <- sump3 + f * f * f
+        if moment >= 4 then sump4 <- sump4 + f * f * f * f
+      | None -> ()
+    { nobs = nobs; sum = sum; sump2 = sump2; sump3 = sump3; sump4 = sump4 }
 
   /// Update `Sums` value using `updateSumsDense`, but handle the case
   /// when removing/adding value that is missing (`OptionalValue.Missing`)
@@ -533,11 +545,16 @@ type Stats =
   ///
   /// <category>Expanding windows</category>
   static member inline expandingMin (series:Series<'K, 'V>) : Series<'K, float> =
-    let minFn s v =
-      match v with
-      | OptionalValue.Present x -> if System.Double.IsNaN(s) then x else min x s
-      | OptionalValue.Missing   -> s
-    applySeriesProj ((Seq.scan minFn nan) >> (Seq.skip 1) >> Array.ofSeq) (series |> Series.mapValues toFloat)
+    let calcSparse (source: float opt seq) =
+      let res = ResizeArray<float>()
+      let mutable m = nan
+      for v in source do
+        match v with
+        | OptionalValue.Present x -> if System.Double.IsNaN(m) then m <- x else m <- min x m
+        | OptionalValue.Missing -> ()
+        res.Add(m)
+      res.ToArray()
+    applySeriesProj calcSparse (series |> Series.mapValues toFloat)
 
   /// Returns a series that contains maximum over an expanding window. The value
   /// for a key _k_ in the returned series is the maximum from all elements with
@@ -547,11 +564,16 @@ type Stats =
   ///
   /// <category>Expanding windows</category>
   static member inline expandingMax (series:Series<'K, 'V>) : Series<'K, float> =
-    let maxFn s v =
-      match v with
-      | OptionalValue.Present x -> if System.Double.IsNaN(s) then x else max x s
-      | OptionalValue.Missing   -> s
-    applySeriesProj ((Seq.scan maxFn nan) >> (Seq.skip 1) >> Array.ofSeq) (series |> Series.mapValues toFloat)
+    let calcSparse (source: float opt seq) =
+      let res = ResizeArray<float>()
+      let mutable m = nan
+      for v in source do
+        match v with
+        | OptionalValue.Present x -> if System.Double.IsNaN(m) then m <- x else m <- max x m
+        | OptionalValue.Missing -> ()
+        res.Add(m)
+      res.ToArray()
+    applySeriesProj calcSparse (series |> Series.mapValues toFloat)
 
 
   // ------------------------------------------------------------------------------------
