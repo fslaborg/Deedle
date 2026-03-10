@@ -1116,3 +1116,43 @@ let ``Series.empty is distinct per type instantiation`` () =
   let ss : Series<string, int> = Series.empty
   si.KeyCount |> shouldEqual 0
   ss.KeyCount |> shouldEqual 0
+
+// ------------------------------------------------------------------------------------------------
+// Series.flatten, Series.convert, Series.applyLevel, Series.reduceLevel
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Series.flatten converts Some values to present and None to missing`` () =
+  let s = series [ 1 => Some 10.0; 2 => Some 20.0; 3 => None ]
+  let result = s |> Series.flatten
+  result.TryGet(1) |> shouldEqual (OptionalValue(10.0))
+  result.TryGet(2) |> shouldEqual (OptionalValue(20.0))
+  result.TryGet(3).HasValue |> shouldEqual false
+
+[<Test>]
+let ``Series.flatten on all-Some series is equivalent to mapValues Option.get`` () =
+  let s = series [ "a" => Some 1; "b" => Some 2; "c" => Some 3 ]
+  let result = s |> Series.flatten
+  result |> shouldEqual (series [ "a" => 1; "b" => 2; "c" => 3 ])
+
+[<Test>]
+let ``Series.convert applies forward and backward conversions`` () =
+  let original = series [ 1 => 1.5; 2 => 2.7; 3 => 3.9 ]
+  let converted = original |> Series.convert int float
+  // values are truncated to int via the forward conversion
+  converted |> shouldEqual (series [ 1 => 1; 2 => 2; 3 => 3 ])
+
+[<Test>]
+let ``Series.applyLevel groups by level key and applies function to each group`` () =
+  // Use tuple keys where the first element is the "level"
+  let s = series [ (1, "a") => 10.0; (1, "b") => 20.0; (2, "a") => 30.0; (2, "b") => 40.0 ]
+  let result = s |> Series.applyLevel fst Stats.sum
+  result.Get(1) |> should beWithin (30.0 +/- 1e-9)
+  result.Get(2) |> should beWithin (70.0 +/- 1e-9)
+
+[<Test>]
+let ``Series.reduceLevel groups by level key and reduces each group`` () =
+  let s = series [ (1, "a") => 5.0; (1, "b") => 15.0; (2, "a") => 7.0; (2, "b") => 3.0 ]
+  let result = s |> Series.reduceLevel fst (+)
+  result.Get(1) |> should beWithin (20.0 +/- 1e-9)
+  result.Get(2) |> should beWithin (10.0 +/- 1e-9)

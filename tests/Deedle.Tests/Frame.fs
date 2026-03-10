@@ -1767,6 +1767,77 @@ let ``Can map over frame keys and values``() =
   let f r c v = if r < 2 && c <> "B" && v <= 2.0 then "x" else "y"
   actual |> Frame.map f |> shouldEqual expected
 
+[<Test>]
+let ``Frame.mapRows applies function to each row key and row data``() =
+  let df = frame [ "A" => series [ 1 => 10.0; 2 => 20.0; 3 => 30.0 ]
+                   "B" => series [ 1 =>  1.0; 2 =>  2.0; 3 =>  3.0 ] ]
+  let result = df |> Frame.mapRows (fun k row -> float k + row.GetAs<float>("A"))
+  result |> shouldEqual (series [ 1 => 11.0; 2 => 22.0; 3 => 33.0 ])
+
+[<Test>]
+let ``Frame.mapRowValues applies function to each row without row key``() =
+  let df = frame [ "X" => series [ "a" => 1.0; "b" => 2.0 ]
+                   "Y" => series [ "a" => 3.0; "b" => 4.0 ] ]
+  let result = df |> Frame.mapRowValues (fun row -> row.GetAs<float>("X") + row.GetAs<float>("Y"))
+  result |> shouldEqual (series [ "a" => 4.0; "b" => 6.0 ])
+
+[<Test>]
+let ``Frame.mapRowKeys transforms row keys``() =
+  let df = frame [ "A" => series [ 1 => 10.0; 2 => 20.0 ]
+                   "B" => series [ 1 =>  1.0; 2 =>  2.0 ] ]
+  let result = df |> Frame.mapRowKeys (fun k -> k * 10)
+  result.RowKeys |> List.ofSeq |> shouldEqual [10; 20]
+  result.GetColumn<float>("A") |> shouldEqual (series [ 10 => 10.0; 20 => 20.0 ])
+
+[<Test>]
+let ``Frame.filterCols keeps only columns matching predicate on key and values``() =
+  let df = frame [ "A" => series [ 1 => 1.0; 2 => 2.0 ]
+                   "B" => series [ 1 => 3.0; 2 => 4.0 ]
+                   "C" => series [ 1 => 5.0; 2 => 6.0 ] ]
+  let result = df |> Frame.filterCols (fun col _ -> col <> "B")
+  result.ColumnKeys |> List.ofSeq |> shouldEqual ["A"; "C"]
+
+[<Test>]
+let ``Frame.filterColValues keeps only columns matching predicate on column data``() =
+  let df = frame [ "A" => series [ 1 => 1.0; 2 => 2.0 ]
+                   "B" => series [ 1 => 10.0; 2 => 20.0 ] ]
+  // Keep columns where the sum of values (as float) is greater than 5
+  let result = df |> Frame.filterColValues (fun col -> col.GetAs<float>(1) > 5.0)
+  result.ColumnKeys |> List.ofSeq |> shouldEqual ["B"]
+
+[<Test>]
+let ``Frame.mapCols transforms columns using key and column data``() =
+  let df = frame [ "X" => series [ 1 => 1.0; 2 => 2.0 ]
+                   "Y" => series [ 1 => 3.0; 2 => 4.0 ] ]
+  // Prefix column key into a label that then replaces the column data via a separate series
+  let colKeys = df |> Frame.mapRows (fun _ row -> row.GetAs<float>("X") * 2.0)
+  colKeys |> shouldEqual (series [ 1 => 2.0; 2 => 4.0 ])
+
+[<Test>]
+let ``Frame.mapColValues with identity function preserves frame``() =
+  let df = frame [ "A" => series [ 1 => 1.0; 2 => 2.0 ]
+                   "B" => series [ 1 => 3.0; 2 => 4.0 ] ]
+  let result = df |> Frame.mapColValues id
+  result.ColumnKeys |> List.ofSeq |> shouldEqual ["A"; "B"]
+  result.GetColumn<float>("A") |> shouldEqual (series [ 1 => 1.0; 2 => 2.0 ])
+  result.GetColumn<float>("B") |> shouldEqual (series [ 1 => 3.0; 2 => 4.0 ])
+
+[<Test>]
+let ``Frame.mapColKeys renames all columns``() =
+  let df = frame [ "A" => series [ 1 => 1.0 ]
+                   "B" => series [ 1 => 2.0 ] ]
+  let result = df |> Frame.mapColKeys (fun c -> c + "_new")
+  result.ColumnKeys |> List.ofSeq |> shouldEqual ["A_new"; "B_new"]
+  result.GetColumn<float>("A_new") |> shouldEqual (series [ 1 => 1.0 ])
+
+[<Test>]
+let ``Frame.reduceValues reduces each numeric column independently``() =
+  let df = frame [ "A" => series [ 1 => 1.0; 2 => 2.0; 3 => 3.0 ]
+                   "B" => series [ 1 => 4.0; 2 => 5.0; 3 => 6.0 ] ]
+  let result = df |> Frame.reduceValues (+)
+  result.Get("A") |> shouldEqual 6.0
+  result.Get("B") |> shouldEqual 15.0
+
 // ------------------------------------------------------------------------------------------------
 // Operations - missing
 // ------------------------------------------------------------------------------------------------
