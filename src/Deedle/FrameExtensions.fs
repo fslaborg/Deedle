@@ -78,9 +78,9 @@ type Frame =
   /// </summary>
   /// <param name="location">Specifies a file name or an web location of the resource.</param>
   /// <param name="hasHeaders">Specifies whether the input CSV file has header row (when not set, the default value is `true`)</param>
-  /// <param name="inferTypes">Specifies whether the method should attempt to infer types of columns automatically (set this to `false` if you want to specify schema)</param>
+  /// <param name="inferTypes">Specifies whether the method should attempt to infer types of columns automatically. Set to `false` to treat all columns as strings. When a `schema` is also provided and `inferTypes=false`, the schema overrides are still applied.</param>
   /// <param name="inferRows">If `inferTypes=true`, this parameter specifies the number of rows to use for type inference. The default value is 100.</param>
-  /// <param name="schema">A string that specifies CSV schema. See the documentation for information about the schema format.</param>
+  /// <param name="schema">A string that specifies CSV schema. See the documentation for information about the schema format. Schema overrides are respected even when `inferTypes=false`.</param>
   /// <param name="separators">A string that specifies one or more (single character) separators that are used to separate columns in the CSV file. Use for example `";"` to parse semicolon separated files.</param>
   /// <param name="culture">Specifies the name of the culture that is used when parsing values in the CSV file (such as `"en-US"`). The default is invariant culture.</param>
   /// <param name="maxRows">Specifies the maximum number of rows that will be read from the CSV file</param>

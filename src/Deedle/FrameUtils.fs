@@ -470,10 +470,18 @@ module internal FrameUtils =
     // to load information about types in the CSV file. By default, use the first
     // 100 rows (but inferRows can be set to another value). Otherwise we just
     // "infer" all columns as string.
+    // Note: when inferTypes=false but a schema is provided, the schema is still applied
+    // so that the caller's explicit type overrides are respected.
     let inferredProperties =
       let data = CsvFile.Load(stream, ?separators=separators, ?hasHeaders=hasHeaders)
       match inferTypes with
       | Some true | None ->
+          data.InferColumnTypes(inferRows, missingValues, cultureInfo, schema, safeMode, preferOptionals)
+          |> Array.ofSeq
+      | Some false when schema <> "" ->
+          // Schema provided: apply the schema overrides (columns not in the schema
+          // will still be inferred from data, which is the most useful behaviour
+          // when the caller has specified explicit types for some columns).
           data.InferColumnTypes(inferRows, missingValues, cultureInfo, schema, safeMode, preferOptionals)
           |> Array.ofSeq
       | Some false ->
