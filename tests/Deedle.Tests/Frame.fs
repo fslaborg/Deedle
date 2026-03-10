@@ -190,9 +190,9 @@ col_A
   use reader = new System.IO.StringReader(csv)
   let df = Frame.ReadCsv(reader,separators = ";")
   let actual = df.ColumnKeys |> Seq.toArray
-  Assert.IsTrue(
+  Assert.That(
     actual = [| "col_A"; "col_A\n2"; "col_B" |] ||
-    actual = [| "col_A"; "col_A\r\n2"; "col_B" |] )
+    actual = [| "col_A"; "col_A\r\n2"; "col_B" |], Is.True)
 
 [<Test>]
 let ``Can read space-separated file without headers`` () =

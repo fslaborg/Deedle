@@ -37,7 +37,7 @@ namespace Deedle.CSharp.Tests
 		{
 			var df = Common.LoadMSFT();
 			var actual = df.Zip<float, float, float>(df, (n1, n2) => n1 - n2).GetAllValues<float>().Sum();
-			Assert.AreEqual(0.0, actual);
+			Assert.That(actual, Is.EqualTo(0.0));
 		}
 
         [Test]
@@ -45,7 +45,7 @@ namespace Deedle.CSharp.Tests
         {
             var df = Common.LoadMSFTStream();
             var actual = df.Zip<float, float, float>(df, (n1, n2) => n1 - n2).GetAllValues<float>().Sum();
-            Assert.AreEqual(0.0, actual);
+            Assert.That(actual, Is.EqualTo(0.0));
         }
     }
 
@@ -74,8 +74,8 @@ namespace Deedle.CSharp.Tests
             new { A = 2, B = "Another"}
             });
             var firstRow = df.Rows[0].Values.ToArray();
-            Assert.AreEqual(new object[] { 1, "Test" }, firstRow);
-            Assert.AreEqual(new[] { "A", "B" }, df.ColumnKeys.ToArray());
+            Assert.That(firstRow, Is.EqualTo(new object[] { 1, "Test" }));
+            Assert.That(df.ColumnKeys.ToArray(), Is.EqualTo(new[] { "A", "B" }));
         }
 
         [Test]
@@ -86,8 +86,8 @@ namespace Deedle.CSharp.Tests
             new PublicFields(2, "Another")
             });
             var firstRow = df.Rows[0].Values.ToArray();
-            Assert.AreEqual(new object[] { 1, "Test" }, firstRow);
-            Assert.AreEqual(new[] { "A", "B" }, df.ColumnKeys.ToArray());
+            Assert.That(firstRow, Is.EqualTo(new object[] { 1, "Test" }));
+            Assert.That(df.ColumnKeys.ToArray(), Is.EqualTo(new[] { "A", "B" }));
         }
 
         [Test]
@@ -99,7 +99,7 @@ namespace Deedle.CSharp.Tests
                 arr[r, c] = (r + c == 10) ? Double.NaN : (r + c);
 
             var arr2 = Frame.FromArray2D(arr).ToArray2D<double>();
-            Assert.AreEqual(arr, arr2);
+            Assert.That(arr2, Is.EqualTo(arr));
         }
 
         [Test]
@@ -122,7 +122,7 @@ namespace Deedle.CSharp.Tests
             });
             var data = df.ToArray2D<bool>(true);
             var bools = data.OfType<bool>().ToArray();
-            Assert.AreEqual(new[] { true, true, true, true }, bools);
+            Assert.That(bools, Is.EqualTo(new[] { true, true, true, true }));
         }
 
         [Test]
@@ -135,10 +135,7 @@ namespace Deedle.CSharp.Tests
             builder.Add("column4", new[] { 1, 2, 3, 4 }.ToOrdinalSeries());
             var frame = builder.Frame;
 
-            Assert.AreEqual(
-            new[] { "column1", "column2", "column3", "column4" },
-            frame.ColumnKeys.ToArray()
-            );
+            Assert.That(frame.ColumnKeys.ToArray(), Is.EqualTo(new[] { "column1", "column2", "column3", "column4" }));
         }
 
         [Test]
@@ -150,8 +147,8 @@ namespace Deedle.CSharp.Tests
                 new { a = "z", b = 3.0 }
             });
             var b = Deedle.FrameModule.DropSparseRows(f).GetColumn<float>("b").GetAllValues().ToArray();
-            Assert.AreEqual(1.0, b[0].Value);
-            Assert.AreEqual(3.0, b[1].Value);
+            Assert.That(b[0].Value, Is.EqualTo(1.0));
+            Assert.That(b[1].Value, Is.EqualTo(3.0));
         }
 
         [Test]
@@ -159,7 +156,7 @@ namespace Deedle.CSharp.Tests
         {
             var df = Common.LoadMSFT();
             var actual = df.Rows[new int[] { 0, 1, 2, 3, 4 }];
-            Assert.AreEqual(5, actual.RowCount);
+            Assert.That(actual.RowCount, Is.EqualTo(5));
         }
 
         [Test]
@@ -167,7 +164,7 @@ namespace Deedle.CSharp.Tests
         {
             var df = Common.LoadMSFT();
             var actual = df.Columns[new string[] { "Open", "High" }];
-            Assert.AreEqual(2, actual.ColumnCount);
+            Assert.That(actual.ColumnCount, Is.EqualTo(2));
         }
     }
 
@@ -186,8 +183,8 @@ namespace Deedle.CSharp.Tests
             builder.Add("column4", new[] { 1, 2, 3, 4 }.ToOrdinalSeries());
             var df = builder.Frame;
             var sum = df.Sum().GetAllValues().ToArray();
-            Assert.AreEqual(10.0, sum[0].Value);
-            Assert.AreEqual(10.0, sum[1].Value);
+            Assert.That(sum[0].Value, Is.EqualTo(10.0));
+            Assert.That(sum[1].Value, Is.EqualTo(10.0));
         }
     }
 
@@ -211,10 +208,10 @@ namespace Deedle.CSharp.Tests
 				dfd.Test3 = new Dictionary<int, string> { { 1, "A" }, { 2, "B" } };
 				var row = df.Rows[2];
 
-				Assert.AreEqual(22.4, row["Test"]);
-				Assert.AreEqual(2, row["Test1"]);
-				Assert.AreEqual(22.4, row["Test2"]);
-				Assert.AreEqual("B", ((KeyValuePair<int, string>)row["Test3"]).Value);
+				Assert.That(row["Test"], Is.EqualTo(22.4));
+				Assert.That(row["Test1"], Is.EqualTo(2));
+				Assert.That(row["Test2"], Is.EqualTo(22.4));
+				Assert.That(((KeyValuePair<int, string>)row["Test3"]).Value, Is.EqualTo("B"));
 			}
 		}
 
@@ -232,8 +229,8 @@ namespace Deedle.CSharp.Tests
 				Series<int, double> s0 = dfd.Test;
 				dynamic s1 = dfd.Test;
 
-				Assert.AreEqual(11.1, s0[1]);
-				Assert.AreEqual(11.1, s1[1]);
+				Assert.That(s0[1], Is.EqualTo(11.1));
+				Assert.That(s1[1], Is.EqualTo(11.1));
 			}
 		}
     }
@@ -264,8 +261,8 @@ namespace Deedle.CSharp.Tests
                 new { Name = "Bob",   Value = 2.0 }
             });
             var rows = df.GetRowsAs<INamedRow>();
-            Assert.AreEqual("Alice", rows[0].Name);
-            Assert.AreEqual(2.0, rows[1].Value);
+            Assert.That(rows[0].Name, Is.EqualTo("Alice"));
+            Assert.That(rows[1].Value, Is.EqualTo(2.0));
         }
 
         [Test]
@@ -278,8 +275,8 @@ namespace Deedle.CSharp.Tests
                 new { Name = "Bob",   Value = 2.0 }
             });
             var rows = df.GetRowsAs<IRowWithSetter>();
-            Assert.AreEqual("Alice", rows[0].Name);
-            Assert.AreEqual(1.0, rows[0].Value);
+            Assert.That(rows[0].Name, Is.EqualTo("Alice"));
+            Assert.That(rows[0].Value, Is.EqualTo(1.0));
         }
 
         [Test]

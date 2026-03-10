@@ -53,7 +53,7 @@ let ``PCA result matches with example from MathWorks`` () =
   let eigenVectors = PCA.eigenVectors pca
   let compareSeqs (expected : float seq) (actual : float seq) =
     Seq.zip expected actual
-    |> Seq.iter (fun (e,a) -> Assert.AreEqual(e, a, 1e-10))
+    |> Seq.iter (fun (e,a) -> Assert.That(a, Is.EqualTo(e).Within(1e-10)))
   let roundPcs (xs : Series<'a, float>) =
     xs
     |> Series.mapValues (fun x -> System.Math.Round(x, 4))
