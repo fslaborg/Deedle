@@ -770,6 +770,41 @@ let ``SeriesExtensions.After works when the key is before, after or in range``()
   s.After(25.0).Values |> List.ofSeq |> shouldEqual [ ]
 
 [<Test>]
+let ``Series.after module function matches member After``() =
+  let s = series [ for i in 10.0 .. 20.0 -> i => int i ]
+  s |> Series.after 15.0 |> Series.values |> List.ofSeq |> shouldEqual [ 16 .. 20 ]
+  s |> Series.after 5.0  |> Series.values |> List.ofSeq |> shouldEqual [ 10 .. 20 ]
+  s |> Series.after 25.0 |> Series.values |> List.ofSeq |> shouldEqual [ ]
+
+[<Test>]
+let ``Series.before module function matches member Before``() =
+  let s = series [ for i in 10.0 .. 20.0 -> i => int i ]
+  s |> Series.before 15.0 |> Series.values |> List.ofSeq |> shouldEqual [ 10 .. 14 ]
+  s |> Series.before 5.0  |> Series.values |> List.ofSeq |> shouldEqual [ ]
+  s |> Series.before 25.0 |> Series.values |> List.ofSeq |> shouldEqual [ 10 .. 20 ]
+
+[<Test>]
+let ``Series.startAt module function matches member StartAt``() =
+  let s = series [ for i in 10.0 .. 20.0 -> i => int i ]
+  s |> Series.startAt 15.0 |> Series.values |> List.ofSeq |> shouldEqual [ 15 .. 20 ]
+  s |> Series.startAt 5.0  |> Series.values |> List.ofSeq |> shouldEqual [ 10 .. 20 ]
+  s |> Series.startAt 25.0 |> Series.values |> List.ofSeq |> shouldEqual [ ]
+
+[<Test>]
+let ``Series.endAt module function matches member EndAt``() =
+  let s = series [ for i in 10.0 .. 20.0 -> i => int i ]
+  s |> Series.endAt 15.0 |> Series.values |> List.ofSeq |> shouldEqual [ 10 .. 15 ]
+  s |> Series.endAt 5.0  |> Series.values |> List.ofSeq |> shouldEqual [ ]
+  s |> Series.endAt 25.0 |> Series.values |> List.ofSeq |> shouldEqual [ 10 .. 20 ]
+
+[<Test>]
+let ``Series.between module function returns inclusive range``() =
+  let s = series [ for i in 10.0 .. 20.0 -> i => int i ]
+  s |> Series.between 13.0 17.0 |> Series.values |> List.ofSeq |> shouldEqual [ 13 .. 17 ]
+  s |> Series.between 5.0 25.0  |> Series.values |> List.ofSeq |> shouldEqual [ 10 .. 20 ]
+  s |> Series.between 5.0 5.0   |> Series.values |> List.ofSeq |> shouldEqual [ ]
+
+[<Test>]
 let ``Slicing of ordered series works when using inexact keys (below, inside, above) key range``() =
   let s = series [ for i in 10.0 .. 20.0 -> i => int i ]
   s.[15.5 .. 20.0].Values |> List.ofSeq |> shouldEqual [ 16 .. 20 ]

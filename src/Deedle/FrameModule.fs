@@ -212,6 +212,7 @@ namespace Deedle
 module Frame =
   open System
   open Deedle.Internal
+  open Deedle.Indices
   open Deedle.VectorHelpers
   open Deedle.Vectors
 
@@ -416,6 +417,62 @@ module Frame =
     frame
     |> sliceCols columns
     |> sliceRows rows
+
+  /// <summary>
+  /// Returns a new frame containing all rows with row keys strictly greater than
+  /// <c>lowerExclusive</c>.
+  /// </summary>
+  /// <param name="lowerExclusive">The exclusive lower bound row key.</param>
+  /// <param name="frame">Source data frame.</param>
+  /// <category>Accessing frame data and lookup</category>
+  [<CompiledName("RowsAfter")>]
+  let rowsAfter lowerExclusive (frame:Frame<'R, 'C>) =
+    frame.GetSubrange(Some(lowerExclusive, BoundaryBehavior.Exclusive), None)
+
+  /// <summary>
+  /// Returns a new frame containing all rows with row keys strictly less than
+  /// <c>upperExclusive</c>.
+  /// </summary>
+  /// <param name="upperExclusive">The exclusive upper bound row key.</param>
+  /// <param name="frame">Source data frame.</param>
+  /// <category>Accessing frame data and lookup</category>
+  [<CompiledName("RowsBefore")>]
+  let rowsBefore upperExclusive (frame:Frame<'R, 'C>) =
+    frame.GetSubrange(None, Some(upperExclusive, BoundaryBehavior.Exclusive))
+
+  /// <summary>
+  /// Returns a new frame containing all rows with row keys greater than or equal to
+  /// <c>lowerInclusive</c>.
+  /// </summary>
+  /// <param name="lowerInclusive">The inclusive lower bound row key.</param>
+  /// <param name="frame">Source data frame.</param>
+  /// <category>Accessing frame data and lookup</category>
+  [<CompiledName("RowsStartAt")>]
+  let rowsStartAt lowerInclusive (frame:Frame<'R, 'C>) =
+    frame.GetSubrange(Some(lowerInclusive, BoundaryBehavior.Inclusive), None)
+
+  /// <summary>
+  /// Returns a new frame containing all rows with row keys less than or equal to
+  /// <c>upperInclusive</c>.
+  /// </summary>
+  /// <param name="upperInclusive">The inclusive upper bound row key.</param>
+  /// <param name="frame">Source data frame.</param>
+  /// <category>Accessing frame data and lookup</category>
+  [<CompiledName("RowsEndAt")>]
+  let rowsEndAt upperInclusive (frame:Frame<'R, 'C>) =
+    frame.GetSubrange(None, Some(upperInclusive, BoundaryBehavior.Inclusive))
+
+  /// <summary>
+  /// Returns a new frame containing all rows with row keys in the range
+  /// [<c>lowerInclusive</c>, <c>upperInclusive</c>] (both bounds inclusive).
+  /// </summary>
+  /// <param name="lowerInclusive">The inclusive lower bound row key.</param>
+  /// <param name="upperInclusive">The inclusive upper bound row key.</param>
+  /// <param name="frame">Source data frame.</param>
+  /// <category>Accessing frame data and lookup</category>
+  [<CompiledName("RowsBetween")>]
+  let rowsBetween lowerInclusive upperInclusive (frame:Frame<'R, 'C>) =
+    frame.GetSubrange(Some(lowerInclusive, BoundaryBehavior.Inclusive), Some(upperInclusive, BoundaryBehavior.Inclusive))
 
   /// <summary>
   /// Creates a new data frame that contains all data from
