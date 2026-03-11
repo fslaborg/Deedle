@@ -1116,3 +1116,28 @@ let ``Series.empty is distinct per type instantiation`` () =
   let ss : Series<string, int> = Series.empty
   si.KeyCount |> shouldEqual 0
   ss.KeyCount |> shouldEqual 0
+
+// ------------------------------------------------------------------------------------------------
+// Boolean mask indexing
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Series.filterByMask returns only elements where mask is true`` () =
+  let s = series [ "a" => 1.0; "b" => 2.0; "c" => 3.0; "d" => 4.0 ]
+  let mask = series [ "a" => true; "b" => false; "c" => true; "d" => false ]
+  let result = s |> Series.filterByMask mask
+  result |> shouldEqual (series [ "a" => 1.0; "c" => 3.0 ])
+
+[<Test>]
+let ``Series.filterByMask excludes keys missing from mask`` () =
+  let s = series [ "a" => 10.0; "b" => 20.0; "c" => 30.0 ]
+  let mask = series [ "a" => true; "c" => false ]
+  let result = s |> Series.filterByMask mask
+  result |> shouldEqual (series [ "a" => 10.0 ])
+
+[<Test>]
+let ``Series.filterByMask returns empty series when mask is all false`` () =
+  let s = series [ 1 => "x"; 2 => "y"; 3 => "z" ]
+  let mask = series [ 1 => false; 2 => false; 3 => false ]
+  let result = s |> Series.filterByMask mask
+  result.KeyCount |> shouldEqual 0

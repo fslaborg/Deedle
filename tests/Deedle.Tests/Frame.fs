@@ -1922,3 +1922,43 @@ let ``Frame.empty can have columns added to it`` () =
   let result = df |> Frame.addCol "A" s
   result.ColumnCount |> shouldEqual 1
   result.RowCount |> shouldEqual 2
+
+// ------------------------------------------------------------------------------------------------
+// Boolean mask indexing
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Frame.filterRowsByMask returns only rows where mask is true`` () =
+  let df = frame [ "X" =?> series [| "a" => 1.0; "b" => 2.0; "c" => 3.0 |]
+                   "Y" =?> series [| "a" => 10.0; "b" => 20.0; "c" => 30.0 |] ]
+  let mask = series [ "a" => true; "b" => false; "c" => true ]
+  let result = df |> Frame.filterRowsByMask mask
+  result.RowCount |> shouldEqual 2
+  result.GetColumn<float>("X") |> shouldEqual (series [ "a" => 1.0; "c" => 3.0 ])
+
+[<Test>]
+let ``Frame.filterRowsByMask excludes rows with keys missing from mask`` () =
+  let df = frame [ "V" =?> series [| "a" => 1.0; "b" => 2.0; "c" => 3.0 |] ]
+  let mask = series [ "a" => true; "b" => true ]
+  let result = df |> Frame.filterRowsByMask mask
+  result.RowCount |> shouldEqual 2
+  result.GetColumn<float>("V") |> shouldEqual (series [ "a" => 1.0; "b" => 2.0 ])
+
+[<Test>]
+let ``Frame.filterColsByMask returns only columns where mask is true`` () =
+  let df = frame [ "A" =?> series [| 1 => 1.0; 2 => 2.0 |]
+                   "B" =?> series [| 1 => 3.0; 2 => 4.0 |]
+                   "C" =?> series [| 1 => 5.0; 2 => 6.0 |] ]
+  let mask = series [ "A" => true; "B" => false; "C" => true ]
+  let result = df |> Frame.filterColsByMask mask
+  result.ColumnCount |> shouldEqual 2
+  result.ColumnKeys |> Seq.toList |> shouldEqual ["A"; "C"]
+
+[<Test>]
+let ``Frame.filterRowsByMask can be used with derived boolean series`` () =
+  let df = frame [ "Age"  =?> series [| "Alice" => 25; "Bob" => 17; "Carol" => 32 |]
+                   "Name" =?> series [| "Alice" => "Alice"; "Bob" => "Bob"; "Carol" => "Carol" |] ]
+  let adults = df.GetColumn<int>("Age") |> Series.mapValues (fun age -> age >= 18)
+  let result = df |> Frame.filterRowsByMask adults
+  result.RowCount |> shouldEqual 2
+  result.RowKeys |> Seq.toList |> shouldEqual ["Alice"; "Carol"]
