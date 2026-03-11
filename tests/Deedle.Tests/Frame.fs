@@ -313,6 +313,46 @@ let ``SaveCsv uses correct CultureInfo for OptionalValue float columns (verify n
   csv |> should contain "1,1"
   csv |> should contain "2,2"
 
+// Discriminated union type used in CSV writer tests below.
+type private TwoValueDU = | DU_A | DU_B
+
+[<Test>]
+let ``SaveCsv serialises discriminated union columns correctly`` () =
+  // Regression / performance test for #564.
+  // DU values that don't implement IFormattable must still be serialised via ToString().
+  let builder = System.Text.StringBuilder()
+  use writer = new System.IO.StringWriter(builder)
+  let df =
+    frame
+      [ "Col" =?> series [ 0 => DU_A; 1 => DU_B; 2 => DU_A ] ]
+  FrameExtensions.SaveCsv(df, writer, false, null, ',', System.Globalization.CultureInfo.InvariantCulture)
+  let csv = builder.ToString()
+  csv |> should contain "DU_A"
+  csv |> should contain "DU_B"
+  let lines = csv.Split([|'\n';'\r'|], StringSplitOptions.RemoveEmptyEntries)
+  // Header + 3 data rows
+  lines.Length |> shouldEqual 4
+  lines.[1] |> should contain "DU_A"
+  lines.[2] |> should contain "DU_B"
+  lines.[3] |> should contain "DU_A"
+
+[<Test>]
+let ``SaveCsv correctly caches repeated discriminated union values`` () =
+  // Verify that the ToString() cache in writeCsv produces the same output as a
+  // naive (uncached) implementation: each unique DU value must appear the correct
+  // number of times regardless of the cache.
+  let N = 200  // large enough to exceed trivial paths
+  let values = Array.init N (fun i -> if i % 2 = 0 then DU_A else DU_B)
+  let df = frame [ "V" =?> Series.ofValues values ]
+  let builder = System.Text.StringBuilder()
+  use writer = new System.IO.StringWriter(builder)
+  FrameExtensions.SaveCsv(df, writer, false, null, ',', System.Globalization.CultureInfo.InvariantCulture)
+  let csv = builder.ToString()
+  let aCount = csv.Split([|'\n'|]) |> Array.filter (fun l -> l.Trim() = "DU_A") |> Array.length
+  let bCount = csv.Split([|'\n'|]) |> Array.filter (fun l -> l.Trim() = "DU_B") |> Array.length
+  aCount |> shouldEqual 100
+  bCount |> shouldEqual 100
+
 [<Test>]
 let ``Can create frame from IDataReader``() =
   let dt = new DataTable()
@@ -719,6 +759,81 @@ let ``Filter frame rows by column value`` () =
   (df |> Frame.filterRowsBy "X" false)?Y |> shouldEqual <| series [ "c" => nan; "f" => 4.0 ]
   (df |> Frame.filterRowsBy "Y" 4).GetColumn<bool>("X") |> shouldEqual <| series [ "a" => true; "f" => false ]
   df.FilterRowsBy("Y", 4).GetColumn<bool>("X") |> shouldEqual <| series [ "a" => true; "f" => false ]
+
+// ------------------------------------------------------------------------------------------------
+// Frame.mapCols / mapColValues / mapRows / mapRowValues / mapColKeys / mapRowKeys
+// ------------------------------------------------------------------------------------------------
+
+let mapSample() =
+  frame [ "A" =?> series [ 1 => 1.0; 2 => 2.0; 3 => 3.0 ]
+          "B" =?> series [ 1 => 10.0; 2 => 20.0; 3 => 30.0 ] ]
+
+[<Test>]
+let ``Frame.mapColValues applies function to each object-series column`` () =
+  let df = mapSample()
+  // mapColValues receives ObjectSeries<'R> (Series<'R, obj>); map to a typed result
+  let result = df |> Frame.mapColValues (fun (s:ObjectSeries<int>) -> s.As<float>() |> Series.mapValues ((*) 2.0))
+  result.GetColumn<float>("A") |> shouldEqual (series [ 1 => 2.0; 2 => 4.0; 3 => 6.0 ])
+  result.GetColumn<float>("B") |> shouldEqual (series [ 1 => 20.0; 2 => 40.0; 3 => 60.0 ])
+
+[<Test>]
+let ``Frame.mapCols passes key and object-series to function`` () =
+  let df = mapSample()
+  // mapCols receives (key, ObjectSeries<'R>); we use Stats.sum on the untyped column
+  let result = df |> Frame.mapCols (fun k (s:ObjectSeries<int>) ->
+    let sumVal = s.As<float>() |> Stats.sum
+    series [ 0 => if k = "A" then sumVal + 100.0 else sumVal + 200.0 ])
+  result.GetColumn<float>("A").[0] |> should beWithin (106.0 +/- 1e-9)  // 1+2+3+100
+  result.GetColumn<float>("B").[0] |> should beWithin (260.0 +/- 1e-9)  // 10+20+30+200
+
+[<Test>]
+let ``Frame.mapColValues preserves column keys`` () =
+  let df = mapSample()
+  let result = df |> Frame.mapColValues (fun (s:ObjectSeries<int>) -> s.As<float>() |> Series.mapValues id)
+  result.ColumnKeys |> Seq.toList |> shouldEqual [ "A"; "B" ]
+
+[<Test>]
+let ``Frame.mapRowValues applies function to each object row`` () =
+  let df = mapSample()
+  // Sum the two numeric columns for each row
+  let result : Series<int, float> =
+    df |> Frame.mapRowValues (fun row -> row.GetAs<float>("A") + row.GetAs<float>("B"))
+  result |> shouldEqual (series [ 1 => 11.0; 2 => 22.0; 3 => 33.0 ])
+
+[<Test>]
+let ``Frame.mapRows passes row key and object row to function`` () =
+  let df = mapSample()
+  let result : Series<int, float> =
+    df |> Frame.mapRows (fun k row -> float k + row.GetAs<float>("A"))
+  result |> shouldEqual (series [ 1 => 2.0; 2 => 4.0; 3 => 6.0 ])
+
+[<Test>]
+let ``Frame.mapColKeys renames columns`` () =
+  let df = mapSample()
+  let result = df |> Frame.mapColKeys (fun k -> k + "_new")
+  result.ColumnKeys |> Seq.toList |> shouldEqual [ "A_new"; "B_new" ]
+  result.RowCount |> shouldEqual 3
+
+[<Test>]
+let ``Frame.mapRowKeys remaps row keys`` () =
+  let df = mapSample()
+  let result = df |> Frame.mapRowKeys (fun k -> k * 10)
+  result.RowKeys |> Seq.toList |> shouldEqual [ 10; 20; 30 ]
+  result.ColumnCount |> shouldEqual 2
+
+[<Test>]
+let ``Frame.filterColValues keeps only matching columns`` () =
+  let df = mapSample()
+  // Keep only columns where the sum of values is greater than 5
+  let result = df |> Frame.filterColValues (fun (s:ObjectSeries<int>) -> s.As<float>() |> Stats.sum > 9.0)
+  result.ColumnKeys |> Seq.toList |> shouldEqual [ "B" ]  // B sums to 60 (>9), A sums to 6 (<= 9)
+
+[<Test>]
+let ``Frame.filterCols passes key and series to predicate`` () =
+  let df = mapSample()
+  let result = df |> Frame.filterCols (fun k _ -> k = "A")
+  result.ColumnKeys |> Seq.toList |> shouldEqual [ "A" ]
+  result.RowCount |> shouldEqual 3
 
 // ------------------------------------------------------------------------------------------------
 // Slices
