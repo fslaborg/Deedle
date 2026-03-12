@@ -917,6 +917,50 @@ let ``Frame.melt preserves type of values`` () =
   colTypes |> shouldEqual ["Int32"; "String"; "Double"]
 
 [<Test>]
+let ``Frame.meltBy keeps id columns and melts remaining columns`` () =
+  let df =
+    frame [ "id" =?> series [ 0 => "A"; 1 => "B"; 2 => "C" ]
+            "v1" =?> series [ 0 => 10.0; 1 => 20.0; 2 => 30.0 ]
+            "v2" =?> series [ 0 => 1.0; 1 => 2.0; 2 => 3.0 ] ]
+  let res = df |> Frame.meltBy ["id"]
+  // 3 rows * 2 value columns = 6 output rows
+  res |> Frame.countRows |> shouldEqual 6
+  // Output column names: id, Column, Value
+  res.ColumnKeys |> List.ofSeq |> shouldEqual ["id"; "Column"; "Value"]
+
+[<Test>]
+let ``Frame.meltBy preserves id column values`` () =
+  let df =
+    frame [ "id" =?> series [ 0 => "A"; 1 => "B" ]
+            "v1" =?> series [ 0 => 10.0; 1 => 20.0 ]
+            "v2" =?> series [ 0 => 1.0; 1 => 2.0 ] ]
+  let res = df |> Frame.meltBy ["id"]
+  let ids = res.GetColumn<string>("id") |> Series.values |> List.ofSeq
+  // Each id value appears once per value column (2 value cols)
+  ids |> List.sort |> shouldEqual ["A"; "A"; "B"; "B"]
+
+[<Test>]
+let ``Frame.meltBy with no id columns is equivalent to melt`` () =
+  let df =
+    frame [ "v1" => series [ 0 => 1.0; 1 => 2.0 ]
+            "v2" => series [ 0 => 3.0; 1 => 4.0 ] ]
+  let melted = df |> Frame.melt
+  let meltedBy = df |> Frame.meltBy []
+  // meltBy with no ids should produce same row count as melt
+  // (melt has "Row" col too, meltBy does not - just Column and Value)
+  meltedBy |> Frame.countRows |> shouldEqual (melted |> Frame.countRows)
+  meltedBy.ColumnKeys |> List.ofSeq |> shouldEqual ["Column"; "Value"]
+
+[<Test>]
+let ``Frame.meltBy preserves id column types`` () =
+  let df =
+    frame [ "id"  =?> series [ 0 => 42 ]
+            "val" =?> series [ 0 => 1.0 ] ]
+  let res = df |> Frame.meltBy ["id"]
+  let colTypes = res.GetFrameData().Columns |> Seq.map (fun (ty,_) -> ty.Name) |> List.ofSeq
+  colTypes |> shouldEqual ["Int32"; "String"; "Double"]
+
+[<Test>]
 let ``Frame.unmelt is the inverse of Frame.melt for homogeneous frames`` () =
   // A homogeneous float frame should survive a melt/unmelt round-trip.
   let original =

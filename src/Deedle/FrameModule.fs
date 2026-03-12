@@ -639,6 +639,82 @@ module Frame =
       |> Vector.ofValues
     Frame(rowIndex, colIndex, data, frame.IndexBuilder, frame.VectorBuilder)
 
+  /// Similar to `melt`, but keeps the specified identity columns as-is and melts
+  /// the remaining columns into `Column` and `Value` pairs. This is analogous to
+  /// pandas `DataFrame.melt(id_vars=...)` or R's `data.table::melt`.
+  ///
+  /// ## Parameters
+  ///  - `idCols` - The columns to use as identity variables (kept in the output)
+  ///  - `frame` - The input data frame
+  ///
+  /// ## Returns
+  /// A data frame with the identity columns followed by `Column` and `Value` columns.
+  /// The row index is a sequential integer starting from 0.
+  ///
+  /// <category>Grouping, windowing and chunking</category>
+  [<CompiledName("MeltBy")>]
+  let meltBy (idCols: seq<'C>) (frame: Frame<'R, 'C>) =
+    let idColSet = System.Collections.Generic.HashSet<'C>(idCols)
+    let rowKeys = frame.RowIndex.Keys |> Array.ofSeq
+    let allColKeys = frame.ColumnIndex.Keys |> Array.ofSeq
+    let idColKeys = allColKeys |> Array.filter idColSet.Contains
+    let valColKeys = allColKeys |> Array.filter (idColSet.Contains >> not)
+
+    // Accumulate output rows
+    let idAccumulators = idColKeys |> Array.map (fun _ -> ResizeArray<obj>())
+    let colAccumulator = ResizeArray<'C>()
+    let valAccumulator = ResizeArray<obj>()
+
+    for rowKey in rowKeys do
+      let rowAddr = frame.RowIndex.Locate(rowKey)
+      for valColKey in valColKeys do
+        let valData = frame.Data.GetValue(frame.ColumnIndex.Locate(valColKey))
+        if valData.HasValue then
+          let value = valData.Value.GetObject(rowAddr)
+          if value.HasValue then
+            for i in 0 .. idColKeys.Length - 1 do
+              let idData = frame.Data.GetValue(frame.ColumnIndex.Locate(idColKeys.[i]))
+              let idVal =
+                if idData.HasValue then idData.Value.GetObject(rowAddr)
+                else OptionalValue.Missing
+              idAccumulators.[i].Add(if idVal.HasValue then idVal.Value else null)
+            colAccumulator.Add(valColKey)
+            valAccumulator.Add(value.Value)
+
+    let rowCount = valAccumulator.Count
+    let outputRowIndex = Index.ofKeys (Array.init rowCount id)
+
+    // Build output column index: id column names + "Column" + "Value"
+    let outputColNames =
+      [| yield! (idColKeys |> Array.map (sprintf "%O"))
+         yield "Column"
+         yield "Value" |]
+    let outputColIndex = Index.ofKeys outputColNames
+
+    // Infer the value column element type
+    let valTyp =
+      valColKeys
+      |> Seq.choose (fun c ->
+        let v = frame.Data.GetValue(frame.ColumnIndex.Locate(c))
+        if v.HasValue then Some v.Value.ElementType else None)
+      |> VectorHelpers.findCommonSupertype
+
+    // Infer element types for each id column
+    let idTypes =
+      idColKeys |> Array.map (fun c ->
+        let v = frame.Data.GetValue(frame.ColumnIndex.Locate(c))
+        if v.HasValue then v.Value.ElementType else typeof<obj>)
+
+    let outputData =
+      [ yield! (Array.zip idAccumulators idTypes
+                |> Array.toList
+                |> List.map (fun (acc, typ) ->
+                     VectorHelpers.createTypedVector frame.VectorBuilder typ (acc.ToArray())))
+        yield Vector.ofValues (colAccumulator.ToArray()) :> IVector
+        yield VectorHelpers.createTypedVector frame.VectorBuilder valTyp (valAccumulator.ToArray()) ]
+      |> Vector.ofValues
+    Frame(outputRowIndex, outputColIndex, outputData, frame.IndexBuilder, frame.VectorBuilder)
+
   /// Returns a data frame with three columns named `Row`, `Column`
   /// and `Value` that contains the data of the original data frame
   /// in individual rows.
