@@ -7,6 +7,7 @@ namespace Deedle
 
 open System
 open System.IO
+open System.Text
 open System.Collections.Generic
 open System.ComponentModel
 open System.Runtime.InteropServices
@@ -86,12 +87,13 @@ type Frame =
   /// <param name="maxRows">Specifies the maximum number of rows that will be read from the CSV file</param>
   /// <param name="missingValues">An array of strings that contains values which should be treated as missing when reading the file. The default value is: "NaN"; "NA"; "#N/A"; ":"; "-"; "TBA"; "TBD".</param>
   /// <param name="preferOptions">Specifies whether to prefer optional values when parsing CSV data.</param>
+  /// <param name="encoding">Specifies the character encoding to use when reading the CSV file. When not set, UTF-8 with BOM detection is used.</param>
   /// <category>Input and output</category>
   static member ReadCsv
     ( location:string, [<Optional>] hasHeaders:Nullable<bool>, [<Optional>] inferTypes:Nullable<bool>, [<Optional>] inferRows:Nullable<int>,
       [<Optional>] schema, [<Optional>] separators, [<Optional>] culture, [<Optional>] maxRows:Nullable<int>,
-      [<Optional>] missingValues, [<Optional>] preferOptions ) =
-    use reader = new StreamReader(location)
+      [<Optional>] missingValues, [<Optional>] preferOptions, [<Optional>] encoding:Encoding ) =
+    use reader = if encoding = null then new StreamReader(location) else new StreamReader(location, encoding)
     FrameUtils.readCsv
       reader
       (if hasHeaders.HasValue then Some hasHeaders.Value else None)
@@ -119,13 +121,14 @@ type Frame =
   /// <param name="maxRows">The maximal number of rows that should be read from the CSV file.</param>
   /// <param name="missingValues">An array of strings that contains values which should be treated as missing when reading the file. The default value is: "NaN"; "NA"; "#N/A"; ":"; "-"; "TBA"; "TBD".</param>
   /// <param name="preferOptions">Specifies whether to prefer optional values when parsing CSV data.</param>
+  /// <param name="encoding">Specifies the character encoding to use when reading the CSV stream. When not set, UTF-8 with BOM detection is used.</param>
   /// <category>Input and output</category>
   static member ReadCsv
     ( stream:Stream, [<Optional>] hasHeaders:Nullable<bool>, [<Optional>] inferTypes:Nullable<bool>, [<Optional>] inferRows:Nullable<int>,
       [<Optional>] schema, [<Optional>] separators, [<Optional>] culture, [<Optional>] maxRows:Nullable<int>,
-      [<Optional>] missingValues, [<Optional>] preferOptions:Nullable<bool>) =
+      [<Optional>] missingValues, [<Optional>] preferOptions:Nullable<bool>, [<Optional>] encoding:Encoding) =
     FrameUtils.readCsv
-      (new StreamReader(stream))
+      (if encoding = null then new StreamReader(stream) else new StreamReader(stream, encoding))
       (if hasHeaders.HasValue then Some hasHeaders.Value else None)
       (if inferTypes.HasValue then Some inferTypes.Value else None)
       (if inferRows.HasValue then Some inferRows.Value else None)
@@ -420,11 +423,12 @@ module ``F# Frame extensions`` =
     /// <param name="maxRows">The maximal number of rows that should be read from the CSV file.</param>
     /// <param name="missingValues">An array of strings that contains values which should be treated as missing when reading the file. The default value is: "NaN"; "NA"; "#N/A"; ":"; "-"; "TBA"; "TBD".</param>
     /// <param name="preferOptions">Specifies whether to prefer optional values when parsing CSV data.</param>
+    /// <param name="encoding">Specifies the character encoding to use when reading the CSV file. When not set, UTF-8 with BOM detection is used.</param>
     /// <category>Input and output</category>
     static member ReadCsv<'R when 'R : equality>
         ( path:string, indexCol, ?hasHeaders, ?inferTypes, ?inferRows, ?schema, ?separators,
-          ?culture, ?maxRows, ?missingValues, ?preferOptions ) : Frame<'R, _> =
-      use reader = new StreamReader(path)
+          ?culture, ?maxRows, ?missingValues, ?preferOptions, ?encoding: Encoding ) : Frame<'R, _> =
+      use reader = match encoding with Some e -> new StreamReader(path, e) | None -> new StreamReader(path)
       FrameUtils.readCsv reader hasHeaders inferTypes inferRows schema missingValues separators culture maxRows preferOptions
       |> Frame.indexRows indexCol
 
@@ -444,11 +448,12 @@ module ``F# Frame extensions`` =
     /// <param name="maxRows">The maximal number of rows that should be read from the CSV file.</param>
     /// <param name="missingValues">An array of strings that contains values which should be treated as missing when reading the file. The default value is: "NaN"; "NA"; "#N/A"; ":"; "-"; "TBA"; "TBD".</param>
     /// <param name="preferOptions">Specifies whether to prefer optional values when parsing CSV data.</param>
+    /// <param name="encoding">Specifies the character encoding to use when reading the CSV file. When not set, UTF-8 with BOM detection is used.</param>
     /// <category>Input and output</category>
     static member ReadCsv
         ( path:string, ?hasHeaders, ?inferTypes, ?inferRows, ?schema, ?separators,
-          ?culture, ?maxRows, ?missingValues, ?preferOptions ) =
-      use reader = new StreamReader(path)
+          ?culture, ?maxRows, ?missingValues, ?preferOptions, ?encoding: Encoding ) =
+      use reader = match encoding with Some e -> new StreamReader(path, e) | None -> new StreamReader(path)
       FrameUtils.readCsv reader hasHeaders inferTypes inferRows schema missingValues separators culture maxRows preferOptions
 
     /// <summary>
@@ -467,11 +472,13 @@ module ``F# Frame extensions`` =
     /// <param name="maxRows">The maximal number of rows that should be read from the CSV file.</param>
     /// <param name="missingValues">An array of strings that contains values which should be treated as missing when reading the file. The default value is: "NaN"; "NA"; "#N/A"; ":"; "-"; "TBA"; "TBD".</param>
     /// <param name="preferOptions">Specifies whether to prefer optional values when parsing CSV data.</param>
+    /// <param name="encoding">Specifies the character encoding to use when reading the CSV stream. When not set, UTF-8 with BOM detection is used.</param>
     /// <category>Input and output</category>
     static member ReadCsv
         ( stream:Stream, ?hasHeaders, ?inferTypes, ?inferRows, ?schema, ?separators,
-          ?culture, ?maxRows, ?missingValues, ?preferOptions ) =
-      FrameUtils.readCsv (new StreamReader(stream)) hasHeaders inferTypes inferRows schema missingValues separators culture maxRows preferOptions
+          ?culture, ?maxRows, ?missingValues, ?preferOptions, ?encoding: Encoding ) =
+      let reader = match encoding with Some e -> new StreamReader(stream, e) | None -> new StreamReader(stream)
+      FrameUtils.readCsv reader hasHeaders inferTypes inferRows schema missingValues separators culture maxRows preferOptions
 
     /// <summary>
     /// Load data frame from a CSV file. The operation automatically reads column names from the

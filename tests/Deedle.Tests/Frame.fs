@@ -271,8 +271,28 @@ let ``Can save MSFT data as CSV file and read it afterwards (with custom format)
   actual |> shouldEqual expected
 
 [<Test>]
+let ``Can read CSV file with non-UTF8 encoding using path overload`` () =
+  let file = System.IO.Path.GetTempFileName()
+  let csvContent = "Name,Value\nCafe,1\nNaive,2\n"
+  let latin1 = System.Text.Encoding.GetEncoding("iso-8859-1")
+  System.IO.File.WriteAllText(file, csvContent, latin1)
+  let df = Frame.ReadCsv(file, encoding = latin1)
+  df.RowCount |> shouldEqual 2
+  df.GetColumn<string>("Name") |> Series.values |> List.ofSeq |> shouldEqual ["Cafe"; "Naive"]
+  System.IO.File.Delete(file)
+
+[<Test>]
+let ``Can read CSV stream with non-UTF8 encoding using stream overload`` () =
+  let csvContent = "Name,Value\nCafe,1\n"
+  let latin1 = System.Text.Encoding.GetEncoding("iso-8859-1")
+  let bytes = latin1.GetBytes(csvContent)
+  use stream = new System.IO.MemoryStream(bytes)
+  let df = Frame.ReadCsv(stream, encoding = latin1)
+  df.RowCount |> shouldEqual 1
+  df.GetColumn<string>("Name") |> Series.values |> List.ofSeq |> shouldEqual ["Cafe"]
+
+[<Test>]
 let ``SaveCsv uses correct CultureInfo for OptionalValue float columns`` () =
-  // Regression test for #544 – OptionalValue<T> columns must honour CultureInfo in SaveCsv.
   let deDe = System.Globalization.CultureInfo.GetCultureInfo("de-DE")
   let builder = System.Text.StringBuilder()
   use writer = new System.IO.StringWriter(builder)
