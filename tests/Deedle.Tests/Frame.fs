@@ -1797,6 +1797,39 @@ let ``Can reindex ordinally``() =
   let expected = [0; 1] |> Seq.ofList
   actual.RowKeys |> shouldEqual expected
 
+[<Test>]
+let ``Frame.renameCol renames a single column``() =
+  let df =
+    Frame.ofColumns [ "A" => series [ 1 => 1.0; 2 => 2.0 ]
+                      "B" => series [ 1 => 2.0; 2 => 3.0 ] ]
+  let renamed = df |> Frame.renameCol "A" "X"
+  renamed.ColumnKeys |> List.ofSeq |> shouldEqual ["X"; "B"]
+  renamed.GetColumn<float>("X") |> shouldEqual (df.GetColumn<float>("A"))
+
+[<Test>]
+let ``Frame.renameCol with unknown key returns frame unchanged``() =
+  let df =
+    Frame.ofColumns [ "A" => series [ 1 => 1.0; 2 => 2.0 ]
+                      "B" => series [ 1 => 2.0; 2 => 3.0 ] ]
+  let renamed = df |> Frame.renameCol "Z" "X"
+  renamed.ColumnKeys |> List.ofSeq |> shouldEqual ["A"; "B"]
+
+[<Test>]
+let ``Frame.renameColsUsing transforms all column keys``() =
+  let df =
+    Frame.ofColumns [ "A" => series [ 1 => 1.0; 2 => 2.0 ]
+                      "B" => series [ 1 => 2.0; 2 => 3.0 ] ]
+  let renamed = df |> Frame.renameColsUsing (fun k -> k.ToLowerInvariant())
+  renamed.ColumnKeys |> List.ofSeq |> shouldEqual ["a"; "b"]
+  renamed.GetColumn<float>("a") |> shouldEqual (df.GetColumn<float>("A"))
+
+[<Test>]
+let ``Frame.renameCol does not mutate the original frame``() =
+  let df =
+    Frame.ofColumns [ "A" => series [ 1 => 1.0; 2 => 2.0 ] ]
+  let _ = df |> Frame.renameCol "A" "X"
+  df.ColumnKeys |> List.ofSeq |> shouldEqual ["A"]
+
 // ------------------------------------------------------------------------------------------------
 // Operations - mapping
 // ------------------------------------------------------------------------------------------------
