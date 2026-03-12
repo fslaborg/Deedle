@@ -1281,6 +1281,18 @@ type FrameExtensions =
   static member FilterRowsBy(frame:Frame<'TRowKey, 'TColumnKey>, column, value) =
     Frame.filterRowsBy column value frame
 
+  /// <summary>
+  /// Returns a new data frame containing only the rows that have distinct values in the
+  /// specified columns. When multiple rows have the same values in those columns, only
+  /// the first row (in index order) is preserved.
+  /// </summary>
+  /// <param name="frame">Input data frame to be filtered.</param>
+  /// <param name="columns">An array of column keys used to determine row uniqueness.</param>
+  /// <category>Frame transformations</category>
+  [<Extension>]
+  static member DistinctRowsBy(frame:Frame<'TRowKey, 'TColumnKey>, [<ParamArray>] columns:'TColumnKey[]) =
+    Frame.distinctRowsBy columns frame
+
   [<Extension>]
   static member GetRowsAt(frame:Frame<'TRowKey, 'TColumnKey>, [<ParamArray>] indices:int[]) =
     let keys = indices |> Array.map frame.Rows.GetKeyAt
