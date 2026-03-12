@@ -716,6 +716,38 @@ module ``F# Frame extensions`` =
       use writer = new StreamWriter(stream)
       FrameUtils.writeCsv (writer) None separator culture includeRowKeys keyNames frame
 
+    /// <summary>
+    /// Serialize the data frame to a JSON string.
+    /// </summary>
+    /// <param name="orient">
+    /// Controls the JSON layout. Allowed values:
+    /// <c>"columns"</c> (default) — column-major <c>{"col":{"row":v}}</c>;
+    /// <c>"index"</c> — row-major <c>{"row":{"col":v}}</c>;
+    /// <c>"records"</c> — array of row objects <c>[{"col":v}]</c>.
+    /// </param>
+    /// <category>Input and output</category>
+    member frame.ToJson(?orient) =
+      FrameUtils.toJson (defaultArg orient "columns") frame
+
+    /// <summary>
+    /// Save the data frame as a JSON file.
+    /// </summary>
+    /// <param name="writer">The <c>TextWriter</c> to write the JSON to.</param>
+    /// <param name="orient">Controls the JSON layout (see <c>ToJson</c>).</param>
+    /// <category>Input and output</category>
+    member frame.SaveJson(writer:TextWriter, ?orient) =
+      FrameUtils.writeJson writer (defaultArg orient "columns") frame
+
+    /// <summary>
+    /// Save the data frame as a JSON file.
+    /// </summary>
+    /// <param name="path">The output file path.</param>
+    /// <param name="orient">Controls the JSON layout (see <c>ToJson</c>).</param>
+    /// <category>Input and output</category>
+    member frame.SaveJson(path:string, ?orient) =
+      use writer = new StreamWriter(path)
+      FrameUtils.writeJson writer (defaultArg orient "columns") frame
+
 /// <summary>
 /// Type that can be used for creating frames using the C# collection initializer syntax.
 /// You can use <c>new FrameBuilder.Columns&lt;...&gt;</c> to create a new frame from columns or you
@@ -1064,6 +1096,44 @@ type FrameExtensions =
   [<Extension>]
   static member ToDataTable(frame:Frame<'R, 'C>, rowKeyNames) =
     FrameUtils.toDataTable rowKeyNames frame
+
+  /// <summary>
+  /// Serialize the data frame to a JSON string.
+  /// </summary>
+  /// <param name="frame">The input data frame to serialize.</param>
+  /// <param name="orient">
+  /// Controls the JSON layout. Allowed values:
+  /// <c>"columns"</c> (default) — column-major <c>{"col":{"row":v}}</c>;
+  /// <c>"index"</c> — row-major <c>{"row":{"col":v}}</c>;
+  /// <c>"records"</c> — array of row objects <c>[{"col":v}]</c>.
+  /// </param>
+  /// <category>Input and output</category>
+  [<Extension>]
+  static member ToJson(frame:Frame<'R, 'C>, [<Optional>] orient) =
+    FrameUtils.toJson (if orient = null then "columns" else orient) frame
+
+  /// <summary>
+  /// Save the data frame as JSON to the specified <c>TextWriter</c>.
+  /// </summary>
+  /// <param name="frame">The input data frame to serialize.</param>
+  /// <param name="writer">The <c>TextWriter</c> to write JSON to.</param>
+  /// <param name="orient">Controls the JSON layout (see <c>ToJson</c>).</param>
+  /// <category>Input and output</category>
+  [<Extension>]
+  static member SaveJson(frame:Frame<'R, 'C>, writer:TextWriter, [<Optional>] orient) =
+    FrameUtils.writeJson writer (if orient = null then "columns" else orient) frame
+
+  /// <summary>
+  /// Save the data frame as a JSON file at the specified path.
+  /// </summary>
+  /// <param name="frame">The input data frame to serialize.</param>
+  /// <param name="path">The output file path.</param>
+  /// <param name="orient">Controls the JSON layout (see <c>ToJson</c>).</param>
+  /// <category>Input and output</category>
+  [<Extension>]
+  static member SaveJson(frame:Frame<'R, 'C>, path:string, [<Optional>] orient) =
+    use writer = new StreamWriter(path)
+    FrameUtils.writeJson writer (if orient = null then "columns" else orient) frame
 
   /// <summary>
   /// Creates a new data frame resulting from a 'pivot' operation. Consider a denormalized data

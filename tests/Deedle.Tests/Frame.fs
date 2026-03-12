@@ -1906,6 +1906,94 @@ let ``Saving CSV to a stream via the extension method closes the stream when com
   stream.CanWrite |> shouldEqual false
 
 // ------------------------------------------------------------------------------------------------
+// JSON serialization
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``toJson with orient=columns produces expected structure`` () =
+  let df =
+    frame [ "X" => series [ "a" => 1.0; "b" => 2.0 ]
+            "Y" => series [ "a" => 10.0; "b" => 20.0 ] ]
+  let json = df |> Frame.toJson "columns"
+  Assert.IsTrue(json.Contains("\"X\""))
+  Assert.IsTrue(json.Contains("\"Y\""))
+  Assert.IsTrue(json.Contains("\"a\""))
+  Assert.IsTrue(json.Contains("\"b\""))
+  Assert.IsTrue(json.Contains("1"))
+  Assert.IsTrue(json.Contains("10"))
+
+[<Test>]
+let ``toJson with orient=index produces expected structure`` () =
+  let df =
+    frame [ "X" => series [ "a" => 1.0; "b" => 2.0 ]
+            "Y" => series [ "a" => 10.0; "b" => 20.0 ] ]
+  let json = df |> Frame.toJson "index"
+  Assert.IsTrue(json.Contains("\"a\""))
+  Assert.IsTrue(json.Contains("\"b\""))
+  Assert.IsTrue(json.Contains("\"X\""))
+  Assert.IsTrue(json.Contains("\"Y\""))
+
+[<Test>]
+let ``toJson with orient=records produces array`` () =
+  let df =
+    frame [ "X" => series [ 0 => 1.0; 1 => 2.0 ]
+            "Y" => series [ 0 => 10.0; 1 => 20.0 ] ]
+  let json = df |> Frame.toJson "records"
+  json.[0] |> shouldEqual '['
+  json.[json.Length-1] |> shouldEqual ']'
+  Assert.IsTrue(json.Contains("\"X\""))
+  Assert.IsTrue(json.Contains("\"Y\""))
+
+[<Test>]
+let ``toJson uses null for missing float values`` () =
+  let df =
+    frame [ "V" => series [ "a" => 1.0; "b" => nan ] ]
+  let json = df |> Frame.toJson "columns"
+  Assert.IsTrue(json.Contains("null"))
+
+[<Test>]
+let ``toJson handles bool and int columns`` () =
+  let df = frame [ "I" => series [ 0 => 42; 1 => 7 ] ]
+  let json = df |> Frame.toJson "columns"
+  Assert.IsTrue(json.Contains("42"))
+  let df2 = frame [ "B" => series [ 0 => true; 1 => false ] ]
+  let json2 = df2 |> Frame.toJson "columns"
+  Assert.IsTrue(json2.Contains("true"))
+  Assert.IsTrue(json2.Contains("false"))
+
+[<Test>]
+let ``toJson escapes special characters in keys`` () =
+  let df =
+    frame [ "col\"name" => series [ "row\nkey" => 1.0 ] ]
+  let json = df |> Frame.toJson "columns"
+  Assert.IsTrue(json.Contains("\\\""))
+  Assert.IsTrue(json.Contains("\\n"))
+
+[<Test>]
+let ``ToJson extension method works with default orient`` () =
+  let df = frame [ "A" => series [ 1 => 100.0; 2 => 200.0 ] ]
+  let json = df.ToJson()
+  json.[0] |> shouldEqual '{'
+  Assert.IsTrue(json.Contains("\"A\""))
+
+[<Test>]
+let ``toJson with invalid orient throws ArgumentException`` () =
+  let df = frame [ "A" => series [ 1 => 1.0 ] ]
+  (fun () -> df |> Frame.toJson "bad" |> ignore)
+  |> shouldThrow<ArgumentException>
+
+[<Test>]
+let ``saveJson writes file that can be read back`` () =
+  let path = System.IO.Path.GetTempFileName()
+  try
+    let df = frame [ "P" => series [ 0 => 3.14; 1 => 2.71 ] ]
+    Frame.saveJson path df
+    let content = System.IO.File.ReadAllText(path)
+    content.[0] |> shouldEqual '{'
+    Assert.IsTrue(content.Contains("3.14"))
+  finally
+    System.IO.File.Delete(path)
+
 // Creating frames
 // ------------------------------------------------------------------------------------------------
 
