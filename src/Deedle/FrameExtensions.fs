@@ -1268,6 +1268,22 @@ type FrameExtensions =
   static member Diff(frame:Frame<'TRowKey, 'TColumnKey>, offset) =
     frame |> Frame.diff offset
 
+  /// <summary>
+  /// Returns a frame where each value is the percentage change relative to the value at the
+  /// specified offset. For example, calling <c>PctChange(1)</c> returns a frame where each
+  /// value represents the relative change from the previous row's value. In pseudo-code:
+  ///
+  ///     result[k] = (frame[k] - frame[k - offset]) / frame[k - offset]
+  ///
+  /// Columns that cannot be converted to <c>float</c> are left without a change.
+  /// This is commonly used in financial analysis to compute returns (e.g. daily stock returns).
+  /// </summary>
+  /// <param name="offset">When positive, computes change from past values; when negative, computes change relative to future values.</param>
+  /// <param name="frame">The input frame containing at least some <c>float</c> columns.</param>
+  [<Extension>]
+  static member PctChange(frame:Frame<'TRowKey, 'TColumnKey>, offset) =
+    frame |> Frame.pctChange offset
+
   [<Extension>]
   static member Reduce(frame:Frame<'TRowKey, 'TColumnKey>, aggregation:Func<'T, 'T, 'T>) =
     frame |> Frame.reduceValues (fun a b -> aggregation.Invoke(a, b))
