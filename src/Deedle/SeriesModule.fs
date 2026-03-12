@@ -704,6 +704,27 @@ module Series =
     Series(newIndex, newVector, vectorBuilder, series.Index.Builder)
 
   /// <summary>
+  /// Returns a series containing the percentage change between a value in the series and
+  /// a value at the specified offset. For example, calling <c>Series.pctChange 1 s</c> returns
+  /// a series where each value is the relative change from the previous value. In pseudo-code:
+  ///
+  ///     result[k] = (series[k] - series[k - offset]) / series[k - offset]
+  ///
+  /// This is commonly used in financial analysis to compute returns.
+  /// </summary>
+  /// <param name="offset">When positive, computes change from past values; when negative, computes change relative to future values.</param>
+  /// <param name="series">The input series, containing values that support the <c>-</c> and <c>/</c> operators.</param>
+  /// <category>Series transformations</category>
+  [<CompiledName("PctChange")>]
+  let inline pctChange offset (series:Series<'K, ^T>) =
+    let vectorBuilder = VectorBuilder.Instance
+    let newIndex, vectorR = series.Index.Builder.Shift((series.Index, Vectors.Return 0), offset)
+    let _, vectorL = series.Index.Builder.Shift((series.Index, Vectors.Return 0), -offset)
+    let cmd = Vectors.Combine(lazy newIndex.KeyCount, [vectorL; vectorR], BinaryTransform.Create< ^T >(OptionalValue.map2 (fun l r -> (l - r) / r)))
+    let newVector = vectorBuilder.Build(newIndex.AddressingScheme, cmd, [| series.Vector |])
+    Series(newIndex, newVector, vectorBuilder, series.Index.Builder)
+
+  /// <summary>
   /// Returns a series with values shifted by the specified offset. When the offset is
   /// positive, the values are shifted forward and first `offset` keys are dropped. When the
   /// offset is negative, the values are shifted backwards and the last `offset` keys are dropped.

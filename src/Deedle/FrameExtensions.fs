@@ -716,6 +716,38 @@ module ``F# Frame extensions`` =
       use writer = new StreamWriter(stream)
       FrameUtils.writeCsv (writer) None separator culture includeRowKeys keyNames frame
 
+    /// <summary>
+    /// Serialize the data frame to a JSON string.
+    /// </summary>
+    /// <param name="orient">
+    /// Controls the JSON layout. Allowed values:
+    /// <c>"columns"</c> (default) — column-major <c>{"col":{"row":v}}</c>;
+    /// <c>"index"</c> — row-major <c>{"row":{"col":v}}</c>;
+    /// <c>"records"</c> — array of row objects <c>[{"col":v}]</c>.
+    /// </param>
+    /// <category>Input and output</category>
+    member frame.ToJson(?orient) =
+      FrameUtils.toJson (defaultArg orient "columns") frame
+
+    /// <summary>
+    /// Save the data frame as a JSON file.
+    /// </summary>
+    /// <param name="writer">The <c>TextWriter</c> to write the JSON to.</param>
+    /// <param name="orient">Controls the JSON layout (see <c>ToJson</c>).</param>
+    /// <category>Input and output</category>
+    member frame.SaveJson(writer:TextWriter, ?orient) =
+      FrameUtils.writeJson writer (defaultArg orient "columns") frame
+
+    /// <summary>
+    /// Save the data frame as a JSON file.
+    /// </summary>
+    /// <param name="path">The output file path.</param>
+    /// <param name="orient">Controls the JSON layout (see <c>ToJson</c>).</param>
+    /// <category>Input and output</category>
+    member frame.SaveJson(path:string, ?orient) =
+      use writer = new StreamWriter(path)
+      FrameUtils.writeJson writer (defaultArg orient "columns") frame
+
 /// <summary>
 /// Type that can be used for creating frames using the C# collection initializer syntax.
 /// You can use <c>new FrameBuilder.Columns&lt;...&gt;</c> to create a new frame from columns or you
@@ -1066,6 +1098,44 @@ type FrameExtensions =
     FrameUtils.toDataTable rowKeyNames frame
 
   /// <summary>
+  /// Serialize the data frame to a JSON string.
+  /// </summary>
+  /// <param name="frame">The input data frame to serialize.</param>
+  /// <param name="orient">
+  /// Controls the JSON layout. Allowed values:
+  /// <c>"columns"</c> (default) — column-major <c>{"col":{"row":v}}</c>;
+  /// <c>"index"</c> — row-major <c>{"row":{"col":v}}</c>;
+  /// <c>"records"</c> — array of row objects <c>[{"col":v}]</c>.
+  /// </param>
+  /// <category>Input and output</category>
+  [<Extension>]
+  static member ToJson(frame:Frame<'R, 'C>, [<Optional>] orient) =
+    FrameUtils.toJson (if orient = null then "columns" else orient) frame
+
+  /// <summary>
+  /// Save the data frame as JSON to the specified <c>TextWriter</c>.
+  /// </summary>
+  /// <param name="frame">The input data frame to serialize.</param>
+  /// <param name="writer">The <c>TextWriter</c> to write JSON to.</param>
+  /// <param name="orient">Controls the JSON layout (see <c>ToJson</c>).</param>
+  /// <category>Input and output</category>
+  [<Extension>]
+  static member SaveJson(frame:Frame<'R, 'C>, writer:TextWriter, [<Optional>] orient) =
+    FrameUtils.writeJson writer (if orient = null then "columns" else orient) frame
+
+  /// <summary>
+  /// Save the data frame as a JSON file at the specified path.
+  /// </summary>
+  /// <param name="frame">The input data frame to serialize.</param>
+  /// <param name="path">The output file path.</param>
+  /// <param name="orient">Controls the JSON layout (see <c>ToJson</c>).</param>
+  /// <category>Input and output</category>
+  [<Extension>]
+  static member SaveJson(frame:Frame<'R, 'C>, path:string, [<Optional>] orient) =
+    use writer = new StreamWriter(path)
+    FrameUtils.writeJson writer (if orient = null then "columns" else orient) frame
+
+  /// <summary>
   /// Creates a new data frame resulting from a 'pivot' operation. Consider a denormalized data
   /// frame representing a table: column labels are field names &amp; table values are observations
   /// of those fields. pivotTable buckets the rows along two axes, according to the values of
@@ -1198,6 +1268,22 @@ type FrameExtensions =
   static member Diff(frame:Frame<'TRowKey, 'TColumnKey>, offset) =
     frame |> Frame.diff offset
 
+  /// <summary>
+  /// Returns a frame where each value is the percentage change relative to the value at the
+  /// specified offset. For example, calling <c>PctChange(1)</c> returns a frame where each
+  /// value represents the relative change from the previous row's value. In pseudo-code:
+  ///
+  ///     result[k] = (frame[k] - frame[k - offset]) / frame[k - offset]
+  ///
+  /// Columns that cannot be converted to <c>float</c> are left without a change.
+  /// This is commonly used in financial analysis to compute returns (e.g. daily stock returns).
+  /// </summary>
+  /// <param name="offset">When positive, computes change from past values; when negative, computes change relative to future values.</param>
+  /// <param name="frame">The input frame containing at least some <c>float</c> columns.</param>
+  [<Extension>]
+  static member PctChange(frame:Frame<'TRowKey, 'TColumnKey>, offset) =
+    frame |> Frame.pctChange offset
+
   [<Extension>]
   static member Reduce(frame:Frame<'TRowKey, 'TColumnKey>, aggregation:Func<'T, 'T, 'T>) =
     frame |> Frame.reduceValues (fun a b -> aggregation.Invoke(a, b))
@@ -1210,6 +1296,18 @@ type FrameExtensions =
   [<Extension>]
   static member FilterRowsBy(frame:Frame<'TRowKey, 'TColumnKey>, column, value) =
     Frame.filterRowsBy column value frame
+
+  /// <summary>
+  /// Returns a new data frame containing only the rows that have distinct values in the
+  /// specified columns. When multiple rows have the same values in those columns, only
+  /// the first row (in index order) is preserved.
+  /// </summary>
+  /// <param name="frame">Input data frame to be filtered.</param>
+  /// <param name="columns">An array of column keys used to determine row uniqueness.</param>
+  /// <category>Frame transformations</category>
+  [<Extension>]
+  static member DistinctRowsBy(frame:Frame<'TRowKey, 'TColumnKey>, [<ParamArray>] columns:'TColumnKey[]) =
+    Frame.distinctRowsBy columns frame
 
   [<Extension>]
   static member GetRowsAt(frame:Frame<'TRowKey, 'TColumnKey>, [<ParamArray>] indices:int[]) =
