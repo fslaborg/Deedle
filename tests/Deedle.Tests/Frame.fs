@@ -2255,12 +2255,12 @@ let ``toJson with orient=columns produces expected structure`` () =
     frame [ "X" => series [ "a" => 1.0; "b" => 2.0 ]
             "Y" => series [ "a" => 10.0; "b" => 20.0 ] ]
   let json = df |> Frame.toJson "columns"
-  Assert.IsTrue(json.Contains("\"X\""))
-  Assert.IsTrue(json.Contains("\"Y\""))
-  Assert.IsTrue(json.Contains("\"a\""))
-  Assert.IsTrue(json.Contains("\"b\""))
-  Assert.IsTrue(json.Contains("1"))
-  Assert.IsTrue(json.Contains("10"))
+  Assert.That(json.Contains("\"X\""), Is.True)
+  Assert.That(json.Contains("\"Y\""), Is.True)
+  Assert.That(json.Contains("\"a\""), Is.True)
+  Assert.That(json.Contains("\"b\""), Is.True)
+  Assert.That(json.Contains("1"), Is.True)
+  Assert.That(json.Contains("10"), Is.True)
 
 [<Test>]
 let ``toJson with orient=index produces expected structure`` () =
@@ -2268,10 +2268,10 @@ let ``toJson with orient=index produces expected structure`` () =
     frame [ "X" => series [ "a" => 1.0; "b" => 2.0 ]
             "Y" => series [ "a" => 10.0; "b" => 20.0 ] ]
   let json = df |> Frame.toJson "index"
-  Assert.IsTrue(json.Contains("\"a\""))
-  Assert.IsTrue(json.Contains("\"b\""))
-  Assert.IsTrue(json.Contains("\"X\""))
-  Assert.IsTrue(json.Contains("\"Y\""))
+  Assert.That(json.Contains("\"a\""), Is.True)
+  Assert.That(json.Contains("\"b\""), Is.True)
+  Assert.That(json.Contains("\"X\""), Is.True)
+  Assert.That(json.Contains("\"Y\""), Is.True)
 
 [<Test>]
 let ``toJson with orient=records produces array`` () =
@@ -2281,40 +2281,40 @@ let ``toJson with orient=records produces array`` () =
   let json = df |> Frame.toJson "records"
   json.[0] |> shouldEqual '['
   json.[json.Length-1] |> shouldEqual ']'
-  Assert.IsTrue(json.Contains("\"X\""))
-  Assert.IsTrue(json.Contains("\"Y\""))
+  Assert.That(json.Contains("\"X\""), Is.True)
+  Assert.That(json.Contains("\"Y\""), Is.True)
 
 [<Test>]
 let ``toJson uses null for missing float values`` () =
   let df =
     frame [ "V" => series [ "a" => 1.0; "b" => nan ] ]
   let json = df |> Frame.toJson "columns"
-  Assert.IsTrue(json.Contains("null"))
+  Assert.That(json.Contains("null"), Is.True)
 
 [<Test>]
 let ``toJson handles bool and int columns`` () =
   let df = frame [ "I" => series [ 0 => 42; 1 => 7 ] ]
   let json = df |> Frame.toJson "columns"
-  Assert.IsTrue(json.Contains("42"))
+  Assert.That(json.Contains("42"), Is.True)
   let df2 = frame [ "B" => series [ 0 => true; 1 => false ] ]
   let json2 = df2 |> Frame.toJson "columns"
-  Assert.IsTrue(json2.Contains("true"))
-  Assert.IsTrue(json2.Contains("false"))
+  Assert.That(json2.Contains("true"), Is.True)
+  Assert.That(json2.Contains("false"), Is.True)
 
 [<Test>]
 let ``toJson escapes special characters in keys`` () =
   let df =
     frame [ "col\"name" => series [ "row\nkey" => 1.0 ] ]
   let json = df |> Frame.toJson "columns"
-  Assert.IsTrue(json.Contains("\\\""))
-  Assert.IsTrue(json.Contains("\\n"))
+  Assert.That(json.Contains("\\\""), Is.True)
+  Assert.That(json.Contains("\\n"), Is.True)
 
 [<Test>]
 let ``ToJson extension method works with default orient`` () =
   let df = frame [ "A" => series [ 1 => 100.0; 2 => 200.0 ] ]
   let json = df.ToJson()
   json.[0] |> shouldEqual '{'
-  Assert.IsTrue(json.Contains("\"A\""))
+  Assert.That(json.Contains("\"A\""), Is.True)
 
 [<Test>]
 let ``toJson with invalid orient throws ArgumentException`` () =
@@ -2330,7 +2330,7 @@ let ``saveJson writes file that can be read back`` () =
     Frame.saveJson path df
     let content = System.IO.File.ReadAllText(path)
     content.[0] |> shouldEqual '{'
-    Assert.IsTrue(content.Contains("3.14"))
+    Assert.That(content.Contains("3.14"), Is.True)
   finally
     System.IO.File.Delete(path)
 
