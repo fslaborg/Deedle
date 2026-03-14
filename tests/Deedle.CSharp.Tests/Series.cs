@@ -22,15 +22,15 @@ namespace Deedle.CSharp.Tests
 				sb.Value = 3.4;
 				sb.Date = DateTime.Today;
 
-				Assert.AreEqual(sb.ID, 1);
-				Assert.AreEqual(sb.Value, 3.4);
-				Assert.AreEqual(sb.Date, DateTime.Today);
+				Assert.That(1, Is.EqualTo(sb.ID));
+				Assert.That(3.4, Is.EqualTo(sb.Value));
+				Assert.That(DateTime.Today, Is.EqualTo(sb.Date));
 
 				SeriesBuilder<string> staticTypedSb = sb;
 				var actual = staticTypedSb.Series;
 				var expected =
 					new SeriesBuilder<string, object> { { "ID", 1 }, { "Value", 3.4 }, { "Date", DateTime.Today } }.Series;
-				Assert.AreEqual(expected, actual);
+				Assert.That(actual, Is.EqualTo(expected));
 			}
 		}
 	}
@@ -61,7 +61,7 @@ namespace Deedle.CSharp.Tests
 					{ 4, "efghi" },
 					{ 5, "fghij" }}.Series;
 
-			Assert.AreEqual(expected, actual);
+			Assert.That(actual, Is.EqualTo(expected));
 		}
 
 		[Test]
@@ -81,7 +81,7 @@ namespace Deedle.CSharp.Tests
 					{ 0, "abcde" },
 					{ 5, "fghij" }}.Series;
 
-			Assert.AreEqual(expected, actual);
+			Assert.That(actual, Is.EqualTo(expected));
 		}
 
 		[Test]
@@ -101,7 +101,7 @@ namespace Deedle.CSharp.Tests
 					{ 0,  "a" },
 					{ 10, "bc" }}.Series;
 
-			Assert.AreEqual(expected, actual);
+			Assert.That(actual, Is.EqualTo(expected));
 		}
 
         [Test]
@@ -114,12 +114,12 @@ namespace Deedle.CSharp.Tests
             var e1 = 20.0;
             var r1 = Stats.expandingMax(s1).Sum();
 
-            Assert.AreEqual(e1, r1, delta);
+            Assert.That(r1, Is.EqualTo(e1).Within(delta));
 
             var e2 = -18.0;
             var r2 = Stats.expandingMin(s1).Sum();
 
-            Assert.AreEqual(e2, r2, delta);
+            Assert.That(r2, Is.EqualTo(e2).Within(delta));
 
             var emin = -5.0;
             var emax = 8.0;
@@ -127,19 +127,19 @@ namespace Deedle.CSharp.Tests
             var min = s1.Min();
             var max = s1.Max();
 
-            Assert.AreEqual(emin, min);
-            Assert.AreEqual(emax, max);
+            Assert.That(min, Is.EqualTo(emin));
+            Assert.That(max, Is.EqualTo(emax));
 
             var rsmx = Stats.movingMax(3, s1).Sum();
             var rsmn = Stats.movingMin(3, s1).Sum();
 
-            Assert.AreEqual(e1, rsmx, delta);
-            Assert.AreEqual(e2, rsmn, delta);
+            Assert.That(rsmx, Is.EqualTo(e1).Within(delta));
+            Assert.That(rsmn, Is.EqualTo(e2).Within(delta));
 
             var s2 = Enumerable.Range(1, 3).ToOrdinalSeries();
 
-            Assert.AreEqual(6, s2.Sum());
-            Assert.AreEqual(2, s2.Mean());
+            Assert.That(s2.Sum(), Is.EqualTo(6));
+            Assert.That(s2.Mean(), Is.EqualTo(2));
         }
 	}
 /*

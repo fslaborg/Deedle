@@ -44,7 +44,7 @@ let ``Simple linear regression coefficients between MSFT and WMT returns the sam
         |> Series.values
         |> Seq.toArray
       MathNet.Numerics.LinearRegression.SimpleRegression.FitThroughOrigin(xs, ys)
-  Assert.AreEqual(expectedCoeff, actualCoeff, 1e-10)
+  Assert.That(actualCoeff, Is.EqualTo(expectedCoeff).Within(1e-10))
 
 [<Test>]
 let ``Simple linear regression coefficients between MSFT and WMT returns the same as in Math.Net when fit with y-axis intersect`` () =
@@ -63,8 +63,8 @@ let ``Simple linear regression coefficients between MSFT and WMT returns the sam
       |> Seq.toArray
     MathNet.Numerics.LinearRegression.SimpleRegression.Fit(xs, ys)
   let intersect = actualCoeffs.[LinearRegression.interceptKey]
-  Assert.AreEqual(yCross, intersect, 1e-10)
-  Assert.AreEqual(xCoeff, actualCoeff, 1e-10)
+  Assert.That(intersect, Is.EqualTo(yCross).Within(1e-10))
+  Assert.That(actualCoeff, Is.EqualTo(xCoeff).Within(1e-10))
 
 [<Test>]
 let ``Multiple linear regression coefficients between MSFT, WMT and AES returns the same as in Math.Net when fit without y-axis intersect`` () =
@@ -84,8 +84,8 @@ let ``Multiple linear regression coefficients between MSFT, WMT and AES returns 
     MathNet.Numerics.LinearRegression.MultipleRegression.DirectMethod<float>(xs, ys, false, DirectRegressionMethod.QR)
   let expectedMsft = results.[0]
   let expectedWmt = results.[1]
-  Assert.AreEqual(expectedMsft, actualCoeffs.["MSFT"], 1e-10)
-  Assert.AreEqual(expectedWmt, actualCoeffs.["WMT"], 1e-10)
+  Assert.That(actualCoeffs.["MSFT"], Is.EqualTo(expectedMsft).Within(1e-10))
+  Assert.That(actualCoeffs.["WMT"], Is.EqualTo(expectedWmt).Within(1e-10))
 
 
 [<Test>]
@@ -107,6 +107,6 @@ let ``Multiple linear regression coefficients between MSFT, WMT and AES returns 
   let expectedYIntersect = results.[0]
   let expectedMsft = results.[1]
   let expectedWmt = results.[2]
-  Assert.AreEqual(expectedYIntersect, actualCoeffs.[LinearRegression.interceptKey], 1e-10)
-  Assert.AreEqual(expectedMsft, actualCoeffs.["MSFT"], 1e-10)
-  Assert.AreEqual(expectedWmt, actualCoeffs.["WMT"], 1e-10)
+  Assert.That(actualCoeffs.[LinearRegression.interceptKey], Is.EqualTo(expectedYIntersect).Within(1e-10))
+  Assert.That(actualCoeffs.["MSFT"], Is.EqualTo(expectedMsft).Within(1e-10))
+  Assert.That(actualCoeffs.["WMT"], Is.EqualTo(expectedWmt).Within(1e-10))
