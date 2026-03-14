@@ -21,12 +21,12 @@ let root = __SOURCE_DIRECTORY__ + "/data/"
 
 (**
 
-Deedle is an easy to use library for data and time series manipulation and for scientific 
-programming. It supports working with structured data frames, ordered and unordered data, 
-as well as time series. Deedle is designed to work well for exploratory programming using 
-F# and C# interactive console, but can be also used in efficient compiled .NET code.
+## Deedle
 
-The library implements a wide range of operations for data manipulation including 
+Deedle is an F# library for data frames and time series.
+
+Deedle supports working with structured data frames, ordered and unordered data, 
+and time series. It implements a wide range of operations for data manipulation including 
 advanced indexing and slicing, joining and aligning data, handling of missing values,
 grouping and aggregation, statistics and more. 
 
@@ -68,38 +68,18 @@ Then we add nice namings, sort the frame and build a new data frame with a nice 
 ### How to get Deedle
 
  * The library is available as [Deedle on NuGet](https://www.nuget.org/packages/Deedle).
-   You can also [get the code from GitHub](https://github.com/fslaborg/Deedle/)
-   or download [the source as a ZIP file](https://github.com/fslaborg/Deedle/zipball/master).
-
- * If you want to use Deedle with F# Data, R type provider and other F# components for data science,
-   consider using the [FsLab package](https://www.nuget.org/packages/FsLab).
 
 ## Samples & documentation
 
-The library comes with comprehensible documentation. The tutorials and articles are 
-automatically generated from `*.fsx` files in [the docs folder][docs]. The API
-reference is automatically generated from XML documentation in the library implementation.
+ * [Quick start tutorial](tutorial.html)
 
- * [Quick start tutorial](tutorial.html) shows how to use the most important 
-   features of F# DataFrame library. Start here to learn how to use the library in 10 minutes.
+ * [Data frame features](frame.html)
 
- * [Data frame features](frame.html) provides more examples that use general data frame 
-   features. These includes slicing, joining, grouping, aggregation.
+ * [Series features](series.html)
 
- * [Series features](series.html) provides more details on operations that are 
-   relevant when working with time series data (such as stock prices). This includes sliding
-   windows, chunking, sampling and statistics.
+ * [Calculating frame and series statistics](stats.html)
 
- * [Calculating frame and series statistics](stats.html) shows how to calculate statistical
-   indicators such as mean, variance, skewness and other. The tutorial also covers moving
-   window and expanding window statistics.
-
- * [Creating lazily loaded series](lazysource.html) explains how to create virtual series
-   backed by an external data source that loads data on demand.
-
-Automatically generated documentation for all types, modules and functions in the library 
-is available in the [API Reference](reference/index.html). The three most important modules
-that are fully documented are the following:
+ * [Creating lazily loaded series](lazysource.html)
 
  * [`Series` module](reference/deedle-seriesmodule.html) provides functions for working
    with individual data series and time-series values.
@@ -113,12 +93,9 @@ found in Deedle.Math extension. Deedle.Math has dependency on MathNet.Numerics.
 
 ## Contributing and copyright
 
-The project is hosted on [GitHub][gh] where you can [report issues][issues], fork 
-the project and submit pull requests. If you're adding new public API, please also 
-consider adding [samples][samples] that can be turned into documentation. You might
-also want to read [library design notes](design.html) to understand how it works.
+The project is hosted on [GitHub][gh].
 
-The library has been developed by [BlueMountain Capital](https://www.bluemountaincapital.com/)
+The library was originally developed by [BlueMountain Capital](https://www.bluemountaincapital.com/)
 and contributors. It is available under the BSD license, which allows modification and 
 redistribution for both commercial and non-commercial purposes. For more information see the 
 [License file][license] in the GitHub repository. 

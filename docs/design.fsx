@@ -6,7 +6,7 @@ categoryindex: 1
 index: 7
 ---
 
-## Design principles
+## Deeedle's Design Principles
 
 The Deedle library is a data manipulation library for F# and C# .NET users. There are
 a number of different design choices, some of which are discussed in this article. The

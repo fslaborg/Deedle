@@ -22,6 +22,9 @@ open Deedle
 let root = __SOURCE_DIRECTORY__ + "/data/"
 
 (**
+
+# Calculating frame and series statistics
+
 The `Stats` type contains functions for fast calculation of statistics over
 series and frames as well as over a moving and an expanding window in a series. 
 The standard statistical functions that are available in the `Stats` type 

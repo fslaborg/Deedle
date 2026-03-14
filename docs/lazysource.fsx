@@ -20,6 +20,9 @@ open Deedle
 open Deedle.Indices
 
 (**
+
+# Delay-loaded series
+
 The `DelayedSeries` type provides an efficient way to create series whose data is loaded
 on-demand. For example, you may have a large time series stored in a CSV file or in a 
 database and you do not want to load all the data in memory if the user only needs a

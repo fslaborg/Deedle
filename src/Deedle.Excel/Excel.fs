@@ -1,4 +1,9 @@
-﻿module Deedle.Excel
+﻿/// <summary>
+/// Provides functions for reading Deedle data frames and series from Excel spreadsheets,
+/// and for writing them back to Excel.
+/// </summary>
+/// <category>Excel integration</category>
+module Deedle.Excel
 
 open Deedle
 

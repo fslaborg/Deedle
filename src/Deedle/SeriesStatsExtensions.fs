@@ -3,9 +3,10 @@
 open System
 open System.Runtime.CompilerServices
 
+/// <summary>
 /// The type implements C# and F# extension methods that add numerical operations
 /// to Deedle series.
-///
+/// </summary>
 /// <category>Frame and series operations</category>
 [<Extension>]
 type SeriesStatsExtensions =

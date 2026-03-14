@@ -25,11 +25,12 @@ open Deedle.Internal
 open Deedle.Vectors
 open Deedle.Addressing
 
+/// <summary>
 /// Represents an (untyped) vector that stores some values and provides access
 /// to the values via a generic address. This type should be only used directly when
 /// extending the DataFrame library and adding a new way of storing or loading data.
-/// To allow invocation via Reflection, the vector exposes type of elements as `System.Type`.
-///
+/// To allow invocation via Reflection, the vector exposes type of elements as <c>System.Type</c>.
+/// </summary>
 /// <category>Vectors and indices</category>
 type IVector =
   /// Returns all values of the vector as a sequence of optional objects
@@ -60,18 +61,20 @@ type IVector =
   /// this is compared for equality with the addressing scheme of the vector(s).
   abstract AddressingScheme : IAddressingScheme
 
-/// Represents a generic function `\forall.'T.(IVector<'T> -> 'R)`. The function can be
-/// generically invoked on an argument of type `IVector` using `IVector.Invoke`
-///
+/// <summary>
+/// Represents a generic function <c>∀.'T.(IVector&lt;'T&gt; -&gt; 'R)</c>. The function can be
+/// generically invoked on an argument of type <c>IVector</c> using <c>IVector.Invoke</c>.
+/// </summary>
 /// <category>Vectors and indices</category>
 and VectorCallSite<'R> =
   abstract Invoke<'T> : IVector<'T> -> 'R
 
+/// <summary>
 /// Represents a location in a vector. In general, we always know the address, but
 /// sometimes (BigDeedle) it is hard to get the offset (requires some data lookups),
-/// so we use this interface to delay the calculation of the Offset (which is mainly
-/// needed in one of the `series.Select` overloads)
-///
+/// so we use this interface to delay the calculation of the <c>Offset</c> (which is mainly
+/// needed in one of the <c>series.Select</c> overloads).
+/// </summary>
 /// <category>Vectors and indices</category>
 and IVectorLocation =
   /// Returns the address of the location (this should be immediate)
@@ -79,11 +82,12 @@ and IVectorLocation =
   /// Returns the offset of the location (this may involve some calculation)
   abstract Offset : int64
 
-/// A generic, typed vector. Represents mapping from addresses to values of type `T`.
+/// <summary>
+/// A generic, typed vector. Represents mapping from addresses to values of type <c>'T</c>.
 /// The vector provides a minimal interface that is required by series and can be
 /// implemented in a number of ways to provide vector backed by database or an
 /// alternative representation of data.
-///
+/// </summary>
 /// <category>Vectors and indices</category>
 and IVector<'T> =
   inherit IVector
@@ -113,10 +117,11 @@ and IVector<'T> =
   abstract Convert : ('T -> 'TNew) * ('TNew -> 'T) -> IVector<'TNew>
 
 
-/// Module with extensions for generic vector type. Given `vec` of type `IVector<T>`,
-/// the extension property `vec.DataSequence` returns all data of the vector converted
-/// to the "least common denominator" data structure - `IEnumerable<T>`.
-///
+/// <summary>
+/// Module with extensions for generic vector type. Given <c>vec</c> of type <c>IVector&lt;T&gt;</c>,
+/// the extension property <c>vec.DataSequence</c> returns all data of the vector converted
+/// to the "least common denominator" data structure - <c>IEnumerable&lt;T&gt;</c>.
+/// </summary>
 /// <category>Vectors and indices</category>
 [<AutoOpen>]
 module ``F# Vector extensions (core)`` =
