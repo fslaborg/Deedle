@@ -1144,6 +1144,38 @@ module Frame =
     let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder newRowIndex.AddressingScheme cmd)
     Frame<_, _>(newRowIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
+  /// <summary>
+  /// Returns a new data frame containing only the rows of the input frame whose
+  /// corresponding value in the boolean mask series is <c>true</c>. Rows whose key
+  /// is missing from the mask are excluded. This enables pandas-style boolean indexing.
+  /// </summary>
+  /// <param name="mask">A series of boolean values indexed by the row key type</param>
+  /// <param name="frame">Input data frame to be filtered</param>
+  /// <category>Frame transformations</category>
+  [<CompiledName("WhereRowsByMask")>]
+  let filterRowsByMask (mask:Series<'R, bool>) (frame:Frame<'R, 'C>) =
+    frame |> filterRows (fun k _ ->
+      match mask.TryGet(k) with
+      | OptionalValue.Present v -> v
+      | OptionalValue.Missing -> false)
+
+  /// <summary>
+  /// Returns a new data frame containing only the columns of the input frame whose
+  /// corresponding value in the boolean mask series is <c>true</c>. Columns whose key
+  /// is missing from the mask are excluded. This enables pandas-style boolean indexing.
+  /// </summary>
+  /// <param name="mask">A series of boolean values indexed by the column key type</param>
+  /// <param name="frame">Input data frame to be filtered</param>
+  /// <category>Frame transformations</category>
+  [<CompiledName("WhereColsByMask")>]
+  let filterColsByMask (mask:Series<'C, bool>) (frame:Frame<'R, 'C>) =
+    frame.Columns
+    |> Series.filter (fun k _ ->
+        match mask.TryGet(k) with
+        | OptionalValue.Present v -> v
+        | OptionalValue.Missing -> false)
+    |> FrameUtils.fromColumns frame.IndexBuilder frame.VectorBuilder
+
 
   /// Returns a new data frame containing only the rows of the input frame that have
   /// distinct values in the specified columns. When multiple rows have the same values

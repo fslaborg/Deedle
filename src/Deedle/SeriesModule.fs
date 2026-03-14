@@ -494,6 +494,21 @@ module Series =
     series.WhereOptional(fun kvp -> f kvp.Key (OptionalValue.asOption kvp.Value))
 
   /// <summary>
+  /// Returns a new series containing only the elements of the input series whose key
+  /// maps to <c>true</c> in the given boolean mask series. Keys that are missing from
+  /// the mask are excluded. This enables pandas-style boolean indexing.
+  /// </summary>
+  /// <param name="mask">A series of boolean values indexed by the same key type</param>
+  /// <param name="series">The input series to filter</param>
+  /// <category>Series transformations</category>
+  [<CompiledName("FilterByMask")>]
+  let filterByMask (mask:Series<'K, bool>) (series:Series<'K, 'T>) =
+    series |> filter (fun k _ ->
+      match mask.TryGet(k) with
+      | OptionalValue.Present v -> v
+      | OptionalValue.Missing -> false)
+
+  /// <summary>
   /// Returns a new series whose values are the results of applying the given function to
   /// values of the original series. This function skips over missing values and call the
   /// function with both keys and values.
