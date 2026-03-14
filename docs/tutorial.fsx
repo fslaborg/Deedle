@@ -18,13 +18,16 @@ open System
 open Deedle
 
 (**
-This document is a quick overview of the most important features of F# data frame library.
+
+# Quick Start
+
+This document is a quick overview of the most important features of Deedle.
 
 The first step is to install `Deedle` [from NuGet](https://www.nuget.org/packages/Deedle).
 In F# Interactive, reference the library:
-*)
 
-(**
+// #r "nuget: Deedle,{{fsdocs-package-version}}"
+
 <a name="creating"></a>
 
 ## Creating series and frames

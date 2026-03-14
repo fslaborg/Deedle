@@ -24,6 +24,9 @@ open Deedle
 open MathNet.Numerics.Distributions
 
 (**
+
+# Working with series and time series
+
 In this section, we look at F# data frame library features that are useful when working
 with time series data or, more generally, any ordered series. Although we mainly look at
 operations on the `Series` type, many of the operations can be applied to data frame `Frame`

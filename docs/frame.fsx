@@ -21,6 +21,9 @@ open Deedle
 let root = __SOURCE_DIRECTORY__ + "/data/"
 
 (**
+
+# Working with data frames
+
 In this section, we look at various features of the F# data frame library (using both
 `Series` and `Frame` types and modules). Feel free to jump to the section you are interested
 in, but note that some sections refer back to values built in "Creating & loading".
