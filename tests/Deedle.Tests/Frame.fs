@@ -106,6 +106,18 @@ let ``Can read CSV with schema where column name contains parentheses``() =
   df.GetColumn<int>("Count") |> Series.values |> List.ofSeq |> shouldEqual [1; 2]
 
 [<Test>]
+let ``Schema is respected when inferTypes=false (regression #347)``() =
+  // Regression test for issue #347: schema was silently ignored when inferTypes=false
+  let csv = "Name,Value,Flag\nAlice,42,true\nBob,17,false"
+  use reader = new System.IO.StringReader(csv)
+  // Use "Name=type" override-by-name syntax so schema columns are matched by column name
+  let df = Frame.ReadCsv(reader, inferTypes=false, schema="Value=int,Flag=bool")
+  // Schema-specified columns should use the declared types
+  df.GetColumn<int>("Value") |> Series.values |> List.ofSeq |> shouldEqual [42; 17]
+  df.GetColumn<bool>("Flag") |> Series.values |> List.ofSeq |> shouldEqual [true; false]
+  df.ColumnKeys |> List.ofSeq |> shouldEqual ["Name"; "Value"; "Flag"]
+
+[<Test>]
 let ``Can read MSFT data from CSV and rename``() =
   let df = Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/data/MSFT.csv", schema="Day,Adj Close->Adjusted")
   let actual = List.ofSeq df.ColumnKeys
@@ -271,8 +283,28 @@ let ``Can save MSFT data as CSV file and read it afterwards (with custom format)
   actual |> shouldEqual expected
 
 [<Test>]
+let ``Can read CSV file with non-UTF8 encoding using path overload`` () =
+  let file = System.IO.Path.GetTempFileName()
+  let csvContent = "Name,Value\nCafe,1\nNaive,2\n"
+  let latin1 = System.Text.Encoding.GetEncoding("iso-8859-1")
+  System.IO.File.WriteAllText(file, csvContent, latin1)
+  let df = Frame.ReadCsv(file, encoding = latin1)
+  df.RowCount |> shouldEqual 2
+  df.GetColumn<string>("Name") |> Series.values |> List.ofSeq |> shouldEqual ["Cafe"; "Naive"]
+  System.IO.File.Delete(file)
+
+[<Test>]
+let ``Can read CSV stream with non-UTF8 encoding using stream overload`` () =
+  let csvContent = "Name,Value\nCafe,1\n"
+  let latin1 = System.Text.Encoding.GetEncoding("iso-8859-1")
+  let bytes = latin1.GetBytes(csvContent)
+  use stream = new System.IO.MemoryStream(bytes)
+  let df = Frame.ReadCsv(stream, encoding = latin1)
+  df.RowCount |> shouldEqual 1
+  df.GetColumn<string>("Name") |> Series.values |> List.ofSeq |> shouldEqual ["Cafe"]
+
+[<Test>]
 let ``SaveCsv uses correct CultureInfo for OptionalValue float columns`` () =
-  // Regression test for #544 – OptionalValue<T> columns must honour CultureInfo in SaveCsv.
   let deDe = System.Globalization.CultureInfo.GetCultureInfo("de-DE")
   let builder = System.Text.StringBuilder()
   use writer = new System.IO.StringWriter(builder)
@@ -312,6 +344,46 @@ let ``SaveCsv uses correct CultureInfo for OptionalValue float columns (verify n
   // (it would appear if culture was ignored). We check both columns use ','
   csv |> should contain "1,1"
   csv |> should contain "2,2"
+
+// Discriminated union type used in CSV writer tests below.
+type private TwoValueDU = | DU_A | DU_B
+
+[<Test>]
+let ``SaveCsv serialises discriminated union columns correctly`` () =
+  // Regression / performance test for #564.
+  // DU values that don't implement IFormattable must still be serialised via ToString().
+  let builder = System.Text.StringBuilder()
+  use writer = new System.IO.StringWriter(builder)
+  let df =
+    frame
+      [ "Col" =?> series [ 0 => DU_A; 1 => DU_B; 2 => DU_A ] ]
+  FrameExtensions.SaveCsv(df, writer, false, null, ',', System.Globalization.CultureInfo.InvariantCulture)
+  let csv = builder.ToString()
+  csv |> should contain "DU_A"
+  csv |> should contain "DU_B"
+  let lines = csv.Split([|'\n';'\r'|], StringSplitOptions.RemoveEmptyEntries)
+  // Header + 3 data rows
+  lines.Length |> shouldEqual 4
+  lines.[1] |> should contain "DU_A"
+  lines.[2] |> should contain "DU_B"
+  lines.[3] |> should contain "DU_A"
+
+[<Test>]
+let ``SaveCsv correctly caches repeated discriminated union values`` () =
+  // Verify that the ToString() cache in writeCsv produces the same output as a
+  // naive (uncached) implementation: each unique DU value must appear the correct
+  // number of times regardless of the cache.
+  let N = 200  // large enough to exceed trivial paths
+  let values = Array.init N (fun i -> if i % 2 = 0 then DU_A else DU_B)
+  let df = frame [ "V" =?> Series.ofValues values ]
+  let builder = System.Text.StringBuilder()
+  use writer = new System.IO.StringWriter(builder)
+  FrameExtensions.SaveCsv(df, writer, false, null, ',', System.Globalization.CultureInfo.InvariantCulture)
+  let csv = builder.ToString()
+  let aCount = csv.Split([|'\n'|]) |> Array.filter (fun l -> l.Trim() = "DU_A") |> Array.length
+  let bCount = csv.Split([|'\n'|]) |> Array.filter (fun l -> l.Trim() = "DU_B") |> Array.length
+  aCount |> shouldEqual 100
+  bCount |> shouldEqual 100
 
 [<Test>]
 let ``Can create frame from IDataReader``() =
@@ -743,6 +815,81 @@ let ``distinctRowsBy with all duplicate rows returns one row`` () =
   result.RowCount |> shouldEqual 1
 
 // ------------------------------------------------------------------------------------------------
+// Frame.mapCols / mapColValues / mapRows / mapRowValues / mapColKeys / mapRowKeys
+// ------------------------------------------------------------------------------------------------
+
+let mapSample() =
+  frame [ "A" =?> series [ 1 => 1.0; 2 => 2.0; 3 => 3.0 ]
+          "B" =?> series [ 1 => 10.0; 2 => 20.0; 3 => 30.0 ] ]
+
+[<Test>]
+let ``Frame.mapColValues applies function to each object-series column`` () =
+  let df = mapSample()
+  // mapColValues receives ObjectSeries<'R> (Series<'R, obj>); map to a typed result
+  let result = df |> Frame.mapColValues (fun (s:ObjectSeries<int>) -> s.As<float>() |> Series.mapValues ((*) 2.0))
+  result.GetColumn<float>("A") |> shouldEqual (series [ 1 => 2.0; 2 => 4.0; 3 => 6.0 ])
+  result.GetColumn<float>("B") |> shouldEqual (series [ 1 => 20.0; 2 => 40.0; 3 => 60.0 ])
+
+[<Test>]
+let ``Frame.mapCols passes key and object-series to function`` () =
+  let df = mapSample()
+  // mapCols receives (key, ObjectSeries<'R>); we use Stats.sum on the untyped column
+  let result = df |> Frame.mapCols (fun k (s:ObjectSeries<int>) ->
+    let sumVal = s.As<float>() |> Stats.sum
+    series [ 0 => if k = "A" then sumVal + 100.0 else sumVal + 200.0 ])
+  result.GetColumn<float>("A").[0] |> should beWithin (106.0 +/- 1e-9)  // 1+2+3+100
+  result.GetColumn<float>("B").[0] |> should beWithin (260.0 +/- 1e-9)  // 10+20+30+200
+
+[<Test>]
+let ``Frame.mapColValues preserves column keys`` () =
+  let df = mapSample()
+  let result = df |> Frame.mapColValues (fun (s:ObjectSeries<int>) -> s.As<float>() |> Series.mapValues id)
+  result.ColumnKeys |> Seq.toList |> shouldEqual [ "A"; "B" ]
+
+[<Test>]
+let ``Frame.mapRowValues applies function to each object row`` () =
+  let df = mapSample()
+  // Sum the two numeric columns for each row
+  let result : Series<int, float> =
+    df |> Frame.mapRowValues (fun row -> row.GetAs<float>("A") + row.GetAs<float>("B"))
+  result |> shouldEqual (series [ 1 => 11.0; 2 => 22.0; 3 => 33.0 ])
+
+[<Test>]
+let ``Frame.mapRows passes row key and object row to function`` () =
+  let df = mapSample()
+  let result : Series<int, float> =
+    df |> Frame.mapRows (fun k row -> float k + row.GetAs<float>("A"))
+  result |> shouldEqual (series [ 1 => 2.0; 2 => 4.0; 3 => 6.0 ])
+
+[<Test>]
+let ``Frame.mapColKeys renames columns`` () =
+  let df = mapSample()
+  let result = df |> Frame.mapColKeys (fun k -> k + "_new")
+  result.ColumnKeys |> Seq.toList |> shouldEqual [ "A_new"; "B_new" ]
+  result.RowCount |> shouldEqual 3
+
+[<Test>]
+let ``Frame.mapRowKeys remaps row keys`` () =
+  let df = mapSample()
+  let result = df |> Frame.mapRowKeys (fun k -> k * 10)
+  result.RowKeys |> Seq.toList |> shouldEqual [ 10; 20; 30 ]
+  result.ColumnCount |> shouldEqual 2
+
+[<Test>]
+let ``Frame.filterColValues keeps only matching columns`` () =
+  let df = mapSample()
+  // Keep only columns where the sum of values is greater than 5
+  let result = df |> Frame.filterColValues (fun (s:ObjectSeries<int>) -> s.As<float>() |> Stats.sum > 9.0)
+  result.ColumnKeys |> Seq.toList |> shouldEqual [ "B" ]  // B sums to 60 (>9), A sums to 6 (<= 9)
+
+[<Test>]
+let ``Frame.filterCols passes key and series to predicate`` () =
+  let df = mapSample()
+  let result = df |> Frame.filterCols (fun k _ -> k = "A")
+  result.ColumnKeys |> Seq.toList |> shouldEqual [ "A" ]
+  result.RowCount |> shouldEqual 3
+
+// ------------------------------------------------------------------------------------------------
 // Slices
 // ------------------------------------------------------------------------------------------------
 
@@ -758,6 +905,16 @@ let ``Frame Slice works``() =
             "Z" => series [| "a" => 7.0; "e" => 9.0 |] ]
 
   df |> Frame.slice [|"Y"; "Z"|] [|"a"; "e"|] |> shouldEqual expectedFrame
+
+[<Test>]
+let ``Frame.rowsAfter, rowsBefore, rowsStartAt, rowsEndAt, rowsBetween work on ordered int keys``() =
+  let df =
+    frame [ "V" => series [ 1 => 10; 2 => 20; 3 => 30; 4 => 40; 5 => 50 ] ]
+  df |> Frame.rowsAfter 2   |> Frame.countRows |> shouldEqual 3
+  df |> Frame.rowsBefore 4  |> Frame.countRows |> shouldEqual 3
+  df |> Frame.rowsStartAt 2 |> Frame.countRows |> shouldEqual 4
+  df |> Frame.rowsEndAt 4   |> Frame.countRows |> shouldEqual 4
+  df |> Frame.rowsBetween 2 4 |> Frame.countRows |> shouldEqual 3
 
 // ------------------------------------------------------------------------------------------------
 // Row access
@@ -2193,3 +2350,43 @@ let ``Frame.empty can have columns added to it`` () =
   let result = df |> Frame.addCol "A" s
   result.ColumnCount |> shouldEqual 1
   result.RowCount |> shouldEqual 2
+
+// ------------------------------------------------------------------------------------------------
+// Boolean mask indexing
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Frame.filterRowsByMask returns only rows where mask is true`` () =
+  let df = frame [ "X" =?> series [| "a" => 1.0; "b" => 2.0; "c" => 3.0 |]
+                   "Y" =?> series [| "a" => 10.0; "b" => 20.0; "c" => 30.0 |] ]
+  let mask = series [ "a" => true; "b" => false; "c" => true ]
+  let result = df |> Frame.filterRowsByMask mask
+  result.RowCount |> shouldEqual 2
+  result.GetColumn<float>("X") |> shouldEqual (series [ "a" => 1.0; "c" => 3.0 ])
+
+[<Test>]
+let ``Frame.filterRowsByMask excludes rows with keys missing from mask`` () =
+  let df = frame [ "V" =?> series [| "a" => 1.0; "b" => 2.0; "c" => 3.0 |] ]
+  let mask = series [ "a" => true; "b" => true ]
+  let result = df |> Frame.filterRowsByMask mask
+  result.RowCount |> shouldEqual 2
+  result.GetColumn<float>("V") |> shouldEqual (series [ "a" => 1.0; "b" => 2.0 ])
+
+[<Test>]
+let ``Frame.filterColsByMask returns only columns where mask is true`` () =
+  let df = frame [ "A" =?> series [| 1 => 1.0; 2 => 2.0 |]
+                   "B" =?> series [| 1 => 3.0; 2 => 4.0 |]
+                   "C" =?> series [| 1 => 5.0; 2 => 6.0 |] ]
+  let mask = series [ "A" => true; "B" => false; "C" => true ]
+  let result = df |> Frame.filterColsByMask mask
+  result.ColumnCount |> shouldEqual 2
+  result.ColumnKeys |> Seq.toList |> shouldEqual ["A"; "C"]
+
+[<Test>]
+let ``Frame.filterRowsByMask can be used with derived boolean series`` () =
+  let df = frame [ "Age"  =?> series [| "Alice" => 25; "Bob" => 17; "Carol" => 32 |]
+                   "Name" =?> series [| "Alice" => "Alice"; "Bob" => "Bob"; "Carol" => "Carol" |] ]
+  let adults = df.GetColumn<int>("Age") |> Series.mapValues (fun age -> age >= 18)
+  let result = df |> Frame.filterRowsByMask adults
+  result.RowCount |> shouldEqual 2
+  result.RowKeys |> Seq.toList |> shouldEqual ["Alice"; "Carol"]

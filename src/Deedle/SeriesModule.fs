@@ -460,6 +460,59 @@ module Series =
   [<CompiledName("GetKeys")>]
   let keys (series:Series<'K, 'T>) = series.Keys
 
+  /// <summary>
+  /// Returns a new series containing all values with keys strictly greater than
+  /// <c>lowerExclusive</c>. This is the functional equivalent of <c>series.After(k)</c>.
+  /// </summary>
+  /// <param name="lowerExclusive">The exclusive lower bound key.</param>
+  /// <param name="series">The input series.</param>
+  /// <category>Accessing series data and lookup</category>
+  [<CompiledName("After")>]
+  let after lowerExclusive (series:Series<'K, 'T>) = series.After(lowerExclusive)
+
+  /// <summary>
+  /// Returns a new series containing all values with keys strictly less than
+  /// <c>upperExclusive</c>. This is the functional equivalent of <c>series.Before(k)</c>.
+  /// </summary>
+  /// <param name="upperExclusive">The exclusive upper bound key.</param>
+  /// <param name="series">The input series.</param>
+  /// <category>Accessing series data and lookup</category>
+  [<CompiledName("Before")>]
+  let before upperExclusive (series:Series<'K, 'T>) = series.Before(upperExclusive)
+
+  /// <summary>
+  /// Returns a new series containing all values with keys greater than or equal to
+  /// <c>lowerInclusive</c>. This is the functional equivalent of <c>series.StartAt(k)</c>.
+  /// </summary>
+  /// <param name="lowerInclusive">The inclusive lower bound key.</param>
+  /// <param name="series">The input series.</param>
+  /// <category>Accessing series data and lookup</category>
+  [<CompiledName("StartAt")>]
+  let startAt lowerInclusive (series:Series<'K, 'T>) = series.StartAt(lowerInclusive)
+
+  /// <summary>
+  /// Returns a new series containing all values with keys less than or equal to
+  /// <c>upperInclusive</c>. This is the functional equivalent of <c>series.EndAt(k)</c>.
+  /// </summary>
+  /// <param name="upperInclusive">The inclusive upper bound key.</param>
+  /// <param name="series">The input series.</param>
+  /// <category>Accessing series data and lookup</category>
+  [<CompiledName("EndAt")>]
+  let endAt upperInclusive (series:Series<'K, 'T>) = series.EndAt(upperInclusive)
+
+  /// <summary>
+  /// Returns a new series containing all values with keys in the range
+  /// [<c>lowerInclusive</c>, <c>upperInclusive</c>] (both bounds inclusive).
+  /// This is the functional equivalent of <c>series.Between(lo, hi)</c>.
+  /// </summary>
+  /// <param name="lowerInclusive">The inclusive lower bound key.</param>
+  /// <param name="upperInclusive">The inclusive upper bound key.</param>
+  /// <param name="series">The input series.</param>
+  /// <category>Accessing series data and lookup</category>
+  [<CompiledName("Between")>]
+  let between lowerInclusive upperInclusive (series:Series<'K, 'T>) =
+    series.Between(lowerInclusive, upperInclusive)
+
   // ------------------------------------------------------------------------------------
   // Series transformations
   // ------------------------------------------------------------------------------------
@@ -494,6 +547,21 @@ module Series =
     series.WhereOptional(fun kvp -> f kvp.Key (OptionalValue.asOption kvp.Value))
 
   /// <summary>
+  /// Returns a new series containing only the elements of the input series whose key
+  /// maps to <c>true</c> in the given boolean mask series. Keys that are missing from
+  /// the mask are excluded. This enables pandas-style boolean indexing.
+  /// </summary>
+  /// <param name="mask">A series of boolean values indexed by the same key type</param>
+  /// <param name="series">The input series to filter</param>
+  /// <category>Series transformations</category>
+  [<CompiledName("FilterByMask")>]
+  let filterByMask (mask:Series<'K, bool>) (series:Series<'K, 'T>) =
+    series |> filter (fun k _ ->
+      match mask.TryGet(k) with
+      | OptionalValue.Present v -> v
+      | OptionalValue.Missing -> false)
+
+  /// <summary>
   /// Returns a new series whose values are the results of applying the given function to
   /// values of the original series. This function skips over missing values and call the
   /// function with both keys and values.
@@ -525,6 +593,30 @@ module Series =
   let mapAll (f:_ -> _ -> option<'R>) (series:Series<'K, 'T>) =
     series.SelectOptional(fun kvp ->
       f kvp.Key (OptionalValue.asOption kvp.Value) |> OptionalValue.ofOption)
+
+  /// <summary>
+  /// Returns a new series with values replaced by missing where the predicate returns `true`.
+  /// The predicate is called with both the key and an optional value (to handle missing values).
+  /// This is the complement of `filterAll`: instead of dropping matching entries the values are
+  /// replaced with missing so that the key alignment of the series is preserved.
+  /// </summary>
+  /// <category>Series transformations</category>
+  [<CompiledName("MaskAll")>]
+  let maskAll f (series:Series<'K, 'T>) =
+    series.SelectOptional(fun kvp ->
+      if f kvp.Key (OptionalValue.asOption kvp.Value) then OptionalValue.Missing
+      else kvp.Value)
+
+  /// <summary>
+  /// Returns a new series with values replaced by missing where the predicate returns `true`.
+  /// The predicate is called with the value only; missing values are never masked by this function.
+  /// </summary>
+  /// <category>Series transformations</category>
+  [<CompiledName("MaskValues")>]
+  let maskValues f (series:Series<'K, 'T>) =
+    series.SelectOptional(fun kvp ->
+      if kvp.Value.HasValue && f kvp.Value.Value then OptionalValue.Missing
+      else kvp.Value)
 
   /// <summary>
   /// Returns a new series whose keys are the results of applying the given function to

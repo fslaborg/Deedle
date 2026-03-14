@@ -339,6 +339,12 @@ module internal FrameUtils =
             else innerType, None
       else typ, opt
 
+    // Cache to avoid repeated ToString() calls for the same value. This is particularly
+    // valuable for columns containing discriminated unions or enum-like types, where
+    // the same few values repeat many thousands of times across rows. We cap the cache
+    // at 4096 entries to bound memory usage for high-cardinality columns.
+    let toStringCache = System.Collections.Generic.Dictionary<obj, string>()
+
     // Format optional value, applying CultureInfo for IFormattable types.
     let formatOptional (typ, opt:obj option) =
       let typ, opt = unwrapOptionalValue typ opt
@@ -347,7 +353,13 @@ module internal FrameUtils =
       | Some value, (true, formatter) -> formatter value
       | Some value, _ when typeof<IFormattable>.IsAssignableFrom(typ) ->
             formatFormattable (unbox value)
-      | Some value, _ -> formatPlainString <| value.ToString()
+      | Some value, _ ->
+            match toStringCache.TryGetValue(value) with
+            | true, s -> s
+            | false, _ ->
+                let s = formatPlainString <| value.ToString()
+                if toStringCache.Count < 4096 then toStringCache.[value] <- s
+                s
 
 
     // Get the data from the data frame
@@ -626,10 +638,18 @@ module internal FrameUtils =
     // to load information about types in the CSV file. By default, use the first
     // 100 rows (but inferRows can be set to another value). Otherwise we just
     // "infer" all columns as string.
+    // Note: when inferTypes=false but a schema is provided, the schema is still applied
+    // so that the caller's explicit type overrides are respected.
     let inferredProperties =
       let data = CsvFile.Load(stream, ?separators=separators, ?hasHeaders=hasHeaders)
       match inferTypes with
       | Some true | None ->
+          data.InferColumnTypes(inferRows, missingValues, cultureInfo, schema, safeMode, preferOptionals)
+          |> Array.ofSeq
+      | Some false when schema <> "" ->
+          // Schema provided: apply the schema overrides (columns not in the schema
+          // will still be inferred from data, which is the most useful behaviour
+          // when the caller has specified explicit types for some columns).
           data.InferColumnTypes(inferRows, missingValues, cultureInfo, schema, safeMode, preferOptionals)
           |> Array.ofSeq
       | Some false ->

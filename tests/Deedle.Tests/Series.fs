@@ -519,6 +519,45 @@ let ``FillMissingUsing nan shall still return series with missing value``() =
   actual |> shouldEqual s
 
 // ------------------------------------------------------------------------------------------------
+// Series.maskValues and Series.maskAll
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``maskValues replaces matching values with missing`` () =
+  let s = series [ 1 => 1.0; 2 => 2.0; 3 => 3.0; 4 => 4.0 ]
+  let masked = s |> Series.maskValues (fun v -> v > 2.0)
+  masked.[1] |> shouldEqual 1.0
+  masked.[2] |> shouldEqual 2.0
+  masked.TryGet(3).HasValue |> shouldEqual false
+  masked.TryGet(4).HasValue |> shouldEqual false
+  masked.KeyCount |> shouldEqual 4
+
+[<Test>]
+let ``maskValues preserves existing missing values`` () =
+  let s = series [ 1 => 1.0; 2 => nan; 3 => 3.0 ]
+  let masked = s |> Series.maskValues (fun v -> v > 2.0)
+  masked.[1] |> shouldEqual 1.0
+  masked.TryGet(2).HasValue |> shouldEqual false
+  masked.TryGet(3).HasValue |> shouldEqual false
+  masked.KeyCount |> shouldEqual 3
+
+[<Test>]
+let ``maskAll can mask on key-value predicate`` () =
+  let s = series [ 1 => 10.0; 2 => 20.0; 3 => 30.0 ]
+  let masked = s |> Series.maskAll (fun k _ -> k = 2)
+  masked.[1] |> shouldEqual 10.0
+  masked.TryGet(2).HasValue |> shouldEqual false
+  masked.[3] |> shouldEqual 30.0
+
+[<Test>]
+let ``maskAll with existing missing value is passed None`` () =
+  let s = series [ 1 => 1.0; 2 => nan; 3 => 3.0 ]
+  let maskedNones = s |> Series.maskAll (fun _ v -> v.IsNone)
+  maskedNones.[1] |> shouldEqual 1.0
+  maskedNones.TryGet(2).HasValue |> shouldEqual false
+  maskedNones.[3] |> shouldEqual 3.0
+
+// ------------------------------------------------------------------------------------------------
 // Sorting and reindexing
 // ------------------------------------------------------------------------------------------------
 
@@ -790,6 +829,41 @@ let ``SeriesExtensions.After works when the key is before, after or in range``()
   s.After(15.0).Values |> List.ofSeq |> shouldEqual [ 16 .. 20 ]
   s.After(5.00).Values |> List.ofSeq |> shouldEqual [ 10 .. 20 ]
   s.After(25.0).Values |> List.ofSeq |> shouldEqual [ ]
+
+[<Test>]
+let ``Series.after module function matches member After``() =
+  let s = series [ for i in 10.0 .. 20.0 -> i => int i ]
+  s |> Series.after 15.0 |> Series.values |> List.ofSeq |> shouldEqual [ 16 .. 20 ]
+  s |> Series.after 5.0  |> Series.values |> List.ofSeq |> shouldEqual [ 10 .. 20 ]
+  s |> Series.after 25.0 |> Series.values |> List.ofSeq |> shouldEqual [ ]
+
+[<Test>]
+let ``Series.before module function matches member Before``() =
+  let s = series [ for i in 10.0 .. 20.0 -> i => int i ]
+  s |> Series.before 15.0 |> Series.values |> List.ofSeq |> shouldEqual [ 10 .. 14 ]
+  s |> Series.before 5.0  |> Series.values |> List.ofSeq |> shouldEqual [ ]
+  s |> Series.before 25.0 |> Series.values |> List.ofSeq |> shouldEqual [ 10 .. 20 ]
+
+[<Test>]
+let ``Series.startAt module function matches member StartAt``() =
+  let s = series [ for i in 10.0 .. 20.0 -> i => int i ]
+  s |> Series.startAt 15.0 |> Series.values |> List.ofSeq |> shouldEqual [ 15 .. 20 ]
+  s |> Series.startAt 5.0  |> Series.values |> List.ofSeq |> shouldEqual [ 10 .. 20 ]
+  s |> Series.startAt 25.0 |> Series.values |> List.ofSeq |> shouldEqual [ ]
+
+[<Test>]
+let ``Series.endAt module function matches member EndAt``() =
+  let s = series [ for i in 10.0 .. 20.0 -> i => int i ]
+  s |> Series.endAt 15.0 |> Series.values |> List.ofSeq |> shouldEqual [ 10 .. 15 ]
+  s |> Series.endAt 5.0  |> Series.values |> List.ofSeq |> shouldEqual [ ]
+  s |> Series.endAt 25.0 |> Series.values |> List.ofSeq |> shouldEqual [ 10 .. 20 ]
+
+[<Test>]
+let ``Series.between module function returns inclusive range``() =
+  let s = series [ for i in 10.0 .. 20.0 -> i => int i ]
+  s |> Series.between 13.0 17.0 |> Series.values |> List.ofSeq |> shouldEqual [ 13 .. 17 ]
+  s |> Series.between 5.0 25.0  |> Series.values |> List.ofSeq |> shouldEqual [ 10 .. 20 ]
+  s |> Series.between 5.0 5.0   |> Series.values |> List.ofSeq |> shouldEqual [ ]
 
 [<Test>]
 let ``Slicing of ordered series works when using inexact keys (below, inside, above) key range``() =
@@ -1140,6 +1214,30 @@ let ``Series.empty is distinct per type instantiation`` () =
   ss.KeyCount |> shouldEqual 0
 
 // ------------------------------------------------------------------------------------------------
+// Boolean mask indexing
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Series.filterByMask returns only elements where mask is true`` () =
+  let s = series [ "a" => 1.0; "b" => 2.0; "c" => 3.0; "d" => 4.0 ]
+  let mask = series [ "a" => true; "b" => false; "c" => true; "d" => false ]
+  let result = s |> Series.filterByMask mask
+  result |> shouldEqual (series [ "a" => 1.0; "c" => 3.0 ])
+
+[<Test>]
+let ``Series.filterByMask excludes keys missing from mask`` () =
+  let s = series [ "a" => 10.0; "b" => 20.0; "c" => 30.0 ]
+  let mask = series [ "a" => true; "c" => false ]
+  let result = s |> Series.filterByMask mask
+  result |> shouldEqual (series [ "a" => 10.0 ])
+
+[<Test>]
+let ``Series.filterByMask returns empty series when mask is all false`` () =
+  let s = series [ 1 => "x"; 2 => "y"; 3 => "z" ]
+  let mask = series [ 1 => false; 2 => false; 3 => false ]
+  let result = s |> Series.filterByMask mask
+  result.KeyCount |> shouldEqual 0
+
 // Series.flatten, Series.convert, Series.applyLevel, Series.reduceLevel
 // ------------------------------------------------------------------------------------------------
 
