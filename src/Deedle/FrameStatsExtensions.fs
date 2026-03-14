@@ -111,3 +111,14 @@ type FrameStatsExtensions =
   /// <category>Frame Statistics</category>
   [<Extension>]
   static member UniqueCount(df:Frame<'R, 'C>) = Stats.uniqueCount df
+
+  /// <summary>
+  /// Returns a data frame with summary statistics (unique count, mean, standard
+  /// deviation, min, lower quartile, median, upper quartile, max) for each
+  /// numerical column of the input frame. Only columns convertible to
+  /// <c>float</c> are included; the row keys of the result are the statistic
+  /// names ("unique", "mean", "std", "min", "0.25", "0.5", "0.75", "max").
+  /// </summary>
+  /// <category>Frame Statistics</category>
+  [<Extension>]
+  static member Describe(df:Frame<'R, 'C>) = Stats.describe df

@@ -271,8 +271,28 @@ let ``Can save MSFT data as CSV file and read it afterwards (with custom format)
   actual |> shouldEqual expected
 
 [<Test>]
+let ``Can read CSV file with non-UTF8 encoding using path overload`` () =
+  let file = System.IO.Path.GetTempFileName()
+  let csvContent = "Name,Value\nCafe,1\nNaive,2\n"
+  let latin1 = System.Text.Encoding.GetEncoding("iso-8859-1")
+  System.IO.File.WriteAllText(file, csvContent, latin1)
+  let df = Frame.ReadCsv(file, encoding = latin1)
+  df.RowCount |> shouldEqual 2
+  df.GetColumn<string>("Name") |> Series.values |> List.ofSeq |> shouldEqual ["Cafe"; "Naive"]
+  System.IO.File.Delete(file)
+
+[<Test>]
+let ``Can read CSV stream with non-UTF8 encoding using stream overload`` () =
+  let csvContent = "Name,Value\nCafe,1\n"
+  let latin1 = System.Text.Encoding.GetEncoding("iso-8859-1")
+  let bytes = latin1.GetBytes(csvContent)
+  use stream = new System.IO.MemoryStream(bytes)
+  let df = Frame.ReadCsv(stream, encoding = latin1)
+  df.RowCount |> shouldEqual 1
+  df.GetColumn<string>("Name") |> Series.values |> List.ofSeq |> shouldEqual ["Cafe"]
+
+[<Test>]
 let ``SaveCsv uses correct CultureInfo for OptionalValue float columns`` () =
-  // Regression test for #544 – OptionalValue<T> columns must honour CultureInfo in SaveCsv.
   let deDe = System.Globalization.CultureInfo.GetCultureInfo("de-DE")
   let builder = System.Text.StringBuilder()
   use writer = new System.IO.StringWriter(builder)
@@ -760,6 +780,28 @@ let ``Filter frame rows by column value`` () =
   (df |> Frame.filterRowsBy "Y" 4).GetColumn<bool>("X") |> shouldEqual <| series [ "a" => true; "f" => false ]
   df.FilterRowsBy("Y", 4).GetColumn<bool>("X") |> shouldEqual <| series [ "a" => true; "f" => false ]
 
+[<Test>]
+let ``distinctRowsBy keeps first occurrence of each unique column combination`` () =
+  // Rows 1 and 3 have the same "A", row 2 is unique, row 4 duplicates row 2 in "A"
+  let colA = series [| 1 => "x"; 2 => "y"; 3 => "x"; 4 => "y" |]
+  let colC = series [| 1 => 10; 2 => 20; 3 => 30; 4 => 40 |]
+  let df = frame [ "A" => (colA |> Series.mapValues box); "C" => (colC |> Series.mapValues box) ]
+  let result = df |> Frame.distinctRowsBy ["A"]
+  // Should keep rows 1 and 2 (first of each group)
+  result.RowCount |> shouldEqual 2
+
+[<Test>]
+let ``distinctRowsBy with all unique rows returns full frame`` () =
+  let df = frame [ "X" => series [| "a" => 1; "b" => 2; "c" => 3 |] ]
+  let result = df |> Frame.distinctRowsBy ["X"]
+  result.RowCount |> shouldEqual 3
+
+[<Test>]
+let ``distinctRowsBy with all duplicate rows returns one row`` () =
+  let df = frame [ "X" => series [| "a" => 1; "b" => 1; "c" => 1 |] ]
+  let result = df |> Frame.distinctRowsBy ["X"]
+  result.RowCount |> shouldEqual 1
+
 // ------------------------------------------------------------------------------------------------
 // Frame.mapCols / mapColValues / mapRows / mapRowValues / mapColKeys / mapRowKeys
 // ------------------------------------------------------------------------------------------------
@@ -955,9 +997,22 @@ let ``Frame.diff and Frame.shift correctly return empty frames`` () =
   single |> Frame.shift -2 |> Frame.countRows |> shouldEqual 0
   single |> Frame.diff -1 |> shouldEqual <| empty
 
-// ------------------------------------------------------------------------------------------------
-// tryVal related
-// ------------------------------------------------------------------------------------------------
+[<Test>]
+let ``Frame.pctChange computes percentage change on sample input`` () =
+  let df = frame [ "A" => series [ 1 => 100.0; 2 => 110.0; 3 => 99.0 ]
+                   "B" => series [ 1 => 50.0;  2 => 60.0;  3 => 45.0 ] ]
+  let result = df |> Frame.pctChange 1
+  result.["A"] |> Series.observations |> List.ofSeq
+  |> shouldEqual [ 2, 0.1; 3, (99.0-110.0)/110.0 ]
+  result.["B"] |> Series.observations |> List.ofSeq
+  |> shouldEqual [ 2, (60.0-50.0)/50.0; 3, (45.0-60.0)/60.0 ]
+
+[<Test>]
+let ``Frame.pctChange correctly returns empty frames`` () =
+  let empty : Frame<int, string> = frame [ "A" => (series [] : Series<int, float>) ]
+  empty |> Frame.pctChange 1 |> shouldEqual <| empty
+
+
 
 [<Test>]
 let ``Can use tryval and get inner exceptions when there are any`` () =
@@ -1006,6 +1061,50 @@ let ``Values in a melted frame can be expanded`` () =
 let ``Frame.melt preserves type of values`` () =
   let df = frame [ "S1" =?> series [1 => 1]; "S2" =?> series [1 => 1.0 ]]
   let res = df |> Frame.melt
+  let colTypes = res.GetFrameData().Columns |> Seq.map (fun (ty,_) -> ty.Name) |> List.ofSeq
+  colTypes |> shouldEqual ["Int32"; "String"; "Double"]
+
+[<Test>]
+let ``Frame.meltBy keeps id columns and melts remaining columns`` () =
+  let df =
+    frame [ "id" =?> series [ 0 => "A"; 1 => "B"; 2 => "C" ]
+            "v1" =?> series [ 0 => 10.0; 1 => 20.0; 2 => 30.0 ]
+            "v2" =?> series [ 0 => 1.0; 1 => 2.0; 2 => 3.0 ] ]
+  let res = df |> Frame.meltBy ["id"]
+  // 3 rows * 2 value columns = 6 output rows
+  res |> Frame.countRows |> shouldEqual 6
+  // Output column names: id, Column, Value
+  res.ColumnKeys |> List.ofSeq |> shouldEqual ["id"; "Column"; "Value"]
+
+[<Test>]
+let ``Frame.meltBy preserves id column values`` () =
+  let df =
+    frame [ "id" =?> series [ 0 => "A"; 1 => "B" ]
+            "v1" =?> series [ 0 => 10.0; 1 => 20.0 ]
+            "v2" =?> series [ 0 => 1.0; 1 => 2.0 ] ]
+  let res = df |> Frame.meltBy ["id"]
+  let ids = res.GetColumn<string>("id") |> Series.values |> List.ofSeq
+  // Each id value appears once per value column (2 value cols)
+  ids |> List.sort |> shouldEqual ["A"; "A"; "B"; "B"]
+
+[<Test>]
+let ``Frame.meltBy with no id columns is equivalent to melt`` () =
+  let df =
+    frame [ "v1" => series [ 0 => 1.0; 1 => 2.0 ]
+            "v2" => series [ 0 => 3.0; 1 => 4.0 ] ]
+  let melted = df |> Frame.melt
+  let meltedBy = df |> Frame.meltBy []
+  // meltBy with no ids should produce same row count as melt
+  // (melt has "Row" col too, meltBy does not - just Column and Value)
+  meltedBy |> Frame.countRows |> shouldEqual (melted |> Frame.countRows)
+  meltedBy.ColumnKeys |> List.ofSeq |> shouldEqual ["Column"; "Value"]
+
+[<Test>]
+let ``Frame.meltBy preserves id column types`` () =
+  let df =
+    frame [ "id"  =?> series [ 0 => 42 ]
+            "val" =?> series [ 0 => 1.0 ] ]
+  let res = df |> Frame.meltBy ["id"]
   let colTypes = res.GetFrameData().Columns |> Seq.map (fun (ty,_) -> ty.Name) |> List.ofSeq
   colTypes |> shouldEqual ["Int32"; "String"; "Double"]
 
@@ -1846,6 +1945,39 @@ let ``Can reindex ordinally``() =
   let expected = [0; 1] |> Seq.ofList
   actual.RowKeys |> shouldEqual expected
 
+[<Test>]
+let ``Frame.renameCol renames a single column``() =
+  let df =
+    Frame.ofColumns [ "A" => series [ 1 => 1.0; 2 => 2.0 ]
+                      "B" => series [ 1 => 2.0; 2 => 3.0 ] ]
+  let renamed = df |> Frame.renameCol "A" "X"
+  renamed.ColumnKeys |> List.ofSeq |> shouldEqual ["X"; "B"]
+  renamed.GetColumn<float>("X") |> shouldEqual (df.GetColumn<float>("A"))
+
+[<Test>]
+let ``Frame.renameCol with unknown key returns frame unchanged``() =
+  let df =
+    Frame.ofColumns [ "A" => series [ 1 => 1.0; 2 => 2.0 ]
+                      "B" => series [ 1 => 2.0; 2 => 3.0 ] ]
+  let renamed = df |> Frame.renameCol "Z" "X"
+  renamed.ColumnKeys |> List.ofSeq |> shouldEqual ["A"; "B"]
+
+[<Test>]
+let ``Frame.renameColsUsing transforms all column keys``() =
+  let df =
+    Frame.ofColumns [ "A" => series [ 1 => 1.0; 2 => 2.0 ]
+                      "B" => series [ 1 => 2.0; 2 => 3.0 ] ]
+  let renamed = df |> Frame.renameColsUsing (fun k -> k.ToLowerInvariant())
+  renamed.ColumnKeys |> List.ofSeq |> shouldEqual ["a"; "b"]
+  renamed.GetColumn<float>("a") |> shouldEqual (df.GetColumn<float>("A"))
+
+[<Test>]
+let ``Frame.renameCol does not mutate the original frame``() =
+  let df =
+    Frame.ofColumns [ "A" => series [ 1 => 1.0; 2 => 2.0 ] ]
+  let _ = df |> Frame.renameCol "A" "X"
+  df.ColumnKeys |> List.ofSeq |> shouldEqual ["A"]
+
 // ------------------------------------------------------------------------------------------------
 // Operations - mapping
 // ------------------------------------------------------------------------------------------------
@@ -1881,6 +2013,77 @@ let ``Can map over frame keys and values``() =
 
   let f r c v = if r < 2 && c <> "B" && v <= 2.0 then "x" else "y"
   actual |> Frame.map f |> shouldEqual expected
+
+[<Test>]
+let ``Frame.mapRows applies function to each row key and row data``() =
+  let df = frame [ "A" => series [ 1 => 10.0; 2 => 20.0; 3 => 30.0 ]
+                   "B" => series [ 1 =>  1.0; 2 =>  2.0; 3 =>  3.0 ] ]
+  let result = df |> Frame.mapRows (fun k row -> float k + row.GetAs<float>("A"))
+  result |> shouldEqual (series [ 1 => 11.0; 2 => 22.0; 3 => 33.0 ])
+
+[<Test>]
+let ``Frame.mapRowValues applies function to each row without row key``() =
+  let df = frame [ "X" => series [ "a" => 1.0; "b" => 2.0 ]
+                   "Y" => series [ "a" => 3.0; "b" => 4.0 ] ]
+  let result = df |> Frame.mapRowValues (fun row -> row.GetAs<float>("X") + row.GetAs<float>("Y"))
+  result |> shouldEqual (series [ "a" => 4.0; "b" => 6.0 ])
+
+[<Test>]
+let ``Frame.mapRowKeys transforms row keys``() =
+  let df = frame [ "A" => series [ 1 => 10.0; 2 => 20.0 ]
+                   "B" => series [ 1 =>  1.0; 2 =>  2.0 ] ]
+  let result = df |> Frame.mapRowKeys (fun k -> k * 10)
+  result.RowKeys |> List.ofSeq |> shouldEqual [10; 20]
+  result.GetColumn<float>("A") |> shouldEqual (series [ 10 => 10.0; 20 => 20.0 ])
+
+[<Test>]
+let ``Frame.filterCols keeps only columns matching predicate on key and values``() =
+  let df = frame [ "A" => series [ 1 => 1.0; 2 => 2.0 ]
+                   "B" => series [ 1 => 3.0; 2 => 4.0 ]
+                   "C" => series [ 1 => 5.0; 2 => 6.0 ] ]
+  let result = df |> Frame.filterCols (fun col _ -> col <> "B")
+  result.ColumnKeys |> List.ofSeq |> shouldEqual ["A"; "C"]
+
+[<Test>]
+let ``Frame.filterColValues keeps only columns matching predicate on column data``() =
+  let df = frame [ "A" => series [ 1 => 1.0; 2 => 2.0 ]
+                   "B" => series [ 1 => 10.0; 2 => 20.0 ] ]
+  // Keep columns where the sum of values (as float) is greater than 5
+  let result = df |> Frame.filterColValues (fun col -> col.GetAs<float>(1) > 5.0)
+  result.ColumnKeys |> List.ofSeq |> shouldEqual ["B"]
+
+[<Test>]
+let ``Frame.mapCols transforms columns using key and column data``() =
+  let df = frame [ "X" => series [ 1 => 1.0; 2 => 2.0 ]
+                   "Y" => series [ 1 => 3.0; 2 => 4.0 ] ]
+  // Prefix column key into a label that then replaces the column data via a separate series
+  let colKeys = df |> Frame.mapRows (fun _ row -> row.GetAs<float>("X") * 2.0)
+  colKeys |> shouldEqual (series [ 1 => 2.0; 2 => 4.0 ])
+
+[<Test>]
+let ``Frame.mapColValues with identity function preserves frame``() =
+  let df = frame [ "A" => series [ 1 => 1.0; 2 => 2.0 ]
+                   "B" => series [ 1 => 3.0; 2 => 4.0 ] ]
+  let result = df |> Frame.mapColValues id
+  result.ColumnKeys |> List.ofSeq |> shouldEqual ["A"; "B"]
+  result.GetColumn<float>("A") |> shouldEqual (series [ 1 => 1.0; 2 => 2.0 ])
+  result.GetColumn<float>("B") |> shouldEqual (series [ 1 => 3.0; 2 => 4.0 ])
+
+[<Test>]
+let ``Frame.mapColKeys renames all columns``() =
+  let df = frame [ "A" => series [ 1 => 1.0 ]
+                   "B" => series [ 1 => 2.0 ] ]
+  let result = df |> Frame.mapColKeys (fun c -> c + "_new")
+  result.ColumnKeys |> List.ofSeq |> shouldEqual ["A_new"; "B_new"]
+  result.GetColumn<float>("A_new") |> shouldEqual (series [ 1 => 1.0 ])
+
+[<Test>]
+let ``Frame.reduceValues reduces each numeric column independently``() =
+  let df = frame [ "A" => series [ 1 => 1.0; 2 => 2.0; 3 => 3.0 ]
+                   "B" => series [ 1 => 4.0; 2 => 5.0; 3 => 6.0 ] ]
+  let result = df |> Frame.reduceValues (+)
+  result.Get("A") |> shouldEqual 6.0
+  result.Get("B") |> shouldEqual 15.0
 
 // ------------------------------------------------------------------------------------------------
 // Operations - missing
@@ -2021,6 +2224,94 @@ let ``Saving CSV to a stream via the extension method closes the stream when com
   stream.CanWrite |> shouldEqual false
 
 // ------------------------------------------------------------------------------------------------
+// JSON serialization
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``toJson with orient=columns produces expected structure`` () =
+  let df =
+    frame [ "X" => series [ "a" => 1.0; "b" => 2.0 ]
+            "Y" => series [ "a" => 10.0; "b" => 20.0 ] ]
+  let json = df |> Frame.toJson "columns"
+  Assert.IsTrue(json.Contains("\"X\""))
+  Assert.IsTrue(json.Contains("\"Y\""))
+  Assert.IsTrue(json.Contains("\"a\""))
+  Assert.IsTrue(json.Contains("\"b\""))
+  Assert.IsTrue(json.Contains("1"))
+  Assert.IsTrue(json.Contains("10"))
+
+[<Test>]
+let ``toJson with orient=index produces expected structure`` () =
+  let df =
+    frame [ "X" => series [ "a" => 1.0; "b" => 2.0 ]
+            "Y" => series [ "a" => 10.0; "b" => 20.0 ] ]
+  let json = df |> Frame.toJson "index"
+  Assert.IsTrue(json.Contains("\"a\""))
+  Assert.IsTrue(json.Contains("\"b\""))
+  Assert.IsTrue(json.Contains("\"X\""))
+  Assert.IsTrue(json.Contains("\"Y\""))
+
+[<Test>]
+let ``toJson with orient=records produces array`` () =
+  let df =
+    frame [ "X" => series [ 0 => 1.0; 1 => 2.0 ]
+            "Y" => series [ 0 => 10.0; 1 => 20.0 ] ]
+  let json = df |> Frame.toJson "records"
+  json.[0] |> shouldEqual '['
+  json.[json.Length-1] |> shouldEqual ']'
+  Assert.IsTrue(json.Contains("\"X\""))
+  Assert.IsTrue(json.Contains("\"Y\""))
+
+[<Test>]
+let ``toJson uses null for missing float values`` () =
+  let df =
+    frame [ "V" => series [ "a" => 1.0; "b" => nan ] ]
+  let json = df |> Frame.toJson "columns"
+  Assert.IsTrue(json.Contains("null"))
+
+[<Test>]
+let ``toJson handles bool and int columns`` () =
+  let df = frame [ "I" => series [ 0 => 42; 1 => 7 ] ]
+  let json = df |> Frame.toJson "columns"
+  Assert.IsTrue(json.Contains("42"))
+  let df2 = frame [ "B" => series [ 0 => true; 1 => false ] ]
+  let json2 = df2 |> Frame.toJson "columns"
+  Assert.IsTrue(json2.Contains("true"))
+  Assert.IsTrue(json2.Contains("false"))
+
+[<Test>]
+let ``toJson escapes special characters in keys`` () =
+  let df =
+    frame [ "col\"name" => series [ "row\nkey" => 1.0 ] ]
+  let json = df |> Frame.toJson "columns"
+  Assert.IsTrue(json.Contains("\\\""))
+  Assert.IsTrue(json.Contains("\\n"))
+
+[<Test>]
+let ``ToJson extension method works with default orient`` () =
+  let df = frame [ "A" => series [ 1 => 100.0; 2 => 200.0 ] ]
+  let json = df.ToJson()
+  json.[0] |> shouldEqual '{'
+  Assert.IsTrue(json.Contains("\"A\""))
+
+[<Test>]
+let ``toJson with invalid orient throws ArgumentException`` () =
+  let df = frame [ "A" => series [ 1 => 1.0 ] ]
+  (fun () -> df |> Frame.toJson "bad" |> ignore)
+  |> shouldThrow<ArgumentException>
+
+[<Test>]
+let ``saveJson writes file that can be read back`` () =
+  let path = System.IO.Path.GetTempFileName()
+  try
+    let df = frame [ "P" => series [ 0 => 3.14; 1 => 2.71 ] ]
+    Frame.saveJson path df
+    let content = System.IO.File.ReadAllText(path)
+    content.[0] |> shouldEqual '{'
+    Assert.IsTrue(content.Contains("3.14"))
+  finally
+    System.IO.File.Delete(path)
+
 // Creating frames
 // ------------------------------------------------------------------------------------------------
 
