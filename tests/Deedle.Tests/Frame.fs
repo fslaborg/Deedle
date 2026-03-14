@@ -106,6 +106,18 @@ let ``Can read CSV with schema where column name contains parentheses``() =
   df.GetColumn<int>("Count") |> Series.values |> List.ofSeq |> shouldEqual [1; 2]
 
 [<Test>]
+let ``Schema is respected when inferTypes=false (regression #347)``() =
+  // Regression test for issue #347: schema was silently ignored when inferTypes=false
+  let csv = "Name,Value,Flag\nAlice,42,true\nBob,17,false"
+  use reader = new System.IO.StringReader(csv)
+  // Use "Name=type" override-by-name syntax so schema columns are matched by column name
+  let df = Frame.ReadCsv(reader, inferTypes=false, schema="Value=int,Flag=bool")
+  // Schema-specified columns should use the declared types
+  df.GetColumn<int>("Value") |> Series.values |> List.ofSeq |> shouldEqual [42; 17]
+  df.GetColumn<bool>("Flag") |> Series.values |> List.ofSeq |> shouldEqual [true; false]
+  df.ColumnKeys |> List.ofSeq |> shouldEqual ["Name"; "Value"; "Flag"]
+
+[<Test>]
 let ``Can read MSFT data from CSV and rename``() =
   let df = Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/data/MSFT.csv", schema="Day,Adj Close->Adjusted")
   let actual = List.ofSeq df.ColumnKeys
