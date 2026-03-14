@@ -1,0 +1,2971 @@
+<!DOCTYPE html>
+<html lang="en" data-root="/Deedle/">
+<head>
+    <meta charset="UTF-8">
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="Deedle.Excel" name="author">
+    <!-- Opengraph properties (https://ogp.me/) -->
+    <meta property="og:site_name" content="Deedle">
+    <meta property="og:title" content="Deedle" />
+    <meta property="og:url" content="/Deedle/{{fsdocs-source-basename}}.html">
+    <meta property="og:type" content="website" />
+    <!-- Twitter cards (https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/summary-card-with-large-image) -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="/Deedle/">
+    <meta name="twitter:title" content="Deedle">
+    
+    <title>Deedle | Deedle</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code&display=swap" rel="stylesheet">
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <link href="/Deedle/img/favicon.ico" rel="icon" sizes="32x32" type="image/png"/>
+    <script type="application/javascript" src="/Deedle/content/fsdocs-theme-set-dark.js"></script>
+    <script type="application/javascript" src="/Deedle/content/fsdocs-details-set-expanded.js"></script>
+    <link href="/Deedle/content/fsdocs-default.css" rel="stylesheet" type="text/css"/>
+    <link href="/Deedle/content/fsdocs-theme.css" rel="stylesheet" type="text/css"/>
+    
+    
+</head>
+<body class="api-docs">
+<header>
+    <div class="start">
+        <div id="menu-toggle">
+            <iconify-icon class="icon closed" height="22" icon="eva:menu-fill" width="22"></iconify-icon>
+            <iconify-icon class="icon open" height="22" icon="mi:close" width="22"></iconify-icon>
+            <input type="checkbox" name="mobile-menu" />
+            <ul class="menu">
+                <li class="nav-header">Links</li>
+                <li class="license-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fslaborg/Deedle/blob/master/LICENSE.md">License</a>
+                </li>
+                <li class="release-notes-menu-item builtin-menu-item nav-item"><a class="nav-link"
+                                        href="https://github.com/fslaborg/Deedle/blob/master/RELEASE_NOTES.md">Release
+                    Notes</a></li>
+                <li class="repository-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fslaborg/Deedle/">Source
+                    Repository</a></li>
+                <li class="nav-header ">
+  Documentation
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/tutorial.html">
+    Deedle in 10 minutes using F#
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/frame.html">
+    Working with data frames in F#
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/series.html">
+    Working with series and time series data in F#
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/stats.html">
+    Calculating frame and series statistics
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/lazysource.html">
+    Creating lazily loaded series
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/design.html">
+    F# Data Frame design notes
+  </a>
+</li>
+                <li class="nav-header">
+  API Reference
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="/Deedle/reference/index.html">
+    All Namespaces
+  </a>
+</li>
+            </ul>
+        </div>
+        <a href="/Deedle/">
+            <img alt="Header menu logo" src="/Deedle/img/logo.png">
+            <strong>Deedle</strong>
+        </a>
+    </div>
+    <div class="end">
+        <a href="https://github.com/fslaborg/Deedle/" target="_blank">
+            <iconify-icon icon="uil:github" width="26" height="26"></iconify-icon>
+        </a>
+        <iconify-icon id="search-btn" icon="carbon:search" class="search" width="24" height="24"></iconify-icon>
+        <fsdocs-theme-toggle></fsdocs-theme-toggle>
+    </div>
+</header>
+<aside id="fsdocs-main-menu">
+    <ul class="menu">
+        <li class="nav-header">Links</li>
+        <li class="license-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fslaborg/Deedle/blob/master/LICENSE.md">License</a>
+        </li>
+        <li class="release-notes-menu-item builtin-menu-item nav-item"><a class="nav-link"
+                                href="https://github.com/fslaborg/Deedle/blob/master/RELEASE_NOTES.md">Release
+            Notes</a></li>
+        <li class="repository-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fslaborg/Deedle/">Source
+            Repository</a></li>
+        <li class="nav-header ">
+  Documentation
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/tutorial.html">
+    Deedle in 10 minutes using F#
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/frame.html">
+    Working with data frames in F#
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/series.html">
+    Working with series and time series data in F#
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/stats.html">
+    Calculating frame and series statistics
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/lazysource.html">
+    Creating lazily loaded series
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/design.html">
+    F# Data Frame design notes
+  </a>
+</li>
+        <li class="nav-header">
+  API Reference
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="/Deedle/reference/index.html">
+    All Namespaces
+  </a>
+</li>
+    </ul>
+</aside>
+<main>
+    <div id="content">
+        <div>
+  <h2 id="deedle">
+    Deedle Namespace
+  </h2>
+  <div class="fsdocs-xmldoc"></div>
+  <h3>
+    Contents
+  </h3>
+  <ul>
+    <li>
+      <a href="#category-0_0">
+        Core frame and series types
+      </a>
+    </li>
+    <li>
+      <a href="#category-0_1">
+        Excel integration
+      </a>
+    </li>
+    <li>
+      <a href="#category-0_2">
+        Frame and series operations
+      </a>
+    </li>
+    <li>
+      <a href="#category-0_3">
+        Parameters and results of various operations
+      </a>
+    </li>
+    <li>
+      <a href="#category-0_4">
+        Primitive types and values
+      </a>
+    </li>
+    <li>
+      <a href="#category-0_5">
+        Specialized frame and series types
+      </a>
+    </li>
+    <li>
+      <a href="#category-0_6">
+        Vectors and indices
+      </a>
+    </li>
+  </ul>
+  <h3>
+    <a class="anchor" name="category-0_0" href="#category-0_0">
+      Core frame and series types
+    </a>
+  </h3>
+  <table class="table outer-list fsdocs-entity-list">
+    <thead>
+      <tr>
+        <td>
+          Type/Module
+        </td>
+        <td>
+          Description
+        </td>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="F# Series extensions">
+              <a href="/Deedle/reference/deedle-f__series_extensions.html">
+                F# Series extensions
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ Contains extensions for creating values of type <code>Series&lt;&#39;K, &#39;V&gt;</code> including
+ a type with functions such as `Series.ofValues` and the `series` function.
+ The module is automatically opened for all F# code that references `Deedle`.
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/SeriesExtensions.fs#L25-25" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.F# Series extensions\'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:T:Deedle.F# Series extensions`')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="Frame<'TRowKey, 'TColumnKey>">
+              <a href="/Deedle/reference/deedle-frame-2.html">
+                Frame<'TRowKey, 'TColumnKey>
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ A frame is the key Deedle data structure (together with series). It represents a
+ data table (think spreadsheet or CSV file) with multiple rows and columns. The frame
+ consists of row index, column index and data. The indices are used for efficient
+ lookup when accessing data by the row key `'TRowKey` or by the column key
+ `'TColumnKey`. Deedle frames are optimized for the scenario when all values in a given
+ column are of the same type (but types of different columns can differ).
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Frame.fs#L83-83" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.Frame`2\'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('``cref:T:Deedle.Frame`2``')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="FrameData">
+              <a href="/Deedle/reference/deedle-framedata.html">
+                FrameData
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ Represents the underlying (raw) data of the frame in a format that can
+ be used for exporting data frame to other formats etc. (DataTable, CSV, Excel)
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Frame.fs#L30-30" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.FrameData\'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:T:Deedle.FrameData`')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="ISeries<'K>">
+              <a href="/Deedle/reference/deedle-iseries-1.html">
+                ISeries<'K>
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ Represents an untyped series with keys of type `K` and values of some unknown type
+ (This type should not generally be used directly, but it can be used when you need
+ to write code that works on a sequence of series of heterogeneous types).
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Series.fs#L41-41" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.ISeries`1\'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('``cref:T:Deedle.ISeries`1``')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="Series<'K, 'V>">
+              <a href="/Deedle/reference/deedle-series-2.html">
+                Series<'K, 'V>
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ The type <code>Series&lt;K, V&gt;</code> represents a data series consisting of values `V` indexed by
+ keys `K`. The keys of a series may or may not be ordered
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Series.fs#L58-58" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.Series`2\'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('``cref:T:Deedle.Series`2``')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <h3>
+    <a class="anchor" name="category-0_1" href="#category-0_1">
+      Excel integration
+    </a>
+  </h3>
+  <table class="table outer-list fsdocs-entity-list">
+    <thead>
+      <tr>
+        <td>
+          Modules
+        </td>
+        <td>
+          Description
+        </td>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="Excel">
+              <a href="/Deedle/reference/deedle-excel.html">
+                Excel
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ Provides functions for reading Deedle data frames and series from Excel spreadsheets,
+ and for writing them back to Excel.
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle.Excel/Excel.fs#L6-6" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.Excel\'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:T:Deedle.Excel`')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <h3>
+    <a class="anchor" name="category-0_2" href="#category-0_2">
+      Frame and series operations
+    </a>
+  </h3>
+  <table class="table outer-list fsdocs-entity-list">
+    <thead>
+      <tr>
+        <td>
+          Type/Module
+        </td>
+        <td>
+          Description
+        </td>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="EnumerableExtensions">
+              <a href="/Deedle/reference/deedle-enumerableextensions.html">
+                EnumerableExtensions
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ Contains C#-friendly extension methods for various instances of `IEnumerable`
+ that can be used for creating <code>Series&lt;&#39;K, &#39;V&gt;</code> from the `IEnumerable` value.
+ You can create an ordinal series from <code>IEnumerable&lt;&#39;T&gt;</code> or an indexed series from
+ <code>IEnumerable&lt;KeyValuePair&lt;&#39;K, &#39;V&gt;&gt;</code> or from <code>IEnumerable&lt;KeyValuePair&lt;&#39;K, OptionalValue&lt;&#39;V&gt;&gt;&gt;</code>.
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/SeriesExtensions.fs#L79-79" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.EnumerableExtensions\'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:T:Deedle.EnumerableExtensions`')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="F# Frame extensions">
+              <a href="/Deedle/reference/deedle-f__frame_extensions.html">
+                F# Frame extensions
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ This module contains F# functions and extensions for working with frames. This
+ includes operations for creating frames such as the `frame` function, `=>` operator
+ and `Frame.ofRows`, `Frame.ofColumns` and `Frame.ofRowKeys` functions. The module
+ also provides additional F# extension methods including `ReadCsv`, `SaveCsv` and `PivotTable`.
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L357-357" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.F# Frame extensions\'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:T:Deedle.F# Frame extensions`')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="Frame">
+              <a href="/Deedle/reference/deedle-framemodule.html">
+                Frame (Module)
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ The `Frame` module provides an F#-friendly API for working with data frames.
+ The module follows the usual desing for collection-processing in F#, so the
+ functions work well with the pipelining operator (`|>`). For example, given
+ a frame with two columns representing prices, we can use `Frame.pctChange` to
+ calculate daily returns like this:
+
+     let df = frame [ "MSFT" => prices1; "AAPL" => prices2 ]
+     let rets = df |> Frame.pctChange 1
+     rets |> Stats.mean
+
+ Note that the `Stats.mean` operation is overloaded and works both on series
+ (returning a number) and on frames (returning a series). You can also use
+ `Frame.diff` if you need absolute differences rather than relative changes.
+
+ The functions in this module are designed to be used from F#. For a C#-friendly
+ API, see the `FrameExtensions` type. For working with individual series, see the
+ `Series` module. The functions in the `Frame` module are grouped in a number of
+ categories and documented below.
+
+ Accessing frame data and lookup
+ -------------------------------
+
+ Functions in this category provide access to the values in the fame. You can
+ also add and remove columns from a frame (which both return a new value).
+
+ - `addCol`, `replaceCol` and `dropCol` can be used to create a new data frame
+   with a new column, by replacing an existing column with a new one, or by dropping
+   an existing column
+
+ - `cols` and `rows` return the columns or rows of a frame as a series containing
+   objects; `getCols` and `getRows` return a generic series and cast the values to
+   the type inferred from the context (columns or rows of incompatible types are skipped);
+   `getNumericCols` returns columns of a type convertible to `float` for convenience.
+
+ - You can get a specific row or column using `get[Col|Row]` or `lookup[Col|Row]` functions.
+   The `lookup` variant lets you specify lookup behavior for key matching (e.g. find the
+   nearest smaller key than the specified value). There are also `[try]get` and `[try]Lookup`
+   functions that return optional values and functions returning entire observations
+   (key together with the series).
+
+ - `sliceCols` and `sliceRows` return a sub-frame containing only the specified columns
+   or rows. Finally, `toArray2D` returns the frame data as a 2D array.
+
+ Grouping, windowing and chunking
+ --------------------------------
+
+ The basic grouping functions in this category can be used to group the rows of a
+ data frame by a specified projection or column to create a frame with hierarchical
+ index such as <code>Frame&lt;&#39;K1 * &#39;K2, &#39;C&gt;</code>. The functions always aggregate rows, so if you
+ want to group columns, you need to use `Frame.transpose` first.
+
+ The function `groupRowsBy` groups rows by the value of a specified column. Use
+ `groupRowsBy[Int|Float|String...]` if you want to specify the type of the column in
+ an easier way than using type inference; `groupRowsUsing` groups rows using the
+ specified _projection function_ and `groupRowsByIndex` projects the grouping key just
+ from the row index.
+
+ More advanced functions include: `aggregateRowsBy` which groups the rows by a
+ specified sequence of columns and aggregates each group into a single value;
+ `pivotTable` implements the pivoting operation [as documented in the
+ tutorials](../frame.html#pivot).
+
+ The `melt` and `unmelt` functions turn the data frame into a single data frame
+ containing columns `Row`, `Column` and `Value` containing the data of the original
+ frame; `melt` can be used to turn this representation back into an original frame.
+
+ A simple windowing functions that are exposed for an entire frame operations are
+ `window` and `windowInto`. For more complex windowing operations, you currently have
+ to use `mapRows` or `mapCols` and apply windowing on individual series.
+
+ Sorting and index manipulation
+ ------------------------------
+
+ A frame is indexed by row keys and column keys. Both of these indices can be sorted
+ (by the keys). A frame that is sorted allows a number of additional operations (such
+ as lookup using the `Lookp.ExactOrSmaller` lookup behavior). The functions in this
+ category provide ways for manipulating the indices. It is expected that most operations
+ are done on rows and so more functions are available in a row-wise way. A frame can
+ alwyas be transposed using `Frame.transpose`.
+
+ Index operations:
+
+ The existing row/column keys can be replaced by a sequence of new keys using the
+ `indexColsWith` and `indexRowsWith` functions. Row keys can also be replaced by
+ ordinal numbers using `indexRowsOrdinally`.
+
+ The function `indexRows` uses the specified column of the original frame as the
+ index. It removes the column from the resulting frame (to avoid this, use overloaded
+ `IndexRows` method). This function infers the type of row keys from the context, so it
+ is usually more convenient to use `indexRows[Date|String|Int|...]` functions. Finally,
+ if you want to calculate the index value based on multiple columns of the row, you
+ can use `indexRowsUsing`.
+
+ Sorting frame rows:
+
+ Frame rows can be sorted according to the value of a specified column using the
+ `sortRows` function; `sortRowsBy` takes a projection function which lets you
+ transform the value of a column (e.g. to project a part of the value).
+
+ The functions `sortRowsByKey` and `sortColsByKey` sort the rows or columns
+ using the default ordering on the key values. The result is a frame with ordered
+ index.
+
+ Expanding columns:
+
+ When the frame contains a series with complex .NET objects such as F# records or
+ C# classes, it can be useful to "expand" the column. This operation looks at the
+ type of the objects, gets all properties of the objects (recursively) and
+ generates multiple series representing the properties as columns.
+
+ The function `expandCols` expands the specified columns while `expandAllCols`
+ applies the expansion to all columns of the data frame.
+
+ Frame transformations
+ ---------------------
+
+ Functions in this category perform standard transformations on data frames including
+ projections, filtering, taking some sub-frame of the frame, aggregating values
+ using scanning and so on.
+
+ Projection and filtering functions such as `[map|filter][Cols|Rows]` call the
+ specified function with the column or row key and an <code>ObjectSeries&lt;&#39;K&gt;</code> representing
+ the column or row. You can use functions ending with `Values` (such as `mapRowValues`)
+ when you do not require the row key, but only the row series; `mapRowKeys` and
+ `mapColKeys` can be used to transform the keys.
+
+ You can use `reduceValues` to apply a custom reduction to values of columns. Other
+ aggregations are available in the `Stats` module. You can also get a row with the
+ greaterst or smallest value of a given column using `[min|max]RowBy`.
+
+ The functions `take[Last]` and `skip[Last]` can be used to take a sub-frame of the
+ original source frame by skipping a specified number of rows. Note that this
+ does not require an ordered frame and it ignores the index - for index-based lookup
+ use slicing, such as `df.Rows.[lo .. hi]`, instead.
+
+ Finally the `shift` function can be used to obtain a frame with values shifted by
+ the specified offset. This can be used e.g. to get previous value for each key using
+ `Frame.shift 1 df`. The `diff` function calculates difference from previous value using
+ `df - (Frame.shift offs df)`.
+
+ Processing frames with exceptions
+ ---------------------------------
+
+ The functions in this group can be used to write computations over frames that may fail.
+ They use the type <code>tryval&lt;&#39;T&gt;</code> which is defined as a discriminated union
+ with two cases: Success containing a value, or Error containing an exception.
+
+ Using <code>tryval&lt;&#39;T&gt;</code> as a value in a data frame is not generally recommended, because
+ the type of values cannot be tracked in the type. For this reason, it is better to use
+ <code>tryval&lt;&#39;T&gt;</code> with individual series. However, `tryValues` and `fillErrorsWith` functions
+ can be used to get values, or fill failed values inside an entire data frame.
+
+ The `tryMapRows` function is more useful. It can be used to write a transformation
+ that applies a computation (which may fail) to each row of a data frame. The resulting
+ series is of type <code>Series&lt;&#39;R, tryval&lt;&#39;T&gt;&gt;</code> and can be processed using the <code>Series</code> module
+ functions.
+
+ Missing values
+ --------------
+
+ This group of functions provides a way of working with missing values in a data frame.
+ The category provides the following functions that can be used to fill missing values:
+
+  * `fillMissingWith` fills missing values with a specified constant
+  * `fillMissingUsing` calls a specified function for every missing value
+  * `fillMissing` and variants propagates values from previous/later keys
+
+ We use the terms _sparse_ and _dense_ to denote series that contain some missing values
+ or do not contain any missing values, respectively. The functions `denseCols` and
+ `denseRows` return a series that contains only dense columns or rows and all sparse
+ rows or columns are replaced with a missing value. The `dropSparseCols` and `dropSparseRows`
+ functions drop these missing values and return a frame with no missing values.
+
+ Joining, merging and zipping
+ ----------------------------
+
+ The simplest way to join two frames is to use the `join` operation which can be used to
+ perform left, right, outer or inner join of two frames. When the row keys of the frames do
+ not match exactly, you can use `joinAlign` which takes an additional parameter that specifies
+ how to find matching key in left/right join (e.g. by taking the nearest smaller available key).
+
+ Frames that do not contian overlapping values can be combined using `merge` (when combining
+ just two frames) or using `mergeAll` (for larger number of frames). Tha latter is optimized
+ to work well for a large number of data frames.
+
+ Finally, frames with overlapping values can be combined using `zip`. It takes a function
+ that is used to combine the overlapping values. A `zipAlign` function provides a variant
+ with more flexible row key matching (as in `joinAlign`)
+
+ Hierarchical index operations
+ -----------------------------
+
+ A data frame has a hierarchical row index if the row index is formed by a tuple, such as
+ <code>Frame&lt;&#39;R1 * &#39;R2, &#39;C&gt;</code>. Frames of this kind are returned, for example, by the grouping
+ functions such as <code>Frame.groupRowsBy</code>. The functions in this category provide ways for
+ working with data frames that have hierarchical row keys.
+
+ The functions <code>applyLevel</code> and <code>reduceLevel</code> can be used to reduce values according to
+ one of the levels. The <code>applyLevel</code> function takes a reduction of type <code>Series&lt;&#39;K, &#39;T&gt; -&gt; &#39;T</code>
+ while <code>reduceLevel</code> reduces individual values using a function of type <code>&#39;T -&gt; &#39;T -&gt; &#39;T</code>.
+
+ The functions <code>nest</code> and <code>unnest</code> can be used to convert between frames with
+ hierarchical indices (<code>Frame&lt;&#39;K1 * &#39;K2, &#39;C&gt;</code>) and series of frames that represent
+ individual groups (<code>Series&lt;&#39;K1, Frame&lt;&#39;K2, &#39;C&gt;&gt;</code>). The <code>nestBy</code> function can be
+ used to perform group by operation and return the result as a series of frems.
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L212-212" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.FrameModule\'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:T:Deedle.FrameModule`')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="Frame">
+              <a href="/Deedle/reference/deedle-frame.html">
+                Frame (Type)
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ Provides static methods for creating frames, reading frame data
+ from CSV files and database (via IDataReader). The type also provides
+ global configuration for reflection-based expansion.
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L26-26" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.Frame\'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:T:Deedle.Frame`')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="FrameBuilder">
+              <a href="/Deedle/reference/deedle-framebuilder.html">
+                FrameBuilder
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ Type that can be used for creating frames using the C# collection initializer syntax.
+ You can use <code>new FrameBuilder.Columns&lt;...&gt;</code> to create a new frame from columns or you
+ can use <code>new FrameBuilder.Rows&lt;...&gt;</code> to create a new frame from rows.
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L773-773" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.FrameBuilder\'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:T:Deedle.FrameBuilder`')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="FrameExtensions">
+              <a href="/Deedle/reference/deedle-frameextensions.html">
+                FrameExtensions
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ Contains C# and F# extension methods for the `Frame<'R, 'C>` type. The members are
+ automatically available when you import the `Deedle` namespace. The type contains
+ object-oriented counterparts to most of the functionality from the `Frame` module.
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L827-827" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.FrameExtensions\'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:T:Deedle.FrameExtensions`')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="FrameStatsExtensions">
+              <a href="/Deedle/reference/deedle-framestatsextensions.html">
+                FrameStatsExtensions
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ The type implements C# and F# extension methods that add numerical operations
+ to Deedle series. With a few exceptions, the methods are only available for
+ series containing floating-point values, that is <code>Series&lt;&#39;K, float&gt;</code>.
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameStatsExtensions.fs#L14-14" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.FrameStatsExtensions\'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:T:Deedle.FrameStatsExtensions`')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="Series">
+              <a href="/Deedle/reference/deedle-series.html">
+                Series
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ The `Series` module provides an F#-friendly API for working with data and time series.
+ The API follows the usual design for collection-processing in F#, so the functions work
+ well with the pipelining (<code>|&gt;</code>) operator. For example, given a series with ages,
+ we can use `Series.filterValues` to filter outliers and then `Stats.mean` to calculate
+ the mean:
+
+     ages
+     |> Series.filterValues (fun v -> v > 0.0 && v < 120.0)
+     |> Stats.mean
+
+ The module provides comprehensive set of functions for working with series. The same
+ API is also exposed using C#-friendly extension methods. In C#, the above snippet could
+ be written as:
+
+     [lang=csharp]
+     ages
+       .Where(kvp => kvp.Value > 0.0 && kvp.Value < 120.0)
+       .Mean()
+
+ For more information about similar frame-manipulation functions, see the `Frame` module.
+ For more information about C#-friendly extensions, see `SeriesExtensions`. The functions
+ in the `Series` module are grouped in a number of categories and documented below.
+
+ Accessing series data and lookup
+ --------------------------------
+
+ Functions in this category provide access to the values in the series.
+
+  - The term _observation_ is used for a key value pair in the series.
+  - When working with a sorted series, it is possible to perform lookup using
+    keys that are not present in the series - you can specify to search for the
+    previous or next available value using _lookup behavior_.
+  - Functions such as `get` and `getAll` have their counterparts `lookup` and
+    `lookupAll` that let you specify lookup behavior.
+  - For most of the functions that may fail, there is a `try[Foo]` variant that
+    returns `None` instead of failing.
+  - Functions with a name ending with `At` perform lookup based on the absolute
+    integer offset (and ignore the keys of the series)
+
+ Series transformations
+ ----------------------
+
+ Functions in this category perform standard transformations on series including
+ projections, filtering, taking some sub-series of the series, aggregating values
+ using scanning and so on.
+
+ Projection and filtering functions generally skip over missing values, but there
+ are variants `filterAll` and `mapAll` that let you handle missing values explicitly.
+ Keys can be transformed using `mapKeys`. When you do not need to consider the keys,
+ and only care about values, use `filterValues` and `mapValues` (which is also aliased
+ as the `$` operator).
+
+ Series supports standard set of folding functions including `reduce` and `fold` (to
+ reduce series values into a single value) as well as the `scan[All]` function, which
+ can be used to fold values of a series into a series of intermeidate folding results.
+
+ The functions `take[Last]` and `skip[Last]` can be used to take a sub-series of the
+ original source series by skipping a specified number of elements. Note that this
+ does not require an ordered series and it ignores the index - for index-based lookup
+ use slicing, such as `series.[lo .. hi]`, instead.
+
+ Finally the `shift` function can be used to obtain a series with values shifted by
+ the specified offset. This can be used e.g. to get previous value for each key using
+ `Series.shift 1 ts`. The `diff` function calculates difference from previous value using
+ `ts - (Series.shift offs ts)`.
+
+ Processing series with exceptions
+ ---------------------------------
+
+ The functions in this group can be used to write computations over series that may fail.
+ They use the type <code>tryval&lt;&#39;T&gt;</code> which is defined as a discriminated union
+ with two cases: Success containing a value, or Error containing an exception.
+
+ The function `tryMap` lets you create <code>Series&lt;&#39;K, tryval&lt;&#39;T&gt;&gt;</code> by mapping over values
+ of an original series. You can then extract values using `tryValues`, which throws
+ `AggregateException` if there were any errors. Functions `tryErrors` and `trySuccesses`
+ give series containing only errors and successes. You can fill failed values with
+ a constant using `fillErrorsWith`.
+
+ Hierarchical index operations
+ -----------------------------
+
+ When the key of a series is tuple, the elements of the tuple can be treated
+ as multiple levels of a index. For example <code>Series&lt;&#39;K1 * &#39;K2, &#39;V&gt;</code> has two
+ levels with keys of types <code>&#39;K1</code> and <code>&#39;K2</code> respectively.
+
+ The functions in this cateogry provide a way for aggregating values in the
+ series at one of the levels. For example, given a series `input` indexed by
+ two-element tuple, you can calculate mean for different first-level values as
+ follows:
+
+     input |> applyLevel fst Stats.mean
+
+ Note that the `Stats` module provides helpers for typical statistical operations,
+ so the above could be written just as `input |> Stats.levelMean fst`.
+
+ Grouping, windowing and chunking
+ --------------------------------
+
+ This category includes functions that group data from a series in some way. Two key
+ concepts here are _window_ and _chunk_. Window refers to (overlapping) sliding windows
+ over the input series while chunk refers to non-overlapping blocks of the series.
+
+ The boundary behavior can be specified using the `Boundary` flags. The value
+ `Skip` means that boundaries (incomplete windows or chunks) should be skipped. The value
+ `AtBeginning` and `AtEnding` can be used to define at which side should the boundary be
+ returned (or skipped). For chunking, `AtBeginning ||| Skip` makes sense and it means that
+ the incomplete chunk at the beginning should be skipped (aligning the last chunk with the end).
+
+ The behavior may be specified in a number of ways (which is reflected in the name):
+  - `dist` - using an absolute distance between the keys
+  - `while` - using a condition on the first and last key
+  - `size` - by specifying the absolute size of the window/chunk
+
+ The functions ending with `Into` take a function to be applied to the window/chunk.
+ The functions `window`, `windowInto` and `chunk`, `chunkInto` are simplified versions
+ that take a size. There is also `pairwise` function for sliding window of size two.
+
+ Missing values
+ --------------
+
+ This group of functions provides a way of working with missing values in a series.
+ The `dropMissing` function drops all keys for which there are no values in the series.
+ The `withMissingFrom` function lets you copy missing values from another series.
+ The remaining functions provide different mechanism for filling the missing values.
+
+  * `fillMissingWith` fills missing values with a specified constant
+  * `fillMissingUsing` calls a specified function for every missing value
+  * `fillMissing` and variants propagates values from previous/later keys
+
+ Sorting and index manipulation
+ ------------------------------
+
+ A series that is sorted by keys allows a number of additional operations (such as lookup
+ using the `Lookp.ExactOrSmaller` lookup behavior). However, it is also possible to sort
+ series based on the values - although the functions for manipulation with series do not
+ guarantee that the order will be preserved.
+
+ To sort series by keys, use `sortByKey`. Other sorting functions let you sort the series
+ using a specified comparer function (`sortWith`), using a projection function (`sortBy`)
+ and using the default comparison (`sort`).
+
+ In addition, you can also replace the keys of a series with other keys using `indexWith`
+ or with integers using `indexOrdinally`. To pick and reorder series values using to match
+ a list of keys use `realign`.
+
+ Sampling, resampling and advanced lookup
+ ----------------------------------------
+
+ Given a (typically) time series sampling or resampling makes it possible to
+ get time series with representative values at lower or uniform frequency.
+ We use the following terminology:
+
+  - `lookup` and `sample` functions find values at specified key; if a key is not
+    available, they can look for value associated with the nearest smaller or
+    the nearest greater key.
+
+  - `resample` function aggregate values values into chunks based
+    on a specified collection of keys (e.g. explicitly provided times), or
+    based on some relation between keys (e.g. date times having the same date).
+
+  - `resampleUniform` is similar to resampling, but we specify keys by
+    providing functions that generate a uniform sequence of keys (e.g. days),
+    the operation also fills value for days that have no corresponding
+    observations in the input sequence.
+
+ Joining, merging and zipping
+ ----------------------------
+
+ Given two series, there are two ways to combine the values. If the keys in the series
+ are not overlapping (or you want to throw away values from one or the other series),
+ then you can use `merge` or `mergeUsing`. To merge more than 2 series efficiently, use
+ the `mergeAll` function, which has been optimized for large number of series.
+
+ If you want to align two series, you can use the _zipping_ operation. This aligns
+ two series based on their keys and gives you tuples of values. The default behavior
+ (`zip`) uses outer join and exact matching. For ordered series, you can specify
+ other forms of key lookups (e.g. find the greatest smaller key) using `zipAlign`.
+ functions ending with `Into` are generally easier to use as they call a specified
+ function to turn the tuple (of possibly missing values) into a new value.
+
+ For more complicated behaviors, it is often convenient to use joins on frames instead
+ of working with series. Create two frames with single columns and then use the join
+ operation. The result will be a frame with two columns (which is easier to use than
+ series of tuples).
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/SeriesModule.fs#L199-199" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.Series\'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:T:Deedle.Series`')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="SeriesExtensions">
+              <a href="/Deedle/reference/deedle-seriesextensions.html">
+                SeriesExtensions
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ The type implements C# and F# extension methods for the <code>Series&lt;&#39;K, &#39;V&gt;</code> type.
+ The members are automatically available when you import the `Deedle` namespace.
+ The type contains object-oriented counterparts to most of the functionality
+ from the `Series` module.
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/SeriesExtensions.fs#L213-213" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.SeriesExtensions\'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:T:Deedle.SeriesExtensions`')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="SeriesStatsExtensions">
+              <a href="/Deedle/reference/deedle-seriesstatsextensions.html">
+                SeriesStatsExtensions
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ The type implements C# and F# extension methods that add numerical operations
+ to Deedle series.
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/SeriesStatsExtensions.fs#L12-12" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.SeriesStatsExtensions\'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:T:Deedle.SeriesStatsExtensions`')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="Stats">
+              <a href="/Deedle/reference/deedle-stats.html">
+                Stats
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ The `Stats` type contains functions for fast calculation of statistics over
+ series and frames as well as over a moving and an expanding window in a series.
+
+ The resulting series has the same keys as the input series. When there are
+ no values, or missing values, different functions behave in different ways.
+ Statistics (e.g. mean) return missing value when any value is missing, while min/max
+ functions return the minimal/maximal element (skipping over missing values).
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L369-369" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.Stats\'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:T:Deedle.Stats`')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <h3>
+    <a class="anchor" name="category-0_3" href="#category-0_3">
+      Parameters and results of various operations
+    </a>
+  </h3>
+  <table class="table outer-list fsdocs-entity-list">
+    <thead>
+      <tr>
+        <td>
+          Type/Module
+        </td>
+        <td>
+          Description
+        </td>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="Aggregation">
+              <a href="/Deedle/reference/deedle-aggregation.html">
+                Aggregation
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ A non-generic type that simplifies the construction of <code>Aggregation&lt;K&gt;</code> values
+ from C#. It provides methods for constructing different kinds of aggregation
+ strategies for ordered series.
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Indices/Index.fs#L46-46" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.Aggregation\'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:T:Deedle.Aggregation`')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="Aggregation<'K>">
+              <a href="/Deedle/reference/deedle-aggregation-1.html">
+                Aggregation<'K>
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ Represents a strategy for aggregating data in an ordered series into data segments.
+ To create a value of this type from C#, use the non-generic `Aggregation` type.
+ Data can be aggregate using floating windows or chunks of a specified size or
+ by specifying a condition on two keys (i.e. end a window/chunk when the condition
+ no longer holds).
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Indices/Index.fs#L19-19" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.Aggregation`1\'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('``cref:T:Deedle.Aggregation`1``')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="Boundary">
+              <a href="/Deedle/reference/deedle-boundary.html">
+                Boundary
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ Represents boundary behaviour for operations such as floating window. The type
+ specifies whether incomplete windows (of smaller than required length) should be
+ produced at the beginning (`AtBeginning`) or at the end (`AtEnding`) or
+ skipped (`Skip`). For chunking, combinations are allowed too - to skip incomplete
+ chunk at the beginning, use `Boundary.Skip ||| Boundary.AtBeginning`.
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Common/Common.fs#L254-254" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.Boundary\'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:T:Deedle.Boundary`')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="ConversionKind">
+              <a href="/Deedle/reference/deedle-conversionkind.html">
+                ConversionKind
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ Represents different kinds of type conversions that can be used by Deedle internally.
+ This is used, for example, when converting <code>ObjectSeries&lt;&#39;K&gt;</code> to <code>Series&lt;&#39;K, &#39;T&gt;</code> -
+ The conversion kind can be specified as an argument to allow certain conversions.
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Common/Common.fs#L14-14" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.ConversionKind\'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:T:Deedle.ConversionKind`')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="DataSegment">
+              <a href="/Deedle/reference/deedle-datasegment.html">
+                DataSegment
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ Provides helper functions and active patterns for working with `DataSegment` values
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Common/Common.fs#L310-310" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.DataSegment\'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:T:Deedle.DataSegment`')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="DataSegment<'T>">
+              <a href="/Deedle/reference/deedle-datasegment-1.html">
+                DataSegment<'T>
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ Represents a segment of a series or sequence. The value is returned from
+ various functions that aggregate data into chunks or floating windows. The
+ `Complete` case represents complete segment (e.g. of the specified size) and
+ `Boundary` represents segment at the boundary (e.g. smaller than the required
+ size).
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Common/Common.fs#L289-289" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.DataSegment`1\'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('``cref:T:Deedle.DataSegment`1``')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="DataSegmentKind">
+              <a href="/Deedle/reference/deedle-datasegmentkind.html">
+                DataSegmentKind
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ Represents a kind of <code>DataSegment&lt;T&gt;</code>. See that type for more information.
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Common/Common.fs#L264-264" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.DataSegmentKind\'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:T:Deedle.DataSegmentKind`')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="Direction">
+              <a href="/Deedle/reference/deedle-direction.html">
+                Direction
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ Specifies in which direction should we look when performing operations such as
+ `Series.Pairwise`.
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Common/Common.fs#L240-240" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.Direction\'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:T:Deedle.Direction`')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="ICustomLookup<'K>">
+              <a href="/Deedle/reference/deedle-icustomlookup-1.html">
+                ICustomLookup<'K>
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ Represents a special lookup. This can be used to support hierarchical or duplicate keys
+ in an index. A key type `K` can come with associated <code>ICustomLookup&lt;K&gt;</code> to provide
+ customized pattern matching (equality testing)
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Indices/MultiKey.fs#L14-14" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.ICustomLookup`1\'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('``cref:T:Deedle.ICustomLookup`1``')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="JoinKind">
+              <a href="/Deedle/reference/deedle-joinkind.html">
+                JoinKind
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ This enumeration specifies joining behavior for `Join` method provided
+ by `Series` and `Frame`. Outer join unions the keys (and may introduce
+ missing values), inner join takes the intersection of keys; left and
+ right joins take the keys of the first or the second series/frame.
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/JoinHelpers.fs#L19-19" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.JoinKind\'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:T:Deedle.JoinKind`')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="Lookup">
+              <a href="/Deedle/reference/deedle-lookup.html">
+                Lookup
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ Represents different behaviors of key lookup in series. For unordered series,
+ the only available option is `Lookup.Exact` which finds the exact key - methods
+ fail or return missing value if the key is not available in the index. For ordered
+ series `Lookup.Greater` finds the first greater key (e.g. later date) with
+ a value. `Lookup.Smaller` searches for the first smaller key. The options
+ `Lookup.ExactOrGreater` and `Lookup.ExactOrSmaller` finds the exact key (if it is
+ present) and otherwise search for the nearest larger or smaller key, respectively.
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Common/Common.fs#L194-194" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.Lookup\'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:T:Deedle.Lookup`')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="MultiKeyExtensions">
+              <a href="/Deedle/reference/deedle-multikeyextensions.html">
+                MultiKeyExtensions
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ F#-friendly functions for creating multi-level keys and lookups
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Indices/MultiKey.fs#L122-122" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.MultiKeyExtensions\'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:T:Deedle.MultiKeyExtensions`')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="UnionBehavior">
+              <a href="/Deedle/reference/deedle-unionbehavior.html">
+                UnionBehavior
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ This enumeration specifies the behavior of `Union` operation on series when there are
+ overlapping keys in two series that are being unioned. The options include preferring values
+ from the left/right series or throwing an exception when both values are available.
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Series.fs#L22-22" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.UnionBehavior\'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:T:Deedle.UnionBehavior`')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <h3>
+    <a class="anchor" name="category-0_4" href="#category-0_4">
+      Primitive types and values
+    </a>
+  </h3>
+  <table class="table outer-list fsdocs-entity-list">
+    <thead>
+      <tr>
+        <td>
+          Type/Module
+        </td>
+        <td>
+          Description
+        </td>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="Diff<'T>">
+              <a href="/Deedle/reference/deedle-diff-1.html">
+                Diff<'T>
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ Represents a difference operation applied to a value of type <code>&#39;T</code>.
+ A difference is either a <code>Change</code> (old and new value), a <code>Remove</code>, or an <code>Add</code>.
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Common/Common.fs#L43-43" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.Diff`1\'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('``cref:T:Deedle.Diff`1``')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="KeyValue">
+              <a href="/Deedle/reference/deedle-keyvalue.html">
+                KeyValue
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ A type with extension method for <code>KeyValuePair&lt;&#39;K, &#39;V&gt;</code> that makes
+ it possible to create values using just `KeyValue.Create`.
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L802-802" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.KeyValue\'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:T:Deedle.KeyValue`')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="MissingValueException">
+              <a href="/Deedle/reference/deedle-missingvalueexception.html">
+                MissingValueException
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ Thrown when a value at the specified index does not exist in the data frame or series.
+ This exception is thrown only when the key is defined, but the value is not available,
+ in other situations `KeyNotFoundException` is thrown
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Common/Common.fs#L33-33" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.MissingValueException\'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:T:Deedle.MissingValueException`')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="'T opt">
+              <a href="/Deedle/reference/deedle-opt-1.html">
+                'T opt
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ A type alias for the <code>OptionalValue&lt;T&gt;</code> type. The type alias can be used
+ to make F# type definitions that use optional values directly more succinct.
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Common/Common.fs#L180-180" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.opt`1\'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('``cref:T:Deedle.opt`1``')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="OptionalValue">
+              <a href="/Deedle/reference/deedle-optionalvaluemodule.html">
+                OptionalValue (Module)
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ Provides various helper functions for using the <code>OptionalValue&lt;T&gt;</code> type from F#
+ (The functions are similar to those in the standard <code>Option</code> module).
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Common/Common.fs#L371-371" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.OptionalValueModule\'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:T:Deedle.OptionalValueModule`')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="OptionalValue">
+              <a href="/Deedle/reference/deedle-optionalvalue.html">
+                OptionalValue (Type)
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ Non-generic type that makes it easier to create <code>OptionalValue&lt;T&gt;</code> values
+ from C# by benefiting the type inference for generic method invocations.
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Common/Common.fs#L119-119" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.OptionalValue\'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:T:Deedle.OptionalValue`')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="OptionalValue<'T>">
+              <a href="/Deedle/reference/deedle-optionalvalue-1.html">
+                OptionalValue<'T>
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ Value type that represents a potentially missing value. This is similar to
+ <code>System.Nullable&lt;T&gt;</code>, but does not restrict the contained value to be a value
+ type, so it can be used for storing values of any types. When obtained from
+ <code>DataFrame&lt;R, C&gt;</code> or <code>Series&lt;K, T&gt;</code>, the <code>Value</code> will never be <code>Double.NaN</code> or <code>null</code>
+ (but this is not, in general, checked when constructing the value).
+
+ The type is only used in C#-friendly API. F# operations generally use expose
+ standard F# <code>option&lt;T&gt;</code> type instead. However, there the <code>OptionalValue</code> module
+ contains helper functions for using this type from F# as well as <code>Missing</code> and
+ <code>Present</code> active patterns.
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Common/Common.fs#L68-68" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.OptionalValue`1\'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('``cref:T:Deedle.OptionalValue`1``')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="OptionalValueExtensions">
+              <a href="/Deedle/reference/deedle-optionalvalueextensions.html">
+                OptionalValueExtensions
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ Extension methods for working with optional values from C#. These make
+ it easier to provide default values and convert optional values to
+ `Nullable` (when the contained value is value type)
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Common/Common.fs#L351-351" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.OptionalValueExtensions\'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:T:Deedle.OptionalValueExtensions`')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="Pair">
+              <a href="/Deedle/reference/deedle-pair.html">
+                Pair
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ Module with helper functions for extracting values from hierarchical tuples
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Indices/MultiKey.fs#L175-175" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.Pair\'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:T:Deedle.Pair`')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="'T tryval">
+              <a href="/Deedle/reference/deedle-tryval-1.html">
+                'T tryval
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ A type alias for the <code>TryValue&lt;T&gt;</code> type. The type alias can be used
+ to make F# type declarations that explcitly handle exceptions more succinct.
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Common/Common.fs#L172-172" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.tryval`1\'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('``cref:T:Deedle.tryval`1``')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="TryValue<'T>">
+              <a href="/Deedle/reference/deedle-tryvalue-1.html">
+                TryValue<'T>
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ Represents a value or an exception. This type is used by functions such as
+ `Series.tryMap` and `Frame.tryMap` to capture the result of a lambda function,
+ which may be either a value or an exception. The type is a discriminated union,
+ so it can be processed using F# pattern matching, or using `Value`, `HasValue`
+ and `Exception` properties
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Common/Common.fs#L143-143" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.TryValue`1\'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('``cref:T:Deedle.TryValue`1``')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <h3>
+    <a class="anchor" name="category-0_5" href="#category-0_5">
+      Specialized frame and series types
+    </a>
+  </h3>
+  <table class="table outer-list fsdocs-entity-list">
+    <thead>
+      <tr>
+        <td>
+          Type
+        </td>
+        <td>
+          Description
+        </td>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="ColumnSeries<'TRowKey, 'TColumnKey>">
+              <a href="/Deedle/reference/deedle-columnseries-2.html">
+                ColumnSeries<'TRowKey, 'TColumnKey>
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ Represents a series of columns from a frame. The type inherits from a series of
+ series representing individual columns (<code>Series&lt;&#39;TColumnKey, ObjectSeries&lt;&#39;TRowKey&gt;&gt;</code>) but
+ hides slicing operations with new versions that return frames.
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Frame.fs#L1768-1768" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.ColumnSeries`2\'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('``cref:T:Deedle.ColumnSeries`2``')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="DelayedSeries">
+              <a href="/Deedle/reference/deedle-delayedseries.html">
+                DelayedSeries
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ This type exposes a single static method `DelayedSeries.Create` that can be used for
+ constructing data series (of type <code>Series&lt;K, V&gt;</code>) with lazily loaded data. You can
+ use this functionality to create series that represents e.g. an entire price history
+ in a database, but only loads data that are actually needed. For more information
+ see the [lazy data loading tutorial](../lazysource.html).
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/DelayedSeries.fs#L365-365" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.DelayedSeries\'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:T:Deedle.DelayedSeries`')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="IFrame">
+              <a href="/Deedle/reference/deedle-iframe.html">
+                IFrame
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ An empty interface that is implemented by <code>Frame&lt;&#39;R, &#39;C&gt;</code>. The purpose of the
+ interface is to allow writing code that works on arbitrary data frames (you
+ need to provide an implementation of the <code>IFrameOperation&lt;&#39;V&gt;</code> which contains
+ a generic method `Invoke` that will be called with the typed data frame).
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Frame.fs#L51-51" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.IFrame\'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:T:Deedle.IFrame`')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="IFrameOperation<'V>">
+              <a href="/Deedle/reference/deedle-iframeoperation-1.html">
+                IFrameOperation<'V>
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ Represents an operation that can be invoked on <code>Frame&lt;&#39;R, &#39;C&gt;</code>. The operation
+ is generic in the type of row and column keys.
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Frame.fs#L61-61" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.IFrameOperation`1\'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('``cref:T:Deedle.IFrameOperation`1``')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="ObjectSeries<'K>">
+              <a href="/Deedle/reference/deedle-objectseries-1.html">
+                ObjectSeries<'K>
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ Represents a series containing boxed values. This type is inherited from <code>Series&lt;&#39;K, obj&gt;</code>
+ and it adds additional operations for accessing values with unboxing. This includes operations
+ such as <code>os.GetAs&lt;&#39;T&gt;</code>, <code>os.TryGetAs&lt;&#39;T&gt;</code> and <code>os.TryAs&lt;&#39;T&gt;</code> which (attempt to) convert
+ values to the specified type `'T`.
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Series.fs#L1305-1305" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.ObjectSeries`1\'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('``cref:T:Deedle.ObjectSeries`1``')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="RowSeries<'TRowKey, 'TColumnKey>">
+              <a href="/Deedle/reference/deedle-rowseries-2.html">
+                RowSeries<'TRowKey, 'TColumnKey>
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ Represents a series of rows from a frame. The type inherits from a series of
+ series representing individual rows (<code>Series&lt;&#39;TRowKey, ObjectSeries&lt;&#39;TColumnKey&gt;&gt;</code>) but
+ hides slicing operations with new versions that return frames.
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Frame.fs#L1787-1787" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.RowSeries`2\'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('``cref:T:Deedle.RowSeries`2``')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="SeriesBuilder<'K>">
+              <a href="/Deedle/reference/deedle-seriesbuilder-1.html">
+                SeriesBuilder<'K>
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ A simple class that inherits from <code>SeriesBuilder&lt;&#39;K, obj&gt;</code> and can be
+ used instead of writing <code>SeriesBuilder&lt;&#39;K, obj&gt;</code> with two type arguments.
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/SeriesExtensions.fs#L197-197" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.SeriesBuilder`1\'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('``cref:T:Deedle.SeriesBuilder`1``')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="SeriesBuilder<'K, 'V>">
+              <a href="/Deedle/reference/deedle-seriesbuilder-2.html">
+                SeriesBuilder<'K, 'V>
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ The type can be used for creating series using mutation. You can add
+ items using `Add` and get the resulting series using the <code>Series</code> property.
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/SeriesExtensions.fs#L122-122" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.SeriesBuilder`2\'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('``cref:T:Deedle.SeriesBuilder`2``')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <h3>
+    <a class="anchor" name="category-0_6" href="#category-0_6">
+      Vectors and indices
+    </a>
+  </h3>
+  <table class="table outer-list fsdocs-entity-list">
+    <thead>
+      <tr>
+        <td>
+          Type/Module
+        </td>
+        <td>
+          Description
+        </td>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="Addressing">
+              <a href="/Deedle/reference/deedle-addressing.html">
+                Addressing
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ An `Address` value is used as an interface between vectors and indices. The index maps
+ keys of various types to address, which is then used to get a value from the vector.
+
+ Here is a brief summary of what we assume (and don't assume) about addresses:
+
+  - Address is `int64` (although we might need to generalize this in the future)
+  - Different data sources can use different addressing schemes
+    (as long as both index and vector use the same scheme)
+  - Addresses don't have to be continuous (e.g. if the source is partitioned, it
+    can use 32bit partition index + 32bit offset in the partition)
+  - In the in-memory representation, address is just index into an array
+  - In the BigDeedle representation, address is abstracted and comes with
+    `AddressOperations` that specifies how to use it (tests use linear
+    offset and partitioned representation)
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Common/Address.fs#L29-29" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.Addressing\'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:T:Deedle.Addressing`')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="F# Index extensions">
+              <a href="/Deedle/reference/deedle-f__index_extensions.html">
+                F# Index extensions
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ Defines non-generic `Index` type that provides functions for building indices
+ (hard-bound to `LinearIndexBuilder` type). In F#, the module is automatically opened
+ using `AutoOpen`. The methods are not designed for the use from C#.
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Indices/LinearIndex.fs#L658-658" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.F# Index extensions\'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:T:Deedle.F# Index extensions`')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="F# IndexBuilder implementation">
+              <a href="/Deedle/reference/deedle-f__indexbuilder_implementation.html">
+                F# IndexBuilder implementation
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ Set concrete IIndexBuilder implementation
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Indices/IndexExtensions.fs#L13-13" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.F# IndexBuilder implementation\'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:T:Deedle.F# IndexBuilder implementation`')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="F# Vector extensions">
+              <a href="/Deedle/reference/deedle-f__vector_extensions.html">
+                F# Vector extensions
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ Defines non-generic <code>Vector</code> type that provides functions for building vectors
+ (hard-bound to <code>ArrayVectorBuilder</code> type). In F#, the module is automatically opened
+ using <code>AutoOpen</code>. The methods are not designed for the use from C#.
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Vectors/VectorExtensions.fs#L27-27" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.F# Vector extensions\'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:T:Deedle.F# Vector extensions`')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="F# Vector extensions (core)">
+              <a href="/Deedle/reference/deedle-f__vector_extensions_(core).html">
+                F# Vector extensions (core)
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ Module with extensions for generic vector type. Given <code>vec</code> of type <code>IVector&lt;T&gt;</code>,
+ the extension property <code>vec.DataSequence</code> returns all data of the vector converted
+ to the "least common denominator" data structure - <code>IEnumerable&lt;T&gt;</code>.
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Vectors/Vector.fs#L127-127" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.F# Vector extensions \'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:T:Deedle.F# Vector extensions `')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="F# VectorBuilder implementation">
+              <a href="/Deedle/reference/deedle-f__vectorbuilder_implementation.html">
+                F# VectorBuilder implementation
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ Set concrete <code>IVectorBuilder</code> implementation.
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Vectors/VectorExtensions.fs#L15-15" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.F# VectorBuilder implementation\'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:T:Deedle.F# VectorBuilder implementation`')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="Index">
+              <a href="/Deedle/reference/deedle-index.html">
+                Index
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ Type that provides access to creating indices (represented as `LinearIndex` values)
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Indices/LinearIndex.fs#L696-696" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.Index\'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:T:Deedle.Index`')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="IRangeRestriction<'TAddress>">
+              <a href="/Deedle/reference/deedle-irangerestriction-1.html">
+                IRangeRestriction<'TAddress>
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ A sequence of indicies together with the total number. Use `RangeRestriction.ofSeq` to
+ create one from a sequence. This can be implemented by concrete vector/index
+ builders to allow further optimizations (e.g. when the underlying source directly
+ supports range operations).
+
+ For example, if your source has an optimised way for getting every 10th address, you
+ can create your own `IRangeRestriction` and then check for it in `LookupRange` and
+ use optimised implementation rather than actually iterating over the sequence of indices.
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Common/Address.fs#L110-110" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.IRangeRestriction`1\'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('``cref:T:Deedle.IRangeRestriction`1``')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="IVector">
+              <a href="/Deedle/reference/deedle-ivector.html">
+                IVector
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ Represents an (untyped) vector that stores some values and provides access
+ to the values via a generic address. This type should be only used directly when
+ extending the DataFrame library and adding a new way of storing or loading data.
+ To allow invocation via Reflection, the vector exposes type of elements as <code>System.Type</code>.
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Vectors/Vector.fs#L35-35" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.IVector\'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:T:Deedle.IVector`')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="IVector<'T>">
+              <a href="/Deedle/reference/deedle-ivector-1.html">
+                IVector<'T>
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ A generic, typed vector. Represents mapping from addresses to values of type <code>&#39;T</code>.
+ The vector provides a minimal interface that is required by series and can be
+ implemented in a number of ways to provide vector backed by database or an
+ alternative representation of data.
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Vectors/Vector.fs#L92-92" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.IVector`1\'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('``cref:T:Deedle.IVector`1``')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="IVectorLocation">
+              <a href="/Deedle/reference/deedle-ivectorlocation.html">
+                IVectorLocation
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ Represents a location in a vector. In general, we always know the address, but
+ sometimes (BigDeedle) it is hard to get the offset (requires some data lookups),
+ so we use this interface to delay the calculation of the <code>Offset</code> (which is mainly
+ needed in one of the <code>series.Select</code> overloads).
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Vectors/Vector.fs#L79-79" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.IVectorLocation\'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:T:Deedle.IVectorLocation`')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="RangeRestriction">
+              <a href="/Deedle/reference/deedle-rangerestriction.html">
+                RangeRestriction
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ Provides additional operations for working with the <code>RangeRestriction&lt;&#39;TAddress&gt;</code> type.
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Common/Address.fs#L137-137" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.RangeRestriction\'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:T:Deedle.RangeRestriction`')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="RangeRestriction<'TAddress>">
+              <a href="/Deedle/reference/deedle-rangerestriction-1.html">
+                RangeRestriction<'TAddress>
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ Specifies a sub-range within index that can be accessed via slicing
+ (see the <code>GetAddressRange</code> method). For in-memory data structures, accessing
+ range via known addresses is typically sufficient, but for virtual Big Deedle
+ sources, <code>Start</code> and <code>End</code> let us avoid fully evaluating addresses.
+ <code>Custom</code> range can be used for optimizations.
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Common/Address.fs#L123-123" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.RangeRestriction`1\'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('``cref:T:Deedle.RangeRestriction`1``')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="fsdocs-entity-name">
+          <p>
+            <a name="VectorCallSite<'R>">
+              <a href="/Deedle/reference/deedle-vectorcallsite-1.html">
+                VectorCallSite<'R>
+              </a>
+            </a>
+          </p>
+        </td>
+        <td class="fsdocs-entity-xmldoc">
+          <div>
+            <div class="fsdocs-summary-contents">
+              <p class="fsdocs-summary">
+                
+ Represents a generic function <code>∀.&#39;T.(IVector&lt;&#39;T&gt; -&gt; &#39;R)</code>. The function can be
+ generically invoked on an argument of type <code>IVector</code> using <code>IVector.Invoke</code>.
+ 
+              </p>
+            </div>
+            <div class="icon-button-row">
+              <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Vectors/Vector.fs#L69-69" class="fsdocs-source-link" title="Source on GitHub">
+                <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+              </a>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'T:Deedle.VectorCallSite`1\'/>')">
+                <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('``cref:T:Deedle.VectorCallSite`1``')">
+                <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+        
+    </div>
+</main>
+<aside id="fsdocs-page-menu">
+    <p id="on-this-page">On this page</p>
+    <div class="empty"></div>
+</aside>
+<dialog>
+    <input type="search" placeholder="Search docs" />
+    <div class="results">
+        <ul></ul>
+        <p class="empty">Type something to start searching.</p>
+    </div>
+</dialog>
+<script type="module" src="/Deedle/content/fsdocs-tips.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-theme-toggle.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-details-toggle.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-theme.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-search.js"></script>
+
+</body>
+</html>

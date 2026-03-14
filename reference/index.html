@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en" data-root="/Deedle/">
+<head>
+    <meta charset="UTF-8">
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="Deedle.Excel" name="author">
+    <!-- Opengraph properties (https://ogp.me/) -->
+    <meta property="og:site_name" content="Deedle">
+    <meta property="og:title" content="Deedle (API Reference)" />
+    <meta property="og:url" content="/Deedle/{{fsdocs-source-basename}}.html">
+    <meta property="og:type" content="website" />
+    <!-- Twitter cards (https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/summary-card-with-large-image) -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="/Deedle/">
+    <meta name="twitter:title" content="Deedle (API Reference)">
+    
+    <title>Deedle (API Reference) | Deedle</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code&display=swap" rel="stylesheet">
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <link href="/Deedle/img/favicon.ico" rel="icon" sizes="32x32" type="image/png"/>
+    <script type="application/javascript" src="/Deedle/content/fsdocs-theme-set-dark.js"></script>
+    <script type="application/javascript" src="/Deedle/content/fsdocs-details-set-expanded.js"></script>
+    <link href="/Deedle/content/fsdocs-default.css" rel="stylesheet" type="text/css"/>
+    <link href="/Deedle/content/fsdocs-theme.css" rel="stylesheet" type="text/css"/>
+    
+    
+</head>
+<body class="api-docs">
+<header>
+    <div class="start">
+        <div id="menu-toggle">
+            <iconify-icon class="icon closed" height="22" icon="eva:menu-fill" width="22"></iconify-icon>
+            <iconify-icon class="icon open" height="22" icon="mi:close" width="22"></iconify-icon>
+            <input type="checkbox" name="mobile-menu" />
+            <ul class="menu">
+                <li class="nav-header">Links</li>
+                <li class="license-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fslaborg/Deedle/blob/master/LICENSE.md">License</a>
+                </li>
+                <li class="release-notes-menu-item builtin-menu-item nav-item"><a class="nav-link"
+                                        href="https://github.com/fslaborg/Deedle/blob/master/RELEASE_NOTES.md">Release
+                    Notes</a></li>
+                <li class="repository-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fslaborg/Deedle/">Source
+                    Repository</a></li>
+                <li class="nav-header ">
+  Documentation
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/tutorial.html">
+    Deedle in 10 minutes using F#
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/frame.html">
+    Working with data frames in F#
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/series.html">
+    Working with series and time series data in F#
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/stats.html">
+    Calculating frame and series statistics
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/lazysource.html">
+    Creating lazily loaded series
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/design.html">
+    F# Data Frame design notes
+  </a>
+</li>
+                <li class="nav-header">
+  API Reference
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="/Deedle/reference/index.html">
+    All Namespaces
+  </a>
+</li>
+            </ul>
+        </div>
+        <a href="/Deedle/">
+            <img alt="Header menu logo" src="/Deedle/img/logo.png">
+            <strong>Deedle</strong>
+        </a>
+    </div>
+    <div class="end">
+        <a href="https://github.com/fslaborg/Deedle/" target="_blank">
+            <iconify-icon icon="uil:github" width="26" height="26"></iconify-icon>
+        </a>
+        <iconify-icon id="search-btn" icon="carbon:search" class="search" width="24" height="24"></iconify-icon>
+        <fsdocs-theme-toggle></fsdocs-theme-toggle>
+    </div>
+</header>
+<aside id="fsdocs-main-menu">
+    <ul class="menu">
+        <li class="nav-header">Links</li>
+        <li class="license-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fslaborg/Deedle/blob/master/LICENSE.md">License</a>
+        </li>
+        <li class="release-notes-menu-item builtin-menu-item nav-item"><a class="nav-link"
+                                href="https://github.com/fslaborg/Deedle/blob/master/RELEASE_NOTES.md">Release
+            Notes</a></li>
+        <li class="repository-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fslaborg/Deedle/">Source
+            Repository</a></li>
+        <li class="nav-header ">
+  Documentation
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/tutorial.html">
+    Deedle in 10 minutes using F#
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/frame.html">
+    Working with data frames in F#
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/series.html">
+    Working with series and time series data in F#
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/stats.html">
+    Calculating frame and series statistics
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/lazysource.html">
+    Creating lazily loaded series
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/design.html">
+    F# Data Frame design notes
+  </a>
+</li>
+        <li class="nav-header">
+  API Reference
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="/Deedle/reference/index.html">
+    All Namespaces
+  </a>
+</li>
+    </ul>
+</aside>
+<main>
+    <div id="content">
+        <div>
+  <h1>
+    API Reference
+  </h1>
+  <h2>
+    Available Namespaces:
+  </h2>
+  <table class="table outer-list fsdocs-member-list">
+    <thead>
+      <tr>
+        <td class="fsdocs-member-list-header">
+          Namespace
+        </td>
+        <td class="fsdocs-member-list-header">
+          Description
+        </td>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <a href="/Deedle/reference/deedle.html" title="Deedle">
+            Deedle
+          </a>
+        </td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>
+          <a href="/Deedle/reference/deedle-indices.html" title="Deedle.Indices">
+            Deedle.Indices
+          </a>
+        </td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>
+          <a href="/Deedle/reference/deedle-indices-linear.html" title="Deedle.Indices.Linear">
+            Deedle.Indices.Linear
+          </a>
+        </td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>
+          <a href="/Deedle/reference/deedle-indices-virtual.html" title="Deedle.Indices.Virtual">
+            Deedle.Indices.Virtual
+          </a>
+        </td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>
+          <a href="/Deedle/reference/deedle-interactive.html" title="Deedle.Interactive">
+            Deedle.Interactive
+          </a>
+        </td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>
+          <a href="/Deedle/reference/deedle-internal.html" title="Deedle.Internal">
+            Deedle.Internal
+          </a>
+        </td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>
+          <a href="/Deedle/reference/deedle-keys.html" title="Deedle.Keys">
+            Deedle.Keys
+          </a>
+        </td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>
+          <a href="/Deedle/reference/deedle-math.html" title="Deedle.Math">
+            Deedle.Math
+          </a>
+        </td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>
+          <a href="/Deedle/reference/deedle-ranges.html" title="Deedle.Ranges">
+            Deedle.Ranges
+          </a>
+        </td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>
+          <a href="/Deedle/reference/deedle-vectors.html" title="Deedle.Vectors">
+            Deedle.Vectors
+          </a>
+        </td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>
+          <a href="/Deedle/reference/deedle-vectors-arrayvector.html" title="Deedle.Vectors.ArrayVector">
+            Deedle.Vectors.ArrayVector
+          </a>
+        </td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>
+          <a href="/Deedle/reference/deedle-vectors-virtual.html" title="Deedle.Vectors.Virtual">
+            Deedle.Vectors.Virtual
+          </a>
+        </td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>
+          <a href="/Deedle/reference/deedle-virtual.html" title="Deedle.Virtual">
+            Deedle.Virtual
+          </a>
+        </td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>
+          <a href="/Deedle/reference/fsharp-data.html" title="FSharp.Data">
+            FSharp.Data
+          </a>
+        </td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>
+          <a href="/Deedle/reference/fsharp-data-runtime.html" title="FSharp.Data.Runtime">
+            FSharp.Data.Runtime
+          </a>
+        </td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+        
+    </div>
+</main>
+<aside id="fsdocs-page-menu">
+    <p id="on-this-page">On this page</p>
+    <div class="empty"></div>
+</aside>
+<dialog>
+    <input type="search" placeholder="Search docs" />
+    <div class="results">
+        <ul></ul>
+        <p class="empty">Type something to start searching.</p>
+    </div>
+</dialog>
+<script type="module" src="/Deedle/content/fsdocs-tips.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-theme-toggle.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-details-toggle.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-theme.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-search.js"></script>
+
+</body>
+</html>
