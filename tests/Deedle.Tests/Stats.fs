@@ -99,6 +99,21 @@ let ``describe works`` ()=
   desc.Get("0.75")  |> should beWithin  (3.0 +/- 1e-9)
 
 [<Test>]
+let ``describe works for frame`` () =
+  let s1 = Series.ofValues [ 0.0; 1.0; 2.0; 3.0; 4.0 ]
+  let s2 = Series.ofValues [ 10.0; 20.0; 30.0; 40.0; 50.0 ]
+  let frame = Frame.ofColumns [ "A", s1; "B", s2 ]
+  let desc = Stats.describe frame
+
+  desc.ColumnKeys |> Seq.toList |> should equal ["A"; "B"]
+  desc.["A", "min"] |> should equal (Stats.min s1)
+  desc.["A", "max"] |> should equal (Stats.max s1)
+  desc.["A", "mean"] |> should equal (Stats.mean s1)
+  desc.["B", "min"] |> should equal (Stats.min s2)
+  desc.["B", "max"] |> should equal (Stats.max s2)
+  desc.["B", "mean"] |> should equal (Stats.mean s2)
+
+[<Test>]
 let ``quantile works`` () =
   let s1 = Series.ofValues [ 1.0; 2.0; 3.0; 4.0 ]
   let quantile = Stats.quantile ([|0.25; 0.5; 0.75|], s1)
@@ -428,3 +443,51 @@ let ``Quantile is the same as in Math.NET``() =
        | _ -> quantileValue.Value
 
     actual |> should beWithin (expected +/- 1e-9) )
+
+// ------------------------------------------------------------------------------------------------
+// Covariance and correlation
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Stats.cov computes sample covariance of two series`` () =
+  // Using pandas as oracle: pd.Series([1.0,2.0,3.0,4.0]).cov(pd.Series([2.0,4.0,6.0,8.0])) = 3.333...
+  let s1 = Series.ofValues [1.0; 2.0; 3.0; 4.0]
+  let s2 = Series.ofValues [2.0; 4.0; 6.0; 8.0]
+  Stats.cov s1 s2 |> should beWithin (10.0 / 3.0 +/- 1e-9)
+
+[<Test>]
+let ``Stats.cov returns NaN for series with fewer than 2 common pairs`` () =
+  let s1 = Series.ofValues [1.0]
+  let s2 = Series.ofValues [2.0]
+  Stats.cov s1 s2 |> Double.IsNaN |> shouldEqual true
+
+[<Test>]
+let ``Stats.cov aligns series on keys (inner join) before computing`` () =
+  let s1 = series [ 1 => 1.0; 2 => 2.0; 3 => 3.0 ]
+  let s2 = series [ 2 => 2.0; 3 => 3.0; 4 => 4.0 ]
+  // Only keys 2 and 3 are in common; cov([2,3],[2,3]) = 0.5
+  Stats.cov s1 s2 |> should beWithin (0.5 +/- 1e-9)
+
+[<Test>]
+let ``Stats.corr computes Pearson correlation of perfectly correlated series`` () =
+  let s1 = Series.ofValues [1.0; 2.0; 3.0; 4.0]
+  let s2 = Series.ofValues [2.0; 4.0; 6.0; 8.0]
+  Stats.corr s1 s2 |> should beWithin (1.0 +/- 1e-9)
+
+[<Test>]
+let ``Stats.corr computes Pearson correlation of anti-correlated series`` () =
+  let s1 = Series.ofValues [1.0; 2.0; 3.0; 4.0]
+  let s2 = Series.ofValues [4.0; 3.0; 2.0; 1.0]
+  Stats.corr s1 s2 |> should beWithin (-1.0 +/- 1e-9)
+
+[<Test>]
+let ``Stats.corr returns NaN for zero-variance series`` () =
+  let s1 = Series.ofValues [2.0; 2.0; 2.0]
+  let s2 = Series.ofValues [1.0; 2.0; 3.0]
+  Stats.corr s1 s2 |> Double.IsNaN |> shouldEqual true
+
+[<Test>]
+let ``Stats.corr returns NaN for fewer than 2 pairs`` () =
+  let s1 = Series.ofValues [1.0]
+  let s2 = Series.ofValues [1.0]
+  Stats.corr s1 s2 |> Double.IsNaN |> shouldEqual true

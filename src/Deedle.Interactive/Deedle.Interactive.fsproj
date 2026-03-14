@@ -22,5 +22,9 @@
     <Compile Include="Extension.fs" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="extension.dib" Pack="true" PackagePath="interactive-extensions/dotnet" />
+  </ItemGroup>
+
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

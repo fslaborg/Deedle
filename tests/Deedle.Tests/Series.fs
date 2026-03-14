@@ -366,7 +366,29 @@ let ``Series.diff and Series.shift correctly return empty series`` () =
   single |> Series.diff -2 |> shouldEqual <| series []
 
 [<Test>]
-let ``Series.diff correctly handles missing values``() =
+let ``Series.pctChange computes percentage change on sample input`` () =
+  let input = series [ 'a' => 100.0; 'b' => 110.0; 'c' => 99.0; 'd' => 132.0 ]
+  // pctChange 1: result[k] = (s[k] - s[k-1]) / s[k-1]
+  let expected1 = series [ 'b' => 0.1; 'c' => (99.0-110.0)/110.0; 'd' => (132.0-99.0)/99.0 ]
+  input |> Series.pctChange 1 |> shouldEqual expected1
+  // pctChange 2: result[k] = (s[k] - s[k-2]) / s[k-2]
+  let expected2 = series [ 'c' => (99.0-100.0)/100.0; 'd' => (132.0-110.0)/110.0 ]
+  input |> Series.pctChange 2 |> shouldEqual expected2
+
+[<Test>]
+let ``Series.pctChange returns empty series for offset exceeding length`` () =
+  let empty : Series<int, float> = series []
+  empty |> Series.pctChange 1 |> shouldEqual <| series []
+  let single = series [ 1 => 10.0 ]
+  single |> Series.pctChange 2 |> shouldEqual <| series []
+
+[<Test>]
+let ``Series.pctChange propagates missing values`` () =
+  let s = Series.ofValues [ 100.0; Double.NaN; 110.0 ]
+  let actual = s |> Series.pctChange 1 |> Series.observationsAll |> List.ofSeq
+  actual |> shouldEqual [(1, None); (2, None)]
+
+
   let s = Series.ofValues [ 0.0; Double.NaN; Double.NaN; 0.0; 2.0 ]
   let actual1 = s |> Series.diff -1 |> Series.observationsAll |> List.ofSeq
   actual1 |> shouldEqual [(0, None); (1, None); (2, None); (3, Some -2.0)]
@@ -495,6 +517,45 @@ let ``FillMissingUsing nan shall still return series with missing value``() =
   let s = Series.ofValues [ Double.NaN; 1.0; Double.NaN]
   let actual = s |> Series.fillMissingUsing(fun _ -> nan)
   actual |> shouldEqual s
+
+// ------------------------------------------------------------------------------------------------
+// Series.maskValues and Series.maskAll
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``maskValues replaces matching values with missing`` () =
+  let s = series [ 1 => 1.0; 2 => 2.0; 3 => 3.0; 4 => 4.0 ]
+  let masked = s |> Series.maskValues (fun v -> v > 2.0)
+  masked.[1] |> shouldEqual 1.0
+  masked.[2] |> shouldEqual 2.0
+  masked.TryGet(3).HasValue |> shouldEqual false
+  masked.TryGet(4).HasValue |> shouldEqual false
+  masked.KeyCount |> shouldEqual 4
+
+[<Test>]
+let ``maskValues preserves existing missing values`` () =
+  let s = series [ 1 => 1.0; 2 => nan; 3 => 3.0 ]
+  let masked = s |> Series.maskValues (fun v -> v > 2.0)
+  masked.[1] |> shouldEqual 1.0
+  masked.TryGet(2).HasValue |> shouldEqual false
+  masked.TryGet(3).HasValue |> shouldEqual false
+  masked.KeyCount |> shouldEqual 3
+
+[<Test>]
+let ``maskAll can mask on key-value predicate`` () =
+  let s = series [ 1 => 10.0; 2 => 20.0; 3 => 30.0 ]
+  let masked = s |> Series.maskAll (fun k _ -> k = 2)
+  masked.[1] |> shouldEqual 10.0
+  masked.TryGet(2).HasValue |> shouldEqual false
+  masked.[3] |> shouldEqual 30.0
+
+[<Test>]
+let ``maskAll with existing missing value is passed None`` () =
+  let s = series [ 1 => 1.0; 2 => nan; 3 => 3.0 ]
+  let maskedNones = s |> Series.maskAll (fun _ v -> v.IsNone)
+  maskedNones.[1] |> shouldEqual 1.0
+  maskedNones.TryGet(2).HasValue |> shouldEqual false
+  maskedNones.[3] |> shouldEqual 3.0
 
 // ------------------------------------------------------------------------------------------------
 // Sorting and reindexing
@@ -1141,3 +1202,42 @@ let ``Series.filterByMask returns empty series when mask is all false`` () =
   let mask = series [ 1 => false; 2 => false; 3 => false ]
   let result = s |> Series.filterByMask mask
   result.KeyCount |> shouldEqual 0
+
+// Series.flatten, Series.convert, Series.applyLevel, Series.reduceLevel
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Series.flatten converts Some values to present and None to missing`` () =
+  let s = series [ 1 => Some 10.0; 2 => Some 20.0; 3 => None ]
+  let result = s |> Series.flatten
+  result.TryGet(1) |> shouldEqual (OptionalValue(10.0))
+  result.TryGet(2) |> shouldEqual (OptionalValue(20.0))
+  result.TryGet(3).HasValue |> shouldEqual false
+
+[<Test>]
+let ``Series.flatten on all-Some series is equivalent to mapValues Option.get`` () =
+  let s = series [ "a" => Some 1; "b" => Some 2; "c" => Some 3 ]
+  let result = s |> Series.flatten
+  result |> shouldEqual (series [ "a" => 1; "b" => 2; "c" => 3 ])
+
+[<Test>]
+let ``Series.convert applies forward and backward conversions`` () =
+  let original = series [ 1 => 1.5; 2 => 2.7; 3 => 3.9 ]
+  let converted = original |> Series.convert int float
+  // values are truncated to int via the forward conversion
+  converted |> shouldEqual (series [ 1 => 1; 2 => 2; 3 => 3 ])
+
+[<Test>]
+let ``Series.applyLevel groups by level key and applies function to each group`` () =
+  // Use tuple keys where the first element is the "level"
+  let s = series [ (1, "a") => 10.0; (1, "b") => 20.0; (2, "a") => 30.0; (2, "b") => 40.0 ]
+  let result = s |> Series.applyLevel fst Stats.sum
+  result.Get(1) |> should beWithin (30.0 +/- 1e-9)
+  result.Get(2) |> should beWithin (70.0 +/- 1e-9)
+
+[<Test>]
+let ``Series.reduceLevel groups by level key and reduces each group`` () =
+  let s = series [ (1, "a") => 5.0; (1, "b") => 15.0; (2, "a") => 7.0; (2, "b") => 3.0 ]
+  let result = s |> Series.reduceLevel fst (+)
+  result.Get(1) |> should beWithin (20.0 +/- 1e-9)
+  result.Get(2) |> should beWithin (10.0 +/- 1e-9)

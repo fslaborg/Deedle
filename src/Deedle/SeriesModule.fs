@@ -542,6 +542,30 @@ module Series =
       f kvp.Key (OptionalValue.asOption kvp.Value) |> OptionalValue.ofOption)
 
   /// <summary>
+  /// Returns a new series with values replaced by missing where the predicate returns `true`.
+  /// The predicate is called with both the key and an optional value (to handle missing values).
+  /// This is the complement of `filterAll`: instead of dropping matching entries the values are
+  /// replaced with missing so that the key alignment of the series is preserved.
+  /// </summary>
+  /// <category>Series transformations</category>
+  [<CompiledName("MaskAll")>]
+  let maskAll f (series:Series<'K, 'T>) =
+    series.SelectOptional(fun kvp ->
+      if f kvp.Key (OptionalValue.asOption kvp.Value) then OptionalValue.Missing
+      else kvp.Value)
+
+  /// <summary>
+  /// Returns a new series with values replaced by missing where the predicate returns `true`.
+  /// The predicate is called with the value only; missing values are never masked by this function.
+  /// </summary>
+  /// <category>Series transformations</category>
+  [<CompiledName("MaskValues")>]
+  let maskValues f (series:Series<'K, 'T>) =
+    series.SelectOptional(fun kvp ->
+      if kvp.Value.HasValue && f kvp.Value.Value then OptionalValue.Missing
+      else kvp.Value)
+
+  /// <summary>
   /// Returns a new series whose keys are the results of applying the given function to
   /// keys of the original series.
   /// </summary>
@@ -715,6 +739,27 @@ module Series =
     let newIndex, vectorR = series.Index.Builder.Shift((series.Index, Vectors.Return 0), offset)
     let _, vectorL = series.Index.Builder.Shift((series.Index, Vectors.Return 0), -offset)
     let cmd = Vectors.Combine(lazy newIndex.KeyCount, [vectorL; vectorR], BinaryTransform.Create< ^T >(OptionalValue.map2 (-)))
+    let newVector = vectorBuilder.Build(newIndex.AddressingScheme, cmd, [| series.Vector |])
+    Series(newIndex, newVector, vectorBuilder, series.Index.Builder)
+
+  /// <summary>
+  /// Returns a series containing the percentage change between a value in the series and
+  /// a value at the specified offset. For example, calling <c>Series.pctChange 1 s</c> returns
+  /// a series where each value is the relative change from the previous value. In pseudo-code:
+  ///
+  ///     result[k] = (series[k] - series[k - offset]) / series[k - offset]
+  ///
+  /// This is commonly used in financial analysis to compute returns.
+  /// </summary>
+  /// <param name="offset">When positive, computes change from past values; when negative, computes change relative to future values.</param>
+  /// <param name="series">The input series, containing values that support the <c>-</c> and <c>/</c> operators.</param>
+  /// <category>Series transformations</category>
+  [<CompiledName("PctChange")>]
+  let inline pctChange offset (series:Series<'K, ^T>) =
+    let vectorBuilder = VectorBuilder.Instance
+    let newIndex, vectorR = series.Index.Builder.Shift((series.Index, Vectors.Return 0), offset)
+    let _, vectorL = series.Index.Builder.Shift((series.Index, Vectors.Return 0), -offset)
+    let cmd = Vectors.Combine(lazy newIndex.KeyCount, [vectorL; vectorR], BinaryTransform.Create< ^T >(OptionalValue.map2 (fun l r -> (l - r) / r)))
     let newVector = vectorBuilder.Build(newIndex.AddressingScheme, cmd, [| series.Vector |])
     Series(newIndex, newVector, vectorBuilder, series.Index.Builder)
 

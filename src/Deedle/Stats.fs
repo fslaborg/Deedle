@@ -10,7 +10,7 @@ open Deedle.Internal
 // type. We put all the public functionality in a type to allow overloading.
 // ------------------------------------------------------------------------------------
 
-// TODO: still to do, possibly: median, percentile, corr, cov
+// TODO: still to do, possibly: median, percentile
 
 module StatsInternal =
   // ------------------------------------------------------------------------------------
@@ -784,6 +784,56 @@ type Stats =
   // ------------------------------------------------------------------------------------
 
   /// <summary>
+  /// Returns the sample covariance of the values in two series. The series are aligned
+  /// on their keys (inner join) and covariance is computed over all key-aligned,
+  /// non-missing pairs. Returns `NaN` when fewer than 2 pairs are available.
+  /// Throws a `FormatException` or an `InvalidCastException` if the value type of either
+  /// series is not convertible to floating point number.
+  /// </summary>
+  /// <param name="series1">The first input series</param>
+  /// <param name="series2">The second input series</param>
+  /// <category>Series statistics</category>
+  static member inline cov (series1:Series<'K, 'V1>) (series2:Series<'K, 'V2>) =
+    let pairs =
+      series1.ZipInner(series2).Values
+      |> Seq.map (fun (a, b) -> toFloat a, toFloat b)
+      |> Array.ofSeq
+    let n = float pairs.Length
+    if n < 2.0 then nan
+    else
+      let mx = pairs |> Array.sumBy fst |> fun s -> s / n
+      let my = pairs |> Array.sumBy snd |> fun s -> s / n
+      pairs |> Array.sumBy (fun (x, y) -> (x - mx) * (y - my)) |> fun s -> s / (n - 1.0)
+
+  /// <summary>
+  /// Returns the Pearson correlation coefficient of the values in two series.
+  /// The series are aligned on their keys (inner join) and correlation is computed
+  /// over all key-aligned, non-missing pairs. Returns `NaN` when fewer than 2 pairs
+  /// are available or when either series has zero variance.
+  /// Throws a `FormatException` or an `InvalidCastException` if the value type of either
+  /// series is not convertible to floating point number.
+  /// </summary>
+  /// <param name="series1">The first input series</param>
+  /// <param name="series2">The second input series</param>
+  /// <category>Series statistics</category>
+  static member inline corr (series1:Series<'K, 'V1>) (series2:Series<'K, 'V2>) =
+    let pairs =
+      series1.ZipInner(series2).Values
+      |> Seq.map (fun (a, b) -> toFloat a, toFloat b)
+      |> Array.ofSeq
+    let n = float pairs.Length
+    if n < 2.0 then nan
+    else
+      let mx = pairs |> Array.sumBy fst |> fun s -> s / n
+      let my = pairs |> Array.sumBy snd |> fun s -> s / n
+      let num = pairs |> Array.sumBy (fun (x, y) -> (x - mx) * (y - my))
+      let dx  = pairs |> Array.sumBy (fun (x, _) -> pown (x - mx) 2) |> sqrt
+      let dy  = pairs |> Array.sumBy (fun (_, y) -> pown (y - my) 2) |> sqrt
+      if dx = 0.0 || dy = 0.0 then nan
+      else num / (dx * dy)
+
+
+  /// <summary>
   /// Interpolates an ordered series given a new sequence of keys. The function iterates through
   /// each new key, and invokes a function on the current key, the nearest smaller and larger valid
   /// observations from the series argument. The function must return a new valid float.
@@ -904,6 +954,18 @@ type Stats =
   /// For each column, returns the number of unique values.
   static member uniqueCount (frame: Frame<'R, 'C>) =
     frame.Columns |> Series.map (fun _ -> Stats.uniqueCount)
+
+  /// Returns a frame with summary statistics (unique count, mean, standard
+  /// deviation, min, lower quartile, median, upper quartile, max) for each
+  /// numerical column of the input frame. Only columns convertible to
+  /// <c>float</c> are included; the row keys of the result are the statistic
+  /// names ("unique", "mean", "std", "min", "0.25", "0.5", "0.75", "max").
+  ///
+  /// <category>Frame statistics</category>
+  static member describe (frame:Frame<'R, 'C>) =
+    frame.GetColumns<float>()
+    |> Series.map (fun _ s -> Stats.describe s)
+    |> FrameUtils.fromColumns FrameUtils.indexBuilder FrameUtils.vectorBuilder
 
   // ------------------------------------------------------------------------------------
   // Statistics applied to a single level of a multi-level indexed series

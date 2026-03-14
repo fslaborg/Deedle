@@ -369,6 +369,40 @@ type SeriesExtensions =
   static member Diff(series:Series<'K, System.DateTimeOffset>, offset) : Series<'K, System.TimeSpan> =
     series |> Series.diffDateOffset offset
 
+  /// <summary>
+  /// Returns a series containing the percentage change between a value in the original series and
+  /// a value at the specified offset. For example, calling <c>PctChange(1)</c> returns a series
+  /// where each value is the relative change from the previous value:
+  ///
+  ///     result[k] = (series[k] - series[k - offset]) / series[k - offset]
+  ///
+  /// This is commonly used in financial analysis to compute returns (e.g. daily stock returns).
+  /// </summary>
+  /// <param name="offset">When positive, computes change from past values; when negative, computes change relative to future values.</param>
+  /// <param name="series">The input series.</param>
+  [<Extension>]
+  static member PctChange(series:Series<'K, float>, offset) = series |> Series.pctChange offset
+
+  /// <summary>
+  /// Returns a series containing the percentage change between a value in the original series and
+  /// a value at the specified offset. For example, calling <c>PctChange(1)</c> returns a series
+  /// where each value is the relative change from the previous value.
+  /// </summary>
+  /// <param name="offset">When positive, computes change from past values; when negative, computes change relative to future values.</param>
+  /// <param name="series">The input series.</param>
+  [<Extension>]
+  static member PctChange(series:Series<'K, float32>, offset) = series |> Series.pctChange offset
+
+  /// <summary>
+  /// Returns a series containing the percentage change between a value in the original series and
+  /// a value at the specified offset. For example, calling <c>PctChange(1)</c> returns a series
+  /// where each value is the relative change from the previous value.
+  /// </summary>
+  /// <param name="offset">When positive, computes change from past values; when negative, computes change relative to future values.</param>
+  /// <param name="series">The input series.</param>
+  [<Extension>]
+  static member PctChange(series:Series<'K, decimal>, offset) = series |> Series.pctChange offset
+
   [<Extension>]
   static member WindowInto(series:Series<'K1, 'V>, size:int, selector:Func<Series<'K1, 'V>, KeyValuePair<'K2, 'U>>): Series<'K2, 'U> =
     series.Aggregate(WindowSize(size, Boundary.Skip), (fun ds ->
