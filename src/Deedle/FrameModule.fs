@@ -4,16 +4,16 @@ namespace Deedle
 /// The `Frame` module provides an F#-friendly API for working with data frames.
 /// The module follows the usual desing for collection-processing in F#, so the
 /// functions work well with the pipelining operator (`|>`). For example, given
-/// a frame with two columns representing prices, we can use `Frame.diff` and
-/// numerical operators to calculate daily returns like this:
+/// a frame with two columns representing prices, we can use `Frame.pctChange` to
+/// calculate daily returns like this:
 ///
-///     let df = frame [ "MSFT" =&gt; prices1; "AAPL" =&gt; prices2 ]
-///     let past = df |&gt; Frame.diff 1
-///     let rets = past / df * 100.0
-///     rets |&gt; Stats.mean
+///     let df = frame [ "MSFT" => prices1; "AAPL" => prices2 ]
+///     let rets = df |> Frame.pctChange 1
+///     rets |> Stats.mean
 ///
 /// Note that the `Stats.mean` operation is overloaded and works both on series
-/// (returning a number) and on frames (returning a series).
+/// (returning a number) and on frames (returning a series). You can also use
+/// `Frame.diff` if you need absolute differences rather than relative changes.
 ///
 /// The functions in this module are designed to be used from F#. For a C#-friendly
 /// API, see the `FrameExtensions` type. For working with individual series, see the
@@ -639,6 +639,82 @@ module Frame =
       |> Vector.ofValues
     Frame(rowIndex, colIndex, data, frame.IndexBuilder, frame.VectorBuilder)
 
+  /// Similar to `melt`, but keeps the specified identity columns as-is and melts
+  /// the remaining columns into `Column` and `Value` pairs. This is analogous to
+  /// pandas `DataFrame.melt(id_vars=...)` or R's `data.table::melt`.
+  ///
+  /// ## Parameters
+  ///  - `idCols` - The columns to use as identity variables (kept in the output)
+  ///  - `frame` - The input data frame
+  ///
+  /// ## Returns
+  /// A data frame with the identity columns followed by `Column` and `Value` columns.
+  /// The row index is a sequential integer starting from 0.
+  ///
+  /// <category>Grouping, windowing and chunking</category>
+  [<CompiledName("MeltBy")>]
+  let meltBy (idCols: seq<'C>) (frame: Frame<'R, 'C>) =
+    let idColSet = System.Collections.Generic.HashSet<'C>(idCols)
+    let rowKeys = frame.RowIndex.Keys |> Array.ofSeq
+    let allColKeys = frame.ColumnIndex.Keys |> Array.ofSeq
+    let idColKeys = allColKeys |> Array.filter idColSet.Contains
+    let valColKeys = allColKeys |> Array.filter (idColSet.Contains >> not)
+
+    // Accumulate output rows
+    let idAccumulators = idColKeys |> Array.map (fun _ -> ResizeArray<obj>())
+    let colAccumulator = ResizeArray<'C>()
+    let valAccumulator = ResizeArray<obj>()
+
+    for rowKey in rowKeys do
+      let rowAddr = frame.RowIndex.Locate(rowKey)
+      for valColKey in valColKeys do
+        let valData = frame.Data.GetValue(frame.ColumnIndex.Locate(valColKey))
+        if valData.HasValue then
+          let value = valData.Value.GetObject(rowAddr)
+          if value.HasValue then
+            for i in 0 .. idColKeys.Length - 1 do
+              let idData = frame.Data.GetValue(frame.ColumnIndex.Locate(idColKeys.[i]))
+              let idVal =
+                if idData.HasValue then idData.Value.GetObject(rowAddr)
+                else OptionalValue.Missing
+              idAccumulators.[i].Add(if idVal.HasValue then idVal.Value else null)
+            colAccumulator.Add(valColKey)
+            valAccumulator.Add(value.Value)
+
+    let rowCount = valAccumulator.Count
+    let outputRowIndex = Index.ofKeys (Array.init rowCount id)
+
+    // Build output column index: id column names + "Column" + "Value"
+    let outputColNames =
+      [| yield! (idColKeys |> Array.map (sprintf "%O"))
+         yield "Column"
+         yield "Value" |]
+    let outputColIndex = Index.ofKeys outputColNames
+
+    // Infer the value column element type
+    let valTyp =
+      valColKeys
+      |> Seq.choose (fun c ->
+        let v = frame.Data.GetValue(frame.ColumnIndex.Locate(c))
+        if v.HasValue then Some v.Value.ElementType else None)
+      |> VectorHelpers.findCommonSupertype
+
+    // Infer element types for each id column
+    let idTypes =
+      idColKeys |> Array.map (fun c ->
+        let v = frame.Data.GetValue(frame.ColumnIndex.Locate(c))
+        if v.HasValue then v.Value.ElementType else typeof<obj>)
+
+    let outputData =
+      [ yield! (Array.zip idAccumulators idTypes
+                |> Array.toList
+                |> List.map (fun (acc, typ) ->
+                     VectorHelpers.createTypedVector frame.VectorBuilder typ (acc.ToArray())))
+        yield Vector.ofValues (colAccumulator.ToArray()) :> IVector
+        yield VectorHelpers.createTypedVector frame.VectorBuilder valTyp (valAccumulator.ToArray()) ]
+      |> Vector.ofValues
+    Frame(outputRowIndex, outputColIndex, outputData, frame.IndexBuilder, frame.VectorBuilder)
+
   /// Returns a data frame with three columns named `Row`, `Column`
   /// and `Value` that contains the data of the original data frame
   /// in individual rows.
@@ -777,6 +853,30 @@ module Frame =
   let indexColsWith (keys:seq<'C2>) (frame:Frame<'R, 'C1>) =
     if Seq.length frame.ColumnKeys <> Seq.length keys then invalidArg "keys" "New keys do not match current column index length"
     Frame<_, _>(frame.RowIndex, Index.ofKeys (ReadOnlyCollection.ofSeq keys), frame.Data, frame.IndexBuilder, frame.VectorBuilder)
+
+  /// <summary>
+  /// Rename a single column of the data frame. Returns a new frame; does not mutate the
+  /// original. If <c>oldKey</c> is not found, the frame is returned unchanged.
+  /// </summary>
+  /// <param name="oldKey">The current key of the column to rename.</param>
+  /// <param name="newKey">The new key to assign to that column.</param>
+  /// <param name="frame">Source data frame (which is not mutated by the operation).</param>
+  /// <category>Sorting and index manipulation</category>
+  [<CompiledName("RenameColumn")>]
+  let renameCol oldKey newKey (frame:Frame<'R, 'C>) =
+    let newKeys = frame.ColumnKeys |> Seq.map (fun k -> if k = oldKey then newKey else k)
+    Frame<_, _>(frame.RowIndex, Index.ofKeys (ReadOnlyCollection.ofSeq newKeys), frame.Data, frame.IndexBuilder, frame.VectorBuilder)
+
+  /// <summary>
+  /// Rename all columns of the data frame by applying the specified mapping function.
+  /// Returns a new frame; does not mutate the original.
+  /// </summary>
+  /// <param name="mapping">A function that maps each current column key to a new column key.</param>
+  /// <param name="frame">Source data frame (which is not mutated by the operation).</param>
+  /// <category>Sorting and index manipulation</category>
+  [<CompiledName("RenameColumns")>]
+  let renameColsUsing (mapping:'C -> 'C2) (frame:Frame<'R, 'C>) =
+    Frame<_, _>(frame.RowIndex, Index.ofKeys (ReadOnlyCollection.map mapping frame.ColumnIndex.Keys), frame.Data, frame.IndexBuilder, frame.VectorBuilder)
 
   /// <summary>
   /// Replace the row index of the frame with the provided sequence of row keys.
@@ -1045,6 +1145,28 @@ module Frame =
     Frame<_, _>(newRowIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
 
+  /// Returns a new data frame containing only the rows of the input frame that have
+  /// distinct values in the specified columns. When multiple rows have the same values
+  /// in those columns, only the first row (in index order) is preserved.
+  ///
+  /// ## Parameters
+  ///  - `columns` - A sequence of column keys used to determine row uniqueness
+  ///  - `frame` - Input data frame to be transformed
+  ///
+  /// ## Example
+  ///
+  ///     // Keep only the first row for each unique combination of "Category" and "Region"
+  ///     df |> Frame.distinctRowsBy ["Category"; "Region"]
+  ///
+  /// [category:Frame transformations]
+  [<CompiledName("DistinctRowsBy")>]
+  let distinctRowsBy (columns: 'C seq) (frame: Frame<'R, 'C>) =
+    let cols = Seq.toArray columns
+    let seen = System.Collections.Generic.HashSet<obj list>()
+    frame |> filterRows (fun _ row ->
+      let key = [ for c in cols -> row.TryGet(c).ValueOrDefault ]
+      seen.Add(key))
+
   /// <summary>
   /// Builds a new data frame whose rows are the results of applying the specified
   /// function on the rows of the input data frame. The function is called
@@ -1249,6 +1371,30 @@ module Frame =
     let newRowIndex, vectorR = frame.RowIndex.Builder.Shift((frame.RowIndex, Vectors.Return 0), offset)
     let _, vectorL = frame.RowIndex.Builder.Shift((frame.RowIndex, Vectors.Return 0), -offset)
     let cmd = Vectors.Combine(lazy newRowIndex.KeyCount, [vectorL; vectorR], BinaryTransform.Create<float>(OptionalValue.map2 (-)))
+    let newData = frame.Data.Select(function
+        | AsFloatVector vf -> VectorBuilder.Instance.Build(newRowIndex.AddressingScheme, cmd, [| vf |]) :> IVector
+        | vector -> vector)
+    Frame(newRowIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
+
+  /// <summary>
+  /// Returns a frame where each value is the percentage change relative to the value at the
+  /// specified offset. For example, calling <c>Frame.pctChange 1 df</c> returns a frame where
+  /// each value represents the relative change from the previous row's value. In pseudo-code:
+  ///
+  ///     result[k] = (frame[k] - frame[k - offset]) / frame[k - offset]
+  ///
+  /// Columns that cannot be converted to <c>float</c> are left without a change.
+  /// This is commonly used in financial analysis to compute returns (e.g. daily stock returns).
+  /// </summary>
+  /// <param name="offset">When positive, computes change from past values; when negative, computes change relative to future values.</param>
+  /// <param name="frame">The input frame containing at least some <c>float</c> columns.</param>
+  /// <category>Frame transformations</category>
+  [<CompiledName("PctChange")>]
+  let pctChange offset (frame:Frame<'R, 'C>) =
+    let vectorBuilder = VectorBuilder.Instance
+    let newRowIndex, vectorR = frame.RowIndex.Builder.Shift((frame.RowIndex, Vectors.Return 0), offset)
+    let _, vectorL = frame.RowIndex.Builder.Shift((frame.RowIndex, Vectors.Return 0), -offset)
+    let cmd = Vectors.Combine(lazy newRowIndex.KeyCount, [vectorL; vectorR], BinaryTransform.Create<float>(OptionalValue.map2 (fun l r -> (l - r) / r)))
     let newData = frame.Data.Select(function
         | AsFloatVector vf -> VectorBuilder.Instance.Build(newRowIndex.AddressingScheme, cmd, [| vf |]) :> IVector
         | vector -> vector)
@@ -1674,3 +1820,33 @@ module Frame =
       |> (fun ix -> indexRowsWith ix df))
     |> Series.values
     |> mergeAll
+
+  // ----------------------------------------------------------------------------------------------
+  // JSON serialization
+  // ----------------------------------------------------------------------------------------------
+
+  /// <summary>
+  /// Serialize the data frame to a JSON string.
+  /// </summary>
+  /// <param name="orient">
+  /// Controls the JSON layout:
+  /// <c>"columns"</c> (default) produces a column-major object <c>{"col":{"row":v,...},...}</c>;
+  /// <c>"index"</c> produces a row-major object <c>{"row":{"col":v,...},...}</c>;
+  /// <c>"records"</c> produces an array of row objects <c>[{"col":v,...},...]</c>.
+  /// </param>
+  /// <param name="frame">The data frame to serialize.</param>
+  /// <category>Input and output</category>
+  [<CompiledName("ToJson")>]
+  let toJson orient (frame:Frame<'R, 'C>) =
+    FrameUtils.toJson orient frame
+
+  /// <summary>
+  /// Save the data frame as a JSON file at the specified path.
+  /// </summary>
+  /// <param name="path">The output file path.</param>
+  /// <param name="frame">The data frame to serialize.</param>
+  /// <category>Input and output</category>
+  [<CompiledName("SaveJson")>]
+  let saveJson (path:string) (frame:Frame<'R, 'C>) =
+    use writer = new System.IO.StreamWriter(path)
+    FrameUtils.writeJson writer "columns" frame

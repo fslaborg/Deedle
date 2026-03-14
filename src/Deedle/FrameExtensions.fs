@@ -7,6 +7,7 @@ namespace Deedle
 
 open System
 open System.IO
+open System.Text
 open System.Collections.Generic
 open System.ComponentModel
 open System.Runtime.InteropServices
@@ -78,20 +79,21 @@ type Frame =
   /// </summary>
   /// <param name="location">Specifies a file name or an web location of the resource.</param>
   /// <param name="hasHeaders">Specifies whether the input CSV file has header row (when not set, the default value is `true`)</param>
-  /// <param name="inferTypes">Specifies whether the method should attempt to infer types of columns automatically (set this to `false` if you want to specify schema)</param>
+  /// <param name="inferTypes">Specifies whether the method should attempt to infer types of columns automatically. Set to `false` to treat all columns as strings. When a `schema` is also provided and `inferTypes=false`, the schema overrides are still applied.</param>
   /// <param name="inferRows">If `inferTypes=true`, this parameter specifies the number of rows to use for type inference. The default value is 100.</param>
-  /// <param name="schema">A string that specifies CSV schema. See the documentation for information about the schema format.</param>
+  /// <param name="schema">A string that specifies CSV schema. See the documentation for information about the schema format. Schema overrides are respected even when `inferTypes=false`.</param>
   /// <param name="separators">A string that specifies one or more (single character) separators that are used to separate columns in the CSV file. Use for example `";"` to parse semicolon separated files.</param>
   /// <param name="culture">Specifies the name of the culture that is used when parsing values in the CSV file (such as `"en-US"`). The default is invariant culture.</param>
   /// <param name="maxRows">Specifies the maximum number of rows that will be read from the CSV file</param>
   /// <param name="missingValues">An array of strings that contains values which should be treated as missing when reading the file. The default value is: "NaN"; "NA"; "#N/A"; ":"; "-"; "TBA"; "TBD".</param>
   /// <param name="preferOptions">Specifies whether to prefer optional values when parsing CSV data.</param>
+  /// <param name="encoding">Specifies the character encoding to use when reading the CSV file. When not set, UTF-8 with BOM detection is used.</param>
   /// <category>Input and output</category>
   static member ReadCsv
     ( location:string, [<Optional>] hasHeaders:Nullable<bool>, [<Optional>] inferTypes:Nullable<bool>, [<Optional>] inferRows:Nullable<int>,
       [<Optional>] schema, [<Optional>] separators, [<Optional>] culture, [<Optional>] maxRows:Nullable<int>,
-      [<Optional>] missingValues, [<Optional>] preferOptions ) =
-    use reader = new StreamReader(location)
+      [<Optional>] missingValues, [<Optional>] preferOptions, [<Optional>] encoding:Encoding ) =
+    use reader = if encoding = null then new StreamReader(location) else new StreamReader(location, encoding)
     FrameUtils.readCsv
       reader
       (if hasHeaders.HasValue then Some hasHeaders.Value else None)
@@ -119,13 +121,14 @@ type Frame =
   /// <param name="maxRows">The maximal number of rows that should be read from the CSV file.</param>
   /// <param name="missingValues">An array of strings that contains values which should be treated as missing when reading the file. The default value is: "NaN"; "NA"; "#N/A"; ":"; "-"; "TBA"; "TBD".</param>
   /// <param name="preferOptions">Specifies whether to prefer optional values when parsing CSV data.</param>
+  /// <param name="encoding">Specifies the character encoding to use when reading the CSV stream. When not set, UTF-8 with BOM detection is used.</param>
   /// <category>Input and output</category>
   static member ReadCsv
     ( stream:Stream, [<Optional>] hasHeaders:Nullable<bool>, [<Optional>] inferTypes:Nullable<bool>, [<Optional>] inferRows:Nullable<int>,
       [<Optional>] schema, [<Optional>] separators, [<Optional>] culture, [<Optional>] maxRows:Nullable<int>,
-      [<Optional>] missingValues, [<Optional>] preferOptions:Nullable<bool>) =
+      [<Optional>] missingValues, [<Optional>] preferOptions:Nullable<bool>, [<Optional>] encoding:Encoding) =
     FrameUtils.readCsv
-      (new StreamReader(stream))
+      (if encoding = null then new StreamReader(stream) else new StreamReader(stream, encoding))
       (if hasHeaders.HasValue then Some hasHeaders.Value else None)
       (if inferTypes.HasValue then Some inferTypes.Value else None)
       (if inferRows.HasValue then Some inferRows.Value else None)
@@ -420,11 +423,12 @@ module ``F# Frame extensions`` =
     /// <param name="maxRows">The maximal number of rows that should be read from the CSV file.</param>
     /// <param name="missingValues">An array of strings that contains values which should be treated as missing when reading the file. The default value is: "NaN"; "NA"; "#N/A"; ":"; "-"; "TBA"; "TBD".</param>
     /// <param name="preferOptions">Specifies whether to prefer optional values when parsing CSV data.</param>
+    /// <param name="encoding">Specifies the character encoding to use when reading the CSV file. When not set, UTF-8 with BOM detection is used.</param>
     /// <category>Input and output</category>
     static member ReadCsv<'R when 'R : equality>
         ( path:string, indexCol, ?hasHeaders, ?inferTypes, ?inferRows, ?schema, ?separators,
-          ?culture, ?maxRows, ?missingValues, ?preferOptions ) : Frame<'R, _> =
-      use reader = new StreamReader(path)
+          ?culture, ?maxRows, ?missingValues, ?preferOptions, ?encoding: Encoding ) : Frame<'R, _> =
+      use reader = match encoding with Some e -> new StreamReader(path, e) | None -> new StreamReader(path)
       FrameUtils.readCsv reader hasHeaders inferTypes inferRows schema missingValues separators culture maxRows preferOptions
       |> Frame.indexRows indexCol
 
@@ -444,11 +448,12 @@ module ``F# Frame extensions`` =
     /// <param name="maxRows">The maximal number of rows that should be read from the CSV file.</param>
     /// <param name="missingValues">An array of strings that contains values which should be treated as missing when reading the file. The default value is: "NaN"; "NA"; "#N/A"; ":"; "-"; "TBA"; "TBD".</param>
     /// <param name="preferOptions">Specifies whether to prefer optional values when parsing CSV data.</param>
+    /// <param name="encoding">Specifies the character encoding to use when reading the CSV file. When not set, UTF-8 with BOM detection is used.</param>
     /// <category>Input and output</category>
     static member ReadCsv
         ( path:string, ?hasHeaders, ?inferTypes, ?inferRows, ?schema, ?separators,
-          ?culture, ?maxRows, ?missingValues, ?preferOptions ) =
-      use reader = new StreamReader(path)
+          ?culture, ?maxRows, ?missingValues, ?preferOptions, ?encoding: Encoding ) =
+      use reader = match encoding with Some e -> new StreamReader(path, e) | None -> new StreamReader(path)
       FrameUtils.readCsv reader hasHeaders inferTypes inferRows schema missingValues separators culture maxRows preferOptions
 
     /// <summary>
@@ -467,11 +472,13 @@ module ``F# Frame extensions`` =
     /// <param name="maxRows">The maximal number of rows that should be read from the CSV file.</param>
     /// <param name="missingValues">An array of strings that contains values which should be treated as missing when reading the file. The default value is: "NaN"; "NA"; "#N/A"; ":"; "-"; "TBA"; "TBD".</param>
     /// <param name="preferOptions">Specifies whether to prefer optional values when parsing CSV data.</param>
+    /// <param name="encoding">Specifies the character encoding to use when reading the CSV stream. When not set, UTF-8 with BOM detection is used.</param>
     /// <category>Input and output</category>
     static member ReadCsv
         ( stream:Stream, ?hasHeaders, ?inferTypes, ?inferRows, ?schema, ?separators,
-          ?culture, ?maxRows, ?missingValues, ?preferOptions ) =
-      FrameUtils.readCsv (new StreamReader(stream)) hasHeaders inferTypes inferRows schema missingValues separators culture maxRows preferOptions
+          ?culture, ?maxRows, ?missingValues, ?preferOptions, ?encoding: Encoding ) =
+      let reader = match encoding with Some e -> new StreamReader(stream, e) | None -> new StreamReader(stream)
+      FrameUtils.readCsv reader hasHeaders inferTypes inferRows schema missingValues separators culture maxRows preferOptions
 
     /// <summary>
     /// Load data frame from a CSV file. The operation automatically reads column names from the
@@ -715,6 +722,38 @@ module ``F# Frame extensions`` =
     member frame.SaveCsv(stream:Stream, ?includeRowKeys, ?keyNames, ?separator, ?culture) =
       use writer = new StreamWriter(stream)
       FrameUtils.writeCsv (writer) None separator culture includeRowKeys keyNames frame
+
+    /// <summary>
+    /// Serialize the data frame to a JSON string.
+    /// </summary>
+    /// <param name="orient">
+    /// Controls the JSON layout. Allowed values:
+    /// <c>"columns"</c> (default) — column-major <c>{"col":{"row":v}}</c>;
+    /// <c>"index"</c> — row-major <c>{"row":{"col":v}}</c>;
+    /// <c>"records"</c> — array of row objects <c>[{"col":v}]</c>.
+    /// </param>
+    /// <category>Input and output</category>
+    member frame.ToJson(?orient) =
+      FrameUtils.toJson (defaultArg orient "columns") frame
+
+    /// <summary>
+    /// Save the data frame as a JSON file.
+    /// </summary>
+    /// <param name="writer">The <c>TextWriter</c> to write the JSON to.</param>
+    /// <param name="orient">Controls the JSON layout (see <c>ToJson</c>).</param>
+    /// <category>Input and output</category>
+    member frame.SaveJson(writer:TextWriter, ?orient) =
+      FrameUtils.writeJson writer (defaultArg orient "columns") frame
+
+    /// <summary>
+    /// Save the data frame as a JSON file.
+    /// </summary>
+    /// <param name="path">The output file path.</param>
+    /// <param name="orient">Controls the JSON layout (see <c>ToJson</c>).</param>
+    /// <category>Input and output</category>
+    member frame.SaveJson(path:string, ?orient) =
+      use writer = new StreamWriter(path)
+      FrameUtils.writeJson writer (defaultArg orient "columns") frame
 
 /// <summary>
 /// Type that can be used for creating frames using the C# collection initializer syntax.
@@ -1066,6 +1105,44 @@ type FrameExtensions =
     FrameUtils.toDataTable rowKeyNames frame
 
   /// <summary>
+  /// Serialize the data frame to a JSON string.
+  /// </summary>
+  /// <param name="frame">The input data frame to serialize.</param>
+  /// <param name="orient">
+  /// Controls the JSON layout. Allowed values:
+  /// <c>"columns"</c> (default) — column-major <c>{"col":{"row":v}}</c>;
+  /// <c>"index"</c> — row-major <c>{"row":{"col":v}}</c>;
+  /// <c>"records"</c> — array of row objects <c>[{"col":v}]</c>.
+  /// </param>
+  /// <category>Input and output</category>
+  [<Extension>]
+  static member ToJson(frame:Frame<'R, 'C>, [<Optional>] orient) =
+    FrameUtils.toJson (if orient = null then "columns" else orient) frame
+
+  /// <summary>
+  /// Save the data frame as JSON to the specified <c>TextWriter</c>.
+  /// </summary>
+  /// <param name="frame">The input data frame to serialize.</param>
+  /// <param name="writer">The <c>TextWriter</c> to write JSON to.</param>
+  /// <param name="orient">Controls the JSON layout (see <c>ToJson</c>).</param>
+  /// <category>Input and output</category>
+  [<Extension>]
+  static member SaveJson(frame:Frame<'R, 'C>, writer:TextWriter, [<Optional>] orient) =
+    FrameUtils.writeJson writer (if orient = null then "columns" else orient) frame
+
+  /// <summary>
+  /// Save the data frame as a JSON file at the specified path.
+  /// </summary>
+  /// <param name="frame">The input data frame to serialize.</param>
+  /// <param name="path">The output file path.</param>
+  /// <param name="orient">Controls the JSON layout (see <c>ToJson</c>).</param>
+  /// <category>Input and output</category>
+  [<Extension>]
+  static member SaveJson(frame:Frame<'R, 'C>, path:string, [<Optional>] orient) =
+    use writer = new StreamWriter(path)
+    FrameUtils.writeJson writer (if orient = null then "columns" else orient) frame
+
+  /// <summary>
   /// Creates a new data frame resulting from a 'pivot' operation. Consider a denormalized data
   /// frame representing a table: column labels are field names &amp; table values are observations
   /// of those fields. pivotTable buckets the rows along two axes, according to the values of
@@ -1198,6 +1275,22 @@ type FrameExtensions =
   static member Diff(frame:Frame<'TRowKey, 'TColumnKey>, offset) =
     frame |> Frame.diff offset
 
+  /// <summary>
+  /// Returns a frame where each value is the percentage change relative to the value at the
+  /// specified offset. For example, calling <c>PctChange(1)</c> returns a frame where each
+  /// value represents the relative change from the previous row's value. In pseudo-code:
+  ///
+  ///     result[k] = (frame[k] - frame[k - offset]) / frame[k - offset]
+  ///
+  /// Columns that cannot be converted to <c>float</c> are left without a change.
+  /// This is commonly used in financial analysis to compute returns (e.g. daily stock returns).
+  /// </summary>
+  /// <param name="offset">When positive, computes change from past values; when negative, computes change relative to future values.</param>
+  /// <param name="frame">The input frame containing at least some <c>float</c> columns.</param>
+  [<Extension>]
+  static member PctChange(frame:Frame<'TRowKey, 'TColumnKey>, offset) =
+    frame |> Frame.pctChange offset
+
   [<Extension>]
   static member Reduce(frame:Frame<'TRowKey, 'TColumnKey>, aggregation:Func<'T, 'T, 'T>) =
     frame |> Frame.reduceValues (fun a b -> aggregation.Invoke(a, b))
@@ -1210,6 +1303,18 @@ type FrameExtensions =
   [<Extension>]
   static member FilterRowsBy(frame:Frame<'TRowKey, 'TColumnKey>, column, value) =
     Frame.filterRowsBy column value frame
+
+  /// <summary>
+  /// Returns a new data frame containing only the rows that have distinct values in the
+  /// specified columns. When multiple rows have the same values in those columns, only
+  /// the first row (in index order) is preserved.
+  /// </summary>
+  /// <param name="frame">Input data frame to be filtered.</param>
+  /// <param name="columns">An array of column keys used to determine row uniqueness.</param>
+  /// <category>Frame transformations</category>
+  [<Extension>]
+  static member DistinctRowsBy(frame:Frame<'TRowKey, 'TColumnKey>, [<ParamArray>] columns:'TColumnKey[]) =
+    Frame.distinctRowsBy columns frame
 
   [<Extension>]
   static member GetRowsAt(frame:Frame<'TRowKey, 'TColumnKey>, [<ParamArray>] indices:int[]) =

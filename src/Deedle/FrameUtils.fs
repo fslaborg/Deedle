@@ -339,6 +339,12 @@ module internal FrameUtils =
             else innerType, None
       else typ, opt
 
+    // Cache to avoid repeated ToString() calls for the same value. This is particularly
+    // valuable for columns containing discriminated unions or enum-like types, where
+    // the same few values repeat many thousands of times across rows. We cap the cache
+    // at 4096 entries to bound memory usage for high-cardinality columns.
+    let toStringCache = System.Collections.Generic.Dictionary<obj, string>()
+
     // Format optional value, applying CultureInfo for IFormattable types.
     let formatOptional (typ, opt:obj option) =
       let typ, opt = unwrapOptionalValue typ opt
@@ -347,7 +353,13 @@ module internal FrameUtils =
       | Some value, (true, formatter) -> formatter value
       | Some value, _ when typeof<IFormattable>.IsAssignableFrom(typ) ->
             formatFormattable (unbox value)
-      | Some value, _ -> formatPlainString <| value.ToString()
+      | Some value, _ ->
+            match toStringCache.TryGetValue(value) with
+            | true, s -> s
+            | false, _ ->
+                let s = formatPlainString <| value.ToString()
+                if toStringCache.Count < 4096 then toStringCache.[value] <- s
+                s
 
 
     // Get the data from the data frame
@@ -397,6 +409,162 @@ module internal FrameUtils =
       |> ignore
     )
     dt
+
+  // ------------------------------------------------------------------------------------------------
+  // JSON serialization
+
+  /// Escape a string value for use as a JSON string literal
+  let private jsonEscapeString (s: string) =
+    let sb = System.Text.StringBuilder(s.Length + 4)
+    sb.Append('"') |> ignore
+    for c in s do
+      match c with
+      | '"'  -> sb.Append("\\\"") |> ignore
+      | '\\' -> sb.Append("\\\\") |> ignore
+      | '\b' -> sb.Append("\\b")  |> ignore
+      | '\f' -> sb.Append("\\f")  |> ignore
+      | '\n' -> sb.Append("\\n")  |> ignore
+      | '\r' -> sb.Append("\\r")  |> ignore
+      | '\t' -> sb.Append("\\t")  |> ignore
+      | c when int c < 32 -> sb.Append(sprintf "\\u%04x" (int c)) |> ignore
+      | c -> sb.Append(c) |> ignore
+    sb.Append('"') |> ignore
+    sb.ToString()
+
+  /// Set of .NET types that map to JSON numbers
+  let private jsonNumericTypes =
+    System.Collections.Generic.HashSet<Type>(
+      [| typeof<float>; typeof<float32>; typeof<decimal>
+         typeof<int>; typeof<int16>; typeof<int32>; typeof<int64>
+         typeof<uint16>; typeof<uint32>; typeof<uint64>
+         typeof<byte>; typeof<sbyte> |])
+
+  let private optOVTypeDef = typedefof<OptionalValue<_>>
+
+  /// Unwrap OptionalValue<T> to (innerType, value option); pass through other types unchanged.
+  let private unwrapOptionalForJson (typ: Type) (v: obj option) =
+    if typ.IsGenericType && typ.GetGenericTypeDefinition() = optOVTypeDef then
+      let innerType = typ.GetGenericArguments().[0]
+      match v with
+      | None | Some null -> innerType, None
+      | Some ov ->
+          let hasValue = typ.GetProperty("HasValue").GetValue(ov) :?> bool
+          if hasValue then innerType, Some (typ.GetProperty("Value").GetValue(ov))
+          else innerType, None
+    else typ, v
+
+  /// Format a single column value as a JSON token
+  let private jsonFormatValue (typ: Type) (opt: OptionalValue<obj>) =
+    let v = match opt with OptionalValue.Present o -> Some o | _ -> None
+    let typ, v = unwrapOptionalForJson typ v
+    match v with
+    | None | Some null -> "null"
+    | Some value ->
+        if typ = typeof<float> then
+          let f = value :?> float
+          if Double.IsNaN(f) || Double.IsInfinity(f) then "null"
+          else f.ToString("R", CultureInfo.InvariantCulture)
+        elif typ = typeof<float32> then
+          let f = value :?> float32
+          if Single.IsNaN(f) || Single.IsInfinity(f) then "null"
+          else f.ToString("R", CultureInfo.InvariantCulture)
+        elif typ = typeof<decimal> then
+          (value :?> decimal).ToString(CultureInfo.InvariantCulture)
+        elif jsonNumericTypes.Contains(typ) then
+          (value :?> IFormattable).ToString("G", CultureInfo.InvariantCulture)
+        elif typ = typeof<bool> then
+          if value :?> bool then "true" else "false"
+        elif typ = typeof<DateTime> then
+          jsonEscapeString ((value :?> DateTime).ToString("o", CultureInfo.InvariantCulture))
+        elif typ = typeof<DateTimeOffset> then
+          jsonEscapeString ((value :?> DateTimeOffset).ToString("o", CultureInfo.InvariantCulture))
+        else
+          jsonEscapeString (value.ToString())
+
+  /// Format a (potentially multi-level) row key as a JSON string key
+  let private jsonRowKey (keys: obj[]) =
+    keys |> Array.map (fun k -> if k = null then "" else k.ToString())
+         |> String.concat " - "
+         |> jsonEscapeString
+
+  /// <summary>
+  /// Serialize a data frame to JSON and write it to the given <c>TextWriter</c>.
+  /// </summary>
+  /// <param name="writer">The destination writer.</param>
+  /// <param name="orient">
+  /// Controls the JSON layout. Allowed values:
+  /// <list type="bullet">
+  /// <item><c>"columns"</c> (default) — column-major: <c>{"col1":{"row1":v,...},...}</c></item>
+  /// <item><c>"index"</c> — row-major: <c>{"row1":{"col1":v,...},...}</c></item>
+  /// <item><c>"records"</c> — array of row objects: <c>[{"col1":v,...},...]</c></item>
+  /// </list>
+  /// </param>
+  /// <param name="frame">The data frame to serialize.</param>
+  let writeJson (writer: TextWriter) orient (frame: Frame<_, _>) =
+    let { ColumnKeys = colKeys; RowKeys = rowKeys; Columns = columns } = frame.GetFrameData()
+    let colKeyNames  = flattenKeys colKeys |> Array.ofSeq
+    let rowKeyList   = rowKeys |> Seq.toArray
+    // Snapshot each column's data as an array for random access
+    let columnArrays = columns |> Seq.map (fun (t, v) -> t, v.DataSequence |> Seq.toArray) |> Array.ofSeq
+    let numCols = colKeyNames.Length
+    let numRows = rowKeyList.Length
+
+    match orient with
+    | "columns" ->
+      writer.Write("{")
+      for ci in 0 .. numCols - 1 do
+        if ci > 0 then writer.Write(",")
+        writer.Write(jsonEscapeString colKeyNames.[ci])
+        writer.Write(":{")
+        let (colTyp, values) = columnArrays.[ci]
+        for ri in 0 .. numRows - 1 do
+          if ri > 0 then writer.Write(",")
+          writer.Write(jsonRowKey rowKeyList.[ri])
+          writer.Write(":")
+          writer.Write(jsonFormatValue colTyp values.[ri])
+        writer.Write("}")
+      writer.Write("}")
+
+    | "index" ->
+      writer.Write("{")
+      for ri in 0 .. numRows - 1 do
+        if ri > 0 then writer.Write(",")
+        writer.Write(jsonRowKey rowKeyList.[ri])
+        writer.Write(":{")
+        for ci in 0 .. numCols - 1 do
+          if ci > 0 then writer.Write(",")
+          writer.Write(jsonEscapeString colKeyNames.[ci])
+          writer.Write(":")
+          let (colTyp, values) = columnArrays.[ci]
+          writer.Write(jsonFormatValue colTyp values.[ri])
+        writer.Write("}")
+      writer.Write("}")
+
+    | "records" ->
+      writer.Write("[")
+      for ri in 0 .. numRows - 1 do
+        if ri > 0 then writer.Write(",")
+        writer.Write("{")
+        for ci in 0 .. numCols - 1 do
+          if ci > 0 then writer.Write(",")
+          writer.Write(jsonEscapeString colKeyNames.[ci])
+          writer.Write(":")
+          let (colTyp, values) = columnArrays.[ci]
+          writer.Write(jsonFormatValue colTyp values.[ri])
+        writer.Write("}")
+      writer.Write("]")
+
+    | other ->
+      invalidArg "orient"
+        (sprintf "Unknown orient value '%s'. Expected \"columns\", \"index\", or \"records\"." other)
+
+  /// Serialize a data frame to a JSON string.
+  let toJson orient (frame: Frame<_, _>) =
+    use sw = new System.IO.StringWriter()
+    writeJson sw orient frame
+    sw.ToString()
+
+  // ------------------------------------------------------------------------------------------------
 
   /// Load data frame from a data reader (and cast the values of columns
   /// to their actual types to create IVector<T> with the right T)
@@ -470,10 +638,18 @@ module internal FrameUtils =
     // to load information about types in the CSV file. By default, use the first
     // 100 rows (but inferRows can be set to another value). Otherwise we just
     // "infer" all columns as string.
+    // Note: when inferTypes=false but a schema is provided, the schema is still applied
+    // so that the caller's explicit type overrides are respected.
     let inferredProperties =
       let data = CsvFile.Load(stream, ?separators=separators, ?hasHeaders=hasHeaders)
       match inferTypes with
       | Some true | None ->
+          data.InferColumnTypes(inferRows, missingValues, cultureInfo, schema, safeMode, preferOptionals)
+          |> Array.ofSeq
+      | Some false when schema <> "" ->
+          // Schema provided: apply the schema overrides (columns not in the schema
+          // will still be inferred from data, which is the most useful behaviour
+          // when the caller has specified explicit types for some columns).
           data.InferColumnTypes(inferRows, missingValues, cultureInfo, schema, safeMode, preferOptionals)
           |> Array.ofSeq
       | Some false ->
