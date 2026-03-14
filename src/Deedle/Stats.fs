@@ -955,6 +955,18 @@ type Stats =
   static member uniqueCount (frame: Frame<'R, 'C>) =
     frame.Columns |> Series.map (fun _ -> Stats.uniqueCount)
 
+  /// Returns a frame with summary statistics (unique count, mean, standard
+  /// deviation, min, lower quartile, median, upper quartile, max) for each
+  /// numerical column of the input frame. Only columns convertible to
+  /// <c>float</c> are included; the row keys of the result are the statistic
+  /// names ("unique", "mean", "std", "min", "0.25", "0.5", "0.75", "max").
+  ///
+  /// <category>Frame statistics</category>
+  static member describe (frame:Frame<'R, 'C>) =
+    frame.GetColumns<float>()
+    |> Series.map (fun _ s -> Stats.describe s)
+    |> FrameUtils.fromColumns FrameUtils.indexBuilder FrameUtils.vectorBuilder
+
   // ------------------------------------------------------------------------------------
   // Statistics applied to a single level of a multi-level indexed series
   // ------------------------------------------------------------------------------------

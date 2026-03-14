@@ -99,6 +99,21 @@ let ``describe works`` ()=
   desc.Get("0.75")  |> should beWithin  (3.0 +/- 1e-9)
 
 [<Test>]
+let ``describe works for frame`` () =
+  let s1 = Series.ofValues [ 0.0; 1.0; 2.0; 3.0; 4.0 ]
+  let s2 = Series.ofValues [ 10.0; 20.0; 30.0; 40.0; 50.0 ]
+  let frame = Frame.ofColumns [ "A", s1; "B", s2 ]
+  let desc = Stats.describe frame
+
+  desc.ColumnKeys |> Seq.toList |> should equal ["A"; "B"]
+  desc.["A", "min"] |> should equal (Stats.min s1)
+  desc.["A", "max"] |> should equal (Stats.max s1)
+  desc.["A", "mean"] |> should equal (Stats.mean s1)
+  desc.["B", "min"] |> should equal (Stats.min s2)
+  desc.["B", "max"] |> should equal (Stats.max s2)
+  desc.["B", "mean"] |> should equal (Stats.mean s2)
+
+[<Test>]
 let ``quantile works`` () =
   let s1 = Series.ofValues [ 1.0; 2.0; 3.0; 4.0 ]
   let quantile = Stats.quantile ([|0.25; 0.5; 0.75|], s1)
