@@ -906,6 +906,16 @@ let ``Frame Slice works``() =
 
   df |> Frame.slice [|"Y"; "Z"|] [|"a"; "e"|] |> shouldEqual expectedFrame
 
+[<Test>]
+let ``Frame.rowsAfter, rowsBefore, rowsStartAt, rowsEndAt, rowsBetween work on ordered int keys``() =
+  let df =
+    frame [ "V" => series [ 1 => 10; 2 => 20; 3 => 30; 4 => 40; 5 => 50 ] ]
+  df |> Frame.rowsAfter 2   |> Frame.countRows |> shouldEqual 3
+  df |> Frame.rowsBefore 4  |> Frame.countRows |> shouldEqual 3
+  df |> Frame.rowsStartAt 2 |> Frame.countRows |> shouldEqual 4
+  df |> Frame.rowsEndAt 4   |> Frame.countRows |> shouldEqual 4
+  df |> Frame.rowsBetween 2 4 |> Frame.countRows |> shouldEqual 3
+
 // ------------------------------------------------------------------------------------------------
 // Row access
 // ------------------------------------------------------------------------------------------------

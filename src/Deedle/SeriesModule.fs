@@ -460,6 +460,59 @@ module Series =
   [<CompiledName("GetKeys")>]
   let keys (series:Series<'K, 'T>) = series.Keys
 
+  /// <summary>
+  /// Returns a new series containing all values with keys strictly greater than
+  /// <c>lowerExclusive</c>. This is the functional equivalent of <c>series.After(k)</c>.
+  /// </summary>
+  /// <param name="lowerExclusive">The exclusive lower bound key.</param>
+  /// <param name="series">The input series.</param>
+  /// <category>Accessing series data and lookup</category>
+  [<CompiledName("After")>]
+  let after lowerExclusive (series:Series<'K, 'T>) = series.After(lowerExclusive)
+
+  /// <summary>
+  /// Returns a new series containing all values with keys strictly less than
+  /// <c>upperExclusive</c>. This is the functional equivalent of <c>series.Before(k)</c>.
+  /// </summary>
+  /// <param name="upperExclusive">The exclusive upper bound key.</param>
+  /// <param name="series">The input series.</param>
+  /// <category>Accessing series data and lookup</category>
+  [<CompiledName("Before")>]
+  let before upperExclusive (series:Series<'K, 'T>) = series.Before(upperExclusive)
+
+  /// <summary>
+  /// Returns a new series containing all values with keys greater than or equal to
+  /// <c>lowerInclusive</c>. This is the functional equivalent of <c>series.StartAt(k)</c>.
+  /// </summary>
+  /// <param name="lowerInclusive">The inclusive lower bound key.</param>
+  /// <param name="series">The input series.</param>
+  /// <category>Accessing series data and lookup</category>
+  [<CompiledName("StartAt")>]
+  let startAt lowerInclusive (series:Series<'K, 'T>) = series.StartAt(lowerInclusive)
+
+  /// <summary>
+  /// Returns a new series containing all values with keys less than or equal to
+  /// <c>upperInclusive</c>. This is the functional equivalent of <c>series.EndAt(k)</c>.
+  /// </summary>
+  /// <param name="upperInclusive">The inclusive upper bound key.</param>
+  /// <param name="series">The input series.</param>
+  /// <category>Accessing series data and lookup</category>
+  [<CompiledName("EndAt")>]
+  let endAt upperInclusive (series:Series<'K, 'T>) = series.EndAt(upperInclusive)
+
+  /// <summary>
+  /// Returns a new series containing all values with keys in the range
+  /// [<c>lowerInclusive</c>, <c>upperInclusive</c>] (both bounds inclusive).
+  /// This is the functional equivalent of <c>series.Between(lo, hi)</c>.
+  /// </summary>
+  /// <param name="lowerInclusive">The inclusive lower bound key.</param>
+  /// <param name="upperInclusive">The inclusive upper bound key.</param>
+  /// <param name="series">The input series.</param>
+  /// <category>Accessing series data and lookup</category>
+  [<CompiledName("Between")>]
+  let between lowerInclusive upperInclusive (series:Series<'K, 'T>) =
+    series.Between(lowerInclusive, upperInclusive)
+
   // ------------------------------------------------------------------------------------
   // Series transformations
   // ------------------------------------------------------------------------------------
