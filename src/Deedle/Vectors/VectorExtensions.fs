@@ -7,8 +7,9 @@ open Deedle.Vectors.ArrayVector
 // F# friendly operations for creating vectors
 // ------------------------------------------------------------------------------------------------
 
-/// Set concrete IVectorBuilder implementation
-///
+/// <summary>
+/// Set concrete <c>IVectorBuilder</c> implementation.
+/// </summary>
 /// <category>Vectors and indices</category>
 [<AutoOpen>]
 module ``F# VectorBuilder implementation`` =
@@ -16,10 +17,11 @@ module ``F# VectorBuilder implementation`` =
     /// Returns concrete implementation for IVectorBuilder
     static member Instance = ArrayVectorBuilder.Instance
 
-/// Defines non-generic `Vector` type that provides functions for building vectors
-/// (hard-bound to `ArrayVectorBuilder` type). In F#, the module is automatically opened
-/// using `AutoOpen`. The methods are not designed for the use from C#.
-///
+/// <summary>
+/// Defines non-generic <c>Vector</c> type that provides functions for building vectors
+/// (hard-bound to <c>ArrayVectorBuilder</c> type). In F#, the module is automatically opened
+/// using <c>AutoOpen</c>. The methods are not designed for the use from C#.
+/// </summary>
 /// <category>Vectors and indices</category>
 [<AutoOpen>]
 module ``F# Vector extensions`` =

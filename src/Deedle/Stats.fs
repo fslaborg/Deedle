@@ -12,6 +12,7 @@ open Deedle.Internal
 
 // TODO: still to do, possibly: median, percentile
 
+/// <exclude />
 module StatsInternal =
   // ------------------------------------------------------------------------------------
   // Implementation internals - moving window functionality

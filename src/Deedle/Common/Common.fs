@@ -35,6 +35,11 @@ type MissingValueException(key:obj, message) =
   /// The key that has been accessed
   member x.Key = key
 
+/// <summary>
+/// Represents a difference operation applied to a value of type <c>'T</c>.
+/// A difference is either a <c>Change</c> (old and new value), a <c>Remove</c>, or an <c>Add</c>.
+/// </summary>
+/// <category>Primitive types and values</category>
 type Diff<'T> =
   | Change of 'T * 'T
   | Remove of 'T

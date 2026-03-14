@@ -96,6 +96,7 @@ module Addressing =
 
 open Addressing
 
+/// <summary>
 /// A sequence of indicies together with the total number. Use `RangeRestriction.ofSeq` to
 /// create one from a sequence. This can be implemented by concrete vector/index
 /// builders to allow further optimizations (e.g. when the underlying source directly
@@ -104,15 +105,20 @@ open Addressing
 /// For example, if your source has an optimised way for getting every 10th address, you
 /// can create your own `IRangeRestriction` and then check for it in `LookupRange` and
 /// use optimised implementation rather than actually iterating over the sequence of indices.
+/// </summary>
+/// <category>Vectors and indices</category>
 type IRangeRestriction<'TAddress> =
   inherit seq<'TAddress>
   abstract Count : int64
 
+/// <summary>
 /// Specifies a sub-range within index that can be accessed via slicing
-/// (see the `GetAddressRange` method). For in-memory data structures, accessing
+/// (see the <c>GetAddressRange</c> method). For in-memory data structures, accessing
 /// range via known addresses is typically sufficient, but for virtual Big Deedle
-/// sources, `Start` and `End` let us avoid fully evaluating addresses.
-/// `Custom` range can be used for optimizations.
+/// sources, <c>Start</c> and <c>End</c> let us avoid fully evaluating addresses.
+/// <c>Custom</c> range can be used for optimizations.
+/// </summary>
+/// <category>Vectors and indices</category>
 [<RequireQualifiedAccess>]
 type RangeRestriction<'TAddress> =
   /// Range specified as a pair of (inclusive) lower and upper addresses
@@ -124,7 +130,10 @@ type RangeRestriction<'TAddress> =
   /// Custom range, which is a sequence of indices, or other representation of it
   | Custom of IRangeRestriction<'TAddress>
 
-/// Provides additional operations for working with the `RangeRestriction<'TAddress>` type
+/// <summary>
+/// Provides additional operations for working with the <c>RangeRestriction&lt;'TAddress&gt;</c> type.
+/// </summary>
+/// <category>Vectors and indices</category>
 module RangeRestriction =
   /// Transforms all absolute addresses in the specified range restriction
   /// using the provided function (this is useful for mapping between different

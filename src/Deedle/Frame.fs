@@ -1188,6 +1188,13 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   // Constructor
   // ----------------------------------------------------------------------------------------------
 
+  /// <summary>
+  /// Creates a new data frame from a sequence of column keys and a corresponding sequence of series.
+  /// The row index is determined by the union of the row indices of all provided series.
+  /// </summary>
+  /// <param name="names">A sequence of column keys for the new data frame</param>
+  /// <param name="columns">A sequence of series (columns) to include in the data frame</param>
+  /// <category>Constructors</category>
   new(names:seq<'TColumnKey>, columns:seq<ISeries<'TRowKey>>) =
     let df = Frame(Index.ofKeys [], Index.ofKeys [], Vector.ofValues [], IndexBuilder.Instance, VectorBuilder.Instance)
     let df = (df, Seq.zip names columns) ||> Seq.fold (fun df (colKey, colData) ->
