@@ -168,9 +168,10 @@ type internal DelayedSource<'K, 'V when 'K : equality>
   member x.Values = snd asyncData.Value.Result
   member x.AddressingScheme = scheme
 
-  member x.With(?loader, ?ranges) =
+  member x.With(?loader, ?ranges, ?rangeMin, ?rangeMax) =
     DelayedSource<'K, 'V>
-      ( scheme, rangeMin, rangeMax, defaultArg ranges x.Ranges, indexBuilder,
+      ( scheme, defaultArg rangeMin x.RangeMin, defaultArg rangeMax x.RangeMax,
+        defaultArg ranges x.Ranges, indexBuilder,
         vectorBuilder, defaultArg loader x.Loader )
 
 // --------------------------------------------------------------------------------------
@@ -302,10 +303,12 @@ and internal DelayedIndexBuilder() =
               let hi = defaultArg optHi (index.Source.RangeMax, BoundaryBehavior.Inclusive)
               let range = Intersect(index.Source.Ranges, Range(lo, hi))
               // A function that combines the current slice with another
-              // range and returns a source for this portion of data
+              // range and returns a source for this portion of data.
+              // We also update rangeMin/rangeMax so that KeyRange reflects the
+              // restricted bounds (fixing the DelayedSeries.Between + Sample bug #310).
               let restrictSource otherRange loader =
                 let ranges = Intersect(range, otherRange)
-                index.Source.With(ranges=ranges, loader=loader)
+                index.Source.With(ranges=ranges, loader=loader, rangeMin=fst lo, rangeMax=fst hi)
 
               // Create a new Delayed source for this index with more restricted range
               let source = restrictSource index.Source.Ranges index.Source.Loader
