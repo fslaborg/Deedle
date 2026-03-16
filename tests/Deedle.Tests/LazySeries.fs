@@ -43,6 +43,25 @@ let ``No call is made when series is created and we get the key range`` () =
   r.Values |> shouldEqual []
 
 [<Test>]
+let ``KeyRange reflects Between restriction on a lazy series (regression #310)`` () =
+  // Before the fix, KeyRange always returned the original (min, max) even after Between.
+  // generateKeys in Sample/resampleUniform uses KeyRange, so it would generate keys across
+  // the full original range rather than the restricted one.
+  let ls = DelayedSeries.FromValueLoader(0, 100, loadIntegers)
+  ls.Between(20, 60).KeyRange |> shouldEqual (20, 60)
+  ls.Before(40).KeyRange |> shouldEqual (0, 40)
+  ls.After(30).KeyRange |> shouldEqual (30, 100)
+
+[<Test>]
+let ``Loader is only called with restricted range after Between (regression #310)`` () =
+  let r = Recorder()
+  let ls = DelayedSeries.FromValueLoader(0, 100, spy2 r loadIntegers)
+  let actual = ls.Between(20, 60) |> Series.observations |> List.ofSeq
+  actual |> shouldEqual [ for i in 20 .. 60 -> i, i ]
+  // Loader should be called only for the restricted [20, 60] range
+  r.Values |> shouldEqual [(20, Inclusive), (60, Inclusive)]
+
+[<Test>]
 let ``After creates lower bound exclusive restriction`` () =
   let r = Recorder()
   let ls = DelayedSeries.FromValueLoader(0, 100, spy2 r loadIntegers)
