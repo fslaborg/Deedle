@@ -988,6 +988,17 @@ and
     series.Select(fun (KeyValue(k, v)) -> op v scalar)
   static member inline internal ScalarOperationR<'T>(scalar, series:Series<'K, 'T>, op : 'T -> 'T -> 'T) =
     series.Select(fun (KeyValue(k, v)) -> op scalar v)
+  static member inline internal ScalarGenericOperationL<'T1, 'T2, 'T3>(series:Series<'K,'T1>, scalar:'T2, op:'T1 -> 'T2 -> 'T3) : Series<'K,'T3> =
+    series.Select(fun (KeyValue(k, v)) -> op v scalar)
+  static member inline internal ScalarGenericOperationR<'T1, 'T2, 'T3>(scalar:'T2, series:Series<'K,'T1>, op:'T2 -> 'T1 -> 'T3) : Series<'K,'T3> =
+    series.Select(fun (KeyValue(k, v)) -> op scalar v)
+  static member inline internal VectorGenericOperation<'T1, 'T2, 'T3>(series1:Series<'K,'T1>, series2:Series<'K,'T2>, op:'T1 -> 'T2 -> 'T3) : Series<'K,'T3> =
+    series1.Zip(series2, JoinKind.Outer).SelectOptional(fun (KeyValue(_, outerOpt)) ->
+      if not outerOpt.HasValue then OptionalValue.Missing
+      else
+        let a, b = outerOpt.Value
+        if a.HasValue && b.HasValue then OptionalValue(op a.Value b.Value)
+        else OptionalValue.Missing)
 
   static member inline internal VectorOperation<'T>(series1:Series<'K,'T>, series2:Series<'K,'T>, op): Series<_, 'T> =
     let newIndex, lcmd, rcmd =
@@ -1094,6 +1105,48 @@ and
   static member (+) (series, scalar) = Series<'K, _>.ScalarOperationL<string>(series, scalar, (+))
   /// <category>Operators</category>
   static member (+) (scalar, series) = Series<'K, _>.ScalarOperationR<string>(scalar, series, (+))
+
+  // DateTime / TimeSpan arithmetic
+
+  /// <category>Operators</category>
+  static member (-) (series:Series<'K, DateTime>, scalar:DateTime) =
+    Series<'K, _>.ScalarGenericOperationL(series, scalar, (fun (a:DateTime) (b:DateTime) -> a - b))
+  /// <category>Operators</category>
+  static member (-) (scalar:DateTime, series:Series<'K, DateTime>) =
+    Series<'K, _>.ScalarGenericOperationR(scalar, series, (fun (a:DateTime) (b:DateTime) -> a - b))
+  /// <category>Operators</category>
+  static member (+) (series:Series<'K, DateTime>, scalar:TimeSpan) =
+    Series<'K, _>.ScalarGenericOperationL(series, scalar, (fun (a:DateTime) (b:TimeSpan) -> a + b))
+  /// <category>Operators</category>
+  static member (-) (series:Series<'K, DateTime>, scalar:TimeSpan) =
+    Series<'K, _>.ScalarGenericOperationL(series, scalar, (fun (a:DateTime) (b:TimeSpan) -> a - b))
+  /// <category>Operators</category>
+  static member (+) (scalar:TimeSpan, series:Series<'K, DateTime>) =
+    Series<'K, _>.ScalarGenericOperationR(scalar, series, (fun (a:TimeSpan) (b:DateTime) -> b + a))
+  /// <category>Operators</category>
+  static member (+) (series:Series<'K, TimeSpan>, scalar:TimeSpan) =
+    Series<'K, _>.ScalarOperationL<TimeSpan>(series, scalar, (+))
+  /// <category>Operators</category>
+  static member (+) (scalar:TimeSpan, series:Series<'K, TimeSpan>) =
+    Series<'K, _>.ScalarOperationR<TimeSpan>(scalar, series, (+))
+  /// <category>Operators</category>
+  static member (-) (series:Series<'K, TimeSpan>, scalar:TimeSpan) =
+    Series<'K, _>.ScalarOperationL<TimeSpan>(series, scalar, (-))
+  /// <category>Operators</category>
+  static member (-) (scalar:TimeSpan, series:Series<'K, TimeSpan>) =
+    Series<'K, _>.ScalarOperationR<TimeSpan>(scalar, series, (-))
+  /// <category>Operators</category>
+  static member (+) (s1:Series<'K, TimeSpan>, s2:Series<'K, TimeSpan>) =
+    Series<'K, _>.VectorOperation<TimeSpan>(s1, s2, (+))
+  /// <category>Operators</category>
+  static member (-) (s1:Series<'K, TimeSpan>, s2:Series<'K, TimeSpan>) =
+    Series<'K, _>.VectorOperation<TimeSpan>(s1, s2, (-))
+  /// <category>Operators</category>
+  static member (-) (s1:Series<'K, DateTime>, s2:Series<'K, DateTime>) =
+    Series<'K, _>.VectorGenericOperation(s1, s2, (fun (a:DateTime) (b:DateTime) -> a - b))
+  /// <category>Operators</category>
+  static member (-) (s1:Series<'K, DateTime>, s2:Series<'K, TimeSpan>) =
+    Series<'K, _>.VectorGenericOperation(s1, s2, (fun (a:DateTime) (b:TimeSpan) -> a - b))
 
   // Trigonometric
 

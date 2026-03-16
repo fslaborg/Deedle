@@ -1312,3 +1312,121 @@ let ``Series.reduceLevel groups by level key and reduces each group`` () =
   let result = s |> Series.reduceLevel fst (+)
   result.Get(1) |> should beWithin (20.0 +/- 1e-9)
   result.Get(2) |> should beWithin (10.0 +/- 1e-9)
+
+// ------------------------------------------------------------------------------------------------
+// DateTime / TimeSpan operator overloads (issue #625)
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Series<'K, DateTime> - DateTime produces Series<'K, TimeSpan>`` () =
+  let epoch = DateTime(2024, 1, 1)
+  let dates = series [ 1 => epoch.AddDays(1.0); 2 => epoch.AddDays(2.0); 3 => epoch.AddDays(3.0) ]
+  let result = dates - epoch
+  result.Get(1) |> shouldEqual (TimeSpan.FromDays(1.0))
+  result.Get(2) |> shouldEqual (TimeSpan.FromDays(2.0))
+  result.Get(3) |> shouldEqual (TimeSpan.FromDays(3.0))
+
+[<Test>]
+let ``DateTime - Series<'K, DateTime> produces Series<'K, TimeSpan> with correct sign`` () =
+  let epoch = DateTime(2024, 1, 10)
+  let dates = series [ 1 => DateTime(2024, 1, 1); 2 => DateTime(2024, 1, 2) ]
+  let result = epoch - dates
+  result.Get(1) |> shouldEqual (TimeSpan.FromDays(9.0))
+  result.Get(2) |> shouldEqual (TimeSpan.FromDays(8.0))
+
+[<Test>]
+let ``Series<'K, DateTime> + TimeSpan produces shifted dates`` () =
+  let d = DateTime(2024, 6, 15)
+  let dates = series [ "a" => d; "b" => d.AddDays(1.0) ]
+  let result = dates + TimeSpan.FromDays(7.0)
+  result.Get("a") |> shouldEqual (d.AddDays(7.0))
+  result.Get("b") |> shouldEqual (d.AddDays(8.0))
+
+[<Test>]
+let ``Series<'K, DateTime> - TimeSpan shifts dates backwards`` () =
+  let d = DateTime(2024, 6, 15)
+  let dates = series [ "a" => d; "b" => d.AddDays(10.0) ]
+  let result = dates - TimeSpan.FromDays(5.0)
+  result.Get("a") |> shouldEqual (d.AddDays(-5.0))
+  result.Get("b") |> shouldEqual (d.AddDays(5.0))
+
+[<Test>]
+let ``TimeSpan + Series<'K, DateTime> shifts dates forward`` () =
+  let d = DateTime(2024, 3, 1)
+  let dates = series [ 0 => d; 1 => d.AddHours(1.0) ]
+  let result = TimeSpan.FromHours(2.0) + dates
+  result.Get(0) |> shouldEqual (d.AddHours(2.0))
+  result.Get(1) |> shouldEqual (d.AddHours(3.0))
+
+[<Test>]
+let ``Series<'K, TimeSpan> + TimeSpan scalar adds durations`` () =
+  let s = series [ 1 => TimeSpan.FromHours(1.0); 2 => TimeSpan.FromHours(2.0) ]
+  let result = s + TimeSpan.FromMinutes(30.0)
+  result.Get(1) |> shouldEqual (TimeSpan.FromMinutes(90.0))
+  result.Get(2) |> shouldEqual (TimeSpan.FromMinutes(150.0))
+
+[<Test>]
+let ``TimeSpan scalar + Series<'K, TimeSpan> adds durations`` () =
+  let s = series [ 1 => TimeSpan.FromHours(1.0); 2 => TimeSpan.FromHours(2.0) ]
+  let result = TimeSpan.FromMinutes(30.0) + s
+  result.Get(1) |> shouldEqual (TimeSpan.FromMinutes(90.0))
+  result.Get(2) |> shouldEqual (TimeSpan.FromMinutes(150.0))
+
+[<Test>]
+let ``Series<'K, TimeSpan> - TimeSpan scalar subtracts duration`` () =
+  let s = series [ 1 => TimeSpan.FromHours(3.0); 2 => TimeSpan.FromHours(5.0) ]
+  let result = s - TimeSpan.FromHours(1.0)
+  result.Get(1) |> shouldEqual (TimeSpan.FromHours(2.0))
+  result.Get(2) |> shouldEqual (TimeSpan.FromHours(4.0))
+
+[<Test>]
+let ``TimeSpan scalar - Series<'K, TimeSpan> subtracts with correct sign`` () =
+  let s = series [ 1 => TimeSpan.FromHours(1.0); 2 => TimeSpan.FromHours(2.0) ]
+  let result = TimeSpan.FromHours(5.0) - s
+  result.Get(1) |> shouldEqual (TimeSpan.FromHours(4.0))
+  result.Get(2) |> shouldEqual (TimeSpan.FromHours(3.0))
+
+[<Test>]
+let ``Series<'K, TimeSpan> + Series<'K, TimeSpan> element-wise addition`` () =
+  let s1 = series [ 1 => TimeSpan.FromHours(1.0); 2 => TimeSpan.FromHours(2.0) ]
+  let s2 = series [ 1 => TimeSpan.FromMinutes(30.0); 2 => TimeSpan.FromMinutes(60.0) ]
+  let result = s1 + s2
+  result.Get(1) |> shouldEqual (TimeSpan.FromMinutes(90.0))
+  result.Get(2) |> shouldEqual (TimeSpan.FromHours(3.0))
+
+[<Test>]
+let ``Series<'K, TimeSpan> - Series<'K, TimeSpan> element-wise subtraction`` () =
+  let s1 = series [ 1 => TimeSpan.FromHours(3.0); 2 => TimeSpan.FromHours(5.0) ]
+  let s2 = series [ 1 => TimeSpan.FromHours(1.0); 2 => TimeSpan.FromHours(2.0) ]
+  let result = s1 - s2
+  result.Get(1) |> shouldEqual (TimeSpan.FromHours(2.0))
+  result.Get(2) |> shouldEqual (TimeSpan.FromHours(3.0))
+
+[<Test>]
+let ``Series<'K, DateTime> - Series<'K, DateTime> computes element-wise differences`` () =
+  let epoch = DateTime(2024, 1, 1)
+  let s1 = series [ 1 => epoch.AddDays(5.0); 2 => epoch.AddDays(10.0) ]
+  let s2 = series [ 1 => epoch.AddDays(1.0); 2 => epoch.AddDays(3.0) ]
+  let result = s1 - s2
+  result.Get(1) |> shouldEqual (TimeSpan.FromDays(4.0))
+  result.Get(2) |> shouldEqual (TimeSpan.FromDays(7.0))
+
+[<Test>]
+let ``Series<'K, DateTime> - Series<'K, TimeSpan> shifts dates element-wise`` () =
+  let epoch = DateTime(2024, 1, 1)
+  let dates = series [ 1 => epoch.AddDays(10.0); 2 => epoch.AddDays(20.0) ]
+  let spans = series [ 1 => TimeSpan.FromDays(3.0); 2 => TimeSpan.FromDays(5.0) ]
+  let result = dates - spans
+  result.Get(1) |> shouldEqual (epoch.AddDays(7.0))
+  result.Get(2) |> shouldEqual (epoch.AddDays(15.0))
+
+[<Test>]
+let ``DateTime series operations propagate missing values for unaligned keys`` () =
+  let epoch = DateTime(2024, 1, 1)
+  let s1 = series [ 1 => epoch.AddDays(5.0); 2 => epoch.AddDays(10.0) ]
+  let s2 = series [ 1 => epoch.AddDays(1.0); 3 => epoch.AddDays(3.0) ]   // key 2 missing, key 3 extra
+  let result = s1 - s2
+  result.TryGet(1).HasValue |> shouldEqual true
+  result.TryGet(1).Value |> shouldEqual (TimeSpan.FromDays(4.0))
+  result.TryGet(2).HasValue |> shouldEqual false  // key 2 in s1 has no match in s2 → missing
+  result.TryGet(3).HasValue |> shouldEqual false  // key 3 in s2 has no match in s1 → missing
