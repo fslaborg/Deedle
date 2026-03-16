@@ -106,6 +106,20 @@ let ``Can read CSV with schema where column name contains parentheses``() =
   df.GetColumn<int>("Count") |> Series.values |> List.ofSeq |> shouldEqual [1; 2]
 
 [<Test>]
+let ``Decimal columns accept scientific notation values (regression #337)``() =
+  // Regression test for issue #337: AsDecimal used NumberStyles.Currency which does not
+  // support AllowExponent, so values like "9.51E-05" became missing values when column
+  // type was inferred as decimal from earlier plain-decimal rows.
+  let csv = "X,Y\n1.0,0.12345\n2.0,9.51E-05\n3.0,7.058365954"
+  use reader = new System.IO.StringReader(csv)
+  let df = Frame.ReadCsv(reader)
+  // Y column should be inferred as decimal (or float) and all values should be present
+  let yValues = df.GetColumn<decimal>("Y") |> Series.values |> Array.ofSeq
+  yValues.Length |> shouldEqual 3
+  yValues.[1] |> shouldEqual 9.51e-5m
+  yValues.[2] |> shouldEqual 7.058365954m
+
+[<Test>]
 let ``Schema is respected when inferTypes=false (regression #347)``() =
   // Regression test for issue #347: schema was silently ignored when inferTypes=false
   let csv = "Name,Value,Flag\nAlice,42,true\nBob,17,false"

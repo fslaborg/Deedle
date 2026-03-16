@@ -69,7 +69,7 @@ type TextConversions private() =
     Int64.TryParse(TextConversions.RemoveAdorners text, NumberStyles.Integer, cultureInfo) |> asOption
 
   static member AsDecimal cultureInfo text =
-    Decimal.TryParse(TextConversions.RemoveAdorners text, NumberStyles.Currency, cultureInfo) |> asOption
+    Decimal.TryParse(TextConversions.RemoveAdorners text, NumberStyles.Currency ||| NumberStyles.AllowExponent, cultureInfo) |> asOption
 
   /// if useNoneForMissingValues is true, NAs are returned as None, otherwise Some Double.NaN is used
   static member AsFloat missingValues useNoneForMissingValues cultureInfo (text:string) =
