@@ -2035,3 +2035,29 @@ module Series =
   [<CompiledName("DiffDateOffset")>]
   let diffDateOffset offset (series:Series<'K, System.DateTimeOffset>) : Series<'K, System.TimeSpan> =
     (series, series |> shift offset) ||> zipInto (fun curr prev -> curr - prev)
+
+  /// <summary>
+  /// For each element of the input series, computes a summary value for the group it belongs to
+  /// (using <c>applyLevel</c>) and then combines each element with its group summary using
+  /// <c>sweepOp</c>. This is analogous to the R <c>sweep</c> operation and is useful for
+  /// normalising or relativising values within groups.
+  ///
+  /// For example, to express each value as a fraction of its group sum:
+  /// <code>
+  ///   let s = series [ (1,"a") =&gt; 10.0; (1,"b") =&gt; 40.0; (2,"a") =&gt; 3.0; (2,"b") =&gt; 7.0 ]
+  ///   s |&gt; Series.sweepLevel fst Stats.sum (/)
+  ///   // (1,"a") =&gt; 0.2   (10/50)
+  ///   // (1,"b") =&gt; 0.8   (40/50)
+  ///   // (2,"a") =&gt; 0.3   (3/10)
+  ///   // (2,"b") =&gt; 0.7   (7/10)
+  /// </code>
+  /// </summary>
+  /// <param name="level">A function that maps a key to the group key used for summarisation.</param>
+  /// <param name="summaryOp">A function that aggregates a group series into a single summary value.</param>
+  /// <param name="sweepOp">A function that combines an element value with its group summary.</param>
+  /// <param name="series">The input series with hierarchical (e.g. tuple) keys.</param>
+  /// <category>Hierarchical index operations</category>
+  [<CompiledName("SweepLevel")>]
+  let inline sweepLevel (level:'K1 -> 'K2) summaryOp sweepOp (series:Series<'K1, 'V>) : Series<'K1, 'R> =
+    let summary = series |> applyLevel level summaryOp
+    series |> map (fun k v -> sweepOp v (summary.Get(level k)))

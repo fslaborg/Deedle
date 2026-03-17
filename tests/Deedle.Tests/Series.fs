@@ -1299,6 +1299,36 @@ let ``Series.reduceLevel groups by level key and reduces each group`` () =
   result.Get(2) |> should beWithin (10.0 +/- 1e-9)
 
 // ------------------------------------------------------------------------------------------------
+// Series.sweepLevel
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Series.sweepLevel normalizes values within each group`` () =
+  // Two groups: level 1 has sum 50, level 2 has sum 10
+  let s = series [ (1,"a") => 10.0; (1,"b") => 40.0; (2,"a") => 3.0; (2,"b") => 7.0 ]
+  let result = s |> Series.sweepLevel fst Stats.sum (/)
+  result.Get((1,"a")) |> should beWithin (0.2 +/- 1e-9)
+  result.Get((1,"b")) |> should beWithin (0.8 +/- 1e-9)
+  result.Get((2,"a")) |> should beWithin (0.3 +/- 1e-9)
+  result.Get((2,"b")) |> should beWithin (0.7 +/- 1e-9)
+
+[<Test>]
+let ``Series.sweepLevel subtracts group mean from each element`` () =
+  let s = series [ (1,"a") => 10.0; (1,"b") => 30.0; (2,"a") => 5.0; (2,"b") => 15.0 ]
+  let result = s |> Series.sweepLevel fst Stats.mean (-)
+  result.Get((1,"a")) |> should beWithin (-10.0 +/- 1e-9)
+  result.Get((1,"b")) |> should beWithin (10.0 +/- 1e-9)
+  result.Get((2,"a")) |> should beWithin (-5.0 +/- 1e-9)
+  result.Get((2,"b")) |> should beWithin (5.0 +/- 1e-9)
+
+[<Test>]
+let ``Series.sweepLevel with single-element groups returns unchanged values when divided by sum`` () =
+  let s = series [ (1,"a") => 5.0; (2,"b") => 8.0 ]
+  let result = s |> Series.sweepLevel fst Stats.sum (/)
+  result.Get((1,"a")) |> should beWithin (1.0 +/- 1e-9)
+  result.Get((2,"b")) |> should beWithin (1.0 +/- 1e-9)
+
+// ------------------------------------------------------------------------------------------------
 // DateTime / TimeSpan operator overloads (issue #625)
 // ------------------------------------------------------------------------------------------------
 
