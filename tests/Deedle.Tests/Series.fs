@@ -83,6 +83,15 @@ let ``Can get first and last key of an unordered series`` () =
   unordered |> Series.lastKey |> shouldEqual 5
 
 [<Test>]
+let ``Inexact lookup on unordered series throws InvalidOperationException`` () =
+  // Smaller/Greater always need binary search, so throw on unordered
+  (fun () -> unordered.Get(3, Lookup.Smaller)       |> ignore) |> should throw typeof<InvalidOperationException>
+  (fun () -> unordered.Get(3, Lookup.Greater)        |> ignore) |> should throw typeof<InvalidOperationException>
+  // ExactOrSmaller/ExactOrGreater also throw when the key is absent (would fall through to binary search)
+  (fun () -> unordered.Get(4, Lookup.ExactOrSmaller) |> ignore) |> should throw typeof<InvalidOperationException>
+  (fun () -> unordered.Get(4, Lookup.ExactOrGreater) |> ignore) |> should throw typeof<InvalidOperationException>
+
+[<Test>]
 let ``Can get key range of an ordered series`` () =
   ordered.KeyRange |> shouldEqual (1, 5)
 
