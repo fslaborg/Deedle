@@ -861,6 +861,41 @@ let ``Frame.mapColValues preserves column keys`` () =
   result.ColumnKeys |> Seq.toList |> shouldEqual [ "A"; "B" ]
 
 [<Test>]
+let ``Frame.mapColValuesAs applies function to typed columns without boxing`` () =
+  let df = mapSample()
+  let result = df |> Frame.mapColValuesAs (Series.mapValues ((*) 2.0))
+  result.GetColumn<float>("A") |> shouldEqual (series [ 1 => 2.0; 2 => 4.0; 3 => 6.0 ])
+  result.GetColumn<float>("B") |> shouldEqual (series [ 1 => 20.0; 2 => 40.0; 3 => 60.0 ])
+
+[<Test>]
+let ``Frame.mapColValuesAs preserves column keys`` () =
+  let df = mapSample()
+  let result = df |> Frame.mapColValuesAs (Series.mapValues id : Series<int,float> -> Series<int,float>)
+  result.ColumnKeys |> Seq.toList |> shouldEqual [ "A"; "B" ]
+
+[<Test>]
+let ``Frame.mapColValuesAs drops non-convertible columns`` () =
+  // frame with a float column and a string column; only float survives
+  let df =
+    frame [ "F" =?> series [ 1 => 1.0; 2 => 2.0 ]
+            "S" =?> series [ 1 => "a"; 2 => "b" ] ]
+  let result = df |> Frame.mapColValuesAs (Series.mapValues ((*) 3.0))
+  result.ColumnKeys |> Seq.toList |> shouldEqual [ "F" ]
+  result.GetColumn<float>("F") |> shouldEqual (series [ 1 => 3.0; 2 => 6.0 ])
+
+[<Test>]
+let ``Frame.mapColValuesAs produces same values as mapColValues for homogeneous float frame`` () =
+  let df = mapSample()
+  let via_mapColValues =
+    df |> Frame.mapColValues (fun (s:ObjectSeries<int>) -> s.As<float>() |> Series.mapValues ((*) 5.0))
+  let via_mapColValuesAs =
+    df |> Frame.mapColValuesAs (Series.mapValues ((*) 5.0))
+  for colKey in [ "A"; "B" ] do
+    let expected = via_mapColValues.GetColumn<float>(colKey)
+    let actual   = via_mapColValuesAs.GetColumn<float>(colKey)
+    actual |> shouldEqual expected
+
+[<Test>]
 let ``Frame.mapRowValues applies function to each object row`` () =
   let df = mapSample()
   // Sum the two numeric columns for each row
@@ -1567,6 +1602,64 @@ let ``Can join frame with series`` () =
   )
 
 // ------------------------------------------------------------------------------------------------
+// Operations - joinOn
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``joinOnString inner join keeps only matching keys`` () =
+  let left  = frame [ "id" =?> series [1 => "a"; 2 => "b"; 3 => "c"]
+                      "x"  =?> series [1 => 1.0; 2 => 2.0; 3 => 3.0] ]
+  let right = frame [ "id" =?> series [1 => "a"; 2 => "d"]
+                      "y"  =?> series [1 => 10.0; 2 => 40.0] ]
+  let result = (left, right) ||> Frame.joinOnString "id" JoinKind.Inner
+  result.RowCount |> shouldEqual 1
+  result.RowKeys  |> Seq.toList |> shouldEqual ["a"]
+  result?x |> Series.values |> Seq.toList |> shouldEqual [1.0]
+  result?y |> Series.values |> Seq.toList |> shouldEqual [10.0]
+
+[<Test>]
+let ``joinOnString outer join keeps all keys`` () =
+  let left  = frame [ "id" =?> series [1 => "a"; 2 => "b"]
+                      "x"  =?> series [1 => 1.0; 2 => 2.0] ]
+  let right = frame [ "id" =?> series [1 => "a"; 2 => "c"]
+                      "y"  =?> series [1 => 10.0; 2 => 30.0] ]
+  let result = (left, right) ||> Frame.joinOnString "id" JoinKind.Outer
+  result.RowCount |> shouldEqual 3
+  result.RowKeys |> Seq.sort |> Seq.toList |> shouldEqual ["a"; "b"; "c"]
+
+[<Test>]
+let ``joinOnString left join keeps all left keys`` () =
+  let left  = frame [ "id" =?> series [1 => "a"; 2 => "b"]
+                      "x"  =?> series [1 => 1.0; 2 => 2.0] ]
+  let right = frame [ "id" =?> series [1 => "a"; 2 => "c"]
+                      "y"  =?> series [1 => 10.0; 2 => 30.0] ]
+  let result = (left, right) ||> Frame.joinOnString "id" JoinKind.Left
+  result.RowCount |> shouldEqual 2
+  result.RowKeys |> Seq.sort |> Seq.toList |> shouldEqual ["a"; "b"]
+  result?x |> Series.values |> Seq.toList |> shouldEqual [1.0; 2.0]
+
+[<Test>]
+let ``joinOnInt inner join works on int column`` () =
+  let left  = frame [ "id" =?> series [1 => 10; 2 => 20]
+                      "v"  =?> series [1 => 1.0; 2 => 2.0] ]
+  let right = frame [ "id" =?> series [1 => 10; 2 => 30]
+                      "w"  =?> series [1 => 100.0; 2 => 300.0] ]
+  let result = (left, right) ||> Frame.joinOnInt "id" JoinKind.Inner
+  result.RowCount |> shouldEqual 1
+  result.RowKeys  |> Seq.toList |> shouldEqual [10]
+  result?v |> Series.values |> Seq.toList |> shouldEqual [1.0]
+  result?w |> Series.values |> Seq.toList |> shouldEqual [100.0]
+
+[<Test>]
+let ``joinOn join column is not present in result columns`` () =
+  let left  = frame [ "id" =?> series [1 => "a"]
+                      "x"  =?> series [1 => 1.0] ]
+  let right = frame [ "id" =?> series [1 => "a"]
+                      "y"  =?> series [1 => 10.0] ]
+  let result = (left, right) ||> Frame.joinOnString "id" JoinKind.Inner
+  result.ColumnKeys |> Seq.sort |> Seq.toList |> shouldEqual ["x"; "y"]
+
+// ------------------------------------------------------------------------------------------------
 // Operations - sorting
 // ------------------------------------------------------------------------------------------------
 
@@ -1632,6 +1725,17 @@ let ``Can fill missing values in a frame containing decimals`` () =
   let df1 = frame [ "A" => Series.ofOptionalObservations [ 1 => None; 2 => Some 0.2M ] ]
   let df2 = df1 |> Frame.fillMissingWith 0.1
   df2?A |> shouldEqual <| series [1 => 0.1; 2 => 0.2]
+
+[<Test>]
+let ``Can fill missing float values using int fill value (issue 250)`` () =
+  // FillMissing(0) with an int should fill float columns (int safely widens to float)
+  let s1 = series [ 1 => 1.0; 2 => 2.0; 3 => 3.0 ]
+  let s2 = series [ 2 => 2.0; 3 => 3.0 ]
+  let df = Frame.ofRows [ 0 => s1; 1 => s2 ]
+  let filled = df |> Frame.fillMissingWith 0
+  (filled.GetColumn<float>(1)).[1] |> shouldEqual 0.0
+  (filled.GetColumn<float>(2)).[1] |> shouldEqual 2.0
+  (filled.GetColumn<float>(3)).[1] |> shouldEqual 3.0
 
 [<Test>]
 let ``indexRowsWith with more keys than rows produces missing values for extra rows (issue 498)`` () =
@@ -2404,3 +2508,43 @@ let ``Frame.filterRowsByMask can be used with derived boolean series`` () =
   let result = df |> Frame.filterRowsByMask adults
   result.RowCount |> shouldEqual 2
   result.RowKeys |> Seq.toList |> shouldEqual ["Alice"; "Carol"]
+
+// ------------------------------------------------------------------------------------------------
+// iloc - integer-position based indexing for frames
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Frame.ilocRows selects rows by integer position`` () =
+  let df = frame [ "A" =?> series [ "r1" => 1.0; "r2" => 2.0; "r3" => 3.0; "r4" => 4.0 ]
+                   "B" =?> series [ "r1" => 10.0; "r2" => 20.0; "r3" => 30.0; "r4" => 40.0 ] ]
+  let result = df |> Frame.ilocRows [0; 2]
+  result.RowCount |> shouldEqual 2
+  result.RowKeys |> Seq.toList |> shouldEqual ["r1"; "r3"]
+  result.GetColumn<float>("A") |> Series.values |> Seq.toList |> shouldEqual [1.0; 3.0]
+
+[<Test>]
+let ``Frame.ilocCols selects columns by integer position`` () =
+  let df = frame [ "A" =?> series [ 1 => 1.0; 2 => 2.0 ]
+                   "B" =?> series [ 1 => 10.0; 2 => 20.0 ]
+                   "C" =?> series [ 1 => 100.0; 2 => 200.0 ] ]
+  let result = df |> Frame.ilocCols [0; 2]
+  result.ColumnCount |> shouldEqual 2
+  result.ColumnKeys |> Seq.toList |> shouldEqual ["A"; "C"]
+
+[<Test>]
+let ``Frame.iloc selects rows and columns by integer position`` () =
+  let df = frame [ "A" =?> series [ "r1" => 1.0; "r2" => 2.0; "r3" => 3.0 ]
+                   "B" =?> series [ "r1" => 10.0; "r2" => 20.0; "r3" => 30.0 ]
+                   "C" =?> series [ "r1" => 100.0; "r2" => 200.0; "r3" => 300.0 ] ]
+  let result = df |> Frame.iloc [0; 2] [1; 2]
+  result.RowCount |> shouldEqual 2
+  result.ColumnCount |> shouldEqual 2
+  result.RowKeys |> Seq.toList |> shouldEqual ["r1"; "r3"]
+  result.ColumnKeys |> Seq.toList |> shouldEqual ["B"; "C"]
+
+[<Test>]
+let ``Frame.iloc with empty sequences returns empty frame`` () =
+  let df = frame [ "A" =?> series [ 1 => 1.0; 2 => 2.0 ]
+                   "B" =?> series [ 1 => 10.0; 2 => 20.0 ] ]
+  let result = df |> Frame.ilocRows []
+  result.RowCount |> shouldEqual 0

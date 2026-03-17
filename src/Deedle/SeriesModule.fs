@@ -297,6 +297,25 @@ module Series =
   let getAt index (series:Series<'K, 'T>) = series.GetAt(index)
 
   /// <summary>
+  /// Returns a new series containing only the values at the specified integer (zero-based)
+  /// positions from the original series. Equivalent to pandas <c>Series.iloc</c>.
+  /// The resulting series preserves the original keys at those positions.
+  /// </summary>
+  /// <example>
+  ///   <code>
+  ///   // Select elements at positions 0, 2, 4
+  ///   s |> Series.iloc [0; 2; 4]
+  ///   </code>
+  /// </example>
+  /// <param name="positions">Sequence of zero-based integer positions to select</param>
+  /// <param name="series">Input series</param>
+  /// <category>Accessing series data and lookup</category>
+  [<CompiledName("Iloc")>]
+  let iloc (positions:seq<int>) (series:Series<'K, 'T>) =
+    let keys = positions |> Seq.map series.GetKeyAt
+    series.GetItems(keys)
+
+  /// <summary>
   /// Attempts to get the value for the specified key. If the value is not
   /// available, `None` is returned.
   /// Use the specified lookup semantics - for exact matching, use `tryGet`.
@@ -617,6 +636,25 @@ module Series =
     series.SelectOptional(fun kvp ->
       if kvp.Value.HasValue && f kvp.Value.Value then OptionalValue.Missing
       else kvp.Value)
+
+  /// <summary>
+  /// Returns a new series where all occurrences of <c>oldValue</c> are replaced with
+  /// <c>newValue</c>. Missing values in the series are left unchanged.
+  /// </summary>
+  /// <param name="oldValue">The value to be replaced</param>
+  /// <param name="newValue">The value to use as replacement</param>
+  /// <param name="series">The input series</param>
+  /// <example>
+  /// <code>
+  /// let s = series [ 1 => 1.0; 2 => 2.0; 3 => 2.0; 4 => 3.0 ]
+  /// s |> Series.replaceValue 2.0 99.0
+  /// // Returns: series [ 1 => 1.0; 2 => 99.0; 3 => 99.0; 4 => 3.0 ]
+  /// </code>
+  /// </example>
+  /// <category>Series transformations</category>
+  [<CompiledName("ReplaceValue")>]
+  let replaceValue (oldValue:'T) (newValue:'T) (series:Series<'K, 'T>) =
+    series.Select(fun (KeyValue(_, v)) -> if v = oldValue then newValue else v)
 
   /// <summary>
   /// Returns a new series whose keys are the results of applying the given function to

@@ -419,6 +419,50 @@ module Frame =
     |> sliceRows rows
 
   /// <summary>
+  /// Returns a frame consisting of the rows at the specified integer (zero-based) positions
+  /// from the original data frame. Equivalent to pandas <c>iloc</c> row selection.
+  /// </summary>
+  /// <param name="rowPositions">Sequence of zero-based integer row positions to select</param>
+  /// <param name="frame">Source data frame</param>
+  /// <category>Accessing frame data and lookup</category>
+  [<CompiledName("IlocRows")>]
+  let ilocRows (rowPositions:seq<int>) (frame:Frame<'R, 'C>) =
+    let rowKeys = rowPositions |> Seq.map frame.GetRowKeyAt
+    frame.Rows.[rowKeys]
+
+  /// <summary>
+  /// Returns a frame consisting of the columns at the specified integer (zero-based) positions
+  /// from the original data frame. Equivalent to pandas <c>iloc</c> column selection.
+  /// </summary>
+  /// <param name="colPositions">Sequence of zero-based integer column positions to select</param>
+  /// <param name="frame">Source data frame</param>
+  /// <category>Accessing frame data and lookup</category>
+  [<CompiledName("IlocCols")>]
+  let ilocCols (colPositions:seq<int>) (frame:Frame<'R, 'C>) =
+    let colKeys = colPositions |> Seq.map (fun i -> frame.ColumnIndex.KeyAt(frame.ColumnIndex.AddressAt(int64 i)))
+    frame.Columns.[colKeys]
+
+  /// <summary>
+  /// Returns a sub-frame containing the rows and columns at the specified integer (zero-based)
+  /// positions from the original data frame. Equivalent to pandas <c>DataFrame.iloc[rows, cols]</c>.
+  /// </summary>
+  /// <example>
+  ///   <code>
+  ///   // Select rows 0, 2 and columns 0, 1
+  ///   df |> Frame.iloc [0; 2] [0; 1]
+  ///   </code>
+  /// </example>
+  /// <param name="rowPositions">Sequence of zero-based integer row positions to select</param>
+  /// <param name="colPositions">Sequence of zero-based integer column positions to select</param>
+  /// <param name="frame">Source data frame</param>
+  /// <category>Accessing frame data and lookup</category>
+  [<CompiledName("Iloc")>]
+  let iloc (rowPositions:seq<int>) (colPositions:seq<int>) (frame:Frame<'R, 'C>) =
+    frame
+    |> ilocRows rowPositions
+    |> ilocCols colPositions
+
+  /// <summary>
   /// Returns a new frame containing all rows with row keys strictly greater than
   /// <c>lowerExclusive</c>.
   /// </summary>
@@ -1345,6 +1389,20 @@ module Frame =
     frame.Columns |> Series.mapValues f |> FrameUtils.fromColumns frame.IndexBuilder frame.VectorBuilder
 
   /// <summary>
+  /// Builds a new data frame whose columns are the results of applying the specified
+  /// function on the typed columns of the input data frame. Unlike <c>mapColValues</c>,
+  /// this function avoids the boxing overhead of <c>ObjectSeries</c> by operating directly
+  /// on columns converted to the specified type <c>'T</c>. Columns that cannot be converted
+  /// to <c>'T</c> are silently dropped.
+  /// </summary>
+  /// <param name="frame">Input data frame to be transformed</param>
+  /// <param name="f">Function of one argument that maps a typed series</param>
+  /// <category>Frame transformations</category>
+  [<CompiledName("SelectColumnValuesAs")>]
+  let mapColValuesAs (f: Series<'R,'T> -> Series<'R,'S>) (frame:Frame<'R,'C>) : Frame<'R,'C> =
+    frame.GetColumns<'T>() |> Series.mapValues f |> FrameUtils.fromColumns frame.IndexBuilder frame.VectorBuilder
+
+  /// <summary>
   /// Builds a new data frame whose column keys are the results of applying the
   /// specified function on the column keys of the original data frame.
   /// </summary>
@@ -1539,17 +1597,29 @@ module Frame =
 
   /// <summary>
   /// Fill missing values of a given type in the frame with a constant value.
-  /// The operation is only applied to columns (series) that contain values of the
-  /// same type as the provided filling value. The operation does not attempt to
-  /// convert between numeric values (so a series containing `float` will not be
-  /// converted to a series of `int`).
+  /// The fill value is applied to columns whose element type matches the fill value type
+  /// (using safe numeric widening). This includes both cases where the column type can be
+  /// widened to the fill value type (e.g. decimal columns filled with a float value) and
+  /// cases where the fill value can be widened to the column type (e.g. an integer fill
+  /// value filling float columns).
+  /// Columns whose element type is incompatible with the fill value type are left unchanged.
   /// </summary>
   /// <param name="frame">An input data frame that is to be filled</param>
   /// <param name="value">A constant value that is used to fill all missing values</param>
   /// <category>Missing values</category>
   [<CompiledName("FillMissingWith")>]
   let fillMissingWith (value:'T) (frame:Frame<'R, 'C>) =
-    frame.ColumnApply(ConversionKind.Safe, fun (s:Series<_, 'T>) -> Series.fillMissingWith value s :> ISeries<_>)
+    // First pass: apply to columns that can be safely converted to the fill value's type.
+    // This handles cases where the column type widens to 'T (e.g. decimal columns
+    // when 'T = float, since decimal → float is a safe conversion).
+    let frame1 =
+      frame.ColumnApply(ConversionKind.Safe, fun (s:Series<_, 'T>) -> Series.fillMissingWith value s :> ISeries<_>)
+    // Second pass: handle remaining columns where the fill value can be safely widened
+    // to the column's element type (e.g. int fill value for float columns).
+    // Dense (non-optional) vectors produced by the first pass are unchanged.
+    let fillCmd = Vectors.FillMissing(Vectors.Return 0, VectorFillMissing.Constant (box value))
+    let newData = frame1.Data.Select(VectorHelpers.transformColumn frame1.VectorBuilder frame1.RowIndex.AddressingScheme fillCmd)
+    Frame<_, _>(frame1.RowIndex, frame1.ColumnIndex, newData, frame1.IndexBuilder, frame1.VectorBuilder)
 
   /// <summary>
   /// Fill missing values in the data frame with the nearest available value
@@ -1733,6 +1803,49 @@ module Frame =
   /// <category>Joining, merging and zipping</category>
   [<CompiledName("JoinAlign")>]
   let joinAlign kind lookup (frame1:Frame<'R, 'C>) frame2 = frame1.Join(frame2, kind, lookup)
+
+  /// <summary>
+  /// Join two data frames on a shared column, using that column's values as the row index for
+  /// alignment. Both frames must have unique values in the specified column (the unique-key case).
+  /// The join column is removed from the data columns of the result and becomes the row index.
+  /// This is a convenience wrapper around <c>Frame.indexRows</c> followed by <c>Frame.join</c>.
+  /// </summary>
+  /// <param name="colKey">The name of the column to join on. This column must exist in both frames and must have unique values.</param>
+  /// <param name="kind">Specifies the joining behavior on row indices. Use <c>JoinKind.Outer</c> and <c>JoinKind.Inner</c> to get the union and intersection of the row keys, respectively. Use <c>JoinKind.Left</c> and <c>JoinKind.Right</c> to use the current key of the left/right data frame.</param>
+  /// <param name="frame1">First data frame (left) to be used in the joining.</param>
+  /// <param name="frame2">Other frame (right) to be joined with <c>frame1</c>.</param>
+  /// <category>Joining, merging and zipping</category>
+  [<CompiledName("JoinOn")>]
+  let joinOn (colKey:'C) kind (frame1:Frame<'R1, 'C>) (frame2:Frame<'R2, 'C>) : Frame<'K, 'C> =
+    join kind (frame1 |> indexRows colKey) (frame2 |> indexRows colKey)
+
+  /// <summary>
+  /// Join two data frames on a shared string-valued column. Both frames must have unique values
+  /// in the specified column (the unique-key case). The join column becomes the row index of the
+  /// result frame. This is the string-specialised variant of <c>Frame.joinOn</c>.
+  /// </summary>
+  /// <param name="colKey">The name of the column to join on.</param>
+  /// <param name="kind">Specifies the joining behavior on row indices.</param>
+  /// <param name="frame1">First data frame (left).</param>
+  /// <param name="frame2">Other frame (right).</param>
+  /// <category>Joining, merging and zipping</category>
+  [<CompiledName("JoinOnString")>]
+  let joinOnString (colKey:'C) kind (frame1:Frame<'R1, 'C>) (frame2:Frame<'R2, 'C>) : Frame<string, 'C> =
+    join kind (frame1 |> indexRowsString colKey) (frame2 |> indexRowsString colKey)
+
+  /// <summary>
+  /// Join two data frames on a shared int-valued column. Both frames must have unique values
+  /// in the specified column (the unique-key case). The join column becomes the row index of the
+  /// result frame. This is the int-specialised variant of <c>Frame.joinOn</c>.
+  /// </summary>
+  /// <param name="colKey">The name of the column to join on.</param>
+  /// <param name="kind">Specifies the joining behavior on row indices.</param>
+  /// <param name="frame1">First data frame (left).</param>
+  /// <param name="frame2">Other frame (right).</param>
+  /// <category>Joining, merging and zipping</category>
+  [<CompiledName("JoinOnInt")>]
+  let joinOnInt (colKey:'C) kind (frame1:Frame<'R1, 'C>) (frame2:Frame<'R2, 'C>) : Frame<int, 'C> =
+    join kind (frame1 |> indexRowsInt colKey) (frame2 |> indexRowsInt colKey)
 
   /// Append a sequence of data frames with non-overlapping values. The operation takes the union of
   /// columns and rows of the source data frames and then unions the values. An exception is thrown when

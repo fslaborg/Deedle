@@ -1097,6 +1097,27 @@ let ``Can replace for many keys``() =
   s.Replace([|1; 2|], 4.0) |> shouldEqual e
 
 // ------------------------------------------------------------------------------------------------
+// Series.replaceValue
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``replaceValue replaces all matching values`` () =
+  let s = series [ 1 => 1.0; 2 => 2.0; 3 => 2.0; 4 => 3.0 ]
+  let e = series [ 1 => 1.0; 2 => 99.0; 3 => 99.0; 4 => 3.0 ]
+  s |> Series.replaceValue 2.0 99.0 |> shouldEqual e
+
+[<Test>]
+let ``replaceValue leaves missing values unchanged`` () =
+  let s = Series.ofOptionalObservations [ 1 => Some 1.0; 2 => None; 3 => Some 1.0 ]
+  let e = Series.ofOptionalObservations [ 1 => Some 99.0; 2 => None; 3 => Some 99.0 ]
+  s |> Series.replaceValue 1.0 99.0 |> shouldEqual e
+
+[<Test>]
+let ``replaceValue with no matching values returns original series`` () =
+  let s = series [ 1 => 1.0; 2 => 2.0; 3 => 3.0 ]
+  s |> Series.replaceValue 5.0 99.0 |> shouldEqual s
+
+// ------------------------------------------------------------------------------------------------
 // take, takeLast, skip, skipLast
 // ------------------------------------------------------------------------------------------------
 
@@ -1430,3 +1451,26 @@ let ``DateTime series operations propagate missing values for unaligned keys`` (
   result.TryGet(1).Value |> shouldEqual (TimeSpan.FromDays(4.0))
   result.TryGet(2).HasValue |> shouldEqual false  // key 2 in s1 has no match in s2 → missing
   result.TryGet(3).HasValue |> shouldEqual false  // key 3 in s2 has no match in s1 → missing
+
+// ------------------------------------------------------------------------------------------------
+// iloc - integer-position based indexing
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Series.iloc returns elements at specified integer positions`` () =
+  let s = series [ "a" => 10; "b" => 20; "c" => 30; "d" => 40; "e" => 50 ]
+  let result = s |> Series.iloc [0; 2; 4]
+  result |> shouldEqual (series [ "a" => 10; "c" => 30; "e" => 50 ])
+
+[<Test>]
+let ``Series.iloc preserves original keys`` () =
+  let s = series [ 10 => "x"; 20 => "y"; 30 => "z" ]
+  let result = s |> Series.iloc [1; 0]
+  result.Keys |> Seq.toList |> shouldEqual [20; 10]
+  result.Values |> Seq.toList |> shouldEqual ["y"; "x"]
+
+[<Test>]
+let ``Series.iloc with empty sequence returns empty series`` () =
+  let s = series [ 1 => 1.0; 2 => 2.0; 3 => 3.0 ]
+  let result = s |> Series.iloc []
+  result.KeyCount |> shouldEqual 0

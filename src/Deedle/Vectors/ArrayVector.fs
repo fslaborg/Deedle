@@ -143,8 +143,18 @@ type ArrayVectorBuilder() =
                 VectorOptional(data) |> av
               else
                 VectorNonOptional(data |> Array.map (fun v -> if v.HasValue then v.Value else fill)) |> av
-          | VectorOptional data, VectorFillMissing.Constant _ ->
-              invalidOp "Type mismatch - cannot fill values of the vector!"
+          | VectorOptional data, VectorFillMissing.Constant fill ->
+              // Fill value type doesn't match vector element type 'T.
+              // Try a safe numeric widening conversion (e.g. int 0 -> float 0.0).
+              // If the conversion isn't safe, leave the column unchanged.
+              if Convert.canConvertType<'T> ConversionKind.Safe fill then
+                let typedFill = Convert.convertType<'T> ConversionKind.Safe fill
+                if typeof<'T> = typeof<Double> && Convert.ToDouble(typedFill) |> Double.IsNaN then
+                  VectorOptional(data) |> av
+                else
+                  VectorNonOptional(data |> Array.map (fun v -> if v.HasValue then v.Value else typedFill)) |> av
+              else
+                VectorOptional(data) |> av
 
 
       | Relocate(source, len, relocations) ->
