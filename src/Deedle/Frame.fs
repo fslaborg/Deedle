@@ -1349,7 +1349,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
         if level = 0 && maxLevel = 0 then box key
         else CustomKey.Get(key).GetLevel(level)
       if ordered && (Some levelKey = !previous) then ""
-      else previous := Some levelKey; reset(); levelKey.ToString()
+      else previous := Some levelKey; reset(); Formatting.formatKey levelKey
 
     [|
       // Yield headers (for all column levels)

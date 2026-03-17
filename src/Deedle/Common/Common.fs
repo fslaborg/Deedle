@@ -1430,6 +1430,16 @@ module Formatting =
 
   // Simple functions that pretty-print series and frames
   // (to be integrated as ToString and with F# Interactive)
+
+  /// Format a key value for display. DateTime keys with no time component (i.e. time = 00:00:00)
+  /// are formatted as date-only using the current culture's short date format, matching the
+  /// behaviour of SaveCsv. All other values are formatted with ToString().
+  let formatKey (key:obj) =
+    match key with
+    | :? DateTime as dt when dt.TimeOfDay = TimeSpan.Zero ->
+        dt.ToString("d", Globalization.CultureInfo.CurrentCulture)
+    | _ -> key.ToString()
+
   let formatTable (data:string[,]) =
     let sb = StringBuilder()
     use wr = new StringWriter(sb)
