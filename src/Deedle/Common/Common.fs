@@ -1433,11 +1433,15 @@ module Formatting =
 
   /// Format a key value for display. DateTime keys with no time component (i.e. time = 00:00:00)
   /// are formatted as date-only using the current culture's short date format, matching the
-  /// behaviour of SaveCsv. All other values are formatted with ToString().
+  /// behaviour of SaveCsv. DateTime keys with a time component are formatted using the invariant
+  /// culture to ensure consistent output across platforms (e.g. "01/01/2023 09:30:00").
+  /// All other values are formatted with ToString().
   let formatKey (key:obj) =
     match key with
     | :? DateTime as dt when dt.TimeOfDay = TimeSpan.Zero ->
         dt.ToString("d", Globalization.CultureInfo.CurrentCulture)
+    | :? DateTime as dt ->
+        dt.ToString(Globalization.CultureInfo.InvariantCulture)
     | _ -> key.ToString()
 
   let formatTable (data:string[,]) =
