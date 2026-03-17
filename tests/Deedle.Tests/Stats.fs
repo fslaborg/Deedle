@@ -491,3 +491,79 @@ let ``Stats.corr returns NaN for fewer than 2 pairs`` () =
   let s1 = Series.ofValues [1.0]
   let s2 = Series.ofValues [1.0]
   Stats.corr s1 s2 |> Double.IsNaN |> shouldEqual true
+
+// ------------------------------------------------------------------------------------------------
+// Rank and ntile
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Stats.rank assigns rank 1 to the smallest value`` () =
+  let s = series [ "a" => 30.0; "b" => 10.0; "c" => 20.0 ]
+  let r = Stats.rank s
+  r.Get("b") |> shouldEqual 1
+
+[<Test>]
+let ``Stats.rank assigns the same rank to tied values`` () =
+  let s = series [ "a" => 10.0; "b" => 10.0; "c" => 20.0 ]
+  let r = Stats.rank s
+  r.Get("a") |> shouldEqual 1
+  r.Get("b") |> shouldEqual 1
+  r.Get("c") |> shouldEqual 2
+
+[<Test>]
+let ``Stats.rank preserves all keys from the original series`` () =
+  let s = series [ "a" => 30.0; "b" => 10.0; "c" => 20.0; "d" => 10.0 ]
+  let r = Stats.rank s
+  r.Get("a") |> shouldEqual 3
+  r.Get("b") |> shouldEqual 1
+  r.Get("c") |> shouldEqual 2
+  r.Get("d") |> shouldEqual 1
+
+[<Test>]
+let ``Stats.rank returns empty series for empty input`` () =
+  let s = Series.ofObservations ([] : (int * float) list)
+  Stats.rank s |> Series.countValues |> shouldEqual 0
+
+[<Test>]
+let ``Stats.rank works on integer values`` () =
+  let s = series [ 1 => 5; 2 => 3; 3 => 5; 4 => 1 ]
+  let r = Stats.rank s
+  r.Get(4) |> shouldEqual 1
+  r.Get(2) |> shouldEqual 2
+  r.Get(1) |> shouldEqual 3
+  r.Get(3) |> shouldEqual 3
+
+[<Test>]
+let ``Stats.ntile divides 5 values evenly into 3 buckets`` () =
+  // Sorted order: 1.0, 2.0, 3.0, 4.0, 5.0 -> buckets 1,1,2,2,3
+  let s = series [ 1 => 5.0; 2 => 1.0; 3 => 4.0; 4 => 2.0; 5 => 3.0 ]
+  let t = Stats.ntile 3 s
+  t.Get(2) |> shouldEqual 1  // value 1.0 -> bucket 1
+  t.Get(4) |> shouldEqual 1  // value 2.0 -> bucket 1
+  t.Get(5) |> shouldEqual 2  // value 3.0 -> bucket 2
+  t.Get(3) |> shouldEqual 2  // value 4.0 -> bucket 2
+  t.Get(1) |> shouldEqual 3  // value 5.0 -> bucket 3
+
+[<Test>]
+let ``Stats.ntile with n equal to series length assigns each element its own bucket`` () =
+  let s = series [ 1 => 10.0; 2 => 20.0; 3 => 30.0 ]
+  let t = Stats.ntile 3 s
+  t.Get(1) |> shouldEqual 1
+  t.Get(2) |> shouldEqual 2
+  t.Get(3) |> shouldEqual 3
+
+[<Test>]
+let ``Stats.ntile with n=1 assigns all elements to bucket 1`` () =
+  let s = series [ 1 => 3.0; 2 => 1.0; 3 => 2.0 ]
+  let t = Stats.ntile 1 s
+  t.Values |> Seq.forall (fun b -> b = 1) |> shouldEqual true
+
+[<Test>]
+let ``Stats.ntile raises on n <= 0`` () =
+  let s = series [ 1 => 1.0; 2 => 2.0 ]
+  (fun () -> Stats.ntile 0 s |> ignore) |> should throw typeof<ArgumentException>
+
+[<Test>]
+let ``Stats.ntile returns empty series for empty input`` () =
+  let s = Series.ofObservations ([] : (int * float) list)
+  Stats.ntile 3 s |> Series.countValues |> shouldEqual 0

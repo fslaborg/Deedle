@@ -872,6 +872,65 @@ type Stats =
     series |> Series.mapValues toFloat |> Stats.interpolate keys linearF
 
   // ------------------------------------------------------------------------------------
+  // Ranking operations on series
+  // ------------------------------------------------------------------------------------
+
+  /// <summary>
+  /// Returns the dense rank of each value in the series. Values are ranked in ascending
+  /// order starting from 1. Tied values receive the same rank; the next distinct value
+  /// receives the next consecutive integer rank (SQL-style DENSE_RANK). Missing values
+  /// are not present in the returned series.
+  /// </summary>
+  /// <param name="series">The input series to rank</param>
+  /// <example>
+  /// <code>
+  /// let s = series [ "a" => 30.0; "b" => 10.0; "c" => 20.0; "d" => 10.0 ]
+  /// Stats.rank s
+  /// // a -> 3,  b -> 1,  c -> 2,  d -> 1
+  /// </code>
+  /// </example>
+  /// <category>Series operations</category>
+  static member rank (series:Series<'K, 'V>) : Series<'K, int> =
+    let obs = series |> Series.observations |> Seq.toArray
+    if obs.Length = 0 then Series.ofObservations [||] else
+    let rankMap =
+      obs
+      |> Array.map snd
+      |> Array.distinct
+      |> Array.sortWith Operators.compare
+      |> Array.mapi (fun i v -> v, i + 1)
+      |> dict
+    obs |> Array.map (fun (k, v) -> k, rankMap.[v]) |> Series.ofObservations
+
+  /// <summary>
+  /// Divides the values of a series into <c>n</c> buckets of approximately equal size
+  /// (SQL-style NTILE). The series values are sorted in ascending order and then each
+  /// element is assigned a 1-based bucket number from 1 to <c>n</c>. When the number
+  /// of elements is not evenly divisible by <c>n</c>, the first buckets receive one
+  /// extra element. Missing values are not present in the returned series.
+  /// </summary>
+  /// <param name="n">Number of buckets; must be greater than zero</param>
+  /// <param name="series">The input series</param>
+  /// <example>
+  /// <code>
+  /// let s = series [ 1 => 5.0; 2 => 1.0; 3 => 4.0; 4 => 2.0; 5 => 3.0 ]
+  /// Stats.ntile 3 s
+  /// // Sorted order: 1.0, 2.0, 3.0, 4.0, 5.0 -> buckets 1, 1, 2, 2, 3
+  /// // 2 -> 1,  4 -> 1,  5 -> 2,  3 -> 2,  1 -> 3
+  /// </code>
+  /// </example>
+  /// <category>Series operations</category>
+  static member ntile (n:int) (series:Series<'K, 'V>) : Series<'K, int> =
+    if n <= 0 then invalidArg "n" "Number of buckets must be greater than zero."
+    let obs = series |> Series.observations |> Seq.toArray
+    if obs.Length = 0 then Series.ofObservations [||] else
+    let count = obs.Length
+    obs
+    |> Array.sortWith (fun (_, a) (_, b) -> Operators.compare a b)
+    |> Array.mapi (fun i (k, _) -> k, i * n / count + 1)
+    |> Series.ofObservations
+
+  // ------------------------------------------------------------------------------------
   // Statistics calculated over the entire frames' float column series
   // ------------------------------------------------------------------------------------
 

@@ -178,3 +178,29 @@ type SeriesStatsExtensions =
   static member inline InterpolateLinear(series:Series<'K, 'V>, keys:'K seq, keyDiff:Func<'K,'K,float>): Series<'K,float> =
     series |> Stats.interpolateLinear keys (fun a b -> keyDiff.Invoke(a,b))
 
+  /// <summary>
+  /// Returns the dense rank of each value in the series. Values are ranked in ascending
+  /// order starting from 1. Tied values receive the same rank; the next distinct value
+  /// receives the next consecutive integer rank (SQL-style DENSE_RANK). Missing values
+  /// are not present in the returned series.
+  /// </summary>
+  /// <param name="series">The input series to rank</param>
+  /// <category>Statistics</category>
+  [<Extension>]
+  static member inline Rank(series:Series<'K, 'V>): Series<'K, int> =
+    Stats.rank series
+
+  /// <summary>
+  /// Divides the values of a series into <c>n</c> buckets of approximately equal size
+  /// (SQL-style NTILE). The series values are sorted in ascending order and each
+  /// element is assigned a 1-based bucket number from 1 to <c>n</c>. When the number
+  /// of elements is not evenly divisible by <c>n</c>, the first buckets receive one
+  /// extra element. Missing values are not present in the returned series.
+  /// </summary>
+  /// <param name="series">The input series</param>
+  /// <param name="n">Number of buckets; must be greater than zero</param>
+  /// <category>Statistics</category>
+  [<Extension>]
+  static member inline Ntile(series:Series<'K, 'V>, n:int): Series<'K, int> =
+    Stats.ntile n series
+
