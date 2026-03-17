@@ -943,6 +943,19 @@ type FrameExtensions =
     frame |> Frame.sortRowsBy key f.Invoke
 
   /// <summary>
+  /// Returns a series containing the dense rank of each row in the data frame, based on
+  /// values in the specified column. The rank is 1-based: the row with the smallest
+  /// column value receives rank 1. Rows with equal values receive the same rank.
+  /// Rows where the column has a missing value receive a missing rank.
+  /// </summary>
+  /// <param name="frame">Source data frame.</param>
+  /// <param name="key">The column key to rank by.</param>
+  /// <category>Data structure manipulation</category>
+  [<Extension>]
+  static member RankRowsBy(frame:Frame<'TRowKey, 'TColumnKey>, key: 'TColumnKey) =
+    frame |> Frame.rankRowsBy key
+
+  /// <summary>
   /// Returns a transposed data frame. The rows of the original data frame are used as the
   /// columns of the new one (and vice versa). Use this operation if you have a data frame
   /// and you mostly need to access its rows as a series (because accessing columns as a

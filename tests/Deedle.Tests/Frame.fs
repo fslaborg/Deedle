@@ -1693,6 +1693,30 @@ let ``Can sort frame``() =
   ord6 |> shouldEqual ascendingMissing
 
 // ------------------------------------------------------------------------------------------------
+// Operations - rank
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Can rank frame rows by column``() =
+  let df =
+    frame [ "age" => series ["alice" => 30.0; "bob" => 25.0; "carol" => 30.0; "dave" => 20.0] ]
+  let ranks = df |> Frame.rankRowsBy "age"
+  ranks.["alice"] |> shouldEqual 3
+  ranks.["bob"]   |> shouldEqual 2
+  ranks.["carol"] |> shouldEqual 3
+  ranks.["dave"]  |> shouldEqual 1
+
+[<Test>]
+let ``Can rank frame rows and add as column``() =
+  let df =
+    frame [ "score" => series [1 => 90.0; 2 => 70.0; 3 => 80.0] ]
+  let ranked = df.Clone()
+  ranked.AddColumn("rank", df |> Frame.rankRowsBy "score")
+  ranked.GetColumn<int>("rank").[1] |> shouldEqual 3
+  ranked.GetColumn<int>("rank").[2] |> shouldEqual 1
+  ranked.GetColumn<int>("rank").[3] |> shouldEqual 2
+
+// ------------------------------------------------------------------------------------------------
 // Operations - fill
 // ------------------------------------------------------------------------------------------------
 
