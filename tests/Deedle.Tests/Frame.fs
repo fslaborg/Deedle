@@ -2404,3 +2404,43 @@ let ``Frame.filterRowsByMask can be used with derived boolean series`` () =
   let result = df |> Frame.filterRowsByMask adults
   result.RowCount |> shouldEqual 2
   result.RowKeys |> Seq.toList |> shouldEqual ["Alice"; "Carol"]
+
+// ------------------------------------------------------------------------------------------------
+// iloc - integer-position based indexing for frames
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Frame.ilocRows selects rows by integer position`` () =
+  let df = frame [ "A" =?> series [ "r1" => 1.0; "r2" => 2.0; "r3" => 3.0; "r4" => 4.0 ]
+                   "B" =?> series [ "r1" => 10.0; "r2" => 20.0; "r3" => 30.0; "r4" => 40.0 ] ]
+  let result = df |> Frame.ilocRows [0; 2]
+  result.RowCount |> shouldEqual 2
+  result.RowKeys |> Seq.toList |> shouldEqual ["r1"; "r3"]
+  result.GetColumn<float>("A") |> Series.values |> Seq.toList |> shouldEqual [1.0; 3.0]
+
+[<Test>]
+let ``Frame.ilocCols selects columns by integer position`` () =
+  let df = frame [ "A" =?> series [ 1 => 1.0; 2 => 2.0 ]
+                   "B" =?> series [ 1 => 10.0; 2 => 20.0 ]
+                   "C" =?> series [ 1 => 100.0; 2 => 200.0 ] ]
+  let result = df |> Frame.ilocCols [0; 2]
+  result.ColumnCount |> shouldEqual 2
+  result.ColumnKeys |> Seq.toList |> shouldEqual ["A"; "C"]
+
+[<Test>]
+let ``Frame.iloc selects rows and columns by integer position`` () =
+  let df = frame [ "A" =?> series [ "r1" => 1.0; "r2" => 2.0; "r3" => 3.0 ]
+                   "B" =?> series [ "r1" => 10.0; "r2" => 20.0; "r3" => 30.0 ]
+                   "C" =?> series [ "r1" => 100.0; "r2" => 200.0; "r3" => 300.0 ] ]
+  let result = df |> Frame.iloc [0; 2] [1; 2]
+  result.RowCount |> shouldEqual 2
+  result.ColumnCount |> shouldEqual 2
+  result.RowKeys |> Seq.toList |> shouldEqual ["r1"; "r3"]
+  result.ColumnKeys |> Seq.toList |> shouldEqual ["B"; "C"]
+
+[<Test>]
+let ``Frame.iloc with empty sequences returns empty frame`` () =
+  let df = frame [ "A" =?> series [ 1 => 1.0; 2 => 2.0 ]
+                   "B" =?> series [ 1 => 10.0; 2 => 20.0 ] ]
+  let result = df |> Frame.ilocRows []
+  result.RowCount |> shouldEqual 0

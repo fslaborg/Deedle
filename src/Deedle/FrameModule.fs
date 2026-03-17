@@ -419,6 +419,50 @@ module Frame =
     |> sliceRows rows
 
   /// <summary>
+  /// Returns a frame consisting of the rows at the specified integer (zero-based) positions
+  /// from the original data frame. Equivalent to pandas <c>iloc</c> row selection.
+  /// </summary>
+  /// <param name="rowPositions">Sequence of zero-based integer row positions to select</param>
+  /// <param name="frame">Source data frame</param>
+  /// <category>Accessing frame data and lookup</category>
+  [<CompiledName("IlocRows")>]
+  let ilocRows (rowPositions:seq<int>) (frame:Frame<'R, 'C>) =
+    let rowKeys = rowPositions |> Seq.map frame.GetRowKeyAt
+    frame.Rows.[rowKeys]
+
+  /// <summary>
+  /// Returns a frame consisting of the columns at the specified integer (zero-based) positions
+  /// from the original data frame. Equivalent to pandas <c>iloc</c> column selection.
+  /// </summary>
+  /// <param name="colPositions">Sequence of zero-based integer column positions to select</param>
+  /// <param name="frame">Source data frame</param>
+  /// <category>Accessing frame data and lookup</category>
+  [<CompiledName("IlocCols")>]
+  let ilocCols (colPositions:seq<int>) (frame:Frame<'R, 'C>) =
+    let colKeys = colPositions |> Seq.map (fun i -> frame.ColumnIndex.KeyAt(frame.ColumnIndex.AddressAt(int64 i)))
+    frame.Columns.[colKeys]
+
+  /// <summary>
+  /// Returns a sub-frame containing the rows and columns at the specified integer (zero-based)
+  /// positions from the original data frame. Equivalent to pandas <c>DataFrame.iloc[rows, cols]</c>.
+  /// </summary>
+  /// <example>
+  ///   <code>
+  ///   // Select rows 0, 2 and columns 0, 1
+  ///   df |> Frame.iloc [0; 2] [0; 1]
+  ///   </code>
+  /// </example>
+  /// <param name="rowPositions">Sequence of zero-based integer row positions to select</param>
+  /// <param name="colPositions">Sequence of zero-based integer column positions to select</param>
+  /// <param name="frame">Source data frame</param>
+  /// <category>Accessing frame data and lookup</category>
+  [<CompiledName("Iloc")>]
+  let iloc (rowPositions:seq<int>) (colPositions:seq<int>) (frame:Frame<'R, 'C>) =
+    frame
+    |> ilocRows rowPositions
+    |> ilocCols colPositions
+
+  /// <summary>
   /// Returns a new frame containing all rows with row keys strictly greater than
   /// <c>lowerExclusive</c>.
   /// </summary>

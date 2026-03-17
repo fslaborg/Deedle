@@ -297,6 +297,25 @@ module Series =
   let getAt index (series:Series<'K, 'T>) = series.GetAt(index)
 
   /// <summary>
+  /// Returns a new series containing only the values at the specified integer (zero-based)
+  /// positions from the original series. Equivalent to pandas <c>Series.iloc</c>.
+  /// The resulting series preserves the original keys at those positions.
+  /// </summary>
+  /// <example>
+  ///   <code>
+  ///   // Select elements at positions 0, 2, 4
+  ///   s |> Series.iloc [0; 2; 4]
+  ///   </code>
+  /// </example>
+  /// <param name="positions">Sequence of zero-based integer positions to select</param>
+  /// <param name="series">Input series</param>
+  /// <category>Accessing series data and lookup</category>
+  [<CompiledName("Iloc")>]
+  let iloc (positions:seq<int>) (series:Series<'K, 'T>) =
+    let keys = positions |> Seq.map series.GetKeyAt
+    series.GetItems(keys)
+
+  /// <summary>
   /// Attempts to get the value for the specified key. If the value is not
   /// available, `None` is returned.
   /// Use the specified lookup semantics - for exact matching, use `tryGet`.
