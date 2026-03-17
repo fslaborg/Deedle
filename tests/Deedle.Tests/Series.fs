@@ -1415,3 +1415,26 @@ let ``DateTime series operations propagate missing values for unaligned keys`` (
   result.TryGet(1).Value |> shouldEqual (TimeSpan.FromDays(4.0))
   result.TryGet(2).HasValue |> shouldEqual false  // key 2 in s1 has no match in s2 → missing
   result.TryGet(3).HasValue |> shouldEqual false  // key 3 in s2 has no match in s1 → missing
+
+// ------------------------------------------------------------------------------------------------
+// iloc - integer-position based indexing
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Series.iloc returns elements at specified integer positions`` () =
+  let s = series [ "a" => 10; "b" => 20; "c" => 30; "d" => 40; "e" => 50 ]
+  let result = s |> Series.iloc [0; 2; 4]
+  result |> shouldEqual (series [ "a" => 10; "c" => 30; "e" => 50 ])
+
+[<Test>]
+let ``Series.iloc preserves original keys`` () =
+  let s = series [ 10 => "x"; 20 => "y"; 30 => "z" ]
+  let result = s |> Series.iloc [1; 0]
+  result.Keys |> Seq.toList |> shouldEqual [20; 10]
+  result.Values |> Seq.toList |> shouldEqual ["y"; "x"]
+
+[<Test>]
+let ``Series.iloc with empty sequence returns empty series`` () =
+  let s = series [ 1 => 1.0; 2 => 2.0; 3 => 3.0 ]
+  let result = s |> Series.iloc []
+  result.KeyCount |> shouldEqual 0
