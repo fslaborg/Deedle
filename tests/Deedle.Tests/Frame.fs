@@ -2548,3 +2548,43 @@ let ``Frame.iloc with empty sequences returns empty frame`` () =
                    "B" =?> series [ 1 => 10.0; 2 => 20.0 ] ]
   let result = df |> Frame.ilocRows []
   result.RowCount |> shouldEqual 0
+
+// ------------------------------------------------------------------------------------------------
+// Frame.compare
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Frame.compare detects changed, added, and removed values`` () =
+  let df1 = frame [ "A" =?> series [ 1 => 1.0; 2 => 2.0; 3 => 3.0 ]
+                    "B" =?> series [ 1 => 10.0; 2 => 20.0; 3 => 30.0 ] ]
+  let df2 = frame [ "A" =?> series [ 1 => 99.0; 2 => 2.0; 4 => 4.0 ]
+                    "B" =?> series [ 1 => 10.0; 2 => 99.0; 4 => 40.0 ] ]
+  let result = Frame.compare df1 df2
+  result.GetColumn<Diff<obj>>("A").TryGet(1).Value |> shouldEqual (Change(box 1.0, box 99.0))
+  result.GetColumn<Diff<obj>>("A").TryGet(2).HasValue |> shouldEqual false   // unchanged
+  result.GetColumn<Diff<obj>>("A").TryGet(3).Value |> shouldEqual (Diff.Remove(box 3.0))
+  result.GetColumn<Diff<obj>>("A").TryGet(4).Value |> shouldEqual (Diff.Add(box 4.0))
+  result.GetColumn<Diff<obj>>("B").TryGet(1).HasValue |> shouldEqual false   // unchanged
+  result.GetColumn<Diff<obj>>("B").TryGet(2).Value |> shouldEqual (Change(box 20.0, box 99.0))
+
+[<Test>]
+let ``Frame.compare handles columns only in one frame`` () =
+  let df1 = frame [ "A" =?> series [ 1 => 1.0; 2 => 2.0 ]
+                    "B" =?> series [ 1 => 10.0; 2 => 20.0 ] ]
+  let df2 = frame [ "A" =?> series [ 1 => 1.0; 2 => 2.0 ]
+                    "C" =?> series [ 1 => 100.0; 2 => 200.0 ] ]
+  let result = Frame.compare df1 df2
+  // Column B only in df1 → all Remove
+  result.GetColumn<Diff<obj>>("B").Get(1) |> shouldEqual (Diff.Remove(box 10.0))
+  result.GetColumn<Diff<obj>>("B").Get(2) |> shouldEqual (Diff.Remove(box 20.0))
+  // Column C only in df2 → all Add
+  result.GetColumn<Diff<obj>>("C").Get(1) |> shouldEqual (Diff.Add(box 100.0))
+  result.GetColumn<Diff<obj>>("C").Get(2) |> shouldEqual (Diff.Add(box 200.0))
+
+[<Test>]
+let ``Frame.compare on identical frames returns empty diff columns`` () =
+  let df = frame [ "A" =?> series [ 1 => 1.0; 2 => 2.0 ]
+                   "B" =?> series [ 1 => 10.0; 2 => 20.0 ] ]
+  let result = Frame.compare df df
+  result.GetColumn<Diff<obj>>("A").KeyCount |> shouldEqual 0
+  result.GetColumn<Diff<obj>>("B").KeyCount |> shouldEqual 0

@@ -1926,6 +1926,30 @@ module Frame =
   let strConcat (frame1:Frame<'R, 'C>) (frame2:Frame<'R, 'C>) : Frame<'R, 'C> =
     frame1.StrConcat(frame2)
 
+  /// <summary>
+  /// Compares two frames column-by-column and returns a new frame of <c>Diff</c> values.
+  /// Each cell describes whether the value was added, removed, or changed between the two frames.
+  /// Columns present only in <c>frame1</c> contribute <c>Diff.Remove</c> values;
+  /// columns present only in <c>frame2</c> contribute <c>Diff.Add</c> values;
+  /// columns present in both are compared element-wise.
+  /// </summary>
+  /// <param name="frame1">The first (original) frame.</param>
+  /// <param name="frame2">The second (updated) frame to compare against.</param>
+  /// <category>Joining, merging and zipping</category>
+  [<CompiledName("Compare")>]
+  let compare (frame1:Frame<'R, 'C>) (frame2:Frame<'R, 'C>) =
+    let allColKeys =
+      Seq.append frame1.ColumnKeys frame2.ColumnKeys
+      |> Seq.distinct |> Seq.toArray
+    let getCol (f:Frame<'R, 'C>) col : Series<'R, obj> =
+      match f.TryGetColumn<obj>(col, Lookup.Exact) with
+      | OptionalValue.Present s -> s
+      | _ -> Series.empty<'R, obj>
+    allColKeys
+    |> Seq.map (fun col -> col, (getCol frame1 col).Compare(getCol frame2 col) :> ISeries<'R>)
+    |> Series.ofObservations
+    |> FrameUtils.fromColumns frame1.IndexBuilder frame1.VectorBuilder
+
 
   // ----------------------------------------------------------------------------------------------
   // Hierarchical index operations
