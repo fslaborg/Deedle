@@ -1233,7 +1233,7 @@ and
       series.GetPrintedObservations(Formatting.StartInlineItemCount, Formatting.EndInlineItemCount)
       |> Seq.map (function
           | Choice2Of3() -> " ... "
-          | Choice1Of3(k, v) | Choice3Of3(k, v) -> sprintf "%O => %O" k v )
+          | Choice1Of3(k, v) | Choice3Of3(k, v) -> sprintf "%s => %O" (Formatting.formatKey (box k)) v )
       |> String.concat "; "
       |> sprintf "series [ %s]"
 
@@ -1266,7 +1266,7 @@ and
         if level = 0 && maxLevel = 0 then box key
         else CustomKey.Get(key).GetLevel(level)
       if ordered && (Some levelKey = !previous) then ""
-      else previous := Some levelKey; reset(); levelKey.ToString()
+      else previous := Some levelKey; reset(); Formatting.formatKey levelKey
 
     if vector.SuppressPrinting then [|[|"(Suppressed)"|]|] else
       if series.IsEmpty then

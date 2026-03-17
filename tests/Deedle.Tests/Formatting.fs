@@ -266,3 +266,48 @@ let ``complex frame Format 10 rows, 10 cols`` () =
     199 -> 199       199       199       199       199       ... 199       199       199       199       199       
 """
   shouldEqual expected (complexFrame.Format(10,10))
+
+// ============================================================
+// DateTime key formatting (issue #95)
+// ============================================================
+
+[<Test>]
+let ``series with date-only DateTime keys omits time in Format`` () =
+  // When all row keys have TimeOfDay = 00:00:00, the time component should not appear.
+  let s = series [
+    DateTime(2023, 1, 1) => 1.0
+    DateTime(2023, 1, 2) => 2.0
+    DateTime(2023, 1, 3) => 3.0 ]
+  let fmt = s.Format()
+  fmt |> should (contain >> not') "12:00:00"
+  fmt |> should (contain >> not') "00:00:00"
+  fmt |> should contain "2023"
+
+[<Test>]
+let ``series with datetime keys preserves time in Format`` () =
+  // Keys with a non-zero time component should still include the time.
+  let s = series [
+    DateTime(2023, 1, 1, 9, 30, 0) => 1.0
+    DateTime(2023, 1, 1, 10, 0, 0) => 2.0 ]
+  let fmt = s.Format()
+  fmt |> should contain "09:30:00"
+
+[<Test>]
+let ``series ToString with date-only DateTime keys omits time`` () =
+  let s = series [
+    DateTime(2023, 3, 15) => 42.0 ]
+  let str = s.ToString()
+  str |> should (contain >> not') "12:00:00"
+  str |> should (contain >> not') "00:00:00"
+
+[<Test>]
+let ``frame with date-only DateTime row keys omits time in Format`` () =
+  let f = frame [
+    "A" => series [DateTime(2023, 6, 1) => 1.0; DateTime(2023, 6, 2) => 2.0]
+    "B" => series [DateTime(2023, 6, 1) => 3.0; DateTime(2023, 6, 2) => 4.0] ]
+  let fmt = f.Format()
+  fmt |> should (contain >> not') "12:00:00"
+  fmt |> should (contain >> not') "00:00:00"
+  fmt |> should contain "2023"
+
+
