@@ -1345,6 +1345,20 @@ module Frame =
     frame.Columns |> Series.mapValues f |> FrameUtils.fromColumns frame.IndexBuilder frame.VectorBuilder
 
   /// <summary>
+  /// Builds a new data frame whose columns are the results of applying the specified
+  /// function on the typed columns of the input data frame. Unlike <c>mapColValues</c>,
+  /// this function avoids the boxing overhead of <c>ObjectSeries</c> by operating directly
+  /// on columns converted to the specified type <c>'T</c>. Columns that cannot be converted
+  /// to <c>'T</c> are silently dropped.
+  /// </summary>
+  /// <param name="frame">Input data frame to be transformed</param>
+  /// <param name="f">Function of one argument that maps a typed series</param>
+  /// <category>Frame transformations</category>
+  [<CompiledName("SelectColumnValuesAs")>]
+  let mapColValuesAs (f: Series<'R,'T> -> Series<'R,'S>) (frame:Frame<'R,'C>) : Frame<'R,'C> =
+    frame.GetColumns<'T>() |> Series.mapValues f |> FrameUtils.fromColumns frame.IndexBuilder frame.VectorBuilder
+
+  /// <summary>
   /// Builds a new data frame whose column keys are the results of applying the
   /// specified function on the column keys of the original data frame.
   /// </summary>

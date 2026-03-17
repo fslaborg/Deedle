@@ -861,6 +861,41 @@ let ``Frame.mapColValues preserves column keys`` () =
   result.ColumnKeys |> Seq.toList |> shouldEqual [ "A"; "B" ]
 
 [<Test>]
+let ``Frame.mapColValuesAs applies function to typed columns without boxing`` () =
+  let df = mapSample()
+  let result = df |> Frame.mapColValuesAs (Series.mapValues ((*) 2.0))
+  result.GetColumn<float>("A") |> shouldEqual (series [ 1 => 2.0; 2 => 4.0; 3 => 6.0 ])
+  result.GetColumn<float>("B") |> shouldEqual (series [ 1 => 20.0; 2 => 40.0; 3 => 60.0 ])
+
+[<Test>]
+let ``Frame.mapColValuesAs preserves column keys`` () =
+  let df = mapSample()
+  let result = df |> Frame.mapColValuesAs (Series.mapValues id : Series<int,float> -> Series<int,float>)
+  result.ColumnKeys |> Seq.toList |> shouldEqual [ "A"; "B" ]
+
+[<Test>]
+let ``Frame.mapColValuesAs drops non-convertible columns`` () =
+  // frame with a float column and a string column; only float survives
+  let df =
+    frame [ "F" =?> series [ 1 => 1.0; 2 => 2.0 ]
+            "S" =?> series [ 1 => "a"; 2 => "b" ] ]
+  let result = df |> Frame.mapColValuesAs (Series.mapValues ((*) 3.0))
+  result.ColumnKeys |> Seq.toList |> shouldEqual [ "F" ]
+  result.GetColumn<float>("F") |> shouldEqual (series [ 1 => 3.0; 2 => 6.0 ])
+
+[<Test>]
+let ``Frame.mapColValuesAs produces same values as mapColValues for homogeneous float frame`` () =
+  let df = mapSample()
+  let via_mapColValues =
+    df |> Frame.mapColValues (fun (s:ObjectSeries<int>) -> s.As<float>() |> Series.mapValues ((*) 5.0))
+  let via_mapColValuesAs =
+    df |> Frame.mapColValuesAs (Series.mapValues ((*) 5.0))
+  for colKey in [ "A"; "B" ] do
+    let expected = via_mapColValues.GetColumn<float>(colKey)
+    let actual   = via_mapColValuesAs.GetColumn<float>(colKey)
+    actual |> shouldEqual expected
+
+[<Test>]
 let ``Frame.mapRowValues applies function to each object row`` () =
   let df = mapSample()
   // Sum the two numeric columns for each row
