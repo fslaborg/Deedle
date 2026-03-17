@@ -148,6 +148,21 @@ The functions above create windows of size 4 that move from the left to right.
 Given input `[1,2,3,4,5,6]`, this produces the following three windows:
 `[1,2,3,4]`, `[2,3,4,5]` and `[3,4,5,6]`. 
 
+> **Performance note:** `Series.windowInto` materialises each window as a full series
+> before calling the aggregation function. This gives O(n × window) time and allocation.
+> When computing rolling statistics (mean, standard deviation, variance, etc.), prefer the
+> dedicated `Stats.moving*` functions (e.g. `Stats.movingMean`, `Stats.movingStd`), which
+> use an online algorithm and run in O(n) time:
+>
+>     // Fast – O(n) online algorithm
+>     lf |> Stats.movingMean 4
+>
+>     // Slow – O(n × window), allocates a series per step
+>     lf |> Series.windowInto 4 Stats.mean
+>
+> See the [Statistics documentation](stats.html#moving) for the full list of `Stats.moving*`
+> and `Stats.expanding*` functions.
+
 What if we want to avoid creating `<missing>` values? One approach is to 
 specify that we want to generate windows of smaller sizes at the beginning 
 or at the end. This way, we get _incomplete_ windows at the boundary:
