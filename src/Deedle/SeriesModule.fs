@@ -619,6 +619,25 @@ module Series =
       else kvp.Value)
 
   /// <summary>
+  /// Returns a new series where all occurrences of <c>oldValue</c> are replaced with
+  /// <c>newValue</c>. Missing values in the series are left unchanged.
+  /// </summary>
+  /// <param name="oldValue">The value to be replaced</param>
+  /// <param name="newValue">The value to use as replacement</param>
+  /// <param name="series">The input series</param>
+  /// <example>
+  /// <code>
+  /// let s = series [ 1 => 1.0; 2 => 2.0; 3 => 2.0; 4 => 3.0 ]
+  /// s |> Series.replaceValue 2.0 99.0
+  /// // Returns: series [ 1 => 1.0; 2 => 99.0; 3 => 99.0; 4 => 3.0 ]
+  /// </code>
+  /// </example>
+  /// <category>Series transformations</category>
+  [<CompiledName("ReplaceValue")>]
+  let replaceValue (oldValue:'T) (newValue:'T) (series:Series<'K, 'T>) =
+    series.Select(fun (KeyValue(_, v)) -> if v = oldValue then newValue else v)
+
+  /// <summary>
   /// Returns a new series whose keys are the results of applying the given function to
   /// keys of the original series.
   /// </summary>

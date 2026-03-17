@@ -1061,6 +1061,27 @@ let ``Can replace for many keys``() =
   s.Replace([|1; 2|], 4.0) |> shouldEqual e
 
 // ------------------------------------------------------------------------------------------------
+// Series.replaceValue
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``replaceValue replaces all matching values`` () =
+  let s = series [ 1 => 1.0; 2 => 2.0; 3 => 2.0; 4 => 3.0 ]
+  let e = series [ 1 => 1.0; 2 => 99.0; 3 => 99.0; 4 => 3.0 ]
+  s |> Series.replaceValue 2.0 99.0 |> shouldEqual e
+
+[<Test>]
+let ``replaceValue leaves missing values unchanged`` () =
+  let s = Series.ofOptionalObservations [ 1 => Some 1.0; 2 => None; 3 => Some 1.0 ]
+  let e = Series.ofOptionalObservations [ 1 => Some 99.0; 2 => None; 3 => Some 99.0 ]
+  s |> Series.replaceValue 1.0 99.0 |> shouldEqual e
+
+[<Test>]
+let ``replaceValue with no matching values returns original series`` () =
+  let s = series [ 1 => 1.0; 2 => 2.0; 3 => 3.0 ]
+  s |> Series.replaceValue 5.0 99.0 |> shouldEqual s
+
+// ------------------------------------------------------------------------------------------------
 // take, takeLast, skip, skipLast
 // ------------------------------------------------------------------------------------------------
 

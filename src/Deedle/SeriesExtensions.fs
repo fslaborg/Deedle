@@ -528,6 +528,22 @@ type SeriesExtensions =
     Series.fillMissingUsing filler.Invoke series
 
   // ----------------------------------------------------------------------------------------------
+  // Value replacement
+  // ----------------------------------------------------------------------------------------------
+
+  /// <summary>
+  /// Returns a new series where all occurrences of <c>oldValue</c> are replaced with
+  /// <c>newValue</c>. Missing values in the series are left unchanged.
+  /// </summary>
+  /// <param name="series">An input series</param>
+  /// <param name="oldValue">The value to be replaced</param>
+  /// <param name="newValue">The value to use as replacement</param>
+  /// <category>Series transformations</category>
+  [<Extension>]
+  static member ReplaceValue(series:Series<'K, 'T>, oldValue:'T, newValue:'T) =
+    Series.replaceValue oldValue newValue series
+
+  // ----------------------------------------------------------------------------------------------
   // Sorting
   // ----------------------------------------------------------------------------------------------
 
