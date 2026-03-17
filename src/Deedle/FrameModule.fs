@@ -1539,17 +1539,29 @@ module Frame =
 
   /// <summary>
   /// Fill missing values of a given type in the frame with a constant value.
-  /// The operation is only applied to columns (series) that contain values of the
-  /// same type as the provided filling value. The operation does not attempt to
-  /// convert between numeric values (so a series containing `float` will not be
-  /// converted to a series of `int`).
+  /// The fill value is applied to columns whose element type matches the fill value type
+  /// (using safe numeric widening). This includes both cases where the column type can be
+  /// widened to the fill value type (e.g. decimal columns filled with a float value) and
+  /// cases where the fill value can be widened to the column type (e.g. an integer fill
+  /// value filling float columns).
+  /// Columns whose element type is incompatible with the fill value type are left unchanged.
   /// </summary>
   /// <param name="frame">An input data frame that is to be filled</param>
   /// <param name="value">A constant value that is used to fill all missing values</param>
   /// <category>Missing values</category>
   [<CompiledName("FillMissingWith")>]
   let fillMissingWith (value:'T) (frame:Frame<'R, 'C>) =
-    frame.ColumnApply(ConversionKind.Safe, fun (s:Series<_, 'T>) -> Series.fillMissingWith value s :> ISeries<_>)
+    // First pass: apply to columns that can be safely converted to the fill value's type.
+    // This handles cases where the column type widens to 'T (e.g. decimal columns
+    // when 'T = float, since decimal → float is a safe conversion).
+    let frame1 =
+      frame.ColumnApply(ConversionKind.Safe, fun (s:Series<_, 'T>) -> Series.fillMissingWith value s :> ISeries<_>)
+    // Second pass: handle remaining columns where the fill value can be safely widened
+    // to the column's element type (e.g. int fill value for float columns).
+    // Dense (non-optional) vectors produced by the first pass are unchanged.
+    let fillCmd = Vectors.FillMissing(Vectors.Return 0, VectorFillMissing.Constant (box value))
+    let newData = frame1.Data.Select(VectorHelpers.transformColumn frame1.VectorBuilder frame1.RowIndex.AddressingScheme fillCmd)
+    Frame<_, _>(frame1.RowIndex, frame1.ColumnIndex, newData, frame1.IndexBuilder, frame1.VectorBuilder)
 
   /// <summary>
   /// Fill missing values in the data frame with the nearest available value

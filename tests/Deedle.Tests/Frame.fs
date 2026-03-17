@@ -1634,6 +1634,17 @@ let ``Can fill missing values in a frame containing decimals`` () =
   df2?A |> shouldEqual <| series [1 => 0.1; 2 => 0.2]
 
 [<Test>]
+let ``Can fill missing float values using int fill value (issue 250)`` () =
+  // FillMissing(0) with an int should fill float columns (int safely widens to float)
+  let s1 = series [ 1 => 1.0; 2 => 2.0; 3 => 3.0 ]
+  let s2 = series [ 2 => 2.0; 3 => 3.0 ]
+  let df = Frame.ofRows [ 0 => s1; 1 => s2 ]
+  let filled = df |> Frame.fillMissingWith 0
+  (filled.GetColumn<float>(1)).[1] |> shouldEqual 0.0
+  (filled.GetColumn<float>(2)).[1] |> shouldEqual 2.0
+  (filled.GetColumn<float>(3)).[1] |> shouldEqual 3.0
+
+[<Test>]
 let ``indexRowsWith with more keys than rows produces missing values for extra rows (issue 498)`` () =
   // Regression test: indexRowsWith previously produced a frame with an inconsistent
   // row index / vector length, causing fillMissingWith to throw or silently no-op.
