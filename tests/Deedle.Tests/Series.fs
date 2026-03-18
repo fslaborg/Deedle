@@ -268,6 +268,20 @@ let ``Series.windowWhileInto works on sample input`` () =
   let expected = series [ 1 => [1]; 10 => [10;11;14]; 11 => [11;14]; 14 => [14]; 21 => [21]]
   actual |> shouldEqual expected
 
+[<Test>]
+let ``Series.windowWhileIntoFromEnd works on sample input`` () =
+  let s = series [ 01 => 01; 10 => 10; 11 => 11; 14 => 14; 21 => 21]
+  let actual = s |> Series.windowWhileIntoFromEnd (fun k1 k2 -> k1/10 = k2/10) (Series.values >> List.ofSeq)
+  let expected = series [ 1 => [1]; 10 => [10]; 11 => [10;11]; 14 => [10;11;14]; 21 => [21]]
+  actual |> shouldEqual expected
+
+[<Test>]
+let ``Series.chunkWhileIntoFromEnd uses last key of each chunk`` () =
+  let s = series [ 01 => 01; 10 => 10; 11 => 11; 14 => 14; 21 => 21]
+  let actual = s |> Series.chunkWhileIntoFromEnd (fun k1 k2 -> k1/10 = k2/10) (Series.values >> List.ofSeq)
+  let expected = series [ 1 => [1]; 14 => [10;11;14]; 21 => [21]]
+  actual |> shouldEqual expected
+
 // ------------------------------------------------------------------------------------------------
 // Numerics
 // ------------------------------------------------------------------------------------------------

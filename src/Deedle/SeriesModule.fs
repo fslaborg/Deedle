@@ -1199,6 +1199,66 @@ module Series =
   let inline chunkWhile cond (series:Series<'K, 'T>) =
     chunkWhileInto cond id series
 
+  // Window while from end
+
+  /// <summary>
+  /// Creates a sliding window based on a condition on keys. A window ends at each
+  /// input element and starts at the earliest key for which the specified `cond`
+  /// function returns `true` when called on the start key and the end (current) key.
+  /// Each window is then aggregated into a value using the specified function `f`.
+  /// The key of each window is the key of the last element in the window.
+  /// </summary>
+  /// <param name="cond">A function that is called on the start key and the end key of a window to determine how far back the window extends.</param>
+  /// <param name="f">A function that is used to aggregate each window into a single value.</param>
+  /// <param name="series">The input series to be aggregated.</param>
+  /// <category>Grouping, windowing and chunking</category>
+  [<CompiledName("WindowWhileIntoFromEnd")>]
+  let inline windowWhileIntoFromEnd cond f (series:Series<'K, 'T>) =
+    series.Aggregate(WindowWhileFromEnd(cond), (fun d -> d.Data.Keys |> Seq.last), fun ds -> OptionalValue(f ds.Data))
+
+  /// <summary>
+  /// Creates a sliding window based on a condition on keys. A window ends at each
+  /// input element and starts at the earliest key for which the specified `cond`
+  /// function returns `true` when called on the start key and the end (current) key.
+  /// The windows are then returned as a nested series.
+  /// The key of each window is the key of the last element in the window.
+  /// </summary>
+  /// <param name="cond">A function that is called on the start key and the end key of a window to determine how far back the window extends.</param>
+  /// <param name="series">The input series to be aggregated.</param>
+  /// <category>Grouping, windowing and chunking</category>
+  [<CompiledName("WindowWhileFromEnd")>]
+  let inline windowWhileFromEnd cond (series:Series<'K, 'T>) =
+    windowWhileIntoFromEnd cond id series
+
+  // Chunk while from end
+
+  /// <summary>
+  /// Aggregates the input into a series of adjacent chunks based on a condition on keys,
+  /// using the same chunking as <c>chunkWhileInto</c>, but with the key of each chunk
+  /// being the last key of the chunk rather than the first.
+  /// Each chunk is then aggregated into a value using the specified function `f`.
+  /// </summary>
+  /// <param name="cond">A function that is called on the first and the last key of a chunk to determine when a chunk should end.</param>
+  /// <param name="f">A value selector that is called to aggregate each chunk.</param>
+  /// <param name="series">The input series to be aggregated.</param>
+  /// <category>Grouping, windowing and chunking</category>
+  [<CompiledName("ChunkWhileIntoFromEnd")>]
+  let inline chunkWhileIntoFromEnd cond f (series:Series<'K, 'T>) =
+    series.Aggregate(ChunkWhile(cond), (fun d -> d.Data.Keys |> Seq.last), fun ds -> OptionalValue(f ds.Data))
+
+  /// <summary>
+  /// Aggregates the input into a series of adjacent chunks based on a condition on keys,
+  /// using the same chunking as <c>chunkWhile</c>, but with the key of each chunk
+  /// being the last key of the chunk rather than the first.
+  /// The chunks are returned as a nested series.
+  /// </summary>
+  /// <param name="cond">A function that is called on the first and the last key of a chunk to determine when a chunk should end.</param>
+  /// <param name="series">The input series to be aggregated.</param>
+  /// <category>Grouping, windowing and chunking</category>
+  [<CompiledName("ChunkWhileFromEnd")>]
+  let inline chunkWhileFromEnd cond (series:Series<'K, 'T>) =
+    chunkWhileIntoFromEnd cond id series
+
   // Most common-case functions
 
   /// <summary>

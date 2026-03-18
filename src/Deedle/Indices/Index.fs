@@ -30,6 +30,12 @@ type Aggregation<'K> =
   /// first key and the current key as arguments.
   | WindowWhile of ('K -> 'K -> bool)
 
+  /// Aggregate data into floating windows where each window ends at the current
+  /// element and starts at the earliest key such that the specified function
+  /// returns `true` when called with the start key and the current (end) key.
+  /// The key of each window is the last key of the window.
+  | WindowWhileFromEnd of ('K -> 'K -> bool)
+
   /// Aggregate data into non-overlapping chunks where each chunk ends as soon
   /// as the specified function returns `false` when called with the
   /// first key and the current key as arguments.
@@ -68,6 +74,16 @@ type Aggregation =
   /// <param name="condition">A delegate that specifies when to end the current window (e.g. <c>(k1, k2) =&gt; k2 - k1 &lt; 10</c> means that the difference between keys in each window will be less than 10.</param>
   static member WindowWhile<'K>(condition:System.Func<'K, 'K, bool>) =
     WindowWhile(fun k1 k2 -> condition.Invoke(k1, k2))
+
+  /// <summary>
+  /// Aggregate data into floating windows where each window ends at the current
+  /// element. The window starts at the earliest key for which the specified function
+  /// returns <c>true</c> when called with the start key and the current (end) key.
+  /// The key of each produced window is the last (end) key of the window.
+  /// </summary>
+  /// <param name="condition">A delegate that specifies when to extend the window backward (e.g. <c>(k1, k2) =&gt; k2 - k1 &lt; 10</c> means that the difference between the first and last key in each window will be less than 10).</param>
+  static member WindowWhileFromEnd<'K>(condition:System.Func<'K, 'K, bool>) =
+    WindowWhileFromEnd(fun k1 k2 -> condition.Invoke(k1, k2))
 
   /// <summary>
   /// Aggregate data into non-overlapping chunks where each chunk ends as soon
