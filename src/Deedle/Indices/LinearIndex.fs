@@ -166,7 +166,12 @@ type LinearIndex<'K when 'K : equality>
           |> OptionalValue.ofOption
           |> OptionalValue.map (fun idx -> keys.[idx], Address.ofInt idx)
 
-      // If we did not find the key (or when we're unsorted & user wants fancy semantics), fail
+      // Inexact lookup on an unordered index is a programming error — throw immediately
+      // so the caller gets a clear message instead of a silent Missing/None.
+      | _, (Lookup.Smaller | Lookup.ExactOrSmaller | Lookup.Greater | Lookup.ExactOrGreater) ->
+          invalidOp "Lookup.Smaller/Greater is only supported on ordered series. Sort the series first (e.g. Series.sortByKey) before using inexact lookup."
+
+      // If we did not find the key, fail
       | _ -> OptionalValue.Missing
 
     /// Returns all mappings of the index (key -> address)
