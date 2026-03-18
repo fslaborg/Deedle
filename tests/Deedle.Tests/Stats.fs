@@ -329,6 +329,103 @@ let ``unique count work``() =
   series [1 => 1; 2 => 2; 3 => 1] |> Stats.uniqueCount |> shouldEqual 2
 
 // ------------------------------------------------------------------------------------------------
+// tryMin / tryMax
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Stats.tryMin returns Some for non-empty series`` () =
+  let s = series [ 1 => 3.0; 2 => 1.0; 3 => 2.0 ]
+  Stats.tryMin s |> shouldEqual (Some 1.0)
+
+[<Test>]
+let ``Stats.tryMax returns Some for non-empty series`` () =
+  let s = series [ 1 => 3.0; 2 => 1.0; 3 => 2.0 ]
+  Stats.tryMax s |> shouldEqual (Some 3.0)
+
+[<Test>]
+let ``Stats.tryMin returns None for empty series`` () =
+  Stats.tryMin (Series.empty<int, float>) |> shouldEqual None
+
+[<Test>]
+let ``Stats.tryMax returns None for empty series`` () =
+  Stats.tryMax (Series.empty<int, float>) |> shouldEqual None
+
+[<Test>]
+let ``Stats.tryMin returns None for all-missing series`` () =
+  let s = Series.ofOptionalObservations [ 1, None; 2, None ]
+  Stats.tryMin s |> shouldEqual None
+
+[<Test>]
+let ``Stats.tryMax returns None for all-missing series`` () =
+  let s = Series.ofOptionalObservations [ 1, None; 2, None ]
+  Stats.tryMax s |> shouldEqual None
+
+[<Test>]
+let ``Stats.tryMin works on integer series`` () =
+  let s = series [ "a" => 5; "b" => 2; "c" => 8 ]
+  Stats.tryMin s |> shouldEqual (Some 2)
+
+[<Test>]
+let ``Stats.tryMax works on integer series`` () =
+  let s = series [ "a" => 5; "b" => 2; "c" => 8 ]
+  Stats.tryMax s |> shouldEqual (Some 8)
+
+// ------------------------------------------------------------------------------------------------
+// numSum
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Stats.numSum sums integer series`` () =
+  let s = series [ 1 => 10; 2 => 20; 3 => 30 ]
+  Stats.numSum s |> shouldEqual 60
+
+[<Test>]
+let ``Stats.numSum sums float series, same as Stats.sum for present values`` () =
+  let s = series [ 1 => 1.0; 2 => 2.0; 3 => 3.0 ]
+  Stats.numSum s |> should beWithin (Stats.sum s +/- 1e-9)
+
+[<Test>]
+let ``Stats.numSum returns zero for empty float series`` () =
+  Stats.numSum (Series.empty<int, float>) |> shouldEqual 0.0
+
+[<Test>]
+let ``Stats.numSum returns zero for empty integer series`` () =
+  Stats.numSum (Series.empty<int, int>) |> shouldEqual 0
+
+// ------------------------------------------------------------------------------------------------
+// Stats.interpolate (generic version)
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Stats.interpolate uses custom function for in-range keys`` () =
+  // Series at keys 0, 2, 4 with values 0.0, 4.0, 8.0 (slope = 2 per unit)
+  let s = series [ 0 => 0.0; 2 => 4.0; 4 => 8.0 ]
+  // Custom linear interpolation: weighted average by distance
+  let interp k (prev:(int*float) option) (next:(int*float) option) =
+    match prev, next with
+    | Some (k0, v0), Some (k1, v1) ->
+        let t = float (k - k0) / float (k1 - k0)
+        v0 + t * (v1 - v0)
+    | Some (_, v), None -> v
+    | None, Some (_, v) -> v
+    | None, None -> nan
+  let result = Stats.interpolate [0;1;2;3;4] interp s
+  result.Get(1) |> should beWithin (2.0 +/- 1e-9)
+  result.Get(3) |> should beWithin (6.0 +/- 1e-9)
+
+[<Test>]
+let ``Stats.interpolate passes boundary values to interpolation function`` () =
+  let s = series [ 10 => 100.0; 20 => 200.0 ]
+  // Just return the previous value (step interpolation)
+  let stepInterp _ (prev:(int*float) option) (next:(int*float) option) =
+    match prev, next with
+    | Some (_, v), _ -> v
+    | _, Some (_, v) -> v
+    | None, None     -> nan
+  let result = Stats.interpolate [10;15;20] stepInterp s
+  result.Get(15) |> shouldEqual 100.0
+
+// ------------------------------------------------------------------------------------------------
 // Statistics on frames
 // ------------------------------------------------------------------------------------------------
 
@@ -337,6 +434,80 @@ let sampleFrame() =
     [ "A" =?> Series.ofValues [ 1.0; nan; 2.0; 3.0 ]
       "B" =?> Series.ofValues [ "hi"; "there"; "!"; "?" ]
       "C" =?> Series.ofValues [ 3.3; 4.4; 5.5; 6.6 ] ]
+
+// A frame with all-numeric columns for aggregation tests
+let numericFrame() =
+  frame
+    [ "X" =?> Series.ofValues [ 1.0; 2.0; 3.0; 4.0 ]
+      "Y" =?> Series.ofValues [ 10.0; 20.0; 30.0; 40.0 ] ]
+
+[<Test>]
+let ``Stats.count returns value count per column of a frame`` () =
+  let df = sampleFrame()
+  // Column A has a NaN so only 3 present values; B and C have 4 each
+  let counts = Stats.count df
+  counts.Get("A") |> shouldEqual 3
+  counts.Get("B") |> shouldEqual 4
+  counts.Get("C") |> shouldEqual 4
+
+[<Test>]
+let ``Stats.sum frame returns column-wise sums for numeric columns`` () =
+  let df = numericFrame()
+  let sums = Stats.sum df
+  sums.Get("X") |> should beWithin (10.0 +/- 1e-9)  // 1+2+3+4
+  sums.Get("Y") |> should beWithin (100.0 +/- 1e-9) // 10+20+30+40
+
+[<Test>]
+let ``Stats.mean frame returns column-wise means for numeric columns`` () =
+  let df = numericFrame()
+  let means = Stats.mean df
+  means.Get("X") |> should beWithin (2.5 +/- 1e-9)  // (1+2+3+4)/4
+  means.Get("Y") |> should beWithin (25.0 +/- 1e-9)
+
+[<Test>]
+let ``Stats.median frame returns column-wise medians for numeric columns`` () =
+  let df = numericFrame()
+  let medians = Stats.median df
+  medians.Get("X") |> should beWithin (2.5 +/- 1e-9)
+  medians.Get("Y") |> should beWithin (25.0 +/- 1e-9)
+
+[<Test>]
+let ``Stats.stdDev frame returns column-wise standard deviations`` () =
+  let df = numericFrame()
+  let stds = Stats.stdDev df
+  stds.Get("X") |> should beWithin (Stats.stdDev (series [0=>1.0;1=>2.0;2=>3.0;3=>4.0]) +/- 1e-9)
+
+[<Test>]
+let ``Stats.variance frame returns column-wise variances`` () =
+  let df = numericFrame()
+  let vars = Stats.variance df
+  // Var([1,2,3,4]) = 5/3 ≈ 1.6667 (sample variance)
+  vars.Get("X") |> should beWithin (Stats.variance (series [0=>1.0;1=>2.0;2=>3.0;3=>4.0]) +/- 1e-9)
+
+[<Test>]
+let ``Stats.skew frame returns column-wise skewness`` () =
+  let df = numericFrame()
+  let skews = Stats.skew df
+  skews.Get("X") |> should beWithin (Stats.skew (series [0=>1.0;1=>2.0;2=>3.0;3=>4.0]) +/- 1e-9)
+
+[<Test>]
+let ``Stats.kurt frame returns column-wise kurtosis`` () =
+  let df = numericFrame()
+  let kurts = Stats.kurt df
+  kurts.Get("X") |> should beWithin (Stats.kurt (series [0=>1.0;1=>2.0;2=>3.0;3=>4.0]) +/- 1e-9)
+
+[<Test>]
+let ``Stats.uniqueCount frame returns per-column distinct value counts`` () =
+  let df = frame [ "A" =?> series [1 => 1.0; 2 => 1.0; 3 => 2.0]; "B" =?> series [1 => "x"; 2 => "y"; 3 => "x"] ]
+  let uc = Stats.uniqueCount df
+  uc.Get("A") |> shouldEqual 2  // 1.0, 2.0
+  uc.Get("B") |> shouldEqual 2  // "x", "y"
+
+[<Test>]
+let ``Stats.sum frame ignores NaN values`` () =
+  let df = frame [ "A" =?> Series.ofValues [ 1.0; nan; 3.0 ] ]
+  let sums = Stats.sum df
+  sums.Get("A") |> should beWithin (4.0 +/- 1e-9)
 
 [<Test>]
 let ``Can calulate minimum and maximum of numeric series in a frame`` () =
