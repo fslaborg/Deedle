@@ -516,6 +516,42 @@ let ``Can perform linear interpolation``() =
   i |> shouldEqual e
 
 [<Test>]
+let ``interpolateLinearWith Clamp matches interpolateLinear for in-range keys``() =
+  let s = series [ 2 => 2.0; 4 => 4.0; 6 => 6.0 ]
+  let keyDiff a b = float (a - b)
+  let r1 = s |> Stats.interpolateLinear    [2;3;4;5;6] keyDiff
+  let r2 = s |> Stats.interpolateLinearWith [2;3;4;5;6] keyDiff Clamp
+  r1 |> shouldEqual r2
+
+[<Test>]
+let ``interpolateLinearWith Clamp uses edge value for out-of-range keys``() =
+  // s ranges from 2 to 6; requesting keys 0 and 8 should clamp
+  let s = series [ 2 => 10.0; 4 => 20.0; 6 => 30.0 ]
+  let keyDiff a b = float (a - b)
+  let r = s |> Stats.interpolateLinearWith [0;2;4;6;8] keyDiff Clamp
+  r.[0] |> shouldEqual 10.0   // before series start: clamp to first value
+  r.[8] |> shouldEqual 30.0   // after series end:   clamp to last value
+
+[<Test>]
+let ``interpolateLinearWith Missing returns nan for out-of-range keys``() =
+  let s = series [ 2 => 10.0; 4 => 20.0; 6 => 30.0 ]
+  let keyDiff a b = float (a - b)
+  let r = s |> Stats.interpolateLinearWith [0;2;4;6;8] keyDiff Missing
+  r.TryGet(0).HasValue |> shouldEqual false    // before series start: missing
+  r.TryGet(8).HasValue |> shouldEqual false    // after series end: missing
+  r.[2] |> shouldEqual 10.0                   // in-range: normal interpolation
+  r.[4] |> shouldEqual 20.0
+
+[<Test>]
+let ``interpolateLinearWith Linear extrapolates beyond series boundaries``() =
+  // series: slope is +5 per unit (10 at key 2, 20 at key 4, 30 at key 6)
+  let s = series [ 2 => 10.0; 4 => 20.0; 6 => 30.0 ]
+  let keyDiff a b = float (a - b)
+  let r = s |> Stats.interpolateLinearWith [0;2;4;6;8] keyDiff Linear
+  r.[0] |> shouldEqual 0.0    // extrapolate back: 10 - 5*2 = 0
+  r.[8] |> shouldEqual 40.0   // extrapolate forward: 30 + 5*2 = 40
+
+[<Test>]
 let ``FillMissingWith nan shall still return series with missing value``() =
   let s = Series.ofValues [ Double.NaN; 1.0; Double.NaN]
   let actual = s |> Series.fillMissingWith(nan)

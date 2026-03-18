@@ -178,3 +178,22 @@ type SeriesStatsExtensions =
   static member inline InterpolateLinear(series:Series<'K, 'V>, keys:'K seq, keyDiff:Func<'K,'K,float>): Series<'K,float> =
     series |> Stats.interpolateLinear keys (fun a b -> keyDiff.Invoke(a,b))
 
+  /// <summary>
+  /// Linearly interpolates an ordered series given a new sequence of keys, with
+  /// configurable extrapolation behavior for keys that fall outside the range of
+  /// the original series.
+  /// </summary>
+  /// <param name="series">The input series to interpolate</param>
+  /// <param name="keys">Sequence of new keys that forms the index of interpolated results</param>
+  /// <param name="keyDiff">A function representing "subtraction" between two keys</param>
+  /// <param name="extrapolation">
+  /// Controls how keys outside the source range are handled:
+  /// <c>Extrapolation.Clamp</c> uses the nearest boundary value;
+  /// <c>Extrapolation.Missing</c> produces <c>nan</c> for out-of-range keys;
+  /// <c>Extrapolation.Linear</c> continues the boundary slope.
+  /// </param>
+  /// <category>Calculations, aggregation and statistics</category>
+  [<Extension>]
+  static member inline InterpolateLinearWith(series:Series<'K, 'V>, keys:'K seq, keyDiff:Func<'K,'K,float>, extrapolation:Extrapolation): Series<'K,float> =
+    series |> Stats.interpolateLinearWith keys (fun a b -> keyDiff.Invoke(a,b)) extrapolation
+

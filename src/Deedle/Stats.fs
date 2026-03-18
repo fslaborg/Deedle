@@ -366,6 +366,20 @@ open StatsInternal
 /// </para>
 /// </remarks>
 /// <category>Frame and series operations</category>
+
+/// <summary>
+/// Specifies the extrapolation behavior used by <c>Stats.interpolateLinearWith</c>
+/// for keys that fall outside the range of the source series.
+/// </summary>
+type Extrapolation =
+  /// Retain the nearest boundary value. This is the same behavior as
+  /// <c>Stats.interpolateLinear</c>.
+  | Clamp
+  /// Return <c>nan</c> for keys that are outside the source series range.
+  | Missing
+  /// Continue the boundary slope linearly beyond the series boundaries.
+  | Linear
+
 type Stats =
 
   // ------------------------------------------------------------------------------------
@@ -870,6 +884,66 @@ type Stats =
       | _, Some y      -> snd y
       | _              -> raise <| new ArgumentException("Unexpected code path in interpolation")
     series |> Series.mapValues toFloat |> Stats.interpolate keys linearF
+
+  /// <summary>
+  /// Linearly interpolates an ordered series given a new sequence of keys, with
+  /// configurable extrapolation behavior for keys that fall outside the range of the
+  /// original series. Throws a `FormatException` or an `InvalidCastException` if the
+  /// value type of the series is not convertible to a floating point number.
+  /// </summary>
+  /// <param name="keys">Sequence of new keys that forms the index of interpolated results</param>
+  /// <param name="keyDiff">A function representing "subtraction" between two keys</param>
+  /// <param name="extrapolation">
+  /// Specifies the behavior for keys outside the source series range:
+  /// <c>Extrapolation.Clamp</c> retains the nearest boundary value (same as
+  /// <c>interpolateLinear</c>); <c>Extrapolation.Missing</c> produces <c>nan</c> for
+  /// out-of-range keys; <c>Extrapolation.Linear</c> continues the boundary slope.
+  /// </param>
+  /// <param name="series">The input series to interpolate</param>
+  /// <category>Series interoploation</category>
+  static member inline interpolateLinearWith keys (keyDiff:'K->'K->float) (extrapolation:Extrapolation) (series:Series<'K, 'V>) =
+    let floatSeries = series |> Series.mapValues toFloat
+    let n = floatSeries.KeyCount
+    // Pre-compute boundary slopes needed for Extrapolation.Linear
+    let headSlope =
+      if n >= 2 then
+        let k0 = floatSeries.GetKeyAt(0)
+        let v0 = floatSeries.GetAt(0)
+        let k1 = floatSeries.GetKeyAt(1)
+        let v1 = floatSeries.GetAt(1)
+        Some ((v1 - v0) / (keyDiff k1 k0))
+      else None
+    let tailSlope =
+      if n >= 2 then
+        let k0 = floatSeries.GetKeyAt(n - 2)
+        let v0 = floatSeries.GetAt(n - 2)
+        let k1 = floatSeries.GetKeyAt(n - 1)
+        let v1 = floatSeries.GetAt(n - 1)
+        Some ((v1 - v0) / (keyDiff k1 k0))
+      else None
+    let linearF k a b =
+      match a, b with
+      | Some x, Some y ->
+        if x = y then snd x
+        else (snd x) + (keyDiff k (fst x)) / (keyDiff (fst y) (fst x)) * (snd y - snd x)
+      | Some x, None ->
+        // k is beyond the end of the series
+        match extrapolation with
+        | Clamp   -> snd x
+        | Missing -> nan
+        | Linear  -> match tailSlope with
+                     | Some s -> snd x + s * (keyDiff k (fst x))
+                     | None   -> snd x
+      | None, Some y ->
+        // k is before the start of the series
+        match extrapolation with
+        | Clamp   -> snd y
+        | Missing -> nan
+        | Linear  -> match headSlope with
+                     | Some s -> snd y + s * (keyDiff k (fst y))
+                     | None   -> snd y
+      | _ -> raise <| new ArgumentException("Unexpected code path in interpolation")
+    floatSeries |> Stats.interpolate keys linearF
 
   // ------------------------------------------------------------------------------------
   // Statistics calculated over the entire frames' float column series
