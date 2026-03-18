@@ -285,12 +285,15 @@ let ``series with date-only DateTime keys omits time in Format`` () =
 
 [<Test>]
 let ``series with datetime keys preserves time in Format`` () =
-  // Keys with a non-zero time component should still include the time.
+  // Keys with a non-zero time component are formatted as "yyyy-MM-dd HH:mm:ss" (invariant, no AM/PM).
   let s = series [
     DateTime(2023, 1, 1, 9, 30, 0) => 1.0
     DateTime(2023, 1, 1, 10, 0, 0) => 2.0 ]
   let fmt = s.Format()
-  fmt |> should contain "09:30:00"
+  fmt |> should contain "2023-01-01 09:30:00"
+  fmt |> should contain "2023-01-01 10:00:00"
+  fmt |> should (contain >> not') "AM"
+  fmt |> should (contain >> not') "PM"
 
 [<Test>]
 let ``series ToString with date-only DateTime keys omits time`` () =
