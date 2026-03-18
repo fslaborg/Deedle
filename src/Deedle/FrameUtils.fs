@@ -610,7 +610,7 @@ module internal FrameUtils =
         member x.ToVector() = Vector.ofOptionalValues (data.ToArray()) :> IVector }
 
   /// Load data from a CSV file using F# Data API
-  let readCsv (reader:TextReader) hasHeaders inferTypes inferRows schema (missingValues:string[] option) separators culture maxRows preferOptions =
+  let readCsv (reader:TextReader) hasHeaders inferTypes inferRows schema (missingValues:string[] option) separators culture maxRows preferOptions (typeResolver:(string -> string option) option) =
     // When called from F#, the optional arguments will be `None`, but when called
     // from C#, we get `Some default(T)` and so we need to check for both here!
     let inferRows = defaultArg inferRows 100
@@ -642,6 +642,51 @@ module internal FrameUtils =
     // so that the caller's explicit type overrides are respected.
     let inferredProperties =
       let data = CsvFile.Load(stream, ?separators=separators, ?hasHeaders=hasHeaders)
+
+      // If a typeResolver is provided, apply it to each column header to build a schema string.
+      // For columns already covered by a named override in the explicit 'schema' parameter, the
+      // resolver result is skipped so that the explicit schema takes precedence without producing
+      // duplicate entries (which would exceed the column-count limit in the schema parser).
+      let schema =
+        match typeResolver with
+        | None -> schema
+        | Some resolver ->
+            let headers =
+              match data.Headers with
+              | None -> [| for i in 1 .. data.NumberOfColumns -> sprintf "Column%d" i |]
+              | Some hs ->
+                  hs |> Array.mapi (fun i h ->
+                      if String.IsNullOrWhiteSpace h then sprintf "Column%d" (i + 1) else h)
+            // Determine which column names are already explicitly covered by named overrides
+            // in the schema string (entries of the form "ColName=Type" or "ColName->...").
+            let explicitCols =
+              if schema = "" then Set.empty
+              else
+                schema.Split(',')
+                |> Array.choose (fun entry ->
+                    let e = entry.Trim()
+                    let eqIdx = e.IndexOf('=')
+                    let arrowIdx = e.IndexOf("->")
+                    let sepIdx =
+                        match eqIdx, arrowIdx with
+                        | -1, -1 -> -1
+                        | -1, a  -> a
+                        | e,  -1 -> e
+                        | e,  a  -> min e a
+                    if sepIdx > 0 then Some (e.[..sepIdx-1].Trim().ToLowerInvariant())
+                    else None)
+                |> Set.ofArray
+            let resolverSchema =
+              headers
+              |> Array.choose (fun col ->
+                  if explicitCols.Contains(col.ToLowerInvariant()) then None
+                  else resolver col |> Option.map (fun t -> sprintf "%s=%s" col t))
+              |> String.concat ","
+            match resolverSchema, schema with
+            | "", s -> s
+            | rs, "" -> rs
+            | rs, s -> rs + "," + s
+
       match inferTypes with
       | Some true | None ->
           data.InferColumnTypes(inferRows, missingValues, cultureInfo, schema, safeMode, preferOptionals)
@@ -699,9 +744,9 @@ module internal FrameUtils =
     Frame(rowIndex, columnIndex, Vector.ofValues columns, IndexBuilder.Instance, VectorBuilder.Instance)
 
   /// Load data from a string representing a UTF8-encoded CSV file using F# Data API
-  let readString (csvString:string) hasHeaders inferTypes inferRows schema (missingValues:string[] option) separators culture maxRows preferOptions =
+  let readString (csvString:string) hasHeaders inferTypes inferRows schema (missingValues:string[] option) separators culture maxRows preferOptions (typeResolver:(string -> string option) option) =
     let stream =  new MemoryStream(Text.Encoding.UTF8.GetBytes(csvString))
-    readCsv (new StreamReader(stream)) hasHeaders inferTypes inferRows schema (missingValues:string[] option) separators culture maxRows preferOptions
+    readCsv (new StreamReader(stream)) hasHeaders inferTypes inferRows schema (missingValues:string[] option) separators culture maxRows preferOptions typeResolver
 
   /// Create data frame from a sequence of values using
   /// projections that return column/row keys and the value

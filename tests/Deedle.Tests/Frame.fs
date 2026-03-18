@@ -132,6 +132,43 @@ let ``Schema is respected when inferTypes=false (regression #347)``() =
   df.ColumnKeys |> List.ofSeq |> shouldEqual ["Name"; "Value"; "Flag"]
 
 [<Test>]
+let ``typeResolver maps column names to types``() =
+  let csv = "Name,Score,IsActive\nAlice,42,true\nBob,17,false"
+  use reader = new System.IO.StringReader(csv)
+  let df =
+    Frame.ReadCsv(reader, typeResolver=fun col ->
+      match col with
+      | "Score"    -> Some "int"
+      | "IsActive" -> Some "bool"
+      | _          -> None)
+  df.GetColumn<int>("Score")   |> Series.values |> List.ofSeq |> shouldEqual [42; 17]
+  df.GetColumn<bool>("IsActive") |> Series.values |> List.ofSeq |> shouldEqual [true; false]
+  df.ColumnKeys |> List.ofSeq |> shouldEqual ["Name"; "Score"; "IsActive"]
+
+[<Test>]
+let ``typeResolver explicit schema takes precedence over typeResolver``() =
+  // When both typeResolver and schema are provided, the explicit schema wins for conflicting columns
+  let csv = "A,B\n1,2\n3,4"
+  use reader = new System.IO.StringReader(csv)
+  let df =
+    Frame.ReadCsv(reader,
+      typeResolver=(fun _ -> Some "string"),  // resolver says all string
+      schema="A=int")                          // but explicit schema says A is int
+  df.GetColumn<int>("A") |> Series.values |> List.ofSeq |> shouldEqual [1; 3]
+  df.GetColumn<string>("B") |> Series.values |> List.ofSeq |> shouldEqual ["2"; "4"]
+
+
+  // Regression test for issue #347: schema was silently ignored when inferTypes=false
+  let csv = "Name,Value,Flag\nAlice,42,true\nBob,17,false"
+  use reader = new System.IO.StringReader(csv)
+  // Use "Name=type" override-by-name syntax so schema columns are matched by column name
+  let df = Frame.ReadCsv(reader, inferTypes=false, schema="Value=int,Flag=bool")
+  // Schema-specified columns should use the declared types
+  df.GetColumn<int>("Value") |> Series.values |> List.ofSeq |> shouldEqual [42; 17]
+  df.GetColumn<bool>("Flag") |> Series.values |> List.ofSeq |> shouldEqual [true; false]
+  df.ColumnKeys |> List.ofSeq |> shouldEqual ["Name"; "Value"; "Flag"]
+
+[<Test>]
 let ``Can read MSFT data from CSV and rename``() =
   let df = Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/data/MSFT.csv", schema="Day,Adj Close->Adjusted")
   let actual = List.ofSeq df.ColumnKeys
