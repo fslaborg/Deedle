@@ -1048,3 +1048,23 @@ type Stats =
   /// <category>Multi-level statistics</category>
   static member inline levelKurt (level:'K -> 'L) (series:Series<'K, 'V>) =
     Series.applyLevel level Stats.kurt series
+
+  /// For each group with equal keys at the level specified by `level`,
+  /// returns the minimum of the values in the group. The function skips over missing
+  /// values and `NaN` values. When the group contains no values, the result is NaN.
+  /// Throws a `FormatException` or an `InvalidCastException` if the value type of the series
+  /// is not convertible to floating point number.
+  ///
+  /// <category>Multi-level statistics</category>
+  static member inline levelMin (level:'K -> 'L) (series:Series<'K, 'V>) =
+    Series.applyLevel level Stats.min series
+
+  /// For each group with equal keys at the level specified by `level`,
+  /// returns the maximum of the values in the group. The function skips over missing
+  /// values and `NaN` values. When the group contains no values, the result is NaN.
+  /// Throws a `FormatException` or an `InvalidCastException` if the value type of the series
+  /// is not convertible to floating point number.
+  ///
+  /// <category>Multi-level statistics</category>
+  static member inline levelMax (level:'K -> 'L) (series:Series<'K, 'V>) =
+    Series.applyLevel level Stats.max series

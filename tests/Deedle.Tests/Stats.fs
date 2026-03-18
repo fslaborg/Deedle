@@ -278,9 +278,13 @@ let ``Basic level statistics works on sample input`` () =
   s1 |> Stats.levelCount fst |> shouldEqual <| series [ 1 => 1; 2 => 2 ]
   s1 |> Stats.levelSum fst |> shouldEqual <| series [ 1 => 2.0; 2 => 7.0 ]
   s1 |> Stats.levelMean fst |> shouldEqual <| series [ 1 => 2.0; 2 => 3.5 ]
+  s1 |> Stats.levelMin fst |> shouldEqual <| series [ 1 => 2.0; 2 => 3.0 ]
+  s1 |> Stats.levelMax fst |> shouldEqual <| series [ 1 => 2.0; 2 => 4.0 ]
   s2 |> Stats.levelCount fst |> shouldEqual <| series [ 1 => 1; 2 => 2 ]
   s2 |> Stats.levelSum fst |> shouldEqual <| series [ 1 => 2.0; 2 => 7.0 ]
   s2 |> Stats.levelMean fst |> shouldEqual <| series [ 1 => 2.0; 2 => 3.5 ]
+  s2 |> Stats.levelMin fst |> shouldEqual <| series [ 1 => 2.0; 2 => 3.0 ]
+  s2 |> Stats.levelMax fst |> shouldEqual <| series [ 1 => 2.0; 2 => 4.0 ]
 
 [<Test>]
 let ``Advanced level statistics works on sample input`` () =
