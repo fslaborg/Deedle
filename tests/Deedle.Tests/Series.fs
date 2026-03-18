@@ -1045,6 +1045,45 @@ let ``Can compare series``() =
 
   Series.compare s1 s2 |> shouldEqual e
 
+[<Test>]
+let ``Series.compare is strongly typed for float values``() =
+  let s1 : Series<int, float> = series [ 1 => 1.0; 2 => 2.0; 3 => 3.0 ]
+  let s2 : Series<int, float> = series [ 1 => 10.0; 2 => 2.0; 4 => 4.0 ]
+  let result : Series<int, Diff<float>> = Series.compare s1 s2
+  result.Get(1) |> shouldEqual (Change(1.0, 10.0))
+  result.TryGet(2).HasValue |> shouldEqual false
+  result.Get(3) |> shouldEqual (Diff.Remove 3.0)
+  result.Get(4) |> shouldEqual (Diff.Add 4.0)
+
+[<Test>]
+let ``Series.compare is strongly typed for string values``() =
+  let s1 : Series<string, string> = series [ "a" => "hello"; "b" => "world"; "c" => "only-left" ]
+  let s2 : Series<string, string> = series [ "a" => "changed"; "b" => "world"; "d" => "only-right" ]
+  let result : Series<string, Diff<string>> = Series.compare s1 s2
+  result.Get("a") |> shouldEqual (Change("hello", "changed"))
+  result.TryGet("b").HasValue |> shouldEqual false
+  result.Get("c") |> shouldEqual (Diff.Remove "only-left")
+  result.Get("d") |> shouldEqual (Diff.Add "only-right")
+
+[<Test>]
+let ``Series.compare is strongly typed for int values``() =
+  let s1 : Series<string, int> = series [ "x" => 1; "y" => 2; "z" => 3 ]
+  let s2 : Series<string, int> = series [ "x" => 1; "y" => 5 ]
+  let result : Series<string, Diff<int>> = Series.compare s1 s2
+  result.TryGet("x").HasValue |> shouldEqual false
+  result.Get("y") |> shouldEqual (Change(2, 5))
+  result.Get("z") |> shouldEqual (Diff.Remove 3)
+
+[<Test>]
+let ``Series.Compare member is strongly typed``() =
+  let s1 : Series<int, float> = series [ 1 => 10.0; 2 => 20.0; 3 => 30.0 ]
+  let s2 : Series<int, float> = series [ 1 => 10.0; 2 => 99.0; 4 => 40.0 ]
+  let result : Series<int, Diff<float>> = s1.Compare(s2)
+  result.TryGet(1).HasValue |> shouldEqual false
+  result.Get(2) |> shouldEqual (Change(20.0, 99.0))
+  result.Get(3) |> shouldEqual (Diff.Remove 30.0)
+  result.Get(4) |> shouldEqual (Diff.Add 40.0)
+
 
 [<Test>]
 let ``Can replace for one key``() =

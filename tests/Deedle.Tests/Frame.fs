@@ -2588,3 +2588,36 @@ let ``Frame.compare on identical frames returns empty diff columns`` () =
   let result = Frame.compare df df
   result.GetColumn<Diff<obj>>("A").KeyCount |> shouldEqual 0
   result.GetColumn<Diff<obj>>("B").KeyCount |> shouldEqual 0
+
+[<Test>]
+let ``Series.compare on typed frame columns returns strongly typed Diff<float>`` () =
+  let df1 = frame [ "Price" =?> series [ 1 => 100.0; 2 => 200.0; 3 => 300.0 ] ]
+  let df2 = frame [ "Price" =?> series [ 1 => 150.0; 2 => 200.0; 4 => 400.0 ] ]
+  let result : Series<int, Diff<float>> =
+    Series.compare (df1.GetColumn<float>("Price")) (df2.GetColumn<float>("Price"))
+  result.Get(1) |> shouldEqual (Change(100.0, 150.0))
+  result.TryGet(2).HasValue |> shouldEqual false
+  result.Get(3) |> shouldEqual (Diff.Remove 300.0)
+  result.Get(4) |> shouldEqual (Diff.Add 400.0)
+
+[<Test>]
+let ``Series.compare on typed frame columns returns strongly typed Diff<string>`` () =
+  let df1 = frame [ "Name" =?> series [ 1 => "alice"; 2 => "bob"; 3 => "carol" ] ]
+  let df2 = frame [ "Name" =?> series [ 1 => "alice"; 2 => "robert"; 4 => "dan" ] ]
+  let result : Series<int, Diff<string>> =
+    Series.compare (df1.GetColumn<string>("Name")) (df2.GetColumn<string>("Name"))
+  result.TryGet(1).HasValue |> shouldEqual false
+  result.Get(2) |> shouldEqual (Change("bob", "robert"))
+  result.Get(3) |> shouldEqual (Diff.Remove "carol")
+  result.Get(4) |> shouldEqual (Diff.Add "dan")
+
+[<Test>]
+let ``Series.compare on typed frame columns returns strongly typed Diff<int>`` () =
+  let df1 = frame [ "Count" =?> series [ "a" => 1; "b" => 2; "c" => 3 ] ]
+  let df2 = frame [ "Count" =?> series [ "a" => 1; "b" => 5; "d" => 6 ] ]
+  let result : Series<string, Diff<int>> =
+    Series.compare (df1.GetColumn<int>("Count")) (df2.GetColumn<int>("Count"))
+  result.TryGet("a").HasValue |> shouldEqual false
+  result.Get("b") |> shouldEqual (Change(2, 5))
+  result.Get("c") |> shouldEqual (Diff.Remove 3)
+  result.Get("d") |> shouldEqual (Diff.Add 6)
