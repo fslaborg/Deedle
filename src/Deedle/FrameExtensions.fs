@@ -103,6 +103,7 @@ type Frame =
       (if separators = null then None else Some separators) (Some culture)
       (if maxRows.HasValue then Some maxRows.Value else None)
       (Some preferOptions)
+      None
 
 
   /// <summary>
@@ -136,6 +137,7 @@ type Frame =
       (if separators = null then None else Some separators) (Some culture)
       (if maxRows.HasValue then Some maxRows.Value else None)
       (if preferOptions.HasValue then Some preferOptions.Value else None)
+      None
 
   // Note: The following is also used from F#
 
@@ -423,13 +425,14 @@ module ``F# Frame extensions`` =
     /// <param name="maxRows">The maximal number of rows that should be read from the CSV file.</param>
     /// <param name="missingValues">An array of strings that contains values which should be treated as missing when reading the file. The default value is: "NaN"; "NA"; "#N/A"; ":"; "-"; "TBA"; "TBD".</param>
     /// <param name="preferOptions">Specifies whether to prefer optional values when parsing CSV data.</param>
+    /// <param name="typeResolver">An optional function that maps a column name to a type name string (e.g. `"int"`, `"float"`, `"string"`, `"bool"`, `"date"`, `"guid"`). Return `None` to let Deedle infer the type for that column. When both `typeResolver` and `schema` are provided, explicit `schema` overrides take precedence for any conflicting column.</param>
     /// <param name="encoding">Specifies the character encoding to use when reading the CSV file. When not set, UTF-8 with BOM detection is used.</param>
     /// <category>Input and output</category>
     static member ReadCsv<'R when 'R : equality>
         ( path:string, indexCol, ?hasHeaders, ?inferTypes, ?inferRows, ?schema, ?separators,
-          ?culture, ?maxRows, ?missingValues, ?preferOptions, ?encoding: Encoding ) : Frame<'R, _> =
+          ?culture, ?maxRows, ?missingValues, ?preferOptions, ?typeResolver: string -> string option, ?encoding: Encoding ) : Frame<'R, _> =
       use reader = match encoding with Some e -> new StreamReader(path, e) | None -> new StreamReader(path)
-      FrameUtils.readCsv reader hasHeaders inferTypes inferRows schema missingValues separators culture maxRows preferOptions
+      FrameUtils.readCsv reader hasHeaders inferTypes inferRows schema missingValues separators culture maxRows preferOptions typeResolver
       |> Frame.indexRows indexCol
 
     /// <summary>
@@ -448,13 +451,14 @@ module ``F# Frame extensions`` =
     /// <param name="maxRows">The maximal number of rows that should be read from the CSV file.</param>
     /// <param name="missingValues">An array of strings that contains values which should be treated as missing when reading the file. The default value is: "NaN"; "NA"; "#N/A"; ":"; "-"; "TBA"; "TBD".</param>
     /// <param name="preferOptions">Specifies whether to prefer optional values when parsing CSV data.</param>
+    /// <param name="typeResolver">An optional function that maps a column name to a type name string (e.g. `"int"`, `"float"`, `"string"`, `"bool"`, `"date"`, `"guid"`). Return `None` to let Deedle infer the type for that column. When both `typeResolver` and `schema` are provided, explicit `schema` overrides take precedence for any conflicting column.</param>
     /// <param name="encoding">Specifies the character encoding to use when reading the CSV file. When not set, UTF-8 with BOM detection is used.</param>
     /// <category>Input and output</category>
     static member ReadCsv
         ( path:string, ?hasHeaders, ?inferTypes, ?inferRows, ?schema, ?separators,
-          ?culture, ?maxRows, ?missingValues, ?preferOptions, ?encoding: Encoding ) =
+          ?culture, ?maxRows, ?missingValues, ?preferOptions, ?typeResolver: string -> string option, ?encoding: Encoding ) =
       use reader = match encoding with Some e -> new StreamReader(path, e) | None -> new StreamReader(path)
-      FrameUtils.readCsv reader hasHeaders inferTypes inferRows schema missingValues separators culture maxRows preferOptions
+      FrameUtils.readCsv reader hasHeaders inferTypes inferRows schema missingValues separators culture maxRows preferOptions typeResolver
 
     /// <summary>
     /// Load data frame from a CSV file. The operation automatically reads column names from the
@@ -472,13 +476,14 @@ module ``F# Frame extensions`` =
     /// <param name="maxRows">The maximal number of rows that should be read from the CSV file.</param>
     /// <param name="missingValues">An array of strings that contains values which should be treated as missing when reading the file. The default value is: "NaN"; "NA"; "#N/A"; ":"; "-"; "TBA"; "TBD".</param>
     /// <param name="preferOptions">Specifies whether to prefer optional values when parsing CSV data.</param>
+    /// <param name="typeResolver">An optional function that maps a column name to a type name string (e.g. `"int"`, `"float"`, `"string"`, `"bool"`, `"date"`, `"guid"`). Return `None` to let Deedle infer the type for that column. When both `typeResolver` and `schema` are provided, explicit `schema` overrides take precedence for any conflicting column.</param>
     /// <param name="encoding">Specifies the character encoding to use when reading the CSV stream. When not set, UTF-8 with BOM detection is used.</param>
     /// <category>Input and output</category>
     static member ReadCsv
         ( stream:Stream, ?hasHeaders, ?inferTypes, ?inferRows, ?schema, ?separators,
-          ?culture, ?maxRows, ?missingValues, ?preferOptions, ?encoding: Encoding ) =
+          ?culture, ?maxRows, ?missingValues, ?preferOptions, ?typeResolver: string -> string option, ?encoding: Encoding ) =
       let reader = match encoding with Some e -> new StreamReader(stream, e) | None -> new StreamReader(stream)
-      FrameUtils.readCsv reader hasHeaders inferTypes inferRows schema missingValues separators culture maxRows preferOptions
+      FrameUtils.readCsv reader hasHeaders inferTypes inferRows schema missingValues separators culture maxRows preferOptions typeResolver
 
     /// <summary>
     /// Load data frame from a CSV file. The operation automatically reads column names from the
@@ -496,11 +501,12 @@ module ``F# Frame extensions`` =
     /// <param name="maxRows">The maximal number of rows that should be read from the CSV file.</param>
     /// <param name="missingValues">An array of strings that contains values which should be treated as missing when reading the file. The default value is: "NaN"; "NA"; "#N/A"; ":"; "-"; "TBA"; "TBD".</param>
     /// <param name="preferOptions">Specifies whether to prefer optional values when parsing CSV data.</param>
+    /// <param name="typeResolver">An optional function that maps a column name to a type name string (e.g. `"int"`, `"float"`, `"string"`, `"bool"`, `"date"`, `"guid"`). Return `None` to let Deedle infer the type for that column. When both `typeResolver` and `schema` are provided, explicit `schema` overrides take precedence for any conflicting column.</param>
     /// <category>Input and output</category>
     static member ReadCsv
         ( reader:TextReader, ?hasHeaders, ?inferTypes, ?inferRows, ?schema,
-          ?separators, ?culture, ?maxRows, ?missingValues, ?preferOptions ) =
-      FrameUtils.readCsv reader hasHeaders inferTypes inferRows schema missingValues separators culture maxRows preferOptions
+          ?separators, ?culture, ?maxRows, ?missingValues, ?preferOptions, ?typeResolver: string -> string option ) =
+      FrameUtils.readCsv reader hasHeaders inferTypes inferRows schema missingValues separators culture maxRows preferOptions typeResolver
 
     /// <summary>
     /// Load data frame from a string representing a UTF8-encoded CSV file. The operation automatically
@@ -518,11 +524,12 @@ module ``F# Frame extensions`` =
     /// <param name="maxRows">The maximal number of rows that should be read from the CSV string.</param>
     /// <param name="missingValues">An array of strings that contains values which should be treated as missing when reading the file. The default value is: "NaN"; "NA"; "#N/A"; ":"; "-"; "TBA"; "TBD".</param>
     /// <param name="preferOptions">Specifies whether to prefer optional values when parsing CSV data.</param>
+    /// <param name="typeResolver">An optional function that maps a column name to a type name string (e.g. `"int"`, `"float"`, `"string"`, `"bool"`, `"date"`, `"guid"`). Return `None` to let Deedle infer the type for that column. When both `typeResolver` and `schema` are provided, explicit `schema` overrides take precedence for any conflicting column.</param>
     /// <category>Input and output</category>
     static member ReadCsvString
         ( csvString:string, ?hasHeaders, ?inferTypes, ?inferRows, ?schema, ?separators,
-          ?culture, ?maxRows, ?missingValues, ?preferOptions ) =
-      FrameUtils.readString csvString hasHeaders inferTypes inferRows schema missingValues separators culture maxRows preferOptions
+          ?culture, ?maxRows, ?missingValues, ?preferOptions, ?typeResolver: string -> string option ) =
+      FrameUtils.readString csvString hasHeaders inferTypes inferRows schema missingValues separators culture maxRows preferOptions typeResolver
 
 
     /// <summary>
