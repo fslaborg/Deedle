@@ -310,4 +310,27 @@ let ``frame with date-only DateTime row keys omits time in Format`` () =
   fmt |> should (contain >> not') "00:00:00"
   fmt |> should contain "2023"
 
+[<Test>]
+let ``series with long string values truncates at MaxCellWidth`` () =
+  // Values longer than MaxCellWidth (50) should be clipped with "..."
+  let longVal = String.replicate 100 "X"
+  let s = series [ 1 => longVal; 2 => "short" ]
+  let fmt = s.Format()
+  fmt |> should (contain >> not') longVal
+  fmt |> should contain "..."
+
+[<Test>]
+let ``frame with long string values truncates at MaxCellWidth`` () =
+  let longVal = String.replicate 100 "A"
+  let f = frame [ "col" => series [ 1 => longVal; 2 => "short" ] ]
+  let fmt = f.Format()
+  fmt |> should (contain >> not') longVal
+  fmt |> should contain "..."
+
+[<Test>]
+let ``series short values are not truncated`` () =
+  let s = series [ 1 => "hello world"; 2 => "foo" ]
+  let fmt = s.Format()
+  fmt |> should contain "hello world"
+
 

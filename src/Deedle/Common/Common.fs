@@ -1424,6 +1424,10 @@ module Formatting =
   /// Maximal number of items to be printed at the end of an inline formatted series/frame
   let EndInlineItemCount = 1
 
+  /// Maximum width (in characters) of a single cell value in FSI/ToString output.
+  /// Values longer than this are truncated with "..." to keep columns readable.
+  let MaxCellWidth = 50
+
   open System
   open System.IO
   open System.Text
@@ -1440,18 +1444,26 @@ module Formatting =
         dt.ToString("d", Globalization.CultureInfo.CurrentCulture)
     | _ -> key.ToString()
 
+  /// Truncate a cell string to at most MaxCellWidth characters.
+  /// Values that exceed the limit are clipped and "..." appended.
+  let private truncateCell (s:string) =
+    if s.Length > MaxCellWidth then s.Substring(0, MaxCellWidth - 3) + "..."
+    else s
+
   let formatTable (data:string[,]) =
     let sb = StringBuilder()
     use wr = new StringWriter(sb)
 
     let rows = data.GetLength(0)
     let columns = data.GetLength(1)
+    // Truncate each cell so that a single very long value cannot make the whole column unreadable.
+    let clipped = Array2D.init rows columns (fun r c -> truncateCell data.[r, c])
     let widths = Array.zeroCreate columns
-    data |> Array2D.iteri (fun r c str ->
+    clipped |> Array2D.iteri (fun _ c str ->
       widths.[c] <- max (widths.[c]) (str.Length))
     for r in 0 .. rows - 1 do
       for c in 0 .. columns - 1 do
-        wr.Write(data.[r, c].PadRight(widths.[c] + 1))
+        wr.Write(clipped.[r, c].PadRight(widths.[c] + 1))
       wr.WriteLine()
 
     sb.ToString()
