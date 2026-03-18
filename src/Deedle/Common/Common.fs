@@ -1053,6 +1053,21 @@ module Seq =
       yield startIdx, endIdx }
 
 
+  /// Generate overlapping floating windows from the input sequence. A window ends at
+  /// each element of the input. To find the start of the window, the function walks
+  /// backward from the current element and calls the provided argument `f` with the
+  /// candidate start element and the current (end) element. The window starts at the
+  /// earliest element for which `f` returns `true`.
+  /// The function returns the windows as pairs of their (start, end) indices.
+  let windowRangesWhileFromEnd (f:'T -> 'T -> bool) input =
+    let arr = input |> Seq.toArray
+    seq {
+      for i in 0..arr.Length-1 do
+        let mutable lo = i
+        while lo > 0 && f arr.[lo-1] arr.[i] do
+          lo <- lo - 1
+        yield int64 lo, int64 i }
+
   /// Generate non-verlapping chunks from the input sequence. A chunk is started
   /// at the beginning and then immediately after the end of the previous chunk.
   /// To find the end of the chunk, the function calls the provided argument `f`

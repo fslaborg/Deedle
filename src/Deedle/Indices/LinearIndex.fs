@@ -315,6 +315,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
         | WindowSize(size, boundary) -> Seq.windowRangesWithBounds (int64 size) boundary index.KeyCount
         | ChunkWhile cond -> Seq.chunkRangesWhile cond index.Keys |> Seq.map (fun (s, e) -> DataSegmentKind.Complete, s, e)
         | WindowWhile cond -> Seq.windowRangesWhile cond index.Keys |> Seq.map (fun (s, e) -> DataSegmentKind.Complete, s, e)
+        | WindowWhileFromEnd cond -> Seq.windowRangesWhileFromEnd cond index.Keys |> Seq.map (fun (s, e) -> DataSegmentKind.Complete, s, e)
 
       // Turn each location into vector construction using LinearRangeIndex
       let vectorConstructions =
