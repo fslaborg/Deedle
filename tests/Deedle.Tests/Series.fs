@@ -634,6 +634,68 @@ let ``Can sort series``() =
   ord6 |> shouldEqual ascendingMissing
 
 [<Test>]
+let ``Can rank series values``() =
+  let s = series ["a" => 5.0; "b" => 3.0; "c" => 7.0; "d" => 1.0]
+  let r = s |> Series.rank
+  r.["a"] |> shouldEqual 3
+  r.["b"] |> shouldEqual 2
+  r.["c"] |> shouldEqual 4
+  r.["d"] |> shouldEqual 1
+
+[<Test>]
+let ``Can rank series values with ties``() =
+  let s = series ["a" => 3.0; "b" => 1.0; "c" => 3.0; "d" => 5.0]
+  let r = s |> Series.rank
+  r.["a"] |> shouldEqual 2
+  r.["b"] |> shouldEqual 1
+  r.["c"] |> shouldEqual 2
+  r.["d"] |> shouldEqual 3
+
+[<Test>]
+let ``Can rank series values with missing``() =
+  let s = series ["a" => 1.0; "b" => nan; "c" => 3.0]
+  let r = s |> Series.rank
+  r.["a"] |> shouldEqual 1
+  r.TryGet("b").HasValue |> shouldEqual false
+  r.["c"] |> shouldEqual 2
+
+[<Test>]
+let ``Can rank series with custom comparator``() =
+  let s = series ["a" => "hello"; "b" => "hi"; "c" => "hey"; "d" => "world"]
+  let r = s |> Series.rankWith (fun (x:string) y -> compare x.Length y.Length)
+  r.["b"] |> shouldEqual 1   // "hi" length 2
+  r.["c"] |> shouldEqual 2   // "hey" length 3
+  r.["a"] |> shouldEqual 3   // "hello" length 5
+  r.["d"] |> shouldEqual 3   // "world" length 5 — same rank as "hello"
+
+[<Test>]
+let ``Can ntile series into equal buckets``() =
+  let s = series [1 => 10.0; 2 => 30.0; 3 => 20.0; 4 => 40.0; 5 => 50.0; 6 => 60.0]
+  // sorted: 10, 20, 30, 40, 50, 60; chunkSize = ceil(6/3) = 2
+  // bucket 0: values 10, 20  bucket 1: values 30, 40  bucket 2: values 50, 60
+  let t = s |> Series.ntile 3
+  t.[1] |> shouldEqual 0   // 10
+  t.[3] |> shouldEqual 0   // 20
+  t.[2] |> shouldEqual 1   // 30
+  t.[4] |> shouldEqual 1   // 40
+  t.[5] |> shouldEqual 2   // 50
+  t.[6] |> shouldEqual 2   // 60
+
+[<Test>]
+let ``Can ntile series into uneven buckets``() =
+  let s = series [1 => 10.0; 2 => 20.0; 3 => 30.0; 4 => 40.0; 5 => 50.0]
+  // 5 values, 3 buckets; chunkSize = ceil(5/3) = 2
+  // bucket 0: positions 0,1 (values 10, 20)
+  // bucket 1: positions 2,3 (values 30, 40)
+  // bucket 2: position  4   (value  50)
+  let t = s |> Series.ntile 3
+  t.[1] |> shouldEqual 0
+  t.[2] |> shouldEqual 0
+  t.[3] |> shouldEqual 1
+  t.[4] |> shouldEqual 1
+  t.[5] |> shouldEqual 2
+
+[<Test>]
 let ``Series.indexWith does not leak previous values through the value vector`` () =
   let s = series [ 1 => 1.0; 2 => 2.0 ]
   s |> Series.indexWith [1] |> Series.reduceValues (+) |> shouldEqual 1.0

@@ -260,6 +260,28 @@ type SeriesExtensions =
   [<Extension>]
   static member SortWith(series:Series<'K, 'V>, cmp: Comparer<'V>) = Series.sortWith (fun x y -> cmp.Compare(x, y)) series
 
+  /// <summary>
+  /// Returns a new series containing the dense rank of each value. The rank is 1-based:
+  /// the smallest value receives rank 1. Ties receive the same rank.
+  /// </summary>
+  [<Extension>]
+  static member Rank(series:Series<'K, 'V>) = Series.rank series
+
+  /// <summary>
+  /// Returns a new series containing the dense rank of each value, using the specified
+  /// comparer to determine ordering. The rank is 1-based. Ties receive the same rank.
+  /// </summary>
+  [<Extension>]
+  static member RankWith(series:Series<'K, 'V>, cmp: Comparer<'V>) =
+    Series.rankWith (fun x y -> cmp.Compare(x, y)) series
+
+  /// <summary>
+  /// Divides the series values into the specified number of equal-sized buckets numbered
+  /// 0 to <paramref name="groups"/> - 1. Bucket 0 contains the smallest values.
+  /// </summary>
+  [<Extension>]
+  static member Ntile(series:Series<'K, 'V>, groups: int) = Series.ntile groups series
+
   [<Extension>]
   static member ContainsKey(series:Series<'K, 'T>, key:'K) =
     series.TryGet(key).HasValue

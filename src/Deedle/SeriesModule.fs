@@ -1508,6 +1508,71 @@ module Series =
     series |> sortWith compare
 
   /// <summary>
+  /// Returns a new series containing the dense rank of each value in the original series.
+  /// The rank is 1-based: the smallest value receives rank 1, the next distinct value
+  /// receives rank 2, and so on. Equal values (ties) receive the same rank. Missing values
+  /// in the input are propagated as missing in the output.
+  /// </summary>
+  /// <param name="series">An input series to be ranked</param>
+  /// <category>Sorting and index manipulation</category>
+  [<CompiledName("Rank")>]
+  let rank (series: Series<'K, 'V>) : Series<'K, int> =
+    let rankMap =
+      series |> values |> Seq.distinct |> Seq.sort
+      |> Seq.mapi (fun i v -> v, i + 1)
+      |> Map.ofSeq
+    series |> mapValues (fun v -> rankMap.[v])
+
+  /// <summary>
+  /// Returns a new series containing the dense rank of each value in the original series,
+  /// using a custom comparison function to determine the ordering. The rank is 1-based:
+  /// the value that sorts first (lowest by the comparator) receives rank 1. Values that
+  /// compare as equal by the comparator receive the same rank. Missing values in the input
+  /// are propagated as missing in the output.
+  /// </summary>
+  /// <param name="comparer">A comparison function that returns a negative integer when the
+  /// first argument is smaller, zero when equal, and a positive integer when greater.</param>
+  /// <param name="series">An input series to be ranked</param>
+  /// <category>Sorting and index manipulation</category>
+  [<CompiledName("RankWith")>]
+  let rankWith (comparer: 'V -> 'V -> int) (series: Series<'K, 'V>) : Series<'K, int> =
+    let sorted =
+      series |> values |> Seq.toArray |> Array.sortWith comparer
+    let mutable currentRank = 1
+    let pairs =
+      sorted |> Array.mapi (fun i v ->
+        if i > 0 && comparer sorted.[i-1] v <> 0 then
+          currentRank <- i + 1
+        (v, currentRank))
+    series |> mapValues (fun v ->
+      pairs |> Array.find (fun (sv, _) -> comparer sv v = 0) |> snd)
+
+  /// <summary>
+  /// Divides the values of the series into <paramref name="groups"/> equal-sized buckets
+  /// numbered 0 to <c>groups - 1</c>. Bucket 0 contains the smallest values and bucket
+  /// <c>groups - 1</c> contains the largest. When the series length is not evenly divisible
+  /// by <paramref name="groups"/>, earlier buckets receive one extra element. Missing values
+  /// in the input are propagated as missing in the output.
+  /// </summary>
+  /// <param name="groups">The number of buckets. Must be a positive integer.</param>
+  /// <param name="series">An input series to be divided into buckets</param>
+  /// <category>Sorting and index manipulation</category>
+  [<CompiledName("Ntile")>]
+  let ntile (groups: int) (series: Series<'K, 'V>) : Series<'K, int> =
+    if groups <= 0 then invalidArg "groups" "Number of groups must be positive"
+    let sortedKeys =
+      series |> observations |> Seq.sortBy snd |> Seq.map fst |> Seq.toArray
+    let len = sortedKeys.Length
+    if len = 0 then series |> map (fun _ _ -> 0)
+    else
+    let chunkSize = ceil (float len / float groups)
+    let bucketByKey =
+      sortedKeys
+      |> Array.mapi (fun i k -> k, min (int (float i / chunkSize)) (groups - 1))
+      |> dict
+    series |> map (fun k _ -> bucketByKey.[k])
+
+  /// <summary>
   /// Returns a new series, containing the observations of the original series in a reverse order.
   /// </summary>
   /// <category>Sorting and index manipulation</category>

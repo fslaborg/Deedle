@@ -1078,6 +1078,19 @@ module Frame =
     let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder newRowIndex.AddressingScheme rowCmd)
     Frame<_, _>(newRowIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
+  /// <summary>
+  /// Returns a series containing the dense rank of each row in the data frame, ordered
+  /// by the values in the specified column. The rank is 1-based: the row with the smallest
+  /// column value receives rank 1. Rows with equal values receive the same rank. Rows where
+  /// the specified column has a missing value receive a missing rank.
+  /// </summary>
+  /// <param name="colKey">The column to rank by</param>
+  /// <param name="frame">The input data frame</param>
+  /// <category>Sorting and index manipulation</category>
+  [<CompiledName("RankRowsBy")>]
+  let rankRowsBy colKey (frame: Frame<'R, 'C>) : Series<'R, int> =
+    frame.GetColumn(colKey) |> Series.rank
+
   /// Returns a data frame that contains the same data as the input,
   /// but whose columns are an ordered series. This allows using operations that are
   /// only available on indexed series such as alignment and inexact lookup.
