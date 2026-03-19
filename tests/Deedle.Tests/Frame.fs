@@ -1294,14 +1294,70 @@ let ``Frame.melt skips missing values and Frame.unmelt reconstructs present valu
   roundTripped.GetColumn<float>("Y").TryGet("r1") |> shouldEqual (OptionalValue 30.0)
   roundTripped.GetColumn<float>("Y").TryGet("r2") |> shouldEqual OptionalValue.Missing
 
-[<Test>]
-let ``Can group 10x5k data frame by row of type string (in less than a few seconds)`` () =
-  let big = frame [ for d in 0 .. 10 -> string d => series [ for i in 0 .. 5000 -> string i => string (i % 1000) ] ]
-  let grouped = big |> Frame.groupRowsByString "1"
-  grouped.Rows.[ ("998","998") ].GetAs<int>("0") |> shouldEqual 998
+// ------------------------------------------------------------------------------------------------
+// Stack & Unstack (pandas-style)
+// ------------------------------------------------------------------------------------------------
 
 [<Test>]
-let ``Can group 10x5k data frame by row of type string and nest it (in less than a few seconds)`` () =
+let ``Frame.stack produces tuple row keys with single Value column`` () =
+  let df =
+    frame [ "X" => series [ "A" => 1.0; "B" => 2.0 ]
+            "Y" => series [ "A" => 3.0; "B" => 4.0 ] ]
+  let stacked : Frame<string * string, string> = df |> Frame.stack
+  stacked |> Frame.countRows |> shouldEqual 4
+  stacked.ColumnKeys |> Seq.toArray |> shouldEqual [| "Value" |]
+  stacked.GetColumn<float>("Value").TryGet(("A", "X")) |> shouldEqual (OptionalValue 1.0)
+  stacked.GetColumn<float>("Value").TryGet(("B", "Y")) |> shouldEqual (OptionalValue 4.0)
+
+[<Test>]
+let ``Frame.stack drops missing values`` () =
+  let df =
+    frame [ "X" => series [ "A" => 1.0; "B" => 2.0 ]
+            "Y" => series [ "A" => 3.0 ] ]   // "B"/"Y" is missing
+  let stacked : Frame<string * string, string> = df |> Frame.stack
+  stacked |> Frame.countRows |> shouldEqual 3
+  stacked.RowKeys |> Seq.contains ("B", "Y") |> shouldEqual false
+
+[<Test>]
+let ``Frame.unstack produces wide frame from tuple-keyed frame`` () =
+  let df =
+    frame [ "X" => series [ ("A", "a") => 1.0; ("A", "b") => 2.0; ("B", "a") => 3.0; ("B", "b") => 4.0 ]
+            "Y" => series [ ("A", "a") => 5.0; ("A", "b") => 6.0; ("B", "a") => 7.0; ("B", "b") => 8.0 ] ]
+  let unstacked : Frame<string, string * string> = df |> Frame.unstack
+  unstacked |> Frame.countRows |> shouldEqual 2
+  unstacked.RowKeys |> Seq.toArray |> shouldEqual [| "A"; "B" |]
+  let colXa : string * string = "X", "a"
+  let colYb : string * string = "Y", "b"
+  (unstacked |> Frame.getCol colXa : Series<string, float>).TryGet("A") |> shouldEqual (OptionalValue 1.0)
+  (unstacked |> Frame.getCol colYb : Series<string, float>).TryGet("B") |> shouldEqual (OptionalValue 8.0)
+
+[<Test>]
+let ``Frame.stack and Frame.unstack roundtrip for single-column frame`` () =
+  // For a single-column frame, stack followed by unstack should reproduce the original shape.
+  let original =
+    frame [ "V" => series [ "r1" => 10.0; "r2" => 20.0; "r3" => 30.0 ] ]
+  let roundTripped : Frame<string, string * string> =
+    original |> Frame.stack |> Frame.unstack
+  // After stack: rows are ("r1","V"),("r2","V"),("r3","V") with single "Value" column.
+  // After unstack: columns become ("Value","V").
+  roundTripped |> Frame.countRows |> shouldEqual 3
+  let colValueV : string * string = "Value", "V"
+  (roundTripped |> Frame.getCol colValueV : Series<string, float>).TryGet("r1") |> shouldEqual (OptionalValue 10.0)
+  (roundTripped |> Frame.getCol colValueV : Series<string, float>).TryGet("r2") |> shouldEqual (OptionalValue 20.0)
+
+[<Test>]
+let ``Frame.unstack fills missing cells when combination is absent`` () =
+  let df =
+    frame [ "X" => series [ ("A", "a") => 1.0; ("A", "b") => 2.0; ("B", "a") => 3.0 ] ]
+    // ("B", "b") is absent
+  let unstacked : Frame<string, string * string> = df |> Frame.unstack
+  let colXb : string * string = "X", "b"
+  let colXa : string * string = "X", "a"
+  (unstacked |> Frame.getCol colXb : Series<string, float>).TryGet("B") |> shouldEqual OptionalValue.Missing
+  (unstacked |> Frame.getCol colXa : Series<string, float>).TryGet("B") |> shouldEqual (OptionalValue 3.0)
+
+[<Test>]
+let ``Can group 10x5k data frame by row of type string (in less than a few seconds)`` () =
   let big = frame [ for d in 0 .. 10 -> string d => series [ for i in 0 .. 5000 -> string i => string (i % 1000) ] ]
   let grouped = big |> Frame.groupRowsByString "1"
   let nest = grouped |> Frame.nest

@@ -65,7 +65,13 @@ namespace Deedle
 ///
 /// The `melt` and `unmelt` functions turn the data frame into a single data frame
 /// containing columns `Row`, `Column` and `Value` containing the data of the original
-/// frame; `melt` can be used to turn this representation back into an original frame.
+/// frame; `unmelt` can be used to turn this representation back into an original frame.
+///
+/// The `stack` and `unstack` functions implement pandas-style reshape operations.
+/// `stack` converts `Frame&lt;'R,'C&gt;` to a long-format `Frame&lt;'R*'C, string&gt;` where each
+/// cell becomes a row keyed by `(rowKey, colKey)` with a single `"Value"` column.
+/// `unstack` promotes the inner row-key level to column keys, producing
+/// `Frame&lt;'R1, 'C*'R2&gt;` from `Frame&lt;'R1*'R2,'C&gt;`.
 ///
 /// A simple windowing functions that are exposed for an entire frame operations are
 /// `window` and `windowInto`. For more complex windowing operations, you currently have
@@ -816,19 +822,10 @@ module Frame =
       |> Vector.ofValues
     Frame(outputRowIndex, outputColIndex, outputData, frame.IndexBuilder, frame.VectorBuilder)
 
-  /// Returns a data frame with three columns named `Row`, `Column`
-  /// and `Value` that contains the data of the original data frame
-  /// in individual rows.
-  ///
-  /// <category>Grouping, windowing and chunking</category>
-  [<Obsolete("The Frame.Stack method has been renamed to Frame.Melt")>]
-  [<CompiledName("Stack")>]
-  let stack (frame:Frame<'R, 'C>) = melt frame
-
   /// <summary>
-  /// This function is the opposite of `melt`. It takes a data frame
-  /// with three columns named `Row`, `Column` and `Value` and reconstructs
-  /// a data frame by using `Row` and `Column` as row and column index keys,
+  /// This function is the opposite of <c>melt</c>. It takes a data frame
+  /// with three columns named <c>Row</c>, <c>Column</c> and <c>Value</c> and reconstructs
+  /// a data frame by using <c>Row</c> and <c>Column</c> as row and column index keys,
   /// respectively.
   /// </summary>
   /// <category>Grouping, windowing and chunking</category>
@@ -840,15 +837,75 @@ module Frame =
       (fun row -> row.GetAs<obj>("Value"))
 
   /// <summary>
-  /// This function is the opposite of `stack`. It takes a data frame
-  /// with three columns named `Row`, `Column` and `Value` and reconstructs
-  /// a data frame by using `Row` and `Column` as row and column index keys,
-  /// respectively.
+  /// Converts a data frame to a long-format frame by combining the row index and the
+  /// column index into a 2-tuple row index. Each cell of the original frame becomes a row
+  /// in the result keyed by <c>(rowKey, columnKey)</c>, with a single column named
+  /// <c>"Value"</c>. Missing values are dropped.
   /// </summary>
+  /// <remarks>
+  /// This is the pandas-style <c>DataFrame.stack()</c> operation. The inverse operation
+  /// is <c>Frame.unstack</c>. To keep row/column keys in separate named columns instead,
+  /// use <c>Frame.melt</c>.
+  /// </remarks>
   /// <category>Grouping, windowing and chunking</category>
-  [<Obsolete("The Frame.UnStack method has been renamed to Frame.Unmelt")>]
-  [<CompiledName("UnStack")>]
-  let unstack (frame:Frame<'O, string>) : Frame<'R, 'C> = unmelt frame
+  [<CompiledName("Stack")>]
+  let stack (frame: Frame<'R, 'C>) : Frame<'R * 'C, string> =
+    let rowKeys = frame.RowIndex.Keys
+    let colKeys = frame.ColumnIndex.Keys
+    let tupleKeys = ResizeArray<'R * 'C>()
+    let valVec    = ResizeArray<obj>()
+    for rowKey in rowKeys do
+      for colKey in colKeys do
+        let vec = frame.Data.GetValue(frame.ColumnIndex.Locate(colKey))
+        if vec.HasValue then
+          let value = vec.Value.GetObject(frame.RowIndex.Locate(rowKey))
+          if value.HasValue then
+            tupleKeys.Add((rowKey, colKey))
+            valVec.Add(value.Value)
+    let valTyp =
+      frame.Data.DataSequence
+      |> Seq.choose (fun dt -> if dt.HasValue then Some dt.Value.ElementType else None)
+      |> VectorHelpers.findCommonSupertype
+    let rowIndex = Index.ofKeys (tupleKeys.ToArray())
+    let colIndex = Index.ofKeys [| "Value" |]
+    let data =
+      [ VectorHelpers.createTypedVector frame.VectorBuilder valTyp (valVec.ToArray()) ]
+      |> Vector.ofValues
+    Frame(rowIndex, colIndex, data, frame.IndexBuilder, frame.VectorBuilder)
+
+  /// <summary>
+  /// Converts a data frame with a 2-tuple row index into a wide-format frame by promoting
+  /// the inner (second) element of each row key to the column index. The resulting frame has
+  /// row keys equal to the unique first tuple elements and column keys of the form
+  /// <c>(originalColumnKey, innerRowKey)</c>. Cells with no corresponding entry in the
+  /// input are represented as missing values.
+  /// </summary>
+  /// <remarks>
+  /// This is the pandas-style <c>DataFrame.unstack()</c> operation and is the inverse of
+  /// <c>Frame.stack</c> (modulo column-key wrapping when the input has more than one column).
+  /// </remarks>
+  /// <category>Grouping, windowing and chunking</category>
+  [<CompiledName("Unstack")>]
+  let unstack (frame: Frame<'R1 * 'R2, 'C>) : Frame<'R1, 'C * 'R2> =
+    let r1Keys = frame.RowIndex.Keys |> Seq.map fst |> Seq.distinct |> Array.ofSeq
+    let r2Keys = frame.RowIndex.Keys |> Seq.map snd |> Seq.distinct |> Array.ofSeq
+    let cKeys  = frame.ColumnIndex.Keys |> Array.ofSeq
+    let newRowIndex = Index.ofKeys r1Keys
+    let newColIndex = Index.ofKeys [| for c in cKeys do for r2 in r2Keys do yield (c, r2) |]
+    let vectors =
+      [| for c in cKeys do
+           let colAddr    = frame.ColumnIndex.Locate(c)
+           let colDataOpt = frame.Data.GetValue(colAddr)
+           for r2 in r2Keys do
+             let optValues =
+               r1Keys |> Array.map (fun r1 ->
+                 if not colDataOpt.HasValue then OptionalValue.Missing
+                 else
+                   let rowLookup = frame.RowIndex.Lookup((r1, r2), Lookup.Exact, fun _ -> true)
+                   if not rowLookup.HasValue then OptionalValue.Missing
+                   else colDataOpt.Value.GetObject(snd rowLookup.Value))
+             yield frame.VectorBuilder.CreateMissing(optValues) :> IVector |]
+    Frame(newRowIndex, newColIndex, Vector.ofValues vectors, frame.IndexBuilder, frame.VectorBuilder)
 
   // ----------------------------------------------------------------------------------------------
   // Sorting and index manipulation

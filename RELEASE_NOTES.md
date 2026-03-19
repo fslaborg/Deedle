@@ -1,5 +1,15 @@
 # Release Notes
 
+## 4.0.0-alpha-002 - 2026-03-19
+
+- **Breaking change**: `Frame.stack` and `Frame.unstack` now implement pandas-style
+  reshape operations. `stack` converts `Frame<'R,'C>` to a long-format
+  `Frame<'R*'C, string>` (tuple row keys, single `"Value"` column). `unstack` converts
+  `Frame<'R1*'R2,'C>` to wide-format `Frame<'R1, 'C*'R2>` by promoting the inner row-key
+  level to column keys.
+- The old denormalised-table operations previously called `stack`/`unstack` were already
+  renamed to `melt`/`unmelt` in an earlier release; the obsolete aliases are now removed.
+
 ## 4.0.0-alpha-001 - 2026-03-09
 
 - Migrate to .NET 9
