@@ -17,8 +17,11 @@
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <DebugType>embedded</DebugType>
-    <!-- Deterministic build in CI for reproducible output -->
-    <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
+    <!-- Deterministic build in CI for reproducible output.
+         Excluded from test projects because they use __SOURCE_DIRECTORY__ to locate test data files
+         at runtime; ContinuousIntegrationBuild normalises those paths to non-existent deterministic
+         paths (e.g. D:\_) which causes DirectoryNotFoundException at test time. -->
+    <ContinuousIntegrationBuild Condition="'$(CI)' == 'true' AND !$(MSBuildProjectDirectory.Replace('\', '/').Contains('/tests/'))">true</ContinuousIntegrationBuild>
   </PropertyGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)README.md" Pack="true" PackagePath="\" />
