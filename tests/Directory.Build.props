@@ -1,0 +1,12 @@
+<Project>
+  <!-- Import the root Directory.Build.props so all root settings apply -->
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+
+  <!-- Disable deterministic path remapping for test projects.
+       ContinuousIntegrationBuild=true rewrites __SOURCE_DIRECTORY__ to /_/…
+       at compile time, which breaks tests that use __SOURCE_DIRECTORY__ to
+       locate test-data files at runtime. -->
+  <PropertyGroup>
+    <ContinuousIntegrationBuild>false</ContinuousIntegrationBuild>
+  </PropertyGroup>
+</Project>
