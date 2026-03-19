@@ -915,8 +915,20 @@ module Frame =
   /// <param name="frame">Source data frame whose row index is to be replaced.</param>
   /// <param name="column">The name of a column in the original data frame that will be used for the new index. Note that the values in the column need to be unique.</param>
   /// <category>Sorting and index manipulation</category>
+  [<Obsolete("Use Frame.indexRowsDateTime instead.")>]
   [<CompiledName("IndexRowsByDateTime")>]
   let indexRowsDate column (frame:Frame<'R1, 'C>) : Frame<DateTime, _> = indexRows column frame
+
+  /// <summary>
+  /// Returns a data frame whose rows are indexed based on the specified column of the original
+  /// data frame. This function casts (or converts) the column key to values of type `DateTime`
+  /// (a generic variant that may require some type annotation is `Frame.indexRows`)
+  /// The specified column is removed from the resulting frame.
+  /// </summary>
+  /// <param name="frame">Source data frame whose row index is to be replaced.</param>
+  /// <param name="column">The name of a column in the original data frame that will be used for the new index. Note that the values in the column need to be unique.</param>
+  /// <category>Sorting and index manipulation</category>
+  let indexRowsDateTime column (frame:Frame<'R1, 'C>) : Frame<DateTime, _> = indexRows column frame
 
   /// <summary>
   /// Returns a data frame whose rows are indexed based on the specified column of the original
@@ -927,8 +939,20 @@ module Frame =
   /// <param name="frame">Source data frame whose row index is to be replaced.</param>
   /// <param name="column">The name of a column in the original data frame that will be used for the new index. Note that the values in the column need to be unique.</param>
   /// <category>Sorting and index manipulation</category>
+  [<Obsolete("Use Frame.indexRowsDateTimeOffset instead.")>]
   [<CompiledName("IndexRowsByDateTimeOffset")>]
   let indexRowsDateOffs column (frame:Frame<'R1, 'C>) : Frame<DateTimeOffset, _> = indexRows column frame
+
+  /// <summary>
+  /// Returns a data frame whose rows are indexed based on the specified column of the original
+  /// data frame. This function casts (or converts) the column key to values of type `DateTimeOffset`
+  /// (a generic variant that may require some type annotation is `Frame.indexRows`)
+  /// The specified column is removed from the resulting frame.
+  /// </summary>
+  /// <param name="frame">Source data frame whose row index is to be replaced.</param>
+  /// <param name="column">The name of a column in the original data frame that will be used for the new index. Note that the values in the column need to be unique.</param>
+  /// <category>Sorting and index manipulation</category>
+  let indexRowsDateTimeOffset column (frame:Frame<'R1, 'C>) : Frame<DateTimeOffset, _> = indexRows column frame
 
   /// <summary>
   /// Returns a data frame whose rows are indexed based on the specified column of the original
