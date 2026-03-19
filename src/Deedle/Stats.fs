@@ -10,8 +10,6 @@ open Deedle.Internal
 // type. We put all the public functionality in a type to allow overloading.
 // ------------------------------------------------------------------------------------
 
-// TODO: still to do, possibly: median, percentile
-
 /// <exclude />
 module StatsInternal =
   // ------------------------------------------------------------------------------------
@@ -187,6 +185,32 @@ module StatsInternal =
         res.Add(snd q.First)
       else
         res.Add(if q.IsEmpty then nan else snd q.First)
+    res.ToArray()
+
+  // ------------------------------------------------------------------------------------
+  // Implementation internals - moving median
+  // ------------------------------------------------------------------------------------
+
+  /// Moving median calculator using a circular buffer.
+  /// Yields nan for the first winSize-1 elements (incomplete windows).
+  let movingMedianHelper winSize (source: seq<float opt>) =
+    let res = ResizeArray<float>()
+    let window : float opt [] = Array.create winSize OptionalValue.Missing
+    let mutable i = 0
+    for v in source do
+      window.[i % winSize] <- v
+      i <- i + 1
+      if i >= winSize then
+        let vals =
+          window
+          |> Array.choose (function OptionalValue.Present x -> Some x | _ -> None)
+          |> Array.sort
+        let n = vals.Length
+        if n = 0 then res.Add(nan)
+        elif n % 2 = 1 then res.Add(vals.[n/2])
+        else res.Add((vals.[n/2-1] + vals.[n/2]) / 2.0)
+      else
+        res.Add(nan)
     res.ToArray()
 
   // ------------------------------------------------------------------------------------
@@ -476,6 +500,17 @@ type Stats =
   static member inline movingMax size (series:Series<'K, 'V>) : Series<'K, float> =
     applySeriesProj (movingMinMaxHelper size (<=)) (series |> Series.mapValues toFloat)
 
+  /// Returns a series that contains median over a moving window of the specified size.
+  /// The first `size-1` elements of the returned series are always missing; if the
+  /// entire window contains missing values, the result is also missing.
+  /// Throws a `FormatException` or an `InvalidCastException` if the value type of the series
+  /// is not convertible to floating point number.
+  ///
+  /// <category>Moving windows</category>
+  static member inline movingMedian size (series:Series<'K, 'V>) : Series<'K, float> =
+    if size <= 0 then invalidArg "windowSize" "Window must be positive"
+    applySeriesProj (movingMedianHelper size) (series |> Series.mapValues toFloat)
+
   // ------------------------------------------------------------------------------------
   // Public - expanding window functions
   // ------------------------------------------------------------------------------------
@@ -587,6 +622,29 @@ type Stats =
         | OptionalValue.Present x -> if System.Double.IsNaN(m) then m <- x else m <- max x m
         | OptionalValue.Missing -> ()
         res.Add(m)
+      res.ToArray()
+    applySeriesProj calcSparse (series |> Series.mapValues toFloat)
+
+  /// Returns a series that contains median over an expanding window. The value
+  /// for a key _k_ in the returned series is the median from all elements with
+  /// smaller keys.
+  /// Throws a `FormatException` or an `InvalidCastException` if the value type of the series
+  /// is not convertible to floating point number.
+  ///
+  /// <category>Expanding windows</category>
+  static member inline expandingMedian (series:Series<'K, 'V>) : Series<'K, float> =
+    let calcSparse (source: float opt seq) =
+      let res = ResizeArray<float>()
+      let values = ResizeArray<float>()
+      for v in source do
+        match v with
+        | OptionalValue.Present x -> values.Add(x)
+        | OptionalValue.Missing -> ()
+        let sorted = values.ToArray() |> Array.sort
+        let n = sorted.Length
+        if n = 0 then res.Add(nan)
+        elif n % 2 = 1 then res.Add(sorted.[n/2])
+        else res.Add((sorted.[n/2-1] + sorted.[n/2]) / 2.0)
       res.ToArray()
     applySeriesProj calcSparse (series |> Series.mapValues toFloat)
 
