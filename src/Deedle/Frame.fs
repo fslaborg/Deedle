@@ -1701,22 +1701,59 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   /// <category>Windowing, chunking and grouping</category>
   member frame.AggregateRowsBy(groupBy:seq<_>, aggBy:seq<_>, aggFunc:Func<_,_>) =
     let keySet = HashSet(groupBy)
-    let filterFunc k = keySet.Contains(k)
-    let grpKeys = frame.ColumnKeys |> Seq.filter filterFunc
-    let nKeys = grpKeys |> Seq.length
+    let grpKeys = frame.ColumnKeys |> Seq.filter keySet.Contains |> Array.ofSeq
+    let nKeys = grpKeys.Length
     if nKeys = 0 then invalidOp "GroupBy columns do not exist in the data frame"
-    let labels =
-      let columns =
-        frame.Columns.[grpKeys].ValuesAll
-        |> Array.ofSeq
-        |> Array.map(fun v -> v.ValuesAll |> Array.ofSeq)
-      // transpose columns arrays
-      Array.init frame.RowCount (fun i -> Array.init nKeys (fun j -> columns.[j].[i]))
-    let nested = frame.NestRowsBy(labels)
-    nested
-    |> Series.map (fun _ f -> [for c in aggBy -> (c, aggFunc.Invoke(f.GetColumn<_>(c)) |> box)] )
-    |> Series.map (fun k v -> v |> Seq.append (k |> Seq.zip grpKeys) |> Series.ofObservations)
-    |> Series.indexOrdinally
+
+    // Extract group-by columns as obj arrays for O(1) positional access
+    let grpColumns =
+      grpKeys |> Array.map (fun k -> frame.GetColumn<obj>(k).ValuesAll |> Array.ofSeq)
+
+    // Single scan: build ordered groups using structural equality on obj[] labels.
+    // HashIdentity.Structural provides element-wise equality for obj[] keys.
+    let structComparer = Microsoft.FSharp.Collections.HashIdentity.Structural<obj[]>
+    let groupLabels  = ResizeArray<obj[]>()
+    let groupOffsets = ResizeArray<ResizeArray<int>>()
+    let groupIndex   = Dictionary<obj[], int>(structComparer)
+
+    for i = 0 to frame.RowCount - 1 do
+      let label = Array.init nKeys (fun j -> grpColumns.[j].[i])
+      match groupIndex.TryGetValue(label) with
+      | true, idx -> groupOffsets.[idx].Add(i)
+      | false, _ ->
+        let idx = groupLabels.Count
+        groupLabels.Add(label)
+        groupOffsets.Add(ResizeArray<int>([i]))
+        groupIndex.[label] <- idx
+
+    let nGroups = groupLabels.Count
+
+    // For each aggregate column, extract values for each group directly from the
+    // source column — avoiding per-group sub-frame construction used by NestRowsBy.
+    let aggByArr = Seq.toArray aggBy
+    let aggResults =
+      aggByArr |> Array.map (fun c ->
+        let col = frame.GetColumn<_>(c)
+        Array.init nGroups (fun g ->
+          let offsets = groupOffsets.[g]
+          let subKeys = Array.init offsets.Count (fun j -> col.GetKeyAt(offsets.[j]))
+          let subVals = Array.init offsets.Count (fun j -> col.TryGetAt(offsets.[j]))
+          let subSeries =
+            Series(Index.ofKeys (ReadOnlyCollection.ofArray subKeys),
+                   Vector.ofOptionalValues subVals,
+                   col.VectorBuilder, col.IndexBuilder)
+          aggFunc.Invoke(subSeries) |> box))
+
+    // Assemble one ObjectSeries<'C> per group (same shape as the original fromRows path)
+    // so that fromRows can infer correct column types from witness values.
+    let rows =
+      Array.init nGroups (fun g ->
+        let grpEntries = grpKeys |> Seq.mapi (fun j k -> k, groupLabels.[g].[j])
+        let aggEntries = aggByArr |> Seq.mapi (fun ci c -> c, aggResults.[ci].[g])
+        Seq.append grpEntries aggEntries |> Series.ofObservations)
+
+    rows
+    |> Series.ofValues
     |> FrameUtils.fromRows frame.IndexBuilder frame.VectorBuilder
 
   /// <summary>
