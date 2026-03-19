@@ -16,6 +16,8 @@ nuget NUnit3TestAdapter
 nuget Microsoft.CSharp
 nuget NetOfficeFw.Core
 nuget NetOfficeFw.Excel
+nuget ExcelDataReader
+nuget ExcelDataReader.DataSet
 
 group interactive
     source https://api.nuget.org/v3/index.json
