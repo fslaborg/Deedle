@@ -16,6 +16,7 @@ nuget NUnit3TestAdapter
 nuget Microsoft.CSharp
 nuget NetOfficeFw.Core
 nuget NetOfficeFw.Excel
+nuget Microsoft.ML
 
 group interactive
     source https://api.nuget.org/v3/index.json
