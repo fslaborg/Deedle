@@ -282,6 +282,52 @@ type SeriesExtensions =
   [<Extension>]
   static member Ntile(series:Series<'K, 'V>, groups: int) = Series.ntile groups series
 
+  /// <summary>
+  /// Align two series using inner join and exact key matching, and combine
+  /// matching values using the provided function. Keys that are present in
+  /// only one of the series are dropped (inner-join semantics). This is a
+  /// convenience alternative to the arithmetic operators for series with custom
+  /// element types that have their own operators defined.
+  /// </summary>
+  /// <param name="series1">The first series to combine.</param>
+  /// <param name="series2">The second series to combine with.</param>
+  /// <param name="op">A function that combines corresponding values.</param>
+  [<Extension>]
+  static member ZipInto(series1:Series<'K,'V1>, series2:Series<'K,'V2>, op:Func<'V1,'V2,'R>) : Series<'K,'R> =
+    Series.zipInto (fun v1 v2 -> op.Invoke(v1, v2)) series1 series2
+
+  /// <summary>
+  /// Align two series using the specified join kind and key lookup, and combine
+  /// matching values using the provided function. When either value is missing
+  /// (outer-join key present in only one series), the corresponding
+  /// <see cref="OptionalValue{T}"/> will have <c>HasValue = false</c>. Return
+  /// an <c>OptionalValue</c> with <c>HasValue = false</c> to produce a missing
+  /// value in the result.
+  /// </summary>
+  /// <param name="series1">The first series to align and combine.</param>
+  /// <param name="series2">The second series to align and combine.</param>
+  /// <param name="op">A function receiving optional values for each key; return an empty <c>OptionalValue</c> to produce a missing value.</param>
+  /// <param name="kind">Specifies the join kind (inner, outer, left, right).</param>
+  /// <param name="lookup">Specifies how keys are looked up in ordered series.</param>
+  [<Extension>]
+  static member ZipAlignInto(series1:Series<'K,'V1>, series2:Series<'K,'V2>, op:Func<OptionalValue<'V1>,OptionalValue<'V2>,OptionalValue<'R>>, kind:JoinKind, lookup:Lookup) : Series<'K,'R> =
+    Series.zipAlignInto kind lookup
+      (fun a b ->
+        let r = op.Invoke(OptionalValue.ofOption a, OptionalValue.ofOption b)
+        if r.HasValue then Some r.Value else None)
+      series1 series2
+
+  /// <summary>
+  /// Align two series using inner join and exact key matching. The result is a
+  /// series of tuples containing the values from both series for each shared key.
+  /// Keys that are present in only one of the series are dropped.
+  /// </summary>
+  /// <param name="series1">The first series to zip.</param>
+  /// <param name="series2">The second series to zip with.</param>
+  [<Extension>]
+  static member ZipInner(series1:Series<'K,'V1>, series2:Series<'K,'V2>) : Series<'K,'V1 * 'V2> =
+    Series.zipInner series1 series2
+
   [<Extension>]
   static member ContainsKey(series:Series<'K, 'T>, key:'K) =
     series.TryGet(key).HasValue
