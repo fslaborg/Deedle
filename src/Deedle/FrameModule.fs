@@ -1823,13 +1823,13 @@ module Frame =
   /// The join column is removed from the data columns of the result and becomes the row index.
   /// This is a convenience wrapper around <c>Frame.indexRows</c> followed by <c>Frame.join</c>.
   /// </summary>
-  /// <param name="colKey">The name of the column to join on. This column must exist in both frames and must have unique values.</param>
   /// <param name="kind">Specifies the joining behavior on row indices. Use <c>JoinKind.Outer</c> and <c>JoinKind.Inner</c> to get the union and intersection of the row keys, respectively. Use <c>JoinKind.Left</c> and <c>JoinKind.Right</c> to use the current key of the left/right data frame.</param>
+  /// <param name="colKey">The name of the column to join on. This column must exist in both frames and must have unique values.</param>
   /// <param name="frame1">First data frame (left) to be used in the joining.</param>
   /// <param name="frame2">Other frame (right) to be joined with <c>frame1</c>.</param>
   /// <category>Joining, merging and zipping</category>
   [<CompiledName("JoinOn")>]
-  let joinOn (colKey:'C) kind (frame1:Frame<'R1, 'C>) (frame2:Frame<'R2, 'C>) : Frame<'K, 'C> =
+  let joinOn kind (colKey:'C) (frame1:Frame<'R1, 'C>) (frame2:Frame<'R2, 'C>) : Frame<'K, 'C> =
     join kind (frame1 |> indexRows colKey) (frame2 |> indexRows colKey)
 
   /// <summary>
@@ -1837,13 +1837,13 @@ module Frame =
   /// in the specified column (the unique-key case). The join column becomes the row index of the
   /// result frame. This is the string-specialised variant of <c>Frame.joinOn</c>.
   /// </summary>
+  /// <param name="kind">Specifies the joining behavior on row indices. Use <c>JoinKind.Outer</c> and <c>JoinKind.Inner</c> to get the union and intersection of the row keys, respectively. Use <c>JoinKind.Left</c> and <c>JoinKind.Right</c> to use the current key of the left/right data frame.</param>
   /// <param name="colKey">The name of the column to join on.</param>
-  /// <param name="kind">Specifies the joining behavior on row indices.</param>
   /// <param name="frame1">First data frame (left).</param>
   /// <param name="frame2">Other frame (right).</param>
   /// <category>Joining, merging and zipping</category>
   [<CompiledName("JoinOnString")>]
-  let joinOnString (colKey:'C) kind (frame1:Frame<'R1, 'C>) (frame2:Frame<'R2, 'C>) : Frame<string, 'C> =
+  let joinOnString kind (colKey:'C) (frame1:Frame<'R1, 'C>) (frame2:Frame<'R2, 'C>) : Frame<string, 'C> =
     join kind (frame1 |> indexRowsString colKey) (frame2 |> indexRowsString colKey)
 
   /// <summary>
@@ -1851,13 +1851,13 @@ module Frame =
   /// in the specified column (the unique-key case). The join column becomes the row index of the
   /// result frame. This is the int-specialised variant of <c>Frame.joinOn</c>.
   /// </summary>
+  /// <param name="kind">Specifies the joining behavior on row indices. Use <c>JoinKind.Outer</c> and <c>JoinKind.Inner</c> to get the union and intersection of the row keys, respectively. Use <c>JoinKind.Left</c> and <c>JoinKind.Right</c> to use the current key of the left/right data frame.</param>
   /// <param name="colKey">The name of the column to join on.</param>
-  /// <param name="kind">Specifies the joining behavior on row indices.</param>
   /// <param name="frame1">First data frame (left).</param>
   /// <param name="frame2">Other frame (right).</param>
   /// <category>Joining, merging and zipping</category>
   [<CompiledName("JoinOnInt")>]
-  let joinOnInt (colKey:'C) kind (frame1:Frame<'R1, 'C>) (frame2:Frame<'R2, 'C>) : Frame<int, 'C> =
+  let joinOnInt kind (colKey:'C) (frame1:Frame<'R1, 'C>) (frame2:Frame<'R2, 'C>) : Frame<int, 'C> =
     join kind (frame1 |> indexRowsInt colKey) (frame2 |> indexRowsInt colKey)
 
   /// Append a sequence of data frames with non-overlapping values. The operation takes the union of
