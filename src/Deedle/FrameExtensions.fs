@@ -898,6 +898,19 @@ type FrameExtensions =
     frame |> Frame.indexRowsUsing f.Invoke
 
   /// <summary>
+  /// Returns a data frame whose rows are indexed based on the specified column of the original
+  /// data frame, with each index value transformed by the given function. The specified column
+  /// is removed from the resulting frame.
+  /// </summary>
+  /// <param name="frame">Source data frame whose row index is to be replaced.</param>
+  /// <param name="column">The name of the column to use as the new index.</param>
+  /// <param name="f">A function that converts each column value to the desired row key type.</param>
+  /// <category>Data structure manipulation</category>
+  [<Extension>]
+  static member IndexRowsApply(frame:Frame<'R, 'C>, column:'C, f:Func<'V,'R2>) =
+    frame |> Frame.indexRowsApply column f.Invoke
+
+  /// <summary>
   /// Replace the column index of the frame with the provided sequence of column keys.
   /// The columns of the frame are assigned keys according to the current order, or in a
   /// non-deterministic way, if the current column index is not ordered.

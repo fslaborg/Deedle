@@ -16,7 +16,7 @@ if (-not $NoTests) {
 dotnet pack Deedle.sln -c Release
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-$version = ([xml](Get-Content Directory.Build.props)).Project.PropertyGroup.Version
+$version = (Select-String -Path RELEASE_NOTES.md -Pattern '^## (\S+)' | Select-Object -First 1).Matches.Groups[1].Value
 # Don't fail the build if API doc generation fails
 dotnet fsdocs build --eval --parameters fsdocs-package-version $version
 if ($LASTEXITCODE -ne 0) { 

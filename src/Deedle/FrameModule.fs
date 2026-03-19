@@ -1352,6 +1352,27 @@ module Frame =
     Frame(newRowIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
   /// <summary>
+  /// Returns a data frame whose rows are indexed based on the specified column of the original
+  /// data frame, with each index value transformed by the given function. This is useful when
+  /// the column contains values that need to be converted or parsed into the desired key type
+  /// (for example, parsing date strings from a CSV file).
+  /// The specified column is removed from the resulting frame.
+  /// </summary>
+  /// <example>
+  ///   // Index by a "Date" string column, parsing each value as a DateTime
+  ///   frame |&gt; Frame.indexRowsApply "Date" System.DateTime.Parse
+  ///   // Index by an "Id" column, converting strings to integers
+  ///   frame |&gt; Frame.indexRowsApply "Id" int
+  /// </example>
+  /// <param name="column">The name of a column in the original data frame to use for the new index.</param>
+  /// <param name="f">A function that converts a column value to the desired row key type.</param>
+  /// <param name="frame">Source data frame whose row index is to be replaced.</param>
+  /// <category>Sorting and index manipulation</category>
+  [<CompiledName("IndexRowsApply")>]
+  let indexRowsApply column (f:'V -> 'R2) (frame:Frame<'R1,'C>) : Frame<'R2, _> =
+    frame |> indexRows column |> mapRowKeys f
+
+  /// <summary>
   /// Returns a new data frame containing only the columns of the input frame
   /// for which the specified predicate returns `true`. The predicate is called
   /// with the column key and object series that represents the column data.

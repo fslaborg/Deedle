@@ -2148,6 +2148,18 @@ let ``Indexing with a column drops the column from the frame by default``() =
   set actual.ColumnKeys |> shouldEqual <| set ["K"; "A"; "B"]
 
 [<Test>]
+let ``Frame.indexRowsApply indexes by column with transformation``() =
+  let sample =
+    [ "K" =?> series [ 1 => "10"; 2 => "20" ]
+      "A" =?> series [ 1 => 1.0; 2 => 2.0 ]
+      "B" =?> series [ 1 => 2.0; 2 => 3.0 ] ] |> frame
+  // Apply int parsing to the string "K" column
+  let actual = sample |> Frame.indexRowsApply "K" int
+  set actual.ColumnKeys |> shouldEqual <| set ["A"; "B"]
+  actual.RowKeys |> List.ofSeq |> shouldEqual [10; 20]
+  actual.GetColumn<float>("A") |> Series.values |> List.ofSeq |> shouldEqual [1.0; 2.0]
+
+[<Test>]
 let ``Can reindex ordinally``() =
   let actual =
     Frame.ofColumns [ "A" => series [ 1 => 1.0; 2 => 2.0 ];
