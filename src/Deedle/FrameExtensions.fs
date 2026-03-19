@@ -1297,6 +1297,29 @@ type FrameExtensions =
   static member SelectColumnKeys(frame:Frame<'TRowKey, 'TColumnKey>, projection) =
     frame.Columns.SelectKeys(projection) |> FrameUtils.fromColumns frame.IndexBuilder frame.VectorBuilder
 
+  /// <summary>
+  /// Builds a new series whose values are the results of applying the specified
+  /// function to each row of the data frame. The function receives the row key and
+  /// an <c>ObjectSeries</c> representing the row data.
+  /// </summary>
+  /// <param name="frame">The input data frame.</param>
+  /// <param name="f">A function called with the row key and row data series that returns the mapped value.</param>
+  [<Extension>]
+  static member MapRows(frame:Frame<'R, 'C>, f:Func<'R, ObjectSeries<'C>, 'V>): Series<'R, 'V> =
+    frame.Rows |> Series.map (fun r (row:ObjectSeries<'C>) -> f.Invoke(r, row))
+
+  /// <summary>
+  /// Builds a new data frame whose columns are the results of applying the specified
+  /// function to each column of the input data frame. The function receives the column
+  /// key and an <c>ObjectSeries</c> representing the column data and must return an
+  /// <c>ObjectSeries</c> of the same row index type.
+  /// </summary>
+  /// <param name="frame">The input data frame.</param>
+  /// <param name="f">A function called with the column key and column data series that returns the transformed column.</param>
+  [<Extension>]
+  static member MapCols(frame:Frame<'R, 'C>, f:Func<'C, ObjectSeries<'R>, ObjectSeries<'R>>): Frame<'R, 'C> =
+    frame.Columns |> Series.map (fun c (col:ObjectSeries<'R>) -> f.Invoke(c, col)) |> FrameUtils.fromColumns frame.IndexBuilder frame.VectorBuilder
+
   [<Extension>]
   static member Merge(frame:Frame<'TRowKey, 'TColumnKey>, rowKey, row) =
     frame.Merge(Frame.ofRows [ rowKey => row ])
