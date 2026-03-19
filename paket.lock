@@ -1,5 +1,10 @@
 NUGET
   remote: https://api.nuget.org/v3/index.json
+    ExcelDataReader (3.8)
+      System.ValueTuple (>= 4.5) - restriction: >= net462
+    ExcelDataReader.DataSet (3.8)
+      ExcelDataReader (>= 3.8) - restriction: || (>= net462) (>= netstandard2.0)
+      System.ValueTuple (>= 4.5) - restriction: >= net462
     FsCheck (3.3.2)
       FSharp.Core (>= 5.0.2) - restriction: >= netstandard2.0
     FSharp.Compiler.Service (43.10.103)

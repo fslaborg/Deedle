@@ -1,4 +1,4 @@
-Microsoft Visual Studio Solution File, Format Version 12.00
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32421.90
 MinimumVisualStudioVersion = 10.0.40219.1
@@ -24,8 +24,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "project", "project", "{B6AF
 		RELEASE_NOTES.md = RELEASE_NOTES.md
 	EndProjectSection
 EndProject
-
-
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Deedle.Excel", "src\Deedle.Excel\Deedle.Excel.fsproj", "{8C50057D-29EF-41AD-B91A-84B49CDBD047}"
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Deedle.Math", "src\Deedle.Math\Deedle.Math.fsproj", "{62ED9851-0A38-43DF-8C35-78F84EB13CB9}"
@@ -39,6 +37,14 @@ EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Deedle.Interactive", "src\Deedle.Interactive\Deedle.Interactive.fsproj", "{D71C0930-C2A3-4EDF-82A9-9EE6B431EC0D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Deedle.CSharp.Tests", "tests\Deedle.CSharp.Tests\Deedle.CSharp.Tests.csproj", "{B0584275-6E9D-4DB8-A35D-4F37B623F97E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{F4B0E327-78A9-4007-8DEE-74F2E880803A}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Deedle.Excel.Reader", "src\Deedle.Excel.Reader\Deedle.Excel.Reader.fsproj", "{EDF1025A-5190-41F9-A68A-532F8AFE3185}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{B4B13E8F-584F-4F77-A6E1-7649C990CBE5}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Deedle.Excel.Reader.Tests", "tests\Deedle.Excel.Reader.Tests\Deedle.Excel.Reader.Tests.fsproj", "{76702DFC-4680-4CBC-9DE9-CD891B72B4C6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -78,11 +84,21 @@ Global
 		{B0584275-6E9D-4DB8-A35D-4F37B623F97E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B0584275-6E9D-4DB8-A35D-4F37B623F97E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B0584275-6E9D-4DB8-A35D-4F37B623F97E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EDF1025A-5190-41F9-A68A-532F8AFE3185}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EDF1025A-5190-41F9-A68A-532F8AFE3185}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EDF1025A-5190-41F9-A68A-532F8AFE3185}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EDF1025A-5190-41F9-A68A-532F8AFE3185}.Release|Any CPU.Build.0 = Release|Any CPU
+		{76702DFC-4680-4CBC-9DE9-CD891B72B4C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{76702DFC-4680-4CBC-9DE9-CD891B72B4C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{76702DFC-4680-4CBC-9DE9-CD891B72B4C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{76702DFC-4680-4CBC-9DE9-CD891B72B4C6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{EDF1025A-5190-41F9-A68A-532F8AFE3185} = {F4B0E327-78A9-4007-8DEE-74F2E880803A}
+		{76702DFC-4680-4CBC-9DE9-CD891B72B4C6} = {B4B13E8F-584F-4F77-A6E1-7649C990CBE5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8478A9AB-3D08-49DF-BE6D-D01341EB3067}
