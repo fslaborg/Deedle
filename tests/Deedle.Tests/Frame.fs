@@ -1106,6 +1106,52 @@ let ``Frame.diff and Frame.shift correctly return empty frames`` () =
   single |> Frame.diff -1 |> shouldEqual <| empty
 
 [<Test>]
+let ``Frame.diff computes first difference on multi-column frame`` () =
+  let df =
+    frame [ "A" => series [ 1 => 10.0; 2 => 20.0; 3 => 15.0 ]
+            "B" => series [ 1 => 100.0; 2 => 150.0; 3 => 130.0 ] ]
+  let result = df |> Frame.diff 1
+  result |> Frame.countRows |> shouldEqual 2
+  result.["A"] |> Series.observations |> List.ofSeq |> shouldEqual [ 2, 10.0; 3, -5.0 ]
+  result.["B"] |> Series.observations |> List.ofSeq |> shouldEqual [ 2, 50.0; 3, -20.0 ]
+
+[<Test>]
+let ``Frame.diff with negative offset subtracts future values`` () =
+  let df =
+    frame [ "A" => series [ 1 => 10.0; 2 => 20.0; 3 => 15.0 ] ]
+  let result = df |> Frame.diff -1
+  result |> Frame.countRows |> shouldEqual 2
+  result.["A"] |> Series.observations |> List.ofSeq |> shouldEqual [ 1, -10.0; 2, 5.0 ]
+
+[<Test>]
+let ``Frame.diff propagates missing values`` () =
+  let df =
+    frame [ "A" => series [ 1 => 10.0; 2 => Double.NaN; 3 => 15.0 ] ]
+  let result = df |> Frame.diff 1
+  // row 2: NaN - 10 = NaN; row 3: 15 - NaN = NaN
+  let actual = result.["A"] |> Series.observationsAll |> List.ofSeq
+  actual |> List.map fst |> shouldEqual [2; 3]
+  actual |> List.forall (snd >> Option.isNone) |> shouldEqual true
+
+[<Test>]
+let ``Frame.shift moves values forward by offset`` () =
+  let df =
+    frame [ "A" => series [ 1 => 10.0; 2 => 20.0; 3 => 15.0 ]
+            "B" => series [ 1 => 1.0; 2 => 2.0; 3 => 3.0 ] ]
+  let result = df |> Frame.shift 1
+  result |> Frame.countRows |> shouldEqual 2
+  result.["A"] |> Series.observations |> List.ofSeq |> shouldEqual [ 2, 10.0; 3, 20.0 ]
+  result.["B"] |> Series.observations |> List.ofSeq |> shouldEqual [ 2, 1.0; 3, 2.0 ]
+
+[<Test>]
+let ``Frame.shift with negative offset moves values backward`` () =
+  let df =
+    frame [ "A" => series [ 1 => 10.0; 2 => 20.0; 3 => 15.0 ] ]
+  let result = df |> Frame.shift -1
+  result |> Frame.countRows |> shouldEqual 2
+  result.["A"] |> Series.observations |> List.ofSeq |> shouldEqual [ 1, 20.0; 2, 15.0 ]
+
+[<Test>]
 let ``Frame.pctChange computes percentage change on sample input`` () =
   let df = frame [ "A" => series [ 1 => 100.0; 2 => 110.0; 3 => 99.0 ]
                    "B" => series [ 1 => 50.0;  2 => 60.0;  3 => 45.0 ] ]
