@@ -1368,9 +1368,11 @@ type ObjectSeries<'K when 'K : equality> internal(index:IIndex<_>, vector, vecto
 
   member x.GetValues<'R>() = x.GetValues<'R>(ConversionKind.Safe)
 
+  [<RequiresExplicitTypeArguments>]
   member x.GetAs<'R>(column) : 'R =
     Convert.convertType<'R> ConversionKind.Flexible (x.Get(column))
 
+  [<RequiresExplicitTypeArguments>]
   member x.GetAs<'R>(column, fallback) : 'R =
     let address = index.Lookup(column, Lookup.Exact, fun _ -> true)
     match address with
@@ -1386,15 +1388,18 @@ type ObjectSeries<'K when 'K : equality> internal(index:IIndex<_>, vector, vecto
   member x.GetAtAs<'R>(index, conversionKind) : 'R =
     Convert.convertType<'R> conversionKind (x.GetAt(index))
 
+  [<RequiresExplicitTypeArguments>]
   member x.TryGetAs<'R>(column) : OptionalValue<'R> =
     x.TryGet(column) |> OptionalValue.map (fun v -> Convert.convertType<'R> ConversionKind.Flexible v)
 
+  [<RequiresExplicitTypeArguments>]
   member x.TryGetAs<'R>(column, conversionKind) : OptionalValue<'R> =
     x.TryGet(column) |> OptionalValue.map (fun v -> Convert.convertType<'R> conversionKind v)
 
   static member (?) (series:ObjectSeries<_>, name:string) =
     series.GetAs<float>(name, nan)
 
+  [<RequiresExplicitTypeArguments>]
   member x.TryAs<'R>(conversionKind) : OptionalValue<Series<_, 'R>> =
     VectorHelpers.tryConvertType conversionKind vector
     |> OptionalValue.map (fun vec ->
@@ -1403,6 +1408,7 @@ type ObjectSeries<'K when 'K : equality> internal(index:IIndex<_>, vector, vecto
 
   member x.TryAs<'R>() = x.TryAs<'R>(ConversionKind.Safe)
 
+  [<RequiresExplicitTypeArguments>]
   member x.As<'R>() =
     let newIndex = indexBuilder.Project(index)
     Series(newIndex, VectorHelpers.convertType<'R> ConversionKind.Flexible vector, vectorBuilder, indexBuilder)

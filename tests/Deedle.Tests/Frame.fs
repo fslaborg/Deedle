@@ -1809,7 +1809,7 @@ let ``indexRowsWith with more keys than rows produces missing values for extra r
   let dfi = df |> Frame.indexRowsWith [0..2]
   // Row 2 should exist with missing values
   dfi.RowCount |> shouldEqual 3
-  dfi.TryGetRow(2).HasValue |> shouldEqual true
+  dfi.TryGetRow<obj>(2).HasValue |> shouldEqual true
   dfi?Value1.TryGet(2).HasValue |> shouldEqual false
   // fillMissingWith should fill the missing row without throwing
   let filled = dfi |> Frame.fillMissingWith 0.0

@@ -564,6 +564,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   /// </summary>
   /// <param name="rowKey">Specifies the key of the row to be returned</param>
   /// <category>Accessors and slicing</category>
+  [<RequiresExplicitTypeArguments>]
   member frame.TryGetRow<'T>(rowKey) : OptionalValue<Series<_, 'T>> =
     let rowAddress = rowIndex.Locate(rowKey)
     if rowAddress = Address.invalid then OptionalValue.Missing
@@ -580,6 +581,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   /// <param name="rowKey">Specifies the key of the row to be returned</param>
   /// <param name="lookup">Specifies how to find value in a frame with ordered rows when the key does not exactly match (look for nearest available value with the smaller/greater key).</param>
   /// <category>Accessors and slicing</category>
+  [<RequiresExplicitTypeArguments>]
   member frame.TryGetRow<'T>(rowKey, lookup) : OptionalValue<Series<_, 'T>> =
     let rowAddress = rowIndex.Lookup(rowKey, lookup, fun _ -> true)
     if not rowAddress.HasValue then OptionalValue.Missing
@@ -594,7 +596,8 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   /// </summary>
   /// <param name="rowKey">Specifies the key of the row to be returned</param>
   /// <category>Accessors and slicing</category>
-  member frame.GetRow<'T>(rowKey) : Series<_, 'T> = frame.TryGetRow(rowKey).Value
+  [<RequiresExplicitTypeArguments>]
+  member frame.GetRow<'T>(rowKey) : Series<_, 'T> = frame.TryGetRow<'T>(rowKey).Value
 
   /// <summary>
   /// Returns a row with the specieifed key. This method is generic and returns the result
@@ -604,7 +607,8 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   /// <param name="rowKey">Specifies the key of the row to be returned</param>
   /// <param name="lookup">Specifies how to find value in a frame with ordered rows when the key does not exactly match (look for nearest available value with the smaller/greater key).</param>
   /// <category>Accessors and slicing</category>
-  member frame.GetRow<'T>(rowKey, lookup) : Series<_, 'T> =  frame.TryGetRow(rowKey, lookup).Value
+  [<RequiresExplicitTypeArguments>]
+  member frame.GetRow<'T>(rowKey, lookup) : Series<_, 'T> =  frame.TryGetRow<'T>(rowKey, lookup).Value
 
   /// <summary>
   /// Try to find a row with the specified row key, or using the specified `lookup` parameter,
@@ -614,6 +618,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   /// <param name="rowKey">Specifies the key of the row to be returned</param>
   /// <param name="lookup">Specifies how to find value in a frame with ordered rows when the key does not exactly match (look for nearest available value with the smaller/greater key).</param>
   /// <category>Accessors and slicing</category>
+  [<RequiresExplicitTypeArguments>]
   member frame.TryGetRowObservation<'T>(rowKey, lookup) : OptionalValue<KeyValuePair<_, Series<_, 'T>>> =
     let rowAddress = rowIndex.Lookup(rowKey, lookup, fun _ -> true)
     if not rowAddress.HasValue then OptionalValue.Missing
@@ -890,7 +895,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
 
   /// <category>Series operations</category>
   member frame.GetColumn<'R>(column:'TColumnKey) : Series<'TRowKey, 'R> =
-    frame.GetColumn(column, Lookup.Exact)
+    frame.GetColumn<'R>(column, Lookup.Exact)
 
   /// <category>Series operations</category>
   member frame.GetAllColumns<'R>() = frame.GetAllColumns<'R>(ConversionKind.Flexible)

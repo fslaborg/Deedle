@@ -329,7 +329,7 @@ module Frame =
   ///
   /// <category>Accessing frame data and lookup</category>
   [<CompiledName("GetRow")>]
-  let getRow row (frame:Frame<'R, 'C>) = frame.GetRow(row)
+  let inline getRow row (frame:Frame<'R, 'C>) : Series<'C, 'T> = frame.GetRow<'T>(row)
 
   /// Returns a series of rows of the data frame indexed by the row keys,
   /// which contains those rows whose values are convertible to 'T, and with
@@ -374,23 +374,23 @@ module Frame =
   ///
   /// <category>Accessing frame data and lookup</category>
   [<CompiledName("LookupRow")>]
-  let lookupRow row lookup (frame:Frame<'R, 'C>) = frame.GetRow(row, lookup)
+  let inline lookupRow row lookup (frame:Frame<'R, 'C>) : Series<'C, 'T> = frame.GetRow<'T>(row, lookup)
 
   /// Returns a specified series (row) from a data frame, or missing value if
   /// row doesn't exit.
   ///
   /// <category>Accessing frame data and lookup</category>
   [<CompiledName("TryLookupRow")>]
-  let tryLookupRow row lookup (frame:Frame<'R, 'C>) =
-    frame.TryGetRow(row, lookup) |> OptionalValue.asOption
+  let inline tryLookupRow row lookup (frame:Frame<'R, 'C>) : option<Series<'C, 'T>> =
+    frame.TryGetRow<'T>(row, lookup) |> OptionalValue.asOption
 
   /// Returns a specified series (row) and key from a data frame, or missing value if
   /// row doesn't exit.
   ///
   /// <category>Accessing frame data and lookup</category>
   [<CompiledName("TryLookupRowObservation")>]
-  let tryLookupRowObservation row lookup (frame:Frame<'R, 'C>) =
-    frame.TryGetRowObservation(row, lookup) |> OptionalValue.asOption |> Option.map (fun kvp -> kvp.Key, kvp.Value)
+  let inline tryLookupRowObservation row lookup (frame:Frame<'R, 'C>) =
+    frame.TryGetRowObservation<'T>(row, lookup) |> OptionalValue.asOption |> Option.map (fun kvp -> kvp.Key, kvp.Value)
 
   /// Returns a frame consisting of the specified columns from the original
   /// data frame. The function uses exact key matching semantics.
