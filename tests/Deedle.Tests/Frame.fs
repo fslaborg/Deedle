@@ -1648,7 +1648,7 @@ let ``joinOnString inner join keeps only matching keys`` () =
                       "x"  =?> series [1 => 1.0; 2 => 2.0; 3 => 3.0] ]
   let right = frame [ "id" =?> series [1 => "a"; 2 => "d"]
                       "y"  =?> series [1 => 10.0; 2 => 40.0] ]
-  let result = (left, right) ||> Frame.joinOnString "id" JoinKind.Inner
+  let result = (left, right) ||> Frame.joinOnString JoinKind.Inner "id"
   result.RowCount |> shouldEqual 1
   result.RowKeys  |> Seq.toList |> shouldEqual ["a"]
   result?x |> Series.values |> Seq.toList |> shouldEqual [1.0]
@@ -1660,7 +1660,7 @@ let ``joinOnString outer join keeps all keys`` () =
                       "x"  =?> series [1 => 1.0; 2 => 2.0] ]
   let right = frame [ "id" =?> series [1 => "a"; 2 => "c"]
                       "y"  =?> series [1 => 10.0; 2 => 30.0] ]
-  let result = (left, right) ||> Frame.joinOnString "id" JoinKind.Outer
+  let result = (left, right) ||> Frame.joinOnString JoinKind.Outer "id"
   result.RowCount |> shouldEqual 3
   result.RowKeys |> Seq.sort |> Seq.toList |> shouldEqual ["a"; "b"; "c"]
 
@@ -1670,10 +1670,21 @@ let ``joinOnString left join keeps all left keys`` () =
                       "x"  =?> series [1 => 1.0; 2 => 2.0] ]
   let right = frame [ "id" =?> series [1 => "a"; 2 => "c"]
                       "y"  =?> series [1 => 10.0; 2 => 30.0] ]
-  let result = (left, right) ||> Frame.joinOnString "id" JoinKind.Left
+  let result = (left, right) ||> Frame.joinOnString JoinKind.Left "id"
   result.RowCount |> shouldEqual 2
   result.RowKeys |> Seq.sort |> Seq.toList |> shouldEqual ["a"; "b"]
   result?x |> Series.values |> Seq.toList |> shouldEqual [1.0; 2.0]
+
+[<Test>]
+let ``joinOnString right join keeps all right keys`` () =
+  let left  = frame [ "id" =?> series [1 => "a"; 2 => "b"]
+                      "x"  =?> series [1 => 1.0; 2 => 2.0] ]
+  let right = frame [ "id" =?> series [1 => "a"; 2 => "c"]
+                      "y"  =?> series [1 => 10.0; 2 => 30.0] ]
+  let result = (left, right) ||> Frame.joinOnString JoinKind.Right "id"
+  result.RowCount |> shouldEqual 2
+  result.RowKeys |> Seq.sort |> Seq.toList |> shouldEqual ["a"; "c"]
+  result?y |> Series.values |> Seq.toList |> shouldEqual [10.0; 30.0]
 
 [<Test>]
 let ``joinOnInt inner join works on int column`` () =
@@ -1681,11 +1692,21 @@ let ``joinOnInt inner join works on int column`` () =
                       "v"  =?> series [1 => 1.0; 2 => 2.0] ]
   let right = frame [ "id" =?> series [1 => 10; 2 => 30]
                       "w"  =?> series [1 => 100.0; 2 => 300.0] ]
-  let result = (left, right) ||> Frame.joinOnInt "id" JoinKind.Inner
+  let result = (left, right) ||> Frame.joinOnInt JoinKind.Inner "id"
   result.RowCount |> shouldEqual 1
   result.RowKeys  |> Seq.toList |> shouldEqual [10]
   result?v |> Series.values |> Seq.toList |> shouldEqual [1.0]
   result?w |> Series.values |> Seq.toList |> shouldEqual [100.0]
+
+[<Test>]
+let ``joinOnInt outer join works on int column`` () =
+  let left  = frame [ "id" =?> series [1 => 10; 2 => 20]
+                      "v"  =?> series [1 => 1.0; 2 => 2.0] ]
+  let right = frame [ "id" =?> series [1 => 10; 2 => 30]
+                      "w"  =?> series [1 => 100.0; 2 => 300.0] ]
+  let result = (left, right) ||> Frame.joinOnInt JoinKind.Outer "id"
+  result.RowCount |> shouldEqual 3
+  result.RowKeys |> Seq.sort |> Seq.toList |> shouldEqual [10; 20; 30]
 
 [<Test>]
 let ``joinOn join column is not present in result columns`` () =
@@ -1693,7 +1714,7 @@ let ``joinOn join column is not present in result columns`` () =
                       "x"  =?> series [1 => 1.0] ]
   let right = frame [ "id" =?> series [1 => "a"]
                       "y"  =?> series [1 => 10.0] ]
-  let result = (left, right) ||> Frame.joinOnString "id" JoinKind.Inner
+  let result = (left, right) ||> Frame.joinOnString JoinKind.Inner "id"
   result.ColumnKeys |> Seq.sort |> Seq.toList |> shouldEqual ["x"; "y"]
 
 // ------------------------------------------------------------------------------------------------
