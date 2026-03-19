@@ -142,6 +142,84 @@ namespace Deedle.CSharp.Tests
             Assert.That(s2.Mean(), Is.EqualTo(2));
         }
 	}
+
+	/* ----------------------------------------------------------------------------------
+	 * Test new windowing/chunking/pairwise extensions
+	 * --------------------------------------------------------------------------------*/
+	class SeriesWindowChunkPairwiseTests
+	{
+		[Test]
+		public static void WindowWhileReturnsNestedSeries()
+		{
+			// WindowWhile creates a sliding window starting at each key
+			var nums = new SeriesBuilder<int, char>
+				{ { 0, 'a' }, { 1, 'b' }, { 5, 'c' }, { 6, 'd' } }.Series;
+
+			var windows = nums.WindowWhile((k1, k2) => k2 - k1 < 3);
+
+			// One window per input key (sliding)
+			Assert.That(windows.KeyCount, Is.EqualTo(4));
+			// Window at key 0 spans keys 0,1 (diff=1 < 3); key 5 is out (diff=5 >= 3)
+			Assert.That(new string(windows[0].Values.ToArray()), Is.EqualTo("ab"));
+			// Window at key 5 spans keys 5,6 (diff=1 < 3)
+			Assert.That(new string(windows[5].Values.ToArray()), Is.EqualTo("cd"));
+		}
+
+		[Test]
+		public static void WindowWhileIntoAggregatesWindows()
+		{
+			var nums = new SeriesBuilder<int, char>
+				{ { 0, 'a' }, { 1, 'b' }, { 5, 'c' }, { 6, 'd' } }.Series;
+
+			var result = nums.WindowWhileInto(
+				(k1, k2) => k2 - k1 < 3,
+				s => new string(s.Values.ToArray()));
+
+			Assert.That(result.KeyCount, Is.EqualTo(4));
+			Assert.That(result[0], Is.EqualTo("ab"));
+			Assert.That(result[5], Is.EqualTo("cd"));
+		}
+
+		[Test]
+		public static void ChunkWhileReturnsNestedSeries()
+		{
+			var nums = new SeriesBuilder<int, char>
+				{ { 0, 'a' }, { 10, 'b' }, { 11, 'c' } }.Series;
+
+			var chunks = nums.ChunkWhile((k1, k2) => k2 - k1 < 10);
+
+			Assert.That(chunks.KeyCount, Is.EqualTo(2));
+			Assert.That(new string(chunks[0].Values.ToArray()), Is.EqualTo("a"));
+			Assert.That(new string(chunks[10].Values.ToArray()), Is.EqualTo("bc"));
+		}
+
+		[Test]
+		public static void ChunkWhileIntoAggregatesChunks()
+		{
+			var nums = new SeriesBuilder<int, char>
+				{ { 0, 'a' }, { 10, 'b' }, { 11, 'c' } }.Series;
+
+			var result = nums.ChunkWhileInto(
+				(k1, k2) => k2 - k1 < 10,
+				s => new string(s.Values.ToArray()));
+
+			Assert.That(result[0], Is.EqualTo("a"));
+			Assert.That(result[10], Is.EqualTo("bc"));
+		}
+
+		[Test]
+		public static void PairwiseWithCombinesConsecutiveValues()
+		{
+			var nums = new SeriesBuilder<int, int>
+				{ { 0, 10 }, { 1, 20 }, { 2, 30 } }.Series;
+
+			var result = nums.PairwiseWith((k, v1, v2) => v2 - v1);
+
+			Assert.That(result.KeyCount, Is.EqualTo(2));
+			Assert.That(result[1], Is.EqualTo(10));
+			Assert.That(result[2], Is.EqualTo(10));
+		}
+	}
 /*
   class Program
   {

@@ -286,4 +286,40 @@ namespace Deedle.CSharp.Tests
             Assert.Throws<InvalidOperationException>(() => df.GetRowsAs<string>());
         }
     }
+
+    /* ----------------------------------------------------------------------------------
+     * Test MapRows and MapCols extensions
+     * --------------------------------------------------------------------------------*/
+    public class FrameMapTests
+    {
+        [Test]
+        public static void MapRowsExtractsValuePerRow()
+        {
+            var df = Frame.FromRecords(new[] {
+                new { Name = "Alice", Value = 1.0 },
+                new { Name = "Bob",   Value = 2.0 }
+            });
+
+            var names = df.MapRows((k, row) => row.GetAs<string>("Name"));
+
+            Assert.That(names[0], Is.EqualTo("Alice"));
+            Assert.That(names[1], Is.EqualTo("Bob"));
+        }
+
+        [Test]
+        public static void MapColsTransformsEachColumn()
+        {
+            var df = Frame.FromColumns(new Dictionary<string, Series<int, double>> {
+                { "A", new SeriesBuilder<int, double> { { 0, 1.0 }, { 1, 2.0 } }.Series },
+                { "B", new SeriesBuilder<int, double> { { 0, 3.0 }, { 1, 4.0 } }.Series }
+            });
+
+            // Return the same column unchanged - verifies MapCols maps all columns
+            var sameFrame = df.MapCols((colKey, col) => col);
+
+            Assert.That(sameFrame.ColumnKeys.ToArray(), Is.EqualTo(new[] { "A", "B" }));
+            Assert.That(sameFrame["A"][0], Is.EqualTo(1.0));
+            Assert.That(sameFrame["B"][1], Is.EqualTo(4.0));
+        }
+    }
 }

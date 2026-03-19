@@ -499,6 +499,63 @@ type SeriesExtensions =
   static member Chunk(series:Series<'K, 'V>, size:int): Series<'K, Series<'K, 'V>> =
     Series.chunk size series
 
+  /// <summary>
+  /// Creates a series of sliding windows. The windows are created based on the specified
+  /// condition: a new window is started when the condition on consecutive keys is no longer met.
+  /// Each window is then aggregated into a single value using the provided <c>reduce</c>
+  /// function.
+  /// </summary>
+  /// <param name="series">The input series to be windowed.</param>
+  /// <param name="cond">A function that is called with the first and last key of a window. As long as the function returns <c>true</c>, the window continues growing. When it returns <c>false</c>, the window ends and a new one is started.</param>
+  /// <param name="reduce">A function that aggregates each window series into a single value.</param>
+  [<Extension>]
+  static member WindowWhileInto(series:Series<'K, 'V>, cond:Func<'K,'K,bool>, reduce:Func<Series<'K,'V>,'U>): Series<'K, 'U> =
+    Series.windowWhileInto (fun a b -> cond.Invoke(a, b)) reduce.Invoke series
+
+  /// <summary>
+  /// Creates a series of sliding windows. The windows are created based on the specified
+  /// condition: a new window is started when the condition on consecutive keys is no longer met.
+  /// Returns a series of nested series, one per window.
+  /// </summary>
+  /// <param name="series">The input series to be windowed.</param>
+  /// <param name="cond">A function that is called with the first and last key of a window. As long as the function returns <c>true</c>, the window continues growing. When it returns <c>false</c>, the window ends and a new one is started.</param>
+  [<Extension>]
+  static member WindowWhile(series:Series<'K, 'V>, cond:Func<'K,'K,bool>): Series<'K, Series<'K, 'V>> =
+    Series.windowWhile (fun a b -> cond.Invoke(a, b)) series
+
+  /// <summary>
+  /// Splits a series into non-overlapping chunks. A new chunk is started when the condition
+  /// on consecutive keys is no longer met. Each chunk is then aggregated into a single value
+  /// using the provided <c>reduce</c> function.
+  /// </summary>
+  /// <param name="series">The input series to be chunked.</param>
+  /// <param name="cond">A function that is called with the first and last key of a chunk. As long as the function returns <c>true</c>, the chunk continues growing. When it returns <c>false</c>, the chunk ends and a new one is started.</param>
+  /// <param name="reduce">A function that aggregates each chunk series into a single value.</param>
+  [<Extension>]
+  static member ChunkWhileInto(series:Series<'K, 'V>, cond:Func<'K,'K,bool>, reduce:Func<Series<'K,'V>,'U>): Series<'K, 'U> =
+    Series.chunkWhileInto (fun a b -> cond.Invoke(a, b)) reduce.Invoke series
+
+  /// <summary>
+  /// Splits a series into non-overlapping chunks. A new chunk is started when the condition
+  /// on consecutive keys is no longer met. Returns a series of nested series, one per chunk.
+  /// </summary>
+  /// <param name="series">The input series to be chunked.</param>
+  /// <param name="cond">A function that is called with the first and last key of a chunk. As long as the function returns <c>true</c>, the chunk continues growing. When it returns <c>false</c>, the chunk ends and a new one is started.</param>
+  [<Extension>]
+  static member ChunkWhile(series:Series<'K, 'V>, cond:Func<'K,'K,bool>): Series<'K, Series<'K, 'V>> =
+    Series.chunkWhile (fun a b -> cond.Invoke(a, b)) series
+
+  /// <summary>
+  /// Returns a series containing the result of applying the specified function to each
+  /// pair of consecutive values in the series. The function receives the key and both the
+  /// preceding and the current value.
+  /// </summary>
+  /// <param name="series">The input series.</param>
+  /// <param name="f">A function that is called for each pair of consecutive values to produce the result value. The arguments are the key, the previous value, and the current value.</param>
+  [<Extension>]
+  static member PairwiseWith(series:Series<'K, 'T>, f:Func<'K,'T,'T,'U>): Series<'K, 'U> =
+    Series.pairwiseWith (fun k (v1, v2) -> f.Invoke(k, v1, v2)) series
+
   // --- end
 
   [<Extension>]
