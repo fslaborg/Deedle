@@ -1036,6 +1036,18 @@ type FrameExtensions =
     frame |> Frame.nestBy keyselector.Invoke
 
   /// <summary>
+  /// Given a data frame, groups rows by <c>groupSelector</c> and produces a series whose
+  /// keys are the distinct group keys and whose values are sub-frames re-indexed by
+  /// <c>rowSelector</c>.  This is a generalisation of <c>NestBy</c> that lets you transform
+  /// the inner row keys independently of the group keys.
+  /// </summary>
+  ///
+  /// <category>Data structure manipulation</category>
+  [<Extension>]
+  static member NestRowsBy(frame:Frame<'TRowKey1, 'TColumnKey>, groupSelector:Func<'TRowKey1, 'TGroupKey>, rowSelector:Func<'TRowKey1, 'TRowKey2>) =
+    frame |> Frame.nestRowsBy groupSelector.Invoke rowSelector.Invoke
+
+  /// <summary>
   /// Given a series whose values are frames, create a frame resulting
   /// from the concatenation of all the frames' rows, with the resulting
   /// keys having two levels. This is the inverse operation to nest.

@@ -2045,6 +2045,24 @@ module Frame =
     else
         frame.GroupByLabels labels frame.RowCount |> nest
 
+  /// <summary>
+  /// Given a data frame, uses <c>groupSel</c> to determine the group key for each row,
+  /// and <c>rowSel</c> to determine the inner row key within each group's sub-frame.
+  /// Returns a series (indexed by the group key) of frames (indexed by the inner row key).
+  /// </summary>
+  /// <remarks>
+  /// This is a generalisation of <c>Frame.nestBy</c> that lets you transform the inner row keys
+  /// independently of the group keys.  A common use-case is grouping a frame whose rows are
+  /// already keyed by tuples: <c>frame |> Frame.nestRowsBy fst snd</c> groups by the first
+  /// element and re-indexes each sub-frame by the second element.
+  /// </remarks>
+  /// <category>Hierarchical index operations</category>
+  [<CompiledName("NestRowsBy")>]
+  let nestRowsBy (groupSel: 'K -> 'K1) (rowSel: 'K -> 'K2) (frame: Frame<'K, 'C>) =
+    frame
+    |> nestBy groupSel
+    |> Series.map (fun _ df -> df |> indexRowsWith (df.RowKeys |> Seq.map rowSel))
+
   /// Given a series of frames, returns a new data frame with two-level hierarchical
   /// row index, using the series keys as the first component. This function is the
   /// dual of `Frame.nest`.

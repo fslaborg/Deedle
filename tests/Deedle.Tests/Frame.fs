@@ -2069,9 +2069,19 @@ let ``Can group on row keys``() =
     Series.ofValues [2; 1]
   actual |> shouldEqual expected
 
-// ------------------------------------------------------------------------------------------------
-// Operations - aggregate rows by
-// ------------------------------------------------------------------------------------------------
+[<Test>]
+let ``nestRowsBy groups rows and re-indexes inner frames by row selector``() =
+  let df =
+    Frame.ofColumns [ "V" => Series.ofValues [10; 20; 30; 40] ]
+    |> Frame.indexRowsWith [("A","x"); ("A","y"); ("B","x"); ("B","y")]
+  let nested = df |> Frame.nestRowsBy fst snd
+  nested.KeyCount |> shouldEqual 2
+  nested.["A"].RowKeys |> Seq.toList |> shouldEqual ["x"; "y"]
+  nested.["B"].RowKeys |> Seq.toList |> shouldEqual ["x"; "y"]
+  nested.["A"] |> Frame.getCol "V" |> Series.values |> Seq.toList |> shouldEqual [10; 20]
+  nested.["B"] |> Frame.getCol "V" |> Series.values |> Seq.toList |> shouldEqual [30; 40]
+
+
 [<Test>]
 let ``Can aggregate rows by key pairs with missing item in pairs ``() =
   let sample =
