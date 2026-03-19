@@ -271,6 +271,42 @@ let ``Expanding max works`` () =
   s3 |> Stats.expandingMax |> Stats.sum |> should beWithin (e3 +/- 1e-9)
 
 [<Test>]
+let ``Moving median works`` () =
+  let s1 = Series.ofValues [ 0.0; -1.0; Double.NaN; 3.0; -5.0; 4.0; 8.0 ]
+  let s2 = Series.ofValues [ 0.0; -1.0; 2.0; 3.0; -5.0; 4.0; 8.0 ]
+  let s3 = Series.ofValues [ 0; -1; 2; 3; -5; 4; 8 ]
+
+  // expected: sum of non-missing window medians
+  let e1 = 6.5   // windows: (-0.5), 1.0, (-1.0), 3.0, 4.0
+  let e2 = 11.0  // windows: 0, 2, 2, 3, 4
+  let e3 = 11.0
+
+  s1 |> Stats.movingMedian 3 |> Stats.sum |> should beWithin (e1 +/- 1e-9)
+  s2 |> Stats.movingMedian 3 |> Stats.sum |> should beWithin (e2 +/- 1e-9)
+  s3 |> Stats.movingMedian 3 |> Stats.sum |> should beWithin (e3 +/- 1e-9)
+
+[<Test>]
+let ``Moving median - first size-1 values are missing`` () =
+  let s = Series.ofValues [ 1.0; 2.0; 3.0; 4.0; 5.0 ]
+  let result = s |> Stats.movingMedian 3
+  result |> Series.countValues |> should equal 3  // 2 missing, 3 present
+
+[<Test>]
+let ``Expanding median works`` () =
+  let s1 = Series.ofValues [ 0.0; 1.0; Double.NaN; 3.0; 4.0 ]
+  let s2 = Series.ofValues [ 0.0; 1.0; 2.0; 3.0; 4.0 ]
+  let s3 = Series.ofValues [ 0; 1; 2; 3; 4 ]
+
+  // expected cumulative medians summed
+  let e1 = 4.0   // 0, 0.5, 0.5, 1.0, 2.0
+  let e2 = 5.0   // 0, 0.5, 1.0, 1.5, 2.0
+  let e3 = 5.0
+
+  s1 |> Stats.expandingMedian |> Stats.sum |> should beWithin (e1 +/- 1e-9)
+  s2 |> Stats.expandingMedian |> Stats.sum |> should beWithin (e2 +/- 1e-9)
+  s3 |> Stats.expandingMedian |> Stats.sum |> should beWithin (e3 +/- 1e-9)
+
+[<Test>]
 let ``Basic level statistics works on sample input`` () =
   let s1 = series [(1,0) => nan; (1,1) => 2.0; (2,0) => 3.0; (2,1) => 4.0 ]
   let s2 = series [(1,1) => 2; (2,0) => 3; (2,1) => 4 ]
