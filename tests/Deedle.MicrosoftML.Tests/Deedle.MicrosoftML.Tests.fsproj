@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Deedle\Deedle.fsproj" />
+    <ProjectReference Include="..\..\src\Deedle.MicrosoftML\Deedle.MicrosoftML.fsproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DataView.fs" />
+    <Compile Include="Transforms.fs" />
+  </ItemGroup>
+  <Import Project="..\..\.paket\Paket.Restore.targets" />
+</Project>
