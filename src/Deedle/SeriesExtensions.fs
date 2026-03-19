@@ -499,6 +499,90 @@ type SeriesExtensions =
   static member Chunk(series:Series<'K, 'V>, size:int): Series<'K, Series<'K, 'V>> =
     Series.chunk size series
 
+  /// <summary>
+  /// Creates a sliding window based on a condition on keys. A window is started at each
+  /// input element and ends once the specified <c>cond</c> function returns <c>false</c> when
+  /// called on the first and the last key of the window. The windows are aggregated into
+  /// values using the specified <c>reduce</c> function. The key of each result is the first
+  /// key of the corresponding window.
+  /// </summary>
+  /// <param name="series">The input series to be aggregated.</param>
+  /// <param name="cond">A function called on the first and last key of a window; the window grows while it returns <c>true</c>.</param>
+  /// <param name="reduce">A function that aggregates each window into a single value.</param>
+  [<Extension>]
+  static member WindowWhileInto(series:Series<'K,'V>, cond:Func<'K,'K,bool>, reduce:Func<Series<'K,'V>,'U>): Series<'K,'U> =
+    Series.windowWhileInto (fun s e -> cond.Invoke(s, e)) reduce.Invoke series
+
+  /// <summary>
+  /// Creates a sliding window based on a condition on keys. A window is started at each
+  /// input element and ends once the specified <c>cond</c> function returns <c>false</c> when
+  /// called on the first and the last key of the window. The windows are returned as a
+  /// nested series. The key of each window is the key of the first element in the window.
+  /// </summary>
+  /// <param name="series">The input series to be aggregated.</param>
+  /// <param name="cond">A function called on the first and last key of a window; the window grows while it returns <c>true</c>.</param>
+  [<Extension>]
+  static member WindowWhile(series:Series<'K,'V>, cond:Func<'K,'K,bool>): Series<'K, Series<'K,'V>> =
+    Series.windowWhile (fun s e -> cond.Invoke(s, e)) series
+
+  /// <summary>
+  /// Aggregates the input into adjacent chunks based on a condition on keys. A chunk is
+  /// started once the <c>cond</c> function returns <c>false</c> for the first and last key
+  /// of the current chunk. The chunks are aggregated using the specified <c>reduce</c>
+  /// function. The key of each result is the first key of the corresponding chunk.
+  /// </summary>
+  /// <param name="series">The input series to be aggregated.</param>
+  /// <param name="cond">A function called on the first and last key of a chunk; the chunk grows while it returns <c>true</c>.</param>
+  /// <param name="reduce">A function that aggregates each chunk into a single value.</param>
+  [<Extension>]
+  static member ChunkWhileInto(series:Series<'K,'V>, cond:Func<'K,'K,bool>, reduce:Func<Series<'K,'V>,'U>): Series<'K,'U> =
+    Series.chunkWhileInto (fun s e -> cond.Invoke(s, e)) reduce.Invoke series
+
+  /// <summary>
+  /// Aggregates the input into adjacent chunks based on a condition on keys. A chunk is
+  /// started once the <c>cond</c> function returns <c>false</c> for the first and last key
+  /// of the current chunk. The chunks are returned as a nested series. The key of each
+  /// chunk is the key of the first element in the chunk.
+  /// </summary>
+  /// <param name="series">The input series to be aggregated.</param>
+  /// <param name="cond">A function called on the first and last key of a chunk; the chunk grows while it returns <c>true</c>.</param>
+  [<Extension>]
+  static member ChunkWhile(series:Series<'K,'V>, cond:Func<'K,'K,bool>): Series<'K, Series<'K,'V>> =
+    Series.chunkWhile (fun s e -> cond.Invoke(s, e)) series
+
+  /// <summary>
+  /// Returns a series containing pairs of adjacent elements. The returned series is one
+  /// element shorter — it does not contain a value for the first key.
+  /// </summary>
+  /// <example>
+  /// <code language="csharp">
+  /// var input = new SeriesBuilder&lt;int, char&gt; { {1,'a'}, {2,'b'}, {3,'c'} }.Series;
+  /// var result = input.Pairwise();
+  /// // result = series [ 2 => ('a','b'); 3 => ('b','c') ]
+  /// </code>
+  /// </example>
+  /// <param name="series">The input series.</param>
+  [<Extension>]
+  static member Pairwise(series:Series<'K,'V>): Series<'K,'V*'V> =
+    series.Pairwise()
+
+  /// <summary>
+  /// Aggregates pairs of adjacent elements using the specified <c>selector</c>. The
+  /// returned series is one element shorter — it does not contain a value for the first key.
+  /// </summary>
+  /// <example>
+  /// <code language="csharp">
+  /// var input = new SeriesBuilder&lt;int, int&gt; { {1,10}, {2,20}, {3,30} }.Series;
+  /// var diffs = input.PairwiseWith((k, pair) => pair.Item2 - pair.Item1);
+  /// // diffs = series [ 2 => 10; 3 => 10 ]
+  /// </code>
+  /// </example>
+  /// <param name="series">The input series.</param>
+  /// <param name="selector">A function that is called with the key and a pair of adjacent values to produce the result.</param>
+  [<Extension>]
+  static member PairwiseWith(series:Series<'K,'V>, selector:Func<'K,'V*'V,'U>): Series<'K,'U> =
+    series |> Series.pairwiseWith (fun k v -> selector.Invoke(k, v))
+
   // --- end
 
   [<Extension>]
