@@ -7,6 +7,7 @@ namespace Deedle
 
 open System
 open System.IO
+open System.Net.Http
 open System.Text
 open System.Collections.Generic
 open System.ComponentModel
@@ -14,6 +15,20 @@ open System.Runtime.InteropServices
 open System.Runtime.CompilerServices
 open Deedle.Keys
 open Deedle.Vectors
+
+// Shared lazy HttpClient for downloading CSV data from HTTP/HTTPS URLs.
+// A single instance is intentionally reused across calls for connection-pool efficiency.
+module private HttpReader =
+  let private client = lazy (new HttpClient())
+  let openLocation (location: string) (encoding: Encoding) : TextReader =
+    if location.StartsWith("http://", StringComparison.OrdinalIgnoreCase) ||
+       location.StartsWith("https://", StringComparison.OrdinalIgnoreCase) then
+      let content = client.Value.GetStringAsync(location).GetAwaiter().GetResult()
+      new StringReader(content) :> TextReader
+    elif encoding = null then
+      new StreamReader(location) :> TextReader
+    else
+      new StreamReader(location, encoding) :> TextReader
 
 
 /// <summary>
@@ -93,7 +108,7 @@ type Frame =
     ( location:string, [<Optional>] hasHeaders:Nullable<bool>, [<Optional>] inferTypes:Nullable<bool>, [<Optional>] inferRows:Nullable<int>,
       [<Optional>] schema, [<Optional>] separators, [<Optional>] culture, [<Optional>] maxRows:Nullable<int>,
       [<Optional>] missingValues, [<Optional>] preferOptions, [<Optional>] encoding:Encoding ) =
-    use reader = if encoding = null then new StreamReader(location) else new StreamReader(location, encoding)
+    use reader = HttpReader.openLocation location encoding
     FrameUtils.readCsv
       reader
       (if hasHeaders.HasValue then Some hasHeaders.Value else None)
@@ -431,7 +446,7 @@ module ``F# Frame extensions`` =
     static member ReadCsv<'R when 'R : equality>
         ( path:string, indexCol, ?hasHeaders, ?inferTypes, ?inferRows, ?schema, ?separators,
           ?culture, ?maxRows, ?missingValues, ?preferOptions, ?typeResolver: string -> string option, ?encoding: Encoding ) : Frame<'R, _> =
-      use reader = match encoding with Some e -> new StreamReader(path, e) | None -> new StreamReader(path)
+      use reader = HttpReader.openLocation path (match encoding with Some e -> e | None -> null)
       FrameUtils.readCsv reader hasHeaders inferTypes inferRows schema missingValues separators culture maxRows preferOptions typeResolver
       |> Frame.indexRows indexCol
 
@@ -457,7 +472,7 @@ module ``F# Frame extensions`` =
     static member ReadCsv
         ( path:string, ?hasHeaders, ?inferTypes, ?inferRows, ?schema, ?separators,
           ?culture, ?maxRows, ?missingValues, ?preferOptions, ?typeResolver: string -> string option, ?encoding: Encoding ) =
-      use reader = match encoding with Some e -> new StreamReader(path, e) | None -> new StreamReader(path)
+      use reader = HttpReader.openLocation path (match encoding with Some e -> e | None -> null)
       FrameUtils.readCsv reader hasHeaders inferTypes inferRows schema missingValues separators culture maxRows preferOptions typeResolver
 
     /// <summary>
