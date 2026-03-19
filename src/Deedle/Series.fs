@@ -1229,7 +1229,12 @@ and
             for obs in ends.ObservationsAll do yield Choice1Of3(obs.Key, obs.Value) }
 
   override series.ToString() =
-    if vector.SuppressPrinting then "(Suppressed)" else
+    if vector.SuppressPrinting then
+      try
+        let lo, hi = series.KeyRange
+        sprintf "(Delayed series [%s .. %s])" (Formatting.formatKey (box lo)) (Formatting.formatKey (box hi))
+      with _ -> "(Suppressed)"
+    else
       series.GetPrintedObservations(Formatting.StartInlineItemCount, Formatting.EndInlineItemCount)
       |> Seq.map (function
           | Choice2Of3() -> " ... "
@@ -1268,7 +1273,12 @@ and
       if ordered && (Some levelKey = !previous) then ""
       else previous := Some levelKey; reset(); Formatting.formatKey levelKey
 
-    if vector.SuppressPrinting then [|[|"(Suppressed)"|]|] else
+    if vector.SuppressPrinting then
+      try
+        let lo, hi = series.KeyRange
+        [|[| sprintf "(Delayed series [%s .. %s])" (Formatting.formatKey (box lo)) (Formatting.formatKey (box hi)) |]|]
+      with _ -> [|[|"(Suppressed)"|]|]
+    else
       if series.IsEmpty then
         [|[|"(Empty)"|]|]
       else
