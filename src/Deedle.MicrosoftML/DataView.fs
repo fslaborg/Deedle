@@ -14,7 +14,7 @@ namespace Deedle.MicrosoftML
 
 open System
 open Microsoft.ML          // DataViewSchema, DataViewRowCursor, ValueGetter<T>, IDataView
-open Microsoft.ML.Data     // NumberDataViewType, BooleanDataViewType, TextDataViewType, DataViewRowId
+open Microsoft.ML.Data     // NumberDataViewType, BooleanDataViewType, TextDataViewType, DataViewRowId, VectorDataViewType, VBuffer
 open Deedle
 
 // ── Internal column storage ──────────────────────────────────────────────────
@@ -22,30 +22,36 @@ open Deedle
 /// Materialised column data – one case per supported CLR type.
 [<NoComparison; NoEquality>]
 type internal ColData =
-    | DoubleCol of float   array  // ML.NET NumberDataViewType.Double
-    | FloatCol  of float32 array  // ML.NET NumberDataViewType.Single
-    | Int32Col  of int32   array  // ML.NET NumberDataViewType.Int32
-    | Int64Col  of int64   array  // ML.NET NumberDataViewType.Int64
-    | BoolCol   of bool    array  // ML.NET BooleanDataViewType
-    | StringCol of string  array  // ML.NET TextDataViewType (ReadOnlyMemory<char>)
+    | DoubleCol      of float    array        // ML.NET NumberDataViewType.Double
+    | FloatCol       of float32  array        // ML.NET NumberDataViewType.Single
+    | Int32Col       of int32    array        // ML.NET NumberDataViewType.Int32
+    | Int64Col       of int64    array        // ML.NET NumberDataViewType.Int64
+    | BoolCol        of bool     array        // ML.NET BooleanDataViewType
+    | StringCol      of string   array        // ML.NET TextDataViewType (ReadOnlyMemory<char>)
+    | FloatVectorCol of float32 array array   // ML.NET VectorDataViewType(Single); fixed-length vectors
 
 module internal ColData =
     let viewType : ColData -> DataViewType = function
-        | DoubleCol _ -> upcast NumberDataViewType.Double
-        | FloatCol _  -> upcast NumberDataViewType.Single
-        | Int32Col _  -> upcast NumberDataViewType.Int32
-        | Int64Col _  -> upcast NumberDataViewType.Int64
-        | BoolCol _   -> upcast BooleanDataViewType.Instance
-        | StringCol _ -> upcast TextDataViewType.Instance
+        | DoubleCol _           -> upcast NumberDataViewType.Double
+        | FloatCol _            -> upcast NumberDataViewType.Single
+        | Int32Col _            -> upcast NumberDataViewType.Int32
+        | Int64Col _            -> upcast NumberDataViewType.Int64
+        | BoolCol _             -> upcast BooleanDataViewType.Instance
+        | StringCol _           -> upcast TextDataViewType.Instance
+        | FloatVectorCol rows   ->
+            // Derive vector size from the first row; 0-length arrays → unknown size (0).
+            let size = if rows.Length > 0 then rows.[0].Length else 0
+            upcast VectorDataViewType(NumberDataViewType.Single, size)
 
     let length (cd: ColData) =
         match cd with
-        | DoubleCol a -> a.Length
-        | FloatCol  a -> a.Length
-        | Int32Col  a -> a.Length
-        | Int64Col  a -> a.Length
-        | BoolCol   a -> a.Length
-        | StringCol a -> a.Length
+        | DoubleCol      a -> a.Length
+        | FloatCol       a -> a.Length
+        | Int32Col       a -> a.Length
+        | Int64Col       a -> a.Length
+        | BoolCol        a -> a.Length
+        | StringCol      a -> a.Length
+        | FloatVectorCol a -> a.Length
 
 // ── Frame → column extraction ────────────────────────────────────────────────
 
@@ -102,6 +108,13 @@ module internal Extraction =
         | Some s -> FloatCol (extractSeries s rowKeys Single.NaN)
         | None ->
 
+        // float32 array → fixed-length vector column (most common ML feature-vector type)
+        match tryGetCol<_, float32 array> frame colKey with
+        | Some s ->
+            let empty : float32 array = [||]
+            FloatVectorCol (extractSeries s rowKeys empty)
+        | None ->
+
         // Final fallback: NaN doubles.
         DoubleCol (Array.create rowKeys.Length Double.NaN)
 
@@ -154,6 +167,10 @@ type private FrameDataViewCursor
         | StringCol arr when typeof<'TValue> = typeof<ReadOnlyMemory<char>> ->
             box (ValueGetter<ReadOnlyMemory<char>>(fun (v : ReadOnlyMemory<char> byref) ->
                 v <- arr.[int position].AsMemory())) :?> ValueGetter<'TValue>
+        | FloatVectorCol arr when typeof<'TValue> = typeof<VBuffer<float32>> ->
+            box (ValueGetter<VBuffer<float32>>(fun (v : VBuffer<float32> byref) ->
+                let row = arr.[int position]
+                v <- VBuffer<float32>(row.Length, row |> Array.copy))) :?> ValueGetter<'TValue>
         | _ ->
             invalidOp (sprintf
                 "Column '%s': cannot produce a getter for type %s (column type is %s)"
@@ -232,6 +249,22 @@ module private FromDataView =
                 let mutable v = ReadOnlyMemory<char>()
                 g.Invoke(&v)
                 box (v.ToString())
+        | :? VectorDataViewType as vt when vt.ItemType :? NumberDataViewType &&
+                                           (vt.ItemType :?> NumberDataViewType) = NumberDataViewType.Single ->
+            // Vector column → read as float32 array per row.
+            let g = cursor.GetGetter<VBuffer<float32>>(col)
+            fun () ->
+                let mutable buf = VBuffer<float32>()
+                g.Invoke(&buf)
+                box (buf.DenseValues() |> Array.ofSeq)
+        | :? VectorDataViewType as vt when vt.ItemType :? NumberDataViewType &&
+                                           (vt.ItemType :?> NumberDataViewType) = NumberDataViewType.Double ->
+            // Double vector column → read as float array per row.
+            let g = cursor.GetGetter<VBuffer<float>>(col)
+            fun () ->
+                let mutable buf = VBuffer<float>()
+                g.Invoke(&buf)
+                box (buf.DenseValues() |> Array.ofSeq)
         | _ ->
             // Unknown type; emit null for every row.
             fun () -> box null
@@ -255,6 +288,7 @@ type Frame =
     ///   <item><c>string</c> columns → <c>Text</c> (<c>ReadOnlyMemory&lt;char&gt;</c>)</item>
     ///   <item><c>bool</c> columns → <c>Boolean</c></item>
     ///   <item><c>int32</c> / <c>int64</c> / <c>float32</c> → their ML.NET equivalents</item>
+    ///   <item><c>float32 array</c> columns → fixed-length <c>VectorDataViewType(Single)</c></item>
     /// </list>
     /// Missing values become <c>NaN</c> for numeric columns and empty string for text.
     /// </remarks>
@@ -289,7 +323,9 @@ type Frame =
     ///   <item><c>Int64</c> → <c>int64</c></item>
     ///   <item><c>Boolean</c> → <c>bool</c></item>
     ///   <item><c>Text</c> → <c>string</c></item>
-    ///   <item>Vector and other composite types → <c>null</c></item>
+    ///   <item><c>Vector(Single)</c> → <c>float32 array</c> (one array per row)</item>
+    ///   <item><c>Vector(Double)</c> → <c>float array</c> (one array per row)</item>
+    ///   <item>Other composite types → <c>null</c></item>
     /// </list>
     /// </remarks>
     static member ofDataView (dataView : IDataView) : Frame<int, string> =

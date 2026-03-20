@@ -148,3 +148,71 @@ let ``FrameDataView exposes RowCount property`` () =
         Assert.That(fdv.RowCount, Is.EqualTo(3))
     | _ ->
         Assert.Fail("Expected FrameDataView")
+
+// ── Vector column tests ───────────────────────────────────────────────────────
+
+let private vectorFrame () : Frame<int, string> =
+    Frame.ofColumns [
+        "Features", Series.ofValues [
+            [| 1.0f; 2.0f; 3.0f |]
+            [| 4.0f; 5.0f; 6.0f |]
+            [| 7.0f; 8.0f; 9.0f |]
+        ] :> ISeries<int>
+    ]
+
+[<Test>]
+let ``toDataView produces VectorDataViewType for float32 array column`` () =
+    let dv     = Frame.toDataView (vectorFrame())
+    let schema = dv.Schema
+    Assert.That(Seq.length schema, Is.EqualTo(1))
+    let colType = schema.["Features"].Type
+    Assert.That(colType, Is.InstanceOf<VectorDataViewType>())
+    let vt = colType :?> VectorDataViewType
+    Assert.That(vt.Size, Is.EqualTo(3))
+    Assert.That(vt.ItemType, Is.EqualTo(NumberDataViewType.Single))
+
+[<Test>]
+let ``toDataView vector cursor reads correct VBuffer values`` () =
+    let dv     = Frame.toDataView (vectorFrame())
+    let schema = dv.Schema
+    use cursor = dv.GetRowCursor(schema |> Seq.toArray, null)
+    let g = cursor.GetGetter<VBuffer<float32>>(schema.["Features"])
+    let read () =
+        let mutable v = VBuffer<float32>()
+        g.Invoke(&v)
+        v.DenseValues() |> Array.ofSeq
+
+    Assert.That(cursor.MoveNext(), Is.True)
+    Assert.That(read() = [| 1.0f; 2.0f; 3.0f |], Is.True)
+    Assert.That(cursor.MoveNext(), Is.True)
+    Assert.That(read() = [| 4.0f; 5.0f; 6.0f |], Is.True)
+    Assert.That(cursor.MoveNext(), Is.True)
+    Assert.That(read() = [| 7.0f; 8.0f; 9.0f |], Is.True)
+    Assert.That(cursor.MoveNext(), Is.False)
+
+[<Test>]
+let ``ofDataView round-trips float32 array vector column`` () =
+    let original = vectorFrame()
+    let result   = Frame.ofDataView (Frame.toDataView original)
+    let col = result.GetColumn<float32 array>("Features")
+    Assert.That(col.[0] = [| 1.0f; 2.0f; 3.0f |], Is.True)
+    Assert.That(col.[1] = [| 4.0f; 5.0f; 6.0f |], Is.True)
+    Assert.That(col.[2] = [| 7.0f; 8.0f; 9.0f |], Is.True)
+
+[<Test>]
+let ``toDataView and ofDataView handle mixed scalar and vector columns`` () =
+    let df : Frame<int, string> =
+        Frame.ofColumns [
+            "Score",    Series.ofValues [ 0.5;  1.5;  2.5  ] :> ISeries<int>
+            "Features", Series.ofValues [
+                [| 1.0f; 0.0f |]
+                [| 0.0f; 1.0f |]
+                [| 1.0f; 1.0f |]
+            ] :> ISeries<int>
+        ]
+    let result = Frame.ofDataView (Frame.toDataView df)
+    let scores   = result.GetColumn<float>("Score")
+    let features = result.GetColumn<float32 array>("Features")
+    Assert.That(scores.[0],   Is.EqualTo(0.5))
+    Assert.That(features.[0] = [| 1.0f; 0.0f |], Is.True)
+    Assert.That(features.[1] = [| 0.0f; 1.0f |], Is.True)
