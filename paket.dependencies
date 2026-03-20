@@ -1,5 +1,6 @@
 source https://api.nuget.org/v3/index.json
 
+nuget Apache.Arrow
 nuget FsCheck
 nuget FSharp.Compiler.Service
 nuget FSharp.Data
