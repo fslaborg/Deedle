@@ -311,6 +311,29 @@ byClassAndPort.GetColumn<bool>("Survived")
 |> Frame.ofRows
 
 (**
+
+### Aggregating by columns with `Frame.aggregateRowsBy`
+
+`Frame.aggregateRowsBy` provides a convenient way to group by one or more columns and
+apply an aggregation function to other columns — similar to SQL `GROUP BY … SELECT aggregate`.
+
+The first argument specifies the grouping columns; the second specifies the columns to
+aggregate; the third is the aggregation function to apply to each group series:
+*)
+
+(*** define-output:aggby1 ***)
+// Average fare by Pclass and Sex
+titanic
+|> Frame.aggregateRowsBy ["Pclass"; "Sex"] ["Fare"] Stats.mean
+(*** include-it:aggby1 ***)
+
+(*** define-output:aggby2 ***)
+// Count survivors (sum of bool-as-int) and average age per Pclass
+titanic
+|> Frame.aggregateRowsBy ["Pclass"] ["Age"] Stats.mean
+(*** include-it:aggby2 ***)
+
+(**
 <a name="pivot"></a>
 
 ## Summarizing data with pivot table
@@ -430,3 +453,9 @@ ozone |> Series.fillMissingUsing (fun k ->
   | OptionalValue.Present(v), _ 
   | _, OptionalValue.Present(v) -> v
   | _ -> 0.0)
+
+(**
+For a comprehensive reference covering `OptionalValue`, sentinel types, all fill strategies,
+and how missing values interact with joins and statistics, see the dedicated
+[Handling missing values](missing.html) page.
+*)
