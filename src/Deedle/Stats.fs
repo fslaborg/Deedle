@@ -38,29 +38,32 @@ module StatsInternal =
   ///   - `fupdate` takes the current state, incoming observation,
   ///      and out-going observation to the next state
   ///   - `ftransf` takes the current state to the current output
+  ///
+  /// Returns a `float[]` of the same length as the source sequence.
   let movingWindowFn winSize finit fupdate ftransf (source: seq<_>) =
-    seq {
-       let arr = Array.zeroCreate winSize
-       let r = ref (winSize - 1)
-       let i = ref 0
-       let isInit = ref false
-       let state = ref Unchecked.defaultof<_>
-       use e = source.GetEnumerator()
-       while e.MoveNext() do
-         let curr = e.Current
-         let outg = arr.[!i]
-         arr.[!i] <- curr
-         i := (!i + 1) % winSize
-         if !r = 0 then
-           if not !isInit then
-             state := arr |> finit
-             isInit := true
-           else
-             state := fupdate !state curr outg
-           yield !state |> ftransf
-         else
-           r := (!r - 1)
-           yield nan }
+    let arr = Array.zeroCreate winSize
+    let mutable r = winSize - 1
+    let mutable i = 0
+    let mutable isInit = false
+    let mutable state = Unchecked.defaultof<_>
+    let res = ResizeArray<float>()
+    use e = source.GetEnumerator()
+    while e.MoveNext() do
+      let curr = e.Current
+      let outg = arr.[i]
+      arr.[i] <- curr
+      i <- (i + 1) % winSize
+      if r = 0 then
+        if not isInit then
+          state <- arr |> finit
+          isInit <- true
+        else
+          state <- fupdate state curr outg
+        res.Add(ftransf state)
+      else
+        r <- r - 1
+        res.Add(nan)
+    res.ToArray()
 
   /// When calculating moments, this record is used to keep track of the
   /// count (`nobs`), sum of values (`sum`), sum of squares (`sum2`),
@@ -125,7 +128,7 @@ module StatsInternal =
   /// is not convertible to floating point number.
   let inline applyMovingSumsTransform moment winSize (proj: Sums -> float) (series:Series<'K,'V>) =
     if winSize <= 0 then invalidArg "windowSize" "Window must be positive"
-    let calcSparse = movingWindowFn winSize (initSumsSparse moment) (updateSumsSparse moment) proj >> Array.ofSeq
+    let calcSparse = movingWindowFn winSize (initSumsSparse moment) (updateSumsSparse moment) proj
     applySeriesProj calcSparse (series |> Series.mapValues toFloat)
 
   /// Calculate variance from `Sums`; requires `moment=2`
@@ -217,18 +220,21 @@ module StatsInternal =
   // Implementation internals - expanding windows
   // ------------------------------------------------------------------------------------
 
-  /// <summary>
-  /// Helper for expanding window calculations
-  /// </summary>
-  /// <param name="initState">is the initial state of the computation</param>
-  /// <param name="fupdate">takes the current state and incoming observation to the next state</param>
-  /// <param name="ftransf">takes the current state to the current output</param>
-  /// <param name="source">The input sequence to process</param>
+  /// Helper for expanding window calculations.
+  /// Returns a `float[]` of the same length as the source sequence.
+  ///
+  /// # Parameters
+  ///   - `initState` - the initial state of the computation
+  ///   - `fupdate` - takes the current state and incoming observation to the next state
+  ///   - `ftransf` - takes the current state to the current output
+  ///   - `source` - the input sequence to process
   let expandingWindowFn initState fupdate ftransf (source: seq<_>) =
-    source
-    |> Seq.scan fupdate initState
-    |> Seq.skip 1
-    |> Seq.map ftransf
+    let mutable state = initState
+    let res = ResizeArray<float>()
+    for x in source do
+      state <- fupdate state x
+      res.Add(ftransf state)
+    res.ToArray()
 
   /// Represents the moments as calculated during online processing
   /// (`nobs` is the count, `sum` is the sum, `M1` to `M4` are moments)
@@ -270,19 +276,9 @@ module StatsInternal =
   /// is not convertible to floating point number.
   let inline applyExpandingMomentsTransform (proj: Moments -> float) (series:Series<'K,'V>) =
     let initMoments = {nobs = 0.0; sum = 0.0; M1 = 0.0; M2 = 0.0; M3 = 0.0; M4 = 0.0 }
-    let calcSparse = expandingWindowFn initMoments updateMomentsSparse proj >> Array.ofSeq
+    let calcSparse = expandingWindowFn initMoments updateMomentsSparse proj
     applySeriesProj calcSparse (series |> Series.mapValues toFloat)
 
-  /// Calculates minimum or maximum over an expanding window
-  let internal expandingMinMaxHelper cmp s =
-    seq {
-      let m = ref nan
-      for v in s ->
-        match v with
-        | Some x ->
-          let mv = !m
-          if System.Double.IsNaN(mv) || cmp mv x then m := x; x else mv
-        | None -> !m }
 
   // ------------------------------------------------------------------------------------
   // Statistics calculated over the entire series
