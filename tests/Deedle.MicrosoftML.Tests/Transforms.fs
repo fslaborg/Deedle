@@ -82,3 +82,18 @@ let ``FitTransform extension method works`` () =
     let pipe   = mlc.Transforms.NormalizeMinMax("A_norm", "A")
     let result = normFrame().FitTransform(pipe)
     Assert.That(result.ColumnKeys |> Seq.contains "A_norm", Is.True)
+
+[<Test>]
+let ``Concatenate transform produces vector column readable as float32 array`` () =
+    let frame : Frame<int, string> =
+        Frame.ofColumns [
+            "A", Series.ofValues [ 1.0f; 2.0f; 3.0f ] :> ISeries<int>
+            "B", Series.ofValues [ 4.0f; 5.0f; 6.0f ] :> ISeries<int>
+        ]
+    let pipe   = mlc.Transforms.Concatenate("Features", [| "A"; "B" |])
+    let result = Pipeline.fitTransform pipe frame
+    Assert.That(result.ColumnKeys |> Seq.contains "Features", Is.True)
+    let features = result.GetColumn<float array>("Features")
+    Assert.That(features.[0] = [| 1.0; 4.0 |], Is.True)
+    Assert.That(features.[1] = [| 2.0; 5.0 |], Is.True)
+    Assert.That(features.[2] = [| 3.0; 6.0 |], Is.True)
