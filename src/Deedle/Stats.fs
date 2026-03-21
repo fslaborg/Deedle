@@ -1110,7 +1110,7 @@ type Stats =
   /// </summary>
   /// <param name="frame">The input frame</param>
   /// <category>Frame statistics</category>
-  static member corrMatrix (frame:Frame<'R, 'C>) =
+  static member corrFrame (frame:Frame<'R, 'C>) =
     let cols = frame.GetColumns<float>() |> Series.observations |> Seq.toArray
     cols
     |> Array.map (fun (c2, s2) ->
@@ -1129,7 +1129,7 @@ type Stats =
   /// </summary>
   /// <param name="frame">The input frame</param>
   /// <category>Frame statistics</category>
-  static member covMatrix (frame:Frame<'R, 'C>) =
+  static member covFrame (frame:Frame<'R, 'C>) =
     let cols = frame.GetColumns<float>() |> Series.observations |> Seq.toArray
     cols
     |> Array.map (fun (c2, s2) ->

@@ -708,43 +708,43 @@ let ``Stats.corr returns NaN for fewer than 2 pairs`` () =
 // ------------------------------------------------------------------------------------------------
 
 [<Test>]
-let ``Stats.corrMatrix diagonal entries are 1.0`` () =
+let ``Stats.corrFrame diagonal entries are 1.0`` () =
   let f = frame [ "A" => series [1=>1.0; 2=>2.0; 3=>3.0]
                   "B" => series [1=>3.0; 2=>1.0; 3=>2.0] ]
-  let m = Stats.corrMatrix f
+  let m = Stats.corrFrame f
   m.GetColumn<float>("A").Get("A") |> should beWithin (1.0 +/- 1e-9)
   m.GetColumn<float>("B").Get("B") |> should beWithin (1.0 +/- 1e-9)
 
 [<Test>]
-let ``Stats.corrMatrix is symmetric`` () =
+let ``Stats.corrFrame is symmetric`` () =
   let f = frame [ "A" => series [1=>1.0; 2=>2.0; 3=>3.0]
                   "B" => series [1=>3.0; 2=>1.0; 3=>2.0] ]
-  let m = Stats.corrMatrix f
+  let m = Stats.corrFrame f
   let ab = m.GetColumn<float>("A").Get("B")
   let ba = m.GetColumn<float>("B").Get("A")
   ab |> should beWithin (ba +/- 1e-9)
 
 [<Test>]
-let ``Stats.corrMatrix perfectly correlated columns give 1.0`` () =
+let ``Stats.corrFrame perfectly correlated columns give 1.0`` () =
   let f = frame [ "A" => series [1=>1.0; 2=>2.0; 3=>3.0; 4=>4.0]
                   "B" => series [1=>2.0; 2=>4.0; 3=>6.0; 4=>8.0] ]
-  let m = Stats.corrMatrix f
+  let m = Stats.corrFrame f
   m.GetColumn<float>("A").Get("B") |> should beWithin (1.0 +/- 1e-9)
 
 [<Test>]
-let ``Stats.covMatrix diagonal entries equal variance`` () =
+let ``Stats.covFrame diagonal entries equal variance`` () =
   let f = frame [ "A" => series [1=>1.0; 2=>2.0; 3=>3.0; 4=>4.0]
                   "B" => series [1=>2.0; 2=>4.0; 3=>6.0; 4=>8.0] ]
-  let m = Stats.covMatrix f
+  let m = Stats.covFrame f
   // Diagonal entry (A,A) = Var(A) = sample variance of [1,2,3,4]
   let expected = Stats.variance (Series.ofValues [1.0;2.0;3.0;4.0])
   m.GetColumn<float>("A").Get("A") |> should beWithin (expected +/- 1e-9)
 
 [<Test>]
-let ``Stats.covMatrix is symmetric`` () =
+let ``Stats.covFrame is symmetric`` () =
   let f = frame [ "A" => series [1=>1.0; 2=>2.0; 3=>3.0]
                   "B" => series [1=>3.0; 2=>1.0; 3=>2.0] ]
-  let m = Stats.covMatrix f
+  let m = Stats.covFrame f
   let ab = m.GetColumn<float>("A").Get("B")
   let ba = m.GetColumn<float>("B").Get("A")
   ab |> should beWithin (ba +/- 1e-9)
