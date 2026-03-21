@@ -2,6 +2,7 @@
 #load "../../src/Deedle/Deedle.fsx"
 #r "nuget: NUnit"
 #r "nuget: FsUnit"
+#r "nuget: FsCheck"
 #else
 module Deedle.Arrow.Tests
 #endif
@@ -10,6 +11,7 @@ open System
 open System.IO
 open NUnit.Framework
 open FsUnit
+open FsCheck
 open Deedle
 open Deedle.Arrow
 open Apache.Arrow
@@ -383,3 +385,293 @@ let ``writeFeatherWithIndex and readFeatherWithIndex round-trip row keys`` () =
             df2.RowKeys |> List.ofSeq |> should equal [ "x"; "y"; "z" ]
         finally
             if File.Exists(featherPath) then File.Delete(featherPath))
+
+// ------------------------------------------------------------------------------------------------
+// Part 3: Frame module API tests
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Frame.toRecordBatch and Frame.ofRecordBatch round-trip floats`` () =
+    let df = frame [ "A" => Series.ofValues [ 1.0; 2.0; 3.0 ]
+                     "B" => Series.ofValues [ 4.0; 5.0; 6.0 ] ]
+    let batch = Frame.toRecordBatch df
+    let df2   = Frame.ofRecordBatch batch
+    df2.ColumnCount |> should equal 2
+    df2.RowCount    |> should equal 3
+    df2.["A"] |> Series.values |> Array.ofSeq |> should equal [| 1.0; 2.0; 3.0 |]
+    df2.["B"] |> Series.values |> Array.ofSeq |> should equal [| 4.0; 5.0; 6.0 |]
+
+[<Test>]
+let ``Frame.readArrow and Frame.writeArrow round-trip float frame`` () =
+    let tmpPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N") + ".arrow")
+    try
+        let df = frame [ "X" => Series.ofValues [ 10.0; 20.0; 30.0 ] ]
+        Frame.writeArrow tmpPath df
+        let df2 = Frame.readArrow tmpPath
+        df2.RowCount    |> should equal 3
+        df2.ColumnCount |> should equal 1
+        df2.["X"] |> Series.values |> Array.ofSeq |> should equal [| 10.0; 20.0; 30.0 |]
+    finally
+        if File.Exists(tmpPath) then File.Delete(tmpPath)
+
+[<Test>]
+let ``Frame.readArrowStream and Frame.writeArrowStream round-trip`` () =
+    let df = frame [ "P" => Series.ofValues [ 1.0; 2.0 ]
+                     "Q" => Series.ofValues [ 3.0; 4.0 ] ]
+    use ms = new MemoryStream()
+    Frame.writeArrowStream ms df
+    ms.Position <- 0L
+    let df2 = Frame.readArrowStream ms
+    df2.ColumnCount |> should equal 2
+    df2.RowCount    |> should equal 2
+    df2.["P"] |> Series.values |> Array.ofSeq |> should equal [| 1.0; 2.0 |]
+
+[<Test>]
+let ``Frame.readFeather and Frame.writeFeather are Feather v2 aliases`` () =
+    let tmpPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N") + ".feather")
+    try
+        let df = frame [ "Val" => Series.ofValues [ 99.0; 88.0 ] ]
+        Frame.writeFeather tmpPath df
+        let df2 = Frame.readFeather tmpPath
+        df2.RowCount    |> should equal 2
+        df2.ColumnCount |> should equal 1
+        df2.["Val"] |> Series.values |> Array.ofSeq |> should equal [| 99.0; 88.0 |]
+    finally
+        if File.Exists(tmpPath) then File.Delete(tmpPath)
+
+[<Test>]
+let ``Frame.writeArrowWithIndex and Frame.readArrowWithIndex preserve string row keys`` () =
+    let tmpPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N") + ".arrow")
+    try
+        let keys = [| "r1"; "r2"; "r3" |]
+        let df = frame [ "N" => Series(keys, [| 1.0; 2.0; 3.0 |]) ]
+        Frame.writeArrowWithIndex tmpPath df
+        let df2 = Frame.readArrowWithIndex tmpPath
+        df2.RowKeys |> List.ofSeq |> should equal [ "r1"; "r2"; "r3" ]
+        df2.ColumnCount |> should equal 1
+    finally
+        if File.Exists(tmpPath) then File.Delete(tmpPath)
+
+// ------------------------------------------------------------------------------------------------
+// Part 3: Series module API tests
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Series.toArrowArray converts float series to DoubleArray`` () =
+    let s = Series.ofValues [ 3.0; 1.0; 4.0; 1.0; 5.0 ]
+    let arr = Series.toArrowArray s
+    arr :? DoubleArray |> should equal true
+    arr.Length         |> should equal 5
+
+[<Test>]
+let ``Series.toArrowArray preserves missing values`` () =
+    let s = Series.ofOptionalObservations [ (0, Some 1.0); (1, None); (2, Some 3.0) ]
+    let arr = Series.toArrowArray s
+    arr.IsNull(0) |> should equal false
+    arr.IsNull(1) |> should equal true
+    arr.IsNull(2) |> should equal false
+
+[<Test>]
+let ``Series.ofArrowArray produces 0-based int key series`` () =
+    let arr = DoubleArray.Builder().Append(7.0).Append(8.0).Append(9.0).Build()
+    let s = Series.ofArrowArray (arr :> IArrowArray)
+    s.KeyCount   |> should equal 3
+    s.Keys |> List.ofSeq |> should equal [ 0; 1; 2 ]
+
+[<Test>]
+let ``Series.toArrowArray and Series.ofArrowArray round-trip floats`` () =
+    let orig = Series.ofValues [ 1.1; 2.2; 3.3 ]
+    let arr  = Series.toArrowArray orig
+    let back = Series.ofArrowArray arr
+    back.Values |> Seq.map (fun v -> v :?> float) |> Seq.toArray
+    |> should equal [| 1.1; 2.2; 3.3 |]
+
+[<Test>]
+let ``Series.toArrowArray round-trips int series`` () =
+    let s = Series.ofValues [ 100; 200; 300 ]
+    let arr = Series.toArrowArray s
+    arr :? Int32Array |> should equal true
+    (arr :?> Int32Array).GetValue(0).Value |> should equal 100
+
+// ------------------------------------------------------------------------------------------------
+// Part 3: Edge case tests
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Single-row frame round-trips through Arrow file`` () =
+    let tmpPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N") + ".arrow")
+    try
+        let df =
+            frame [ "A" => (Series.ofValues [ 42.0 ]    :> ISeries<int>)
+                    "B" => (Series.ofValues [ "hello" ]  :> ISeries<int>) ]
+        writeArrow tmpPath df
+        let df2 = readArrow tmpPath
+        df2.RowCount    |> should equal 1
+        df2.ColumnCount |> should equal 2
+        df2.["A"] |> Series.values |> Array.ofSeq |> should equal [| 42.0 |]
+        df2.GetColumn<string>("B") |> Series.values |> Array.ofSeq |> should equal [| "hello" |]
+    finally
+        if File.Exists(tmpPath) then File.Delete(tmpPath)
+
+[<Test>]
+let ``Single-column frame round-trips through Arrow file`` () =
+    let tmpPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N") + ".arrow")
+    try
+        let df = frame [ "Only" => Series.ofValues [ 1; 2; 3; 4; 5 ] ]
+        writeArrow tmpPath df
+        let df2 = readArrow tmpPath
+        df2.ColumnCount |> should equal 1
+        df2.RowCount    |> should equal 5
+        df2.GetColumn<int>("Only") |> Series.values |> Array.ofSeq |> should equal [| 1; 2; 3; 4; 5 |]
+    finally
+        if File.Exists(tmpPath) then File.Delete(tmpPath)
+
+[<Test>]
+let ``All-missing column round-trips through Arrow file`` () =
+    let tmpPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N") + ".arrow")
+    try
+        let s = Series.ofOptionalObservations [ (0, None); (1, None); (2, None) ] : Series<int, float>
+        let df = frame [ "AllMissing" => s ]
+        writeArrow tmpPath df
+        let df2 = readArrow tmpPath
+        df2.RowCount    |> should equal 3
+        df2.["AllMissing"].ValueCount |> should equal 0
+    finally
+        if File.Exists(tmpPath) then File.Delete(tmpPath)
+
+[<Test>]
+let ``Mixed-type frame round-trips through Arrow file`` () =
+    let tmpPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N") + ".arrow")
+    try
+        let df =
+            frame [ "FloatCol" => (Series.ofValues [ 1.0; 2.0; 3.0 ] :> ISeries<int>)
+                    "IntCol"   => (Series.ofValues [ 10; 20; 30 ]     :> ISeries<int>)
+                    "StrCol"   => (Series.ofValues [ "a"; "b"; "c" ]  :> ISeries<int>) ]
+        writeArrow tmpPath df
+        let df2 = readArrow tmpPath
+        df2.ColumnCount |> should equal 3
+        df2.RowCount    |> should equal 3
+        df2.["FloatCol"] |> Series.values |> Array.ofSeq |> should equal [| 1.0; 2.0; 3.0 |]
+        df2.GetColumn<int>("IntCol") |> Series.values |> Array.ofSeq |> should equal [| 10; 20; 30 |]
+        df2.GetColumn<string>("StrCol") |> Series.values |> Array.ofSeq |> should equal [| "a"; "b"; "c" |]
+    finally
+        if File.Exists(tmpPath) then File.Delete(tmpPath)
+
+[<Test>]
+let ``frame with int64 column round-trips through Arrow stream`` () =
+    let df = frame [ "Big" => Series.ofValues [ Int64.MinValue; 0L; Int64.MaxValue ] ]
+    use ms = new MemoryStream()
+    writeArrowStream ms df
+    ms.Position <- 0L
+    let df2 = readArrowStream ms
+    df2.GetColumn<int64>("Big") |> Series.values |> Array.ofSeq
+    |> should equal [| Int64.MinValue; 0L; Int64.MaxValue |]
+
+[<Test>]
+let ``frame with float32 column round-trips through Arrow file`` () =
+    let tmpPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N") + ".arrow")
+    try
+        let df = frame [ "F32" => Series.ofValues [ 1.5f; 2.5f; 3.5f ] ]
+        writeArrow tmpPath df
+        let df2 = readArrow tmpPath
+        df2.GetColumn<float32>("F32") |> Series.values |> Array.ofSeq
+        |> should equal [| 1.5f; 2.5f; 3.5f |]
+    finally
+        if File.Exists(tmpPath) then File.Delete(tmpPath)
+
+[<Test>]
+let ``Empty string column round-trips through Arrow file`` () =
+    let tmpPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N") + ".arrow")
+    try
+        let df = frame [ "S" => Series.ofValues [ ""; "hello"; "" ] ]
+        writeArrow tmpPath df
+        let df2 = readArrow tmpPath
+        df2.GetColumn<string>("S") |> Series.values |> Array.ofSeq
+        |> should equal [| ""; "hello"; "" |]
+    finally
+        if File.Exists(tmpPath) then File.Delete(tmpPath)
+
+// ------------------------------------------------------------------------------------------------
+// Part 3: FsCheck property-based tests
+// ------------------------------------------------------------------------------------------------
+
+// Non-special float: finite, not NaN
+let private isFinite (f: float) = not (Double.IsNaN f) && not (Double.IsInfinity f)
+
+[<Test>]
+let ``Property: float frame round-trips through Arrow file (FsCheck)`` () =
+    let check (values: float list) =
+        let vs = values |> List.filter isFinite
+        if vs.IsEmpty then true
+        else
+            let tmpPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N") + ".arrow")
+            try
+                let df = frame [ "V" => Series.ofValues vs ]
+                writeArrow tmpPath df
+                let df2 = readArrow tmpPath
+                let out = df2.["V"] |> Series.values |> Array.ofSeq
+                out = Array.ofList vs
+            finally
+                if File.Exists(tmpPath) then File.Delete(tmpPath)
+    Check.QuickThrowOnFailure check
+
+[<Test>]
+let ``Property: int32 frame round-trips through Arrow file (FsCheck)`` () =
+    let check (values: int list) =
+        if values.IsEmpty then true
+        else
+            let tmpPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N") + ".arrow")
+            try
+                let df = frame [ "I" => Series.ofValues values ]
+                writeArrow tmpPath df
+                let df2 = readArrow tmpPath
+                let out = df2.GetColumn<int>("I") |> Series.values |> Array.ofSeq
+                out = Array.ofList values
+            finally
+                if File.Exists(tmpPath) then File.Delete(tmpPath)
+    Check.QuickThrowOnFailure check
+
+[<Test>]
+let ``Property: string frame round-trips through Arrow file (FsCheck)`` () =
+    let check (values: NonNull<string> list) =
+        let vs = values |> List.map (fun (NonNull s) -> s)
+        if vs.IsEmpty then true
+        else
+            let tmpPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N") + ".arrow")
+            try
+                let df = frame [ "S" => Series.ofValues vs ]
+                writeArrow tmpPath df
+                let df2 = readArrow tmpPath
+                let out = df2.GetColumn<string>("S") |> Series.values |> Array.ofSeq
+                out = Array.ofList vs
+            finally
+                if File.Exists(tmpPath) then File.Delete(tmpPath)
+    Check.QuickThrowOnFailure check
+
+[<Test>]
+let ``Property: float series round-trips through Arrow array (FsCheck)`` () =
+    let check (values: float list) =
+        let vs = values |> List.filter isFinite
+        if vs.IsEmpty then true
+        else
+            let orig = Series.ofValues vs
+            let arr  = seriesToArrowArray orig
+            let back = arrowArrayToSeries arr
+            let backVals = back.Values |> Seq.map (fun v -> v :?> float) |> Seq.toList
+            backVals = vs
+    Check.QuickThrowOnFailure check
+
+[<Test>]
+let ``Property: recordBatch round-trip preserves column names (FsCheck)`` () =
+    let check (colNames: NonNull<string> list) =
+        let names = colNames |> List.map (fun (NonNull s) -> s) |> List.distinct
+        if names.IsEmpty then true
+        else
+            let cols =
+                names |> List.map (fun n -> n, Series.ofValues [ 1.0; 2.0 ] :> ISeries<int>)
+            let df    = Frame.ofColumns cols
+            let batch = frameToRecordBatch df
+            let df2   = recordBatchToFrame batch
+            let outNames = df2.ColumnKeys |> List.ofSeq
+            outNames = names
+    Check.QuickThrowOnFailure check
