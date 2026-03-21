@@ -79,6 +79,8 @@ Then we add nice namings, sort the frame and build a new data frame with a nice 
 
  * [Calculating frame and series statistics](stats.html)
 
+ * [Handling missing values](missing.html)
+
  * [Creating lazily loaded series](lazysource.html)
 
  * [`Series` module](reference/deedle-seriesmodule.html) provides functions for working
