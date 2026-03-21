@@ -595,6 +595,122 @@ let readFeatherWithIndex (path: string) : Frame<string, string> =
     readArrowWithIndex path
 
 // ------------------------------------------------------------------------------------------------
+// F# module API — Frame module
+// After `open Deedle.Arrow`, these are accessible as `Frame.readArrow`, `Frame.writeArrow`, etc.
+// ------------------------------------------------------------------------------------------------
+
+/// <summary>
+/// Arrow-specific functions on Deedle <c>Frame</c> values.
+/// Open <c>Deedle.Arrow</c> and then call these as <c>Frame.readArrow</c>,
+/// <c>Frame.writeArrow</c>, <c>Frame.toRecordBatch</c>, etc.
+/// </summary>
+module Frame =
+
+    /// <summary>
+    /// Convert a Deedle <c>Frame</c> to an Apache Arrow <c>RecordBatch</c>.
+    /// Column keys are converted to strings via <c>ToString()</c>.
+    /// Row keys are <em>not</em> included; use <c>Frame.writeArrow</c> / <c>Frame.readArrow</c>
+    /// for full round-trip serialisation.
+    /// </summary>
+    let toRecordBatch (frame: Frame<'R,'C>) : RecordBatch =
+        frameToRecordBatch frame
+
+    /// <summary>
+    /// Convert an Apache Arrow <c>RecordBatch</c> to a Deedle <c>Frame&lt;int,string&gt;</c>.
+    /// Row keys are 0-based integers. Arrow null values become Deedle missing values.
+    /// </summary>
+    let ofRecordBatch (batch: RecordBatch) : Frame<int, string> =
+        recordBatchToFrame batch
+
+    /// <summary>
+    /// Read an Arrow IPC file (<c>.arrow</c> or Feather v2 <c>.feather</c>) into a
+    /// Deedle <c>Frame&lt;int,string&gt;</c>.
+    /// Files with multiple record batches are concatenated into a single frame.
+    /// </summary>
+    let readArrow (path: string) : Frame<int, string> =
+        readArrow path
+
+    /// <summary>
+    /// Write a Deedle <c>Frame</c> to an Arrow IPC file (the standard <c>.arrow</c> format,
+    /// also compatible with Feather v2 <c>.feather</c> files).
+    /// </summary>
+    let writeArrow (path: string) (frame: Frame<'R, string>) : unit =
+        writeArrow path frame
+
+    /// <summary>
+    /// Read an Arrow IPC stream into a Deedle <c>Frame&lt;int,string&gt;</c>.
+    /// All record batches in the stream are concatenated into a single frame.
+    /// </summary>
+    let readArrowStream (stream: System.IO.Stream) : Frame<int, string> =
+        readArrowStream stream
+
+    /// <summary>
+    /// Write a Deedle <c>Frame</c> to an Arrow IPC stream (suitable for network transport
+    /// or streaming pipelines). The stream is left open after writing.
+    /// </summary>
+    let writeArrowStream (stream: System.IO.Stream) (frame: Frame<'R, string>) : unit =
+        writeArrowStream stream frame
+
+    /// <summary>
+    /// Read a Feather v2 file (<c>.feather</c>) into a Deedle <c>Frame&lt;int,string&gt;</c>.
+    /// Feather v2 is the Arrow IPC file format — this is an alias for <c>Frame.readArrow</c>.
+    /// </summary>
+    let readFeather (path: string) : Frame<int, string> =
+        readFeather path
+
+    /// <summary>
+    /// Write a Deedle <c>Frame</c> to a Feather v2 file (<c>.feather</c>).
+    /// Feather v2 is the Arrow IPC file format — this is an alias for <c>Frame.writeArrow</c>.
+    /// </summary>
+    let writeFeather (path: string) (frame: Frame<'R, string>) : unit =
+        writeFeather path frame
+
+    /// <summary>
+    /// Write a Deedle <c>Frame</c> to an Arrow IPC file, storing row keys in a special
+    /// <c>__index__</c> column so they can be restored on read.
+    /// Row keys are serialised via <c>ToString()</c>.
+    /// </summary>
+    let writeArrowWithIndex (path: string) (frame: Frame<'R, string>) : unit =
+        writeArrowWithIndex path frame
+
+    /// <summary>
+    /// Read an Arrow IPC file that was written with <c>Frame.writeArrowWithIndex</c>,
+    /// restoring the original string row keys.
+    /// If no <c>__index__</c> column is present, returns a frame with 0-based integer
+    /// row keys converted to strings.
+    /// </summary>
+    let readArrowWithIndex (path: string) : Frame<string, string> =
+        readArrowWithIndex path
+
+// ------------------------------------------------------------------------------------------------
+// F# module API — Series module
+// After `open Deedle.Arrow`, these are accessible as `Series.toArrowArray`, etc.
+// ------------------------------------------------------------------------------------------------
+
+/// <summary>
+/// Arrow-specific functions on Deedle <c>Series</c> values.
+/// Open <c>Deedle.Arrow</c> and then call these as <c>Series.toArrowArray</c>,
+/// <c>Series.ofArrowArray</c>, etc.
+/// </summary>
+module Series =
+
+    /// <summary>
+    /// Convert a Deedle <c>Series</c> to an Apache Arrow <c>IArrowArray</c>.
+    /// The series element type determines the Arrow array type (same mapping as
+    /// <c>Frame.toRecordBatch</c>). Missing values are encoded as Arrow validity-bitmap nulls.
+    /// </summary>
+    let toArrowArray (series: Series<'K, 'V>) : IArrowArray =
+        seriesToArrowArray series
+
+    /// <summary>
+    /// Convert an Apache Arrow <c>IArrowArray</c> to a Deedle <c>Series&lt;int,obj&gt;</c>.
+    /// Row keys are 0-based integers. Arrow null values become Deedle missing values.
+    /// The values are boxed as <c>obj</c>; use <c>Series.map</c> to obtain a typed series.
+    /// </summary>
+    let ofArrowArray (arr: IArrowArray) : Series<int, obj> =
+        arrowArrayToSeries arr
+
+// ------------------------------------------------------------------------------------------------
 // C#-friendly API: static factory methods and extension methods
 // ------------------------------------------------------------------------------------------------
 
