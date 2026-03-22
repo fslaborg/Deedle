@@ -73,6 +73,11 @@ dotnet test tests/Deedle.Tests/Deedle.Tests.fsproj -c Release
 
 The library version is set in `Directory.Build.props` at the repo root. Update `<Version>` there when releasing, and add a corresponding entry at the top of `RELEASE_NOTES.md`.
 
+**When making any change that adds, alters, or fixes user-facing behaviour, you must:**
+
+1. **Update `RELEASE_NOTES.md`** — add a bullet under the current unreleased version heading (or create a new version heading if one does not exist). Group entries by category: new packages, new operations, I/O, performance, bug fixes, infrastructure.
+2. **Run and record benchmarks** — if the change affects performance-sensitive code paths (Stats, Frame aggregation, CSV I/O, series windowing, etc.), run the BenchmarkDotNet suite under `benchmarks/` before and after the change and include the relevant results in the PR description.
+
 ---
 
 ## CI Workflow
