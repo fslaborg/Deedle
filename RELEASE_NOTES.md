@@ -1,6 +1,96 @@
 # Release Notes
 
-## 4.0.0 - 2026-03-22
+## 4.0.1 - 2026-03-22
+
+### New packages
+
+- **Deedle.Arrow**: Apache Arrow / Feather interop — `Frame`/`Series` ↔ `RecordBatch`, IPC I/O, Feather aliases, UInt/Date types, C# extensions, row-key preservation ([#675](https://github.com/fslaborg/Deedle/pull/675), [#681](https://github.com/fslaborg/Deedle/pull/681), [#685](https://github.com/fslaborg/Deedle/pull/685))
+- **Deedle.MicrosoftML**: ML.NET `IDataView` integration with `VBuffer<float32>`/`VBuffer<float>` vector column support ([#677](https://github.com/fslaborg/Deedle/pull/677), [#680](https://github.com/fslaborg/Deedle/pull/680))
+- **Deedle.Excel.Reader**: cross-platform xlsx/xls reading via ExcelDataReader ([#679](https://github.com/fslaborg/Deedle/pull/679))
+
+### New Frame operations
+
+- `Frame.interleave` — side-by-side frame combining with tuple column keys ([#691](https://github.com/fslaborg/Deedle/pull/691))
+- `Frame.joinOn`, `Frame.joinOnString`, `Frame.joinOnInt` — join frames on a column value ([#630](https://github.com/fslaborg/Deedle/pull/630), [#663](https://github.com/fslaborg/Deedle/pull/663))
+- `Frame.nestRowsBy` — hierarchical row nesting ([#652](https://github.com/fslaborg/Deedle/pull/652))
+- `Frame.compare` — column-by-column frame diffing ([#637](https://github.com/fslaborg/Deedle/pull/637))
+- `Frame.rankRowsBy` — rank rows within groups ([#636](https://github.com/fslaborg/Deedle/pull/636))
+- `Frame.indexRowsApply` — build row index from a projection ([#650](https://github.com/fslaborg/Deedle/pull/650))
+- `Frame.indexRowsDateTime` / `Frame.indexRowsDateTimeOffset` aliases ([#653](https://github.com/fslaborg/Deedle/pull/653))
+- `Frame.mapColValuesAs` — typed, non-boxing column mapping ([#629](https://github.com/fslaborg/Deedle/pull/629))
+- `Frame.renameCol`, `Frame.renameColsUsing` ([#603](https://github.com/fslaborg/Deedle/pull/603))
+- `Frame.meltBy` — pandas-style melt with identity columns ([#598](https://github.com/fslaborg/Deedle/pull/598))
+- `Frame.distinctRowsBy` — remove duplicate rows by column values ([#596](https://github.com/fslaborg/Deedle/pull/596))
+- `Frame.toJson` / `Frame.saveJson` — JSON serialisation ([#609](https://github.com/fslaborg/Deedle/pull/609))
+- `Frame.pctChange` — percentage change ([#610](https://github.com/fslaborg/Deedle/pull/610))
+- `Frame.filterRowsByMask`, `Frame.filterColsByMask` — boolean mask filtering ([#619](https://github.com/fslaborg/Deedle/pull/619))
+- `Frame.empty` / `Series.empty` module functions ([#607](https://github.com/fslaborg/Deedle/pull/607))
+- `iloc` integer-position indexing for `Frame` and `Series` ([#631](https://github.com/fslaborg/Deedle/pull/631))
+
+### New Series operations
+
+- `Series.rank`, `Series.rankWith`, `Series.ntile` — ranking and quantile binning ([#636](https://github.com/fslaborg/Deedle/pull/636))
+- `Series.sweepLevel` — hierarchical group normalisation ([#638](https://github.com/fslaborg/Deedle/pull/638))
+- `Series.replaceValue` — pandas-style value replacement ([#628](https://github.com/fslaborg/Deedle/pull/628))
+- `Series.maskValues`, `Series.maskAll` — replace values with missing ([#605](https://github.com/fslaborg/Deedle/pull/605))
+- `Series.diffDate`, `Series.diffDateOffset` — `DateTime`/`DateTimeOffset` differences ([#592](https://github.com/fslaborg/Deedle/pull/592))
+- `Series.pctChange` — percentage change ([#610](https://github.com/fslaborg/Deedle/pull/610))
+- `Series.filterByMask` — boolean mask filtering ([#619](https://github.com/fslaborg/Deedle/pull/619))
+- `Series.before`, `Series.after`, `Series.startAt`, `Series.endAt`, `Series.between` ([#620](https://github.com/fslaborg/Deedle/pull/620))
+- `Series.windowWhileFromEnd`, `Series.chunkWhileFromEnd` ([#648](https://github.com/fslaborg/Deedle/pull/648))
+
+### New Stats operations
+
+- `Stats.movingMedian`, `Stats.expandingMedian` ([#661](https://github.com/fslaborg/Deedle/pull/661))
+- `Stats.levelMin`, `Stats.levelMax` ([#647](https://github.com/fslaborg/Deedle/pull/647))
+- `Stats.interpolateLinearWith` — linear interpolation with configurable extrapolation ([#627](https://github.com/fslaborg/Deedle/pull/627))
+- `Stats.cov`, `Stats.corr` — pairwise series covariance and correlation ([#614](https://github.com/fslaborg/Deedle/pull/614))
+- `Stats.corrMatrix`, `Stats.covMatrix` — full correlation/covariance matrix for a `Frame` ([#682](https://github.com/fslaborg/Deedle/pull/682))
+- `Stats.describe` for `Frame` — pandas-style per-column summary statistics ([#612](https://github.com/fslaborg/Deedle/pull/612))
+
+### New C# extension methods
+
+- `WindowWhile`, `ChunkWhile`, `PairwiseWith`, `MapRows`, `MapCols` ([#666](https://github.com/fslaborg/Deedle/pull/666))
+- `ZipInto`, `ZipAlignInto`, `ZipInner` for `Series` ([#657](https://github.com/fslaborg/Deedle/pull/657))
+
+### I/O enhancements
+
+- `Frame.ReadCsv` accepts URLs ([#658](https://github.com/fslaborg/Deedle/pull/658))
+- `Frame.ReadCsv` `typeResolver` parameter for custom type inference ([#649](https://github.com/fslaborg/Deedle/pull/649))
+- `Frame.ReadCsv` / `Frame.SaveCsv` `encoding` parameter ([#617](https://github.com/fslaborg/Deedle/pull/617))
+
+### Performance
+
+- Eliminate `seq`/`ref` overhead in `Stats` moving and expanding window helpers ([#683](https://github.com/fslaborg/Deedle/pull/683))
+- Optimise `Frame.AggregateRowsBy` to avoid per-group sub-frame allocation ([#669](https://github.com/fslaborg/Deedle/pull/669))
+- Cache `ToString()` in CSV writer for repeated values ([#621](https://github.com/fslaborg/Deedle/pull/621))
+
+### Bug fixes
+
+- Fix delayed series display showing `(Suppressed)` — show key range instead ([#662](https://github.com/fslaborg/Deedle/pull/662))
+- Fix `DateTime` key formatting and locale-dependent formatting in FSI output ([#633](https://github.com/fslaborg/Deedle/pull/633), [#643](https://github.com/fslaborg/Deedle/pull/643))
+- Fix `Frame.fillMissingWith` to handle numeric type widening ([#632](https://github.com/fslaborg/Deedle/pull/632))
+- Fix: throw `InvalidOperationException` for inexact `Lookup` on unordered series ([#644](https://github.com/fslaborg/Deedle/pull/644))
+- Fix `DelayedSeries.Between` to correctly update `RangeMin`/`RangeMax` ([#624](https://github.com/fslaborg/Deedle/pull/624))
+- Fix `AsDecimal` to support scientific notation ([#623](https://github.com/fslaborg/Deedle/pull/623))
+- Fix `Frame.ReadCsv` schema being ignored when `inferTypes=false` ([#615](https://github.com/fslaborg/Deedle/pull/615))
+- Fix `Finance.ewmVol` computing RMS instead of standard deviation ([#593](https://github.com/fslaborg/Deedle/pull/593))
+- Fix `Frame.GetRowKeyAt` to accept `int` instead of `int64` ([#588](https://github.com/fslaborg/Deedle/pull/588))
+- Fix `Frame.ofRecords` for internal/private record types ([#580](https://github.com/fslaborg/Deedle/pull/580))
+- Fix `IndexOutOfRangeException` in `Series.windowSize` for series shorter than window ([#573](https://github.com/fslaborg/Deedle/pull/573))
+- Truncate long cell values in FSI/`ToString` output ([#646](https://github.com/fslaborg/Deedle/pull/646))
+- Fix `filterRows`/`filterRowValues`/`Where` losing `ColumnTypes` on all-missing columns ([#601](https://github.com/fslaborg/Deedle/pull/601))
+- Fix CSV schema parsing for column names containing parentheses ([#604](https://github.com/fslaborg/Deedle/pull/604))
+- Fix `Frame.indexRowsWith` to produce missing values for extra row keys ([#595](https://github.com/fslaborg/Deedle/pull/595))
+
+### Infrastructure
+
+- Add SourceLink and deterministic build support ([#660](https://github.com/fslaborg/Deedle/pull/660))
+- Add BenchmarkDotNet benchmark suite under `benchmarks/` ([#687](https://github.com/fslaborg/Deedle/pull/687))
+- Update test infrastructure: NUnit 4, FsUnit 7, FsCheck 3 ([#616](https://github.com/fslaborg/Deedle/pull/616))
+- Add `[RequiresExplicitTypeArguments]` to `GetRow`/`TryGetRow` and `ObjectSeries` typed accessors ([#654](https://github.com/fslaborg/Deedle/pull/654))
+
+## 4.0.0 - 2026-03-10
 
 - **Breaking change**: `Frame.stack` and `Frame.unstack` now implement pandas-style
   reshape operations. `stack` converts `Frame<'R,'C>` to a long-format
