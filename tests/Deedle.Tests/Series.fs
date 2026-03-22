@@ -282,6 +282,26 @@ let ``Series.chunkWhileIntoFromEnd uses last key of each chunk`` () =
   let expected = series [ 1 => [1]; 14 => [10;11;14]; 21 => [21]]
   actual |> shouldEqual expected
 
+[<Test>]
+let ``Series.pairwise produces pairs with predecessor and current value`` () =
+  let s = series [ 1 => 10; 2 => 20; 3 => 30 ]
+  let actual = s |> Series.pairwise
+  actual |> Series.countKeys |> should equal 2
+  actual.Get(2) |> should equal (10, 20)
+  actual.Get(3) |> should equal (20, 30)
+
+[<Test>]
+let ``Series.pairwise result has length N-1`` () =
+  let s = series [ 1 => 'a'; 2 => 'b'; 3 => 'c'; 4 => 'd' ]
+  let actual = s |> Series.pairwise
+  actual |> Series.countKeys |> should equal (s |> Series.countKeys |> (+) -1)
+
+[<Test>]
+let ``Series.pairwise on single-element series returns empty series`` () =
+  let s = series [ 42 => "only" ]
+  let actual = s |> Series.pairwise
+  actual |> Series.countKeys |> should equal 0
+
 // ------------------------------------------------------------------------------------------------
 // Numerics
 // ------------------------------------------------------------------------------------------------
