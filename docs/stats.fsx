@@ -156,3 +156,33 @@ byMonth
 |> Series.mapValues (Stats.levelMean fst)
 |> Frame.ofRows
 (*** include-it:lvlall ***)
+
+(**
+
+<a name="advanced"></a>
+
+## Advanced statistics with Deedle.Math
+
+The `Deedle.Math` package extends Deedle's statistical capabilities using
+[MathNet.Numerics](https://numerics.mathnetchr.net). It adds:
+
+ * **Correlation and covariance matrices** — `Stats.corr`, `Stats.cov` for full-frame
+   Pearson or Spearman correlation and covariance.
+ * **Exponentially weighted moving statistics** — `Stats.ewmMean`, `Finance.ewmVolStdDev`,
+   `Finance.ewmCov` etc. for time-decayed calculations common in quantitative finance.
+ * **Quantiles and ranks** — `Stats.quantile`, `Stats.ranks` backed by MathNet's exact
+   algorithms.
+ * **Linear algebra** — transpose, inverse, decompositions (LU, QR, SVD, Cholesky, Eigen)
+   directly on `Frame<'R,'C>` values.
+ * **PCA** — principal component analysis via `PCA.pca`.
+ * **Linear regression** — ordinary least squares via `LinearRegression.ols`.
+
+Install with:
+
+```
+dotnet add package Deedle.Math
+```
+
+See the [Deedle.Math documentation](math.html) for detailed examples.
+
+*)

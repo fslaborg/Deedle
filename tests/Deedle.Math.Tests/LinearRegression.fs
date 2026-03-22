@@ -52,7 +52,7 @@ let ``Simple linear regression coefficients between MSFT and WMT returns the sam
     LinearRegression.ols ["MSFT"] "WMT" true stockReturns
     |> LinearRegression.Fit.coefficients
   let actualCoeff = actualCoeffs.["MSFT"]
-  let (yCross, xCoeff) =
+  let struct (yCross, xCoeff) =
     let xs =
       stockReturns.["MSFT"]
       |> Series.values

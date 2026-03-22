@@ -1,5 +1,7 @@
 source https://api.nuget.org/v3/index.json
 
+nuget BenchmarkDotNet ~> 0.13.0
+nuget Pragmastat >= 3.2
 nuget Apache.Arrow
 nuget FsCheck
 nuget FSharp.Compiler.Service

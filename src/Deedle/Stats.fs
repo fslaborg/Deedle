@@ -1096,6 +1096,44 @@ type Stats =
     |> Series.map (fun _ s -> Stats.describe s)
     |> FrameUtils.fromColumns FrameUtils.indexBuilder FrameUtils.vectorBuilder
 
+  /// <summary>
+  /// Returns the pairwise Pearson correlation matrix of the numerical columns
+  /// in the input frame. Only columns convertible to <c>float</c> are included.
+  /// The result is a square <c>Frame&lt;'C, 'C&gt;</c> where entry <c>(c1, c2)</c>
+  /// is the correlation coefficient of columns <c>c1</c> and <c>c2</c>.
+  /// Diagonal entries are 1.0; off-diagonal entries are NaN when either column
+  /// has fewer than 2 non-missing values or zero variance.
+  /// </summary>
+  /// <param name="frame">The input frame</param>
+  /// <category>Frame statistics</category>
+  static member corrFrame (frame:Frame<'R, 'C>) =
+    let cols = frame.GetColumns<float>() |> Series.observations |> Seq.toArray
+    cols
+    |> Array.map (fun (c2, s2) ->
+        c2, cols |> Array.map (fun (c1, s1) -> c1, Stats.corr s1 s2)
+                 |> Series.ofObservations)
+    |> Series.ofObservations
+    |> FrameUtils.fromColumns FrameUtils.indexBuilder FrameUtils.vectorBuilder
+
+  /// <summary>
+  /// Returns the pairwise sample covariance matrix of the numerical columns
+  /// in the input frame. Only columns convertible to <c>float</c> are included.
+  /// The result is a square <c>Frame&lt;'C, 'C&gt;</c> where entry <c>(c1, c2)</c>
+  /// is the sample covariance of columns <c>c1</c> and <c>c2</c>.
+  /// Diagonal entries are the sample variance of each column; off-diagonal entries
+  /// are NaN when either column has fewer than 2 non-missing values.
+  /// </summary>
+  /// <param name="frame">The input frame</param>
+  /// <category>Frame statistics</category>
+  static member covFrame (frame:Frame<'R, 'C>) =
+    let cols = frame.GetColumns<float>() |> Series.observations |> Seq.toArray
+    cols
+    |> Array.map (fun (c2, s2) ->
+        c2, cols |> Array.map (fun (c1, s1) -> c1, Stats.cov s1 s2)
+                 |> Series.ofObservations)
+    |> Series.ofObservations
+    |> FrameUtils.fromColumns FrameUtils.indexBuilder FrameUtils.vectorBuilder
+
   // ------------------------------------------------------------------------------------
   // Statistics applied to a single level of a multi-level indexed series
   // ------------------------------------------------------------------------------------

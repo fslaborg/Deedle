@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net9.0</TargetFramework>
+    <AssemblyName>Deedle.Benchmarks</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Benchmarks.fs" />
+    <Compile Include="Program.fs" />
+    <None Include="paket.references" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Deedle\Deedle.fsproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="../Performance/data/titanic.csv">
+      <Link>data/titanic.csv</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <Import Project="..\..\.paket\Paket.Restore.targets" />
+</Project>
