@@ -1,6 +1,6 @@
 # Release Notes
 
-## 4.0.0-alpha-002 - 2026-03-19
+## 4.0.0 - 2026-03-22
 
 - **Breaking change**: `Frame.stack` and `Frame.unstack` now implement pandas-style
   reshape operations. `stack` converts `Frame<'R,'C>` to a long-format
