@@ -1325,6 +1325,17 @@ type FrameExtensions =
     frame.Merge(Frame.ofRows [ rowKey => row ])
 
   /// <summary>
+  /// Combines a sequence of data frames side-by-side by tagging each frame's column keys with
+  /// its 1-based position in the sequence. The result has a tuple column index of type
+  /// <c>Tuple&lt;'TColumnKey, int&gt;</c>, where the integer is the 1-based source frame index.
+  /// Rows are aligned using an outer join.
+  /// </summary>
+  /// <param name="frames">Sequence of data frames to interleave. Must be non-empty.</param>
+  [<Extension>]
+  static member Interleave(frames:seq<Frame<'TRowKey, 'TColumnKey>>) : Frame<'TRowKey, 'TColumnKey * int> =
+    Frame.interleave (List.ofSeq frames)
+
+  /// <summary>
   /// Returns a frame with columns shifted by the specified offset. When the offset is
   /// positive, the values are shifted forward and first `offset` keys are dropped. When the
   /// offset is negative, the values are shifted backwards and the last `offset` keys are dropped.
