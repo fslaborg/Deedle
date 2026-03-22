@@ -54,6 +54,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{B4B13E8F
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Deedle.Excel.Reader.Tests", "tests\Deedle.Excel.Reader.Tests\Deedle.Excel.Reader.Tests.fsproj", "{76702DFC-4680-4CBC-9DE9-CD891B72B4C6}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Deedle.Benchmarks", "tests\Deedle.Benchmarks\Deedle.Benchmarks.fsproj", "{F5325A92-11C7-42E1-843A-5DB83814EA24}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -112,6 +114,10 @@ Global
 		{76702DFC-4680-4CBC-9DE9-CD891B72B4C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{76702DFC-4680-4CBC-9DE9-CD891B72B4C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{76702DFC-4680-4CBC-9DE9-CD891B72B4C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F5325A92-11C7-42E1-843A-5DB83814EA24}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F5325A92-11C7-42E1-843A-5DB83814EA24}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F5325A92-11C7-42E1-843A-5DB83814EA24}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F5325A92-11C7-42E1-843A-5DB83814EA24}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -119,6 +125,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{EDF1025A-5190-41F9-A68A-532F8AFE3185} = {F4B0E327-78A9-4007-8DEE-74F2E880803A}
 		{76702DFC-4680-4CBC-9DE9-CD891B72B4C6} = {B4B13E8F-584F-4F77-A6E1-7649C990CBE5}
+		{F5325A92-11C7-42E1-843A-5DB83814EA24} = {B4B13E8F-584F-4F77-A6E1-7649C990CBE5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8478A9AB-3D08-49DF-BE6D-D01341EB3067}
