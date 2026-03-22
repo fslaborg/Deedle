@@ -85,6 +85,23 @@ let ``Moving stddev works`` () =
   s3 |> Stats.movingStdDev 2 |> Stats.sum |> should beWithin (e3 +/- 1e-9)
 
 [<Test>]
+let ``Moving variance works`` () =
+  let s1 = Series.ofValues [ 0.0; 1.0; Double.NaN; 3.0; 4.0 ]
+  let s2 = Series.ofValues [ 0.0; 1.0; 2.0; 3.0; 4.0 ]
+  let s3 = Series.ofValues [ 0; 1; 2; 3; 4 ]
+
+  // Variance = stddev^2; only windows with >= 2 observations produce a value.
+  // s1: windows [0,1] and [3,4] each have var = 0.5; sum = 1.0
+  // s2/s3: four windows of size 2, each var = 0.5; sum = 2.0
+  let e1 = 1.0
+  let e2 = 2.0
+  let e3 = 2.0
+
+  s1 |> Stats.movingVariance 2 |> Stats.sum |> should beWithin (e1 +/- 1e-9)
+  s2 |> Stats.movingVariance 2 |> Stats.sum |> should beWithin (e2 +/- 1e-9)
+  s3 |> Stats.movingVariance 2 |> Stats.sum |> should beWithin (e3 +/- 1e-9)
+
+[<Test>]
 let ``describe works`` ()=
   let s = Series.ofValues [ 0.0; 1.0; 2.0; 3.0; 4.0 ]
   let desc = Stats.describe s
@@ -183,6 +200,38 @@ let ``Moving kurt works`` () =
   s3 |> Stats.movingKurt 4 |> Stats.sum |> should beWithin (e3 +/- 1e-9)
 
 [<Test>]
+let ``Expanding count works`` () =
+  let s1 = Series.ofValues [ 0.0; 1.0; Double.NaN; 3.0; 4.0 ]
+  let s2 = Series.ofValues [ 0.0; 1.0; 2.0; 3.0; 4.0 ]
+  let s3 = Series.ofValues [ 0; 1; 2; 3; 4 ]
+
+  // s1: counts per position = 1,2,2,3,4 (NaN at idx 2 keeps count at 2); sum = 12
+  // s2/s3: counts = 1,2,3,4,5; sum = 15
+  let e1 = 12.0
+  let e2 = 15.0
+  let e3 = 15.0
+
+  s1 |> Stats.expandingCount |> Stats.sum |> should beWithin (e1 +/- 1e-9)
+  s2 |> Stats.expandingCount |> Stats.sum |> should beWithin (e2 +/- 1e-9)
+  s3 |> Stats.expandingCount |> Stats.sum |> should beWithin (e3 +/- 1e-9)
+
+[<Test>]
+let ``Expanding sum works`` () =
+  let s1 = Series.ofValues [ 0.0; 1.0; Double.NaN; 3.0; 4.0 ]
+  let s2 = Series.ofValues [ 0.0; 1.0; 2.0; 3.0; 4.0 ]
+  let s3 = Series.ofValues [ 0; 1; 2; 3; 4 ]
+
+  // s1: cumulative sums = 0,1,1,4,8 (NaN at idx 2 keeps sum at 1); sum = 14
+  // s2/s3: cumulative sums = 0,1,3,6,10; sum = 20
+  let e1 = 14.0
+  let e2 = 20.0
+  let e3 = 20.0
+
+  s1 |> Stats.expandingSum |> Stats.sum |> should beWithin (e1 +/- 1e-9)
+  s2 |> Stats.expandingSum |> Stats.sum |> should beWithin (e2 +/- 1e-9)
+  s3 |> Stats.expandingSum |> Stats.sum |> should beWithin (e3 +/- 1e-9)
+
+[<Test>]
 let ``Expanding mean works`` () =
   let s1 = Series.ofValues [ 0.0; 1.0; Double.NaN; 3.0; 4.0 ]
   let s2 = Series.ofValues [ 0.0; 1.0; 2.0; 3.0; 4.0 ]
@@ -211,6 +260,27 @@ let ``Expanding stddev works`` () =
   s1 |> Stats.expandingStdDev |> Stats.sum |> should beWithin (e1 +/- 1e-9)
   s2 |> Stats.expandingStdDev |> Stats.sum |> should beWithin (e2 +/- 1e-9)
   s3 |> Stats.expandingStdDev |> Stats.sum |> should beWithin (e3 +/- 1e-9)
+
+[<Test>]
+let ``Expanding variance works`` () =
+  let s1 = Series.ofValues [ 0.0; 1.0; Double.NaN; 3.0; 4.0 ]
+  let s2 = Series.ofValues [ 0.0; 1.0; 2.0; 3.0; 4.0 ]
+  let s3 = Series.ofValues [ 0; 1; 2; 3; 4 ]
+
+  // Expanding variance = Welford sample variance (n >= 2 required).
+  // s1 (NaN at idx 2 keeps moments unchanged):
+  //   idx 0: NaN; idx 1: var([0,1])=0.5; idx 2: var([0,1])=0.5;
+  //   idx 3: var([0,1,3])=7/3; idx 4: var([0,1,3,4])=10/3
+  //   sum = 0.5+0.5+7/3+10/3 = 1.0+17/3 = 20/3
+  // s2/s3: var([0,1])=0.5; var([0,1,2])=1.0; var([0,1,2,3])=5/3; var([0,1,2,3,4])=2.5
+  //   sum = 0.5+1.0+5/3+2.5 = 4.0+5/3 = 17/3
+  let e1 = 20.0 / 3.0
+  let e2 = 17.0 / 3.0
+  let e3 = 17.0 / 3.0
+
+  s1 |> Stats.expandingVariance |> Stats.sum |> should beWithin (e1 +/- 1e-9)
+  s2 |> Stats.expandingVariance |> Stats.sum |> should beWithin (e2 +/- 1e-9)
+  s3 |> Stats.expandingVariance |> Stats.sum |> should beWithin (e3 +/- 1e-9)
 
 [<Test>]
 let ``Expanding skew works`` () =

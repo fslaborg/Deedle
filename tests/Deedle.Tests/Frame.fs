@@ -2827,3 +2827,63 @@ let ``Series.compare on typed frame columns returns strongly typed Diff<int>`` (
   result.Get("b") |> shouldEqual (Change(2, 5))
   result.Get("c") |> shouldEqual (Diff.Remove 3)
   result.Get("d") |> shouldEqual (Diff.Add 6)
+
+// ------------------------------------------------------------------------------------------------
+// Frame.interleave tests
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Frame.interleave on two frames produces tuple column keys`` () =
+  let df1 = frame [ "a" => series [ "x" => 1; "y" => 3 ]
+                    "b" => series [ "x" => 2; "y" => 4 ] ]
+  let df2 = frame [ "a" => series [ "x" => 5; "y" => 7 ]
+                    "b" => series [ "x" => 6; "y" => 8 ] ]
+  let result = Frame.interleave [df1; df2]
+  let cols = result.ColumnKeys |> List.ofSeq
+  cols |> shouldEqual [("a",1); ("b",1); ("a",2); ("b",2)]
+
+[<Test>]
+let ``Frame.interleave preserves row keys and values`` () =
+  let df1 = frame [ "a" => series [ "x" => 1; "y" => 3 ]
+                    "b" => series [ "x" => 2; "y" => 4 ] ]
+  let df2 = frame [ "a" => series [ "x" => 5; "y" => 7 ]
+                    "b" => series [ "x" => 6; "y" => 8 ] ]
+  let result = Frame.interleave [df1; df2]
+  result.GetColumn<int>(("a", 1)).["x"] |> shouldEqual 1
+  result.GetColumn<int>(("b", 1)).["y"] |> shouldEqual 4
+  result.GetColumn<int>(("a", 2)).["x"] |> shouldEqual 5
+  result.GetColumn<int>(("b", 2)).["y"] |> shouldEqual 8
+
+[<Test>]
+let ``Frame.interleave on three frames tags with 1, 2, 3`` () =
+  let df1 = frame [ "v" => series [ 0 => 10 ] ]
+  let df2 = frame [ "v" => series [ 0 => 20 ] ]
+  let df3 = frame [ "v" => series [ 0 => 30 ] ]
+  let result = Frame.interleave [df1; df2; df3]
+  let cols = result.ColumnKeys |> List.ofSeq
+  cols |> shouldEqual [("v",1); ("v",2); ("v",3)]
+  result.GetColumn<int>(("v", 1)).[0] |> shouldEqual 10
+  result.GetColumn<int>(("v", 2)).[0] |> shouldEqual 20
+  result.GetColumn<int>(("v", 3)).[0] |> shouldEqual 30
+
+[<Test>]
+let ``Frame.interleave with single frame is identity up to column key type`` () =
+  let df = frame [ "a" => series [ 1 => 10; 2 => 20 ] ]
+  let result = Frame.interleave [df]
+  let cols = result.ColumnKeys |> List.ofSeq
+  cols |> shouldEqual [("a", 1)]
+  result.GetColumn<int>(("a", 1)).[1] |> shouldEqual 10
+
+[<Test>]
+let ``Frame.interleave outer-joins rows from different frames`` () =
+  let df1 = frame [ "a" => series [ "x" => 1 ] ]
+  let df2 = frame [ "a" => series [ "y" => 2 ] ]
+  let result = Frame.interleave [df1; df2]
+  result.RowCount |> shouldEqual 2
+  result.GetColumn<int>(("a", 1)).TryGet("y").HasValue |> shouldEqual false
+  result.GetColumn<int>(("a", 2)).TryGet("x").HasValue |> shouldEqual false
+
+[<Test>]
+let ``Frame.interleave raises on empty list`` () =
+  shouldThrow<System.ArgumentException> (fun () ->
+    Frame.interleave ([] : Frame<int,string> list) |> ignore)
