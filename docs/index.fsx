@@ -71,15 +71,24 @@ Then we add nice namings, sort the frame and build a new data frame with a nice 
 
 ## Samples & documentation
 
- * [Quick start tutorial](tutorial.html)
+ * [Quick start tutorial](tutorial.html) — a 10-minute tour of Deedle
 
- * [Data frame features](frame.html)
+ * [Data frame features](frame.html) — creating, slicing, grouping, pivoting
 
- * [Series features](series.html)
+ * [Series features](series.html) — time series, windowing, resampling, alignment
 
- * [Calculating frame and series statistics](stats.html)
+ * [Calculating frame and series statistics](stats.html) — summary statistics, moving and expanding windows
 
- * [Creating lazily loaded series](lazysource.html)
+ * [Handling missing values](missing.html) — sentinel values, filling, propagation
+
+ * [Joining and merging frames](joining.html) — inner/outer/left/right joins and appending
+
+ * [Apache Arrow / Feather integration](arrow.html) — zero-copy columnar I/O with `Deedle.Arrow`
+
+ * [Deedle.Math — MathNet.Numerics integration](math.html) — linear algebra, correlation,
+   EWM statistics, PCA, and linear regression via `Deedle.Math`
+
+ * [Creating lazily loaded series](lazysource.html) — virtual series backed by custom loaders
 
  * [`Series` module](reference/deedle-seriesmodule.html) provides functions for working
    with individual data series and time-series values.
@@ -87,9 +96,6 @@ Then we add nice namings, sort the frame and build a new data frame with a nice 
    to those in the `Series` module, but operate on entire data frames.
  * [`Stats` module](reference/deedle-stats.html) implements standard statistical functions,
    moving windows and a lot more.
-
-More functions related to linear algebra, statistical analysis and financial analysis can be 
-found in Deedle.Math extension. Deedle.Math has dependency on MathNet.Numerics.
 
 ## Contributing and copyright
 

@@ -193,4 +193,11 @@ for missing positions.
 You can also use `Frame.mergeAll` to merge a list of frames, or combine `Series.merge`
 with `Series.map` and `Series.zip` for more complex merge strategies.
 
+## See also
+
+ * [Handling missing values](missing.html) — how to fill or drop the missing values
+   introduced by outer joins.
+ * [Data frame features](frame.html) — frame construction, slicing, grouping, and aggregation.
+ * [Series features](series.html) — alignment, resampling, and windowing operations.
+
 *)
