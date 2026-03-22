@@ -1997,6 +1997,27 @@ module Frame =
   let merge (frame1:Frame<'R, 'C>) frame2 = mergeAll [frame1; frame2]
 
   /// <summary>
+  /// Combines a list of data frames side-by-side by tagging each frame's column keys with
+  /// its 1-based position in the list. The result has a tuple column index of type
+  /// <c>('C * int)</c>, where the integer is the 1-based index of the source frame.
+  ///
+  /// For example, given two frames with columns <c>["a"; "b"]</c>, the result has columns
+  /// <c>[("a",1); ("b",1); ("a",2); ("b",2)]</c>. Rows are aligned using an outer join.
+  ///
+  /// When only two frames are involved the result is equivalent to placing them side by side;
+  /// when more than two are involved the frames are joined left-to-right.
+  /// </summary>
+  /// <param name="frames">List of data frames to interleave. Must be non-empty.</param>
+  /// <category>Joining, merging and zipping</category>
+  [<CompiledName("Interleave")>]
+  let interleave (frames: Frame<'R, 'C> list) : Frame<'R, 'C * int> =
+    if List.isEmpty frames then
+      invalidArg "frames" "The list of frames must be non-empty."
+    frames
+    |> List.mapi (fun i f -> f |> mapColKeys (fun c -> (c, i + 1)))
+    |> List.reduce (fun acc f -> acc.Join(f))
+
+  /// <summary>
   /// Aligns two data frames using both column index and row index and apply the specified operation
   /// on values of a specified type that are available in both data frames. The parameters `columnKind`,
   /// and `rowKind` can be specified to determine how the alginment works (similarly to `Join`).
