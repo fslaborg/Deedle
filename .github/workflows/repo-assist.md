@@ -1,6 +1,6 @@
 ---
 description: |
-  A friendly repository assistant that runs 4 times a day to support contributors and maintainers.
+  A friendly repository assistant that runs 2 times a day to support contributors and maintainers.
   Can also be triggered on-demand via '/repo-assist <instructions>' to perform specific tasks.
   - Labels and triages open issues
   - Comments helpfully on open issues to unblock contributors and onboard newcomers
@@ -33,6 +33,19 @@ network:
   - rust
   - java
 
+checkout:
+  fetch: ["*"]     # fetch all remote branches to allow working on PR branches
+  fetch-depth: 0   # fetch full history
+
+tools:
+  web-fetch:
+  github:
+    toolsets: [all]
+    min-integrity: none # This workflow is allowed to examine and comment on any issues or PRs
+    repos: all
+  bash: true
+  repo-memory: true
+
 safe-outputs:
   add-comment:
     max: 10
@@ -42,6 +55,7 @@ safe-outputs:
     draft: true
     title-prefix: "[Repo Assist] "
     labels: [automation, repo-assist]
+    protected-files: fallback-to-issue
     max: 4
   push-to-pull-request-branch:
     target: "*"
@@ -58,18 +72,11 @@ safe-outputs:
   add-labels:
     allowed: [bug, enhancement, "help wanted", "good first issue", "spam", "off topic", documentation, question, duplicate, wontfix, "needs triage", "needs investigation", "breaking change", performance, security, refactor]
     max: 30
-    target: "*" 
+    target: "*"
   remove-labels:
     allowed: [bug, enhancement, "help wanted", "good first issue", "spam", "off topic", documentation, question, duplicate, wontfix, "needs triage", "needs investigation", "breaking change", performance, security, refactor]
     max: 5
-    target: "*" 
-
-tools:
-  web-fetch:
-  github:
-    toolsets: [all]
-  bash: true
-  repo-memory: true
+    target: "*"
 
 steps:
   - name: Fetch repo data for task weighting
@@ -164,8 +171,7 @@ steps:
           json.dump(result, f, indent=2)
       EOF
 
-source: githubnext/agentics/workflows/repo-assist.md@30f2254f2a7a944da1224df45d181a3f8faefd0d
-engine: copilot
+source: githubnext/agentics/workflows/repo-assist.md@4957663821dbb3260348084fa2f1659701950fef
 ---
 
 # Repo Assist
@@ -312,7 +318,7 @@ Maintain a single open issue titled `[Repo Assist] Monthly Activity {YYYY}-{MM}`
 
    ## Suggested Actions for Maintainer
 
-   **Comprehensive list** of all pending actions requiring maintainer attention (excludes items already actioned and checked off). 
+   **Comprehensive list** of all pending actions requiring maintainer attention (excludes items already actioned and checked off).
    - Reread the issue you're updating before you update it  -  there may be new checkbox adjustments since your last update that require you to adjust the suggested actions.
    - List **all** the comments, PRs, and issues that need attention
    - Exclude **all** items that have either
