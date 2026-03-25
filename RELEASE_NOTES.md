@@ -83,6 +83,10 @@
 - Fix CSV schema parsing for column names containing parentheses ([#604](https://github.com/fslaborg/Deedle/pull/604))
 - Fix `Frame.indexRowsWith` to produce missing values for extra row keys ([#595](https://github.com/fslaborg/Deedle/pull/595))
 
+### Documentation
+
+- Add C# cookbook (`docs/csharp.md`) — covers `SeriesBuilder`, `Frame.ReadCsv`, `Frame.FromRecords`, column/row slicing via `Columns[...]`/`Rows[...]`, `GetColumn<T>`, dynamic access, missing values, statistics, windowing, joining, and `GetRowsAs<T>` ([#308](https://github.com/fslaborg/Deedle/issues/308))
+
 ### Infrastructure
 
 - Add SourceLink and deterministic build support ([#660](https://github.com/fslaborg/Deedle/pull/660))
