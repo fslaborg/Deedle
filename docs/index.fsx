@@ -73,6 +73,9 @@ Then we add nice namings, sort the frame and build a new data frame with a nice 
 
  * [Quick start tutorial](tutorial.html) — a 10-minute tour of Deedle
 
+ * [Deedle in C# — Cookbook](csharp.html) — creating frames/series, slicing rows and columns,
+   missing values, statistics, windowing, and more for C# developers
+
  * [Data frame features](frame.html) — creating, slicing, grouping, pivoting
 
  * [Series features](series.html) — time series, windowing, resampling, alignment
