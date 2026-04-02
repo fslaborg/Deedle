@@ -8,7 +8,7 @@ index: 9
 *)
 (*** condition: prepare ***)
 #nowarn "211"
-#r "../bin/net9.0/Deedle.dll"
+#r "../bin/net10.0/Deedle.dll"
 (*** condition: fsx ***)
 #if FSX
 #r "nuget: Deedle,{{fsdocs-package-version}}"
@@ -59,13 +59,13 @@ Series.ofValues [ "a"; null; "c" ]
 (*** include-it:miss3 ***)
 
 (**
-You can also construct a series with an explicit `OptionalValue.Missing`:
+You can also construct a series with explicit missing values using `None`:
 *)
 (*** define-output:miss4 ***)
 Series.ofOptionalObservations
-  [ 1 => OptionalValue(10.0)
-    2 => OptionalValue.Missing
-    3 => OptionalValue(30.0) ]
+  [ 1 => Some(10.0)
+    2 => None
+    3 => Some(30.0) ]
 (*** include-it:miss4 ***)
 
 (**
@@ -131,7 +131,7 @@ match v with
 
 (**
 You can also use `Series.observationsAll` to iterate over all key-value pairs
-including missing ones (as `OptionalValue`), or `Series.observations` to skip
+including missing ones (as `option`), or `Series.observations` to skip
 missing values:
 *)
 (*** define-output:obsall ***)
@@ -140,8 +140,8 @@ ozone
 |> Seq.truncate 6
 |> Seq.map (fun (k, v) ->
     match v with
-    | OptionalValue.Present x -> sprintf "%d => %g" k x
-    | OptionalValue.Missing   -> sprintf "%d => <missing>" k)
+    | Some x -> sprintf "%d => %g" k x
+    | None   -> sprintf "%d => <missing>" k)
 |> Seq.toList
 (*** include-it:obsall ***)
 

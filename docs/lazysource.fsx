@@ -8,7 +8,7 @@ index: 6
 *)
 (*** condition: prepare ***)
 #nowarn "211"
-#r "../bin/net9.0/Deedle.dll"
+#r "../bin/net10.0/Deedle.dll"
 (*** condition: fsx ***)
 #if FSX
 #r "nuget: Deedle,{{fsdocs-package-version}}"
@@ -76,6 +76,7 @@ We can now use the series as usual - for example, to get data for the entire yea
 
 (*** define-output:slice ***)
 let slice = ls.[DateTime(2012, 1, 1) .. DateTime(2012, 12, 31)]
+slice
 (*** include-it:slice ***)
 
 (**
@@ -87,4 +88,5 @@ and then access only a slice:
 (*** define-output:frame ***)
 let df = frame ["Values" => ls]
 let slicedDf = df.Rows.[DateTime(2012,6,1) .. DateTime(2012,6,30)]
+slicedDf
 (*** include-it:frame ***)

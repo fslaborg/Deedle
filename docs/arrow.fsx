@@ -8,8 +8,9 @@ index: 7
 *)
 (*** condition: prepare ***)
 #nowarn "211"
-#r "../bin/net9.0/Deedle.dll"
-#r "../bin/net9.0/Deedle.Arrow.dll"
+#r "../bin/net10.0/Deedle.dll"
+#r "../bin/net10.0/Deedle.Arrow.dll"
+#r "../packages/Apache.Arrow/lib/net8.0/Apache.Arrow.dll"
 (*** condition: fsx ***)
 #if FSX
 #r "nuget: Deedle,{{fsdocs-package-version}}"

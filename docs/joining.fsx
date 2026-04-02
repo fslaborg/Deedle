@@ -8,7 +8,7 @@ index: 8
 *)
 (*** condition: prepare ***)
 #nowarn "211"
-#r "../bin/net9.0/Deedle.dll"
+#r "../bin/net10.0/Deedle.dll"
 (*** condition: fsx ***)
 #if FSX
 #r "nuget: Deedle,{{fsdocs-package-version}}"
