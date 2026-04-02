@@ -92,7 +92,7 @@ the `first` series and another representing the `second` series:
 *)
 
 let df1 = Frame(["first"; "second"], [first; second])
-(*** include-it ***)
+(*** include-value: df1 ***)
 
 (** 
 The type representing a data frame has two generic parameters:
