@@ -423,7 +423,7 @@ let ``Can add computed series as a new column to a frame with the same index``()
 let ``Can index frame by an ordered column computed using series transform`` () =
   let s1, s2, f = createTicksFrame()
   f?Times <- f.GetColumn<int64>("Ticks") |> Series.convert fromTicks toTicks
-  let byTimes = f |> Frame.indexRowsDateOffs "Times"
+  let byTimes = f |> Frame.indexRowsDateTimeOffset "Times"
 
   byTimes.Rows.TryGet(date 2010 1 1, Lookup.Exact) |> shouldEqual OptionalValue.Missing
   let prev = byTimes.Rows.Get(date 2010 1 1, Lookup.ExactOrSmaller).["Ticks"] |> unbox<int64> |> fromTicks

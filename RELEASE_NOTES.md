@@ -1,5 +1,21 @@
 # Release Notes
 
+## 5.0.0 - 2026-04-02
+
+### Infrastructure
+
+- Migrate to .NET 10 and FSharp.Core 10.0
+- Update fsdocs-tool to 22.0.0-alpha.2
+- Remove unnecessary System.Reflection.Emit package references (now in-box on net10.0)
+- Suppress NU1510 warnings for in-box packages pulled transitively via Paket
+- Suppress NU1701 warnings for NetOfficeFw packages (no net10.0 assets)
+- Fix self-referential `open FSharp.Data.Runtime` in vendored TextRuntime.fs for newer F# compilers
+- Replace deprecated `Frame.indexRowsDate`/`Frame.indexRowsDateOffs` usage in tests with `Frame.indexRowsDateTime`/`Frame.indexRowsDateTimeOffset`
+
+### Bug fixes
+
+- Fix doc generation "No value returned by any evaluator" errors ([#692](https://github.com/fslaborg/Deedle/issues/692))
+
 ## 4.0.1 - 2026-03-22
 
 ### New packages
