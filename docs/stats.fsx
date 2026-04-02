@@ -8,11 +8,12 @@ index: 5
 *)
 (*** condition: prepare ***)
 #nowarn "211"
-#r "../bin/net9.0/Deedle.dll"
+#r "../bin/net10.0/Deedle.dll"
 (*** condition: fsx ***)
 #if FSX
 #r "nuget: Deedle,{{fsdocs-package-version}}"
 #endif // FSX
+(*** condition: prepare ***)
 
 open System
 open System.Globalization
@@ -138,7 +139,7 @@ day between May and September. We create a frame with two-level row key using
 *)
 let dateFormat = CultureInfo.CurrentCulture.DateTimeFormat
 let byMonth = air |> Frame.indexRowsUsing (fun r ->
-    dateFormat.GetMonthName(r.GetAs("Month")), r.GetAs<int>("Day"))
+    dateFormat.GetMonthName(r.GetAs<int>("Month")), r.GetAs<int>("Day"))
 
 (**
 We can now access individual columns and calculate statistics over the 

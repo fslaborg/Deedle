@@ -25,7 +25,7 @@ open Deedle
 
 let msft() =
   Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/data/MSFT.csv", inferRows=10)
-  |> Frame.indexRowsDate "Date"
+  |> Frame.indexRowsDateTime "Date"
 
 let msftNoHeaders() =
   let noHeaders =
@@ -37,7 +37,7 @@ let msftNoHeaders() =
 let msftString() =
   let csvString = IO.File.ReadAllText(__SOURCE_DIRECTORY__ + "/data/MSFT.csv")
   Frame.ReadCsvString(csvString, inferRows=10)
-  |> Frame.indexRowsDate "Date"
+  |> Frame.indexRowsDateTime "Date"
 
 [<Test>]
 let ``Can create empty data frame and empty series`` () =
@@ -77,7 +77,7 @@ let ``Can read MSFT data from CSV file without header row`` () =
   let df = msftNoHeaders()
   let expected = msft()
   let colKeys = Seq.append ["Date"] expected.ColumnKeys
-  let actual = df |> Frame.indexColsWith colKeys |> Frame.indexRowsDate "Date"
+  let actual = df |> Frame.indexColsWith colKeys |> Frame.indexRowsDateTime "Date"
   actual |> shouldEqual expected
 
 [<Test>]
@@ -330,7 +330,7 @@ let ``Can save MSFT data as CSV file and read it afterwards (with custom format)
   expected.SaveCsv(file, keyNames=["Date"], separator=';', culture=cz)
   let actual =
     Frame.ReadCsv(file, separators=";", culture="cs-CZ")
-    |> Frame.indexRowsDate "Date"
+    |> Frame.indexRowsDateTime "Date"
   actual |> shouldEqual expected
 
 [<Test>]

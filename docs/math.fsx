@@ -8,8 +8,8 @@ index: 7
 *)
 (*** condition: prepare ***)
 #nowarn "211"
-#r "../bin/net9.0/Deedle.dll"
-#r "../bin/net9.0/Deedle.Math.dll"
+#r "../bin/net10.0/Deedle.dll"
+#r "../bin/net10.0/Deedle.Math.dll"
 #r "nuget: MathNet.Numerics, 5.0.0"
 #r "nuget: MathNet.Numerics.FSharp, 5.0.0"
 (*** condition: fsx ***)
@@ -19,6 +19,7 @@ index: 7
 #r "nuget: MathNet.Numerics"
 #r "nuget: MathNet.Numerics.FSharp"
 #endif // FSX
+(*** condition: prepare ***)
 
 open System
 open Deedle

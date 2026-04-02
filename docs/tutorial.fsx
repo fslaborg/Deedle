@@ -8,14 +8,19 @@ index: 2
 *)
 (*** condition: prepare ***)
 #nowarn "211"
-#r "../bin/net9.0/Deedle.dll"
+#r "../bin/net10.0/Deedle.dll"
 (*** condition: fsx ***)
 #if FSX
 #r "nuget: Deedle,{{fsdocs-package-version}}"
 #endif // FSX
+(*** condition: prepare ***)
 
 open System
 open Deedle
+
+(*** define-output: sanity ***)
+series [1 => 1.0; 2 => 2.0]
+(*** include-it: sanity ***)
 
 (**
 
@@ -70,18 +75,20 @@ with 10 day value range and random values:
 *)
 
 /// Generate date range from 'first' with 'count' days
-let dateRange (first:System.DateTime) count = (*[omit:(...)]*)
-  seq { for i in 0 .. (count - 1) -> first.AddDays(float i) }(*[/omit]*)
+let dateRange (first:System.DateTime) count =
+  seq { for i in 0 .. (count - 1) -> first.AddDays(float i) }
 
 /// Generate 'count' number of random doubles
-let rand count = (*[omit:(...)]*)
+let rand count =
   let rnd = System.Random()
-  seq { for i in 0 .. (count - 1) -> rnd.NextDouble() }(*[/omit]*)
+  seq { for i in 0 .. (count - 1) -> rnd.NextDouble() }
 
 // A series with values for 10 days 
 let second = Series(dateRange (DateTime(2013,1,1)) 10, rand 10)
 
-(*** include-value: (round (second*100.0))/100.0 ***)
+(*** define-output: create3 ***)
+(round (second*100.0))/100.0
+(*** include-it: create3 ***)
 
 (**
 Now we can easily construct a data frame that has two columns - one representing
@@ -90,7 +97,9 @@ the `first` series and another representing the `second` series:
 
 let df1 = Frame(["first"; "second"], [first; second])
 
-(*** include-value: df1 ***)
+(*** define-output: frame1 ***)
+df1
+(*** include-it: frame1 ***)
 
 (** 
 The type representing a data frame has two generic parameters:
@@ -286,8 +295,12 @@ with time component set to the current time:
 let daysSeries = Series(dateRange DateTime.Today 10, rand 10)
 let obsSeries = Series(dateRange DateTime.Now 10, rand 10)
 
-(*** include-value: (round (daysSeries*100.0))/100.0 ***)
-(*** include-value: (round (obsSeries*100.0))/100.0 ***)
+(*** define-output: days ***)
+(round (daysSeries*100.0))/100.0
+(*** include-it: days ***)
+(*** define-output: obs ***)
+(round (obsSeries*100.0))/100.0
+(*** include-it: obs ***)
 
 (**
 The indexing operation written as `daysSeries.[date]` uses _exact_ semantics so it will 

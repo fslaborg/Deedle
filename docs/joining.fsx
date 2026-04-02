@@ -8,11 +8,12 @@ index: 8
 *)
 (*** condition: prepare ***)
 #nowarn "211"
-#r "../bin/net9.0/Deedle.dll"
+#r "../bin/net10.0/Deedle.dll"
 (*** condition: fsx ***)
 #if FSX
 #r "nuget: Deedle,{{fsdocs-package-version}}"
 #endif // FSX
+(*** condition: prepare ***)
 
 open System
 open Deedle
@@ -40,15 +41,15 @@ controls which rows appear in the result.
 // Stock prices for two securities
 let aapl =
     Frame.ofColumns [
-        "Open",  Series.ofValues [ 150.0; 152.0; 151.0; 153.0 ]
-        "Close", Series.ofValues [ 151.5; 151.0; 153.5; 154.0 ]
+        "AAPL Open",  Series.ofValues [ 150.0; 152.0; 151.0; 153.0 ]
+        "AAPL Close", Series.ofValues [ 151.5; 151.0; 153.5; 154.0 ]
     ]
     |> Frame.indexRowsWith [| "2024-01-15"; "2024-01-16"; "2024-01-17"; "2024-01-18" |]
 
 let msft =
     Frame.ofColumns [
-        "Open",  Series.ofValues [ 370.0; 375.0; 373.0 ]
-        "Close", Series.ofValues [ 374.0; 373.0; 376.0 ]
+        "MSFT Open",  Series.ofValues [ 370.0; 375.0; 373.0 ]
+        "MSFT Close", Series.ofValues [ 374.0; 373.0; 376.0 ]
     ]
     |> Frame.indexRowsWith [| "2024-01-15"; "2024-01-16"; "2024-01-18" |]
 
@@ -63,8 +64,8 @@ let outerJoin = Frame.join JoinKind.Outer aapl msft
 
 (**
 
-An outer join includes all row keys from either frame. Columns from each frame are
-suffixed with `.1` and `.2` when their names clash.
+An outer join includes all row keys from either frame. Columns from each frame
+are combined. When column names clash, they are suffixed with `.1` and `.2`.
 
 Missing values appear where one frame had no data for a given key.
 
@@ -180,7 +181,7 @@ takes priority; values from the *second* are used only where the first is missin
 *)
 
 let primary   = Series.ofOptionalObservations [ (1, Some 10.0); (2, None); (3, Some 30.0); (4, None) ]
-let secondary = Series.ofOptionalObservations [ (1, Some 99.0); (2, Some 20.0); (3, None); (4, Some 40.0) ]
+let secondary = Series.ofOptionalObservations [ (2, Some 20.0); (4, Some 40.0) ]
 
 let merged = Series.merge primary secondary
 (*** include-value: merged ***)

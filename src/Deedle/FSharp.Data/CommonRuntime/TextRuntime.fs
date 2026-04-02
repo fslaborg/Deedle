@@ -3,7 +3,6 @@
 open System
 open System.Globalization
 open FSharp.Data
-open FSharp.Data.Runtime
 
 /// Static helper methods called from the generated code for working with text
 type TextRuntime =
