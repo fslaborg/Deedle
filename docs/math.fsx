@@ -72,30 +72,26 @@ let df =
           "B" => series [ 1 => 2.0; 2 => 5.0; 3 => 8.0 ]
           "C" => series [ 1 => 3.0; 2 => 6.0; 3 => 9.0 ] ]
 
-(*** define-output: mat1 ***)
 // Convert frame to a MathNet DenseMatrix
 let m : Matrix<float> = Frame.toMatrix df
 m
-(*** include-it: mat1 ***)
+(*** include-it ***)
 
-(*** define-output: mat2 ***)
 // Convert matrix back to a frame with named rows and columns
 Frame.ofMatrix [1;2;3] ["A";"B";"C"] m
-(*** include-it: mat2 ***)
+(*** include-it ***)
 
 (**
 Series ↔ Vector works the same way:
 *)
 
-(*** define-output: vec1 ***)
 let s = series [ "x" => 1.0; "y" => 2.0; "z" => 3.0 ]
 let v : Vector<float> = Series.toVector s
 v
-(*** include-it: vec1 ***)
+(*** include-it ***)
 
-(*** define-output: vec2 ***)
 Series.ofVector ["x";"y";"z"] v
-(*** include-it: vec2 ***)
+(*** include-it ***)
 
 (**
 
@@ -124,16 +120,14 @@ directly. All operations convert to/from `Matrix<float>` internally.
 
 *)
 
-(*** define-output: la1 ***)
 // Transpose (faster than generic Frame.transpose for numeric frames)
 LinearAlgebra.transpose df
-(*** include-it: la1 ***)
+(*** include-it ***)
 
-(*** define-output: la2 ***)
 // Matrix inverse
 let sq = frame [ "A" => series [1=>4.0;2=>7.0]; "B" => series [1=>3.0;2=>6.0] ]
 LinearAlgebra.inverse sq
-(*** include-it: la2 ***)
+(*** include-it ***)
 
 (**
 Other available operations:
@@ -171,20 +165,17 @@ from MathNet.Numerics.
 let air = Frame.ReadCsv(root + "airquality.csv", separators=";")
 let ozone = air?Ozone |> Series.dropMissing
 
-(*** define-output: q1 ***)
 // Median (uses MathNet's exact median algorithm)
 Stats.median ozone
-(*** include-it: q1 ***)
+(*** include-it ***)
 
-(*** define-output: q2 ***)
 // 25th and 75th percentile
 Stats.quantile(ozone, 0.25), Stats.quantile(ozone, 0.75)
-(*** include-it: q2 ***)
+(*** include-it ***)
 
-(*** define-output: q3 ***)
 // Ranks (average rank for ties by default)
 ozone |> Stats.ranks |> Series.take 6
-(*** include-it: q3 ***)
+(*** include-it ***)
 
 (**
 All three functions also work on entire frames:
@@ -208,20 +199,17 @@ Stats.quantile(air, 0.90)
 // Use a small subset of air quality numeric columns
 let numAir = air |> Frame.sliceCols ["Ozone";"Solar.R";"Wind";"Temp"] |> Frame.dropSparseRows
 
-(*** define-output: corr1 ***)
 // Pearson correlation matrix (default)
 Stats.corr numAir
-(*** include-it: corr1 ***)
+(*** include-it ***)
 
-(*** define-output: corr2 ***)
 // Spearman rank correlation
 Stats.corr(numAir, CorrelationMethod.Spearman)
-(*** include-it: corr2 ***)
+(*** include-it ***)
 
-(*** define-output: cov1 ***)
 // Covariance frame
 Stats.cov numAir
-(*** include-it: cov1 ***)
+(*** include-it ***)
 
 (**
 To correlate two individual series:
@@ -263,15 +251,13 @@ parameters:
 let returns =
   series [ for i in 1..20 -> i => Math.Sin(float i * 0.3) * 0.02 ]
 
-(*** define-output: ewm1 ***)
 // EWM mean with span=5
 Stats.ewmMean(returns, span=5.0)
-(*** include-it: ewm1 ***)
+(*** include-it ***)
 
-(*** define-output: ewm2 ***)
 // EWM mean on a whole frame (applied column by column)
 Stats.ewmMean(numAir, span=10.0)
-(*** include-it: ewm2 ***)
+(*** include-it ***)
 
 (**
 
@@ -305,10 +291,9 @@ let prices =
 
 let dailyReturns = prices.Diff(1) / prices.Shift(1)
 
-(*** define-output: fin1 ***)
 // Mean-corrected EWM volatility (standard deviation form) with half-life of 10 days
 Finance.ewmVolStdDev(dailyReturns, halfLife=10.0)
-(*** include-it: fin1 ***)
+(*** include-it ***)
 
 (**
 
@@ -354,16 +339,14 @@ eigen vectors in descending order of explained variance.
 // Use the numeric air quality columns
 let normed = PCA.normalizeColumns numAir
 
-(*** define-output: pca1 ***)
 let result = PCA.pca numAir
 // Eigen values (proportion of variance explained by each PC)
 result.EigenValues
-(*** include-it: pca1 ***)
+(*** include-it ***)
 
-(*** define-output: pca2 ***)
 // Eigen vectors (loadings): rows = original variables, columns = PC1, PC2, …
 result.EigenVectors
-(*** include-it: pca2 ***)
+(*** include-it ***)
 
 (**
 
@@ -395,20 +378,17 @@ The returned `Fit.t` record provides:
 
 let fit = LinearRegression.ols ["Solar.R"; "Wind"; "Temp"] "Ozone" true numAir
 
-(*** define-output: reg1 ***)
 // Regression coefficients (Intercept, Solar.R, Wind, Temp)
 LinearRegression.Fit.coefficients fit
-(*** include-it: reg1 ***)
+(*** include-it ***)
 
-(*** define-output: reg2 ***)
 // Fitted values (ŷ)
 LinearRegression.Fit.fittedValues fit |> Series.take 6
-(*** include-it: reg2 ***)
+(*** include-it ***)
 
-(*** define-output: reg3 ***)
 // Residuals (y − ŷ)
 LinearRegression.Fit.residuals fit |> Series.take 6
-(*** include-it: reg3 ***)
+(*** include-it ***)
 
 (**
 
