@@ -18,9 +18,15 @@ index: 2
 open System
 open Deedle
 
-(*** define-output: sanity ***)
+fsi.AddPrinter(fun (o: obj) ->
+  let iface = o.GetType().GetInterface("IFsiFormattable")
+  if iface <> null then
+    let fmt = iface.GetMethod("Format")
+    fmt.Invoke(o, [||]) :?> string
+  else null)
+
 series [1 => 1.0; 2 => 2.0]
-(*** include-it: sanity ***)
+(*** include-it ***)
 
 (**
 
@@ -42,7 +48,6 @@ do not actually have to be strings). So, to create a data frame, we first need
 to create a series:
 *)
 
-(*** define-output: create1 ***)
 // Create from sequence of keys and sequence of values
 let dates  = 
   [ DateTime(2013,1,1); 
@@ -58,15 +63,14 @@ Series.ofObservations
     DateTime(2013,1,4) => 20.0
     DateTime(2013,1,8) => 30.0 ]
 
-(*** include-it: create1 ***)
+(*** include-it ***)
 
-(*** define-output: create2 ***)
 // Shorter alternative to 'Series.ofObservations'
 series [ 1 => 1.0; 2 => 2.0 ]
 
 // Create series with implicit (ordinal) keys
 Series.ofValues [ 10.0; 20.0; 30.0 ]
-(*** include-it: create2 ***)
+(*** include-it ***)
 
 (**
 Note that the series type is generic. `Series<K, T>` represents a series
@@ -86,9 +90,8 @@ let rand count =
 // A series with values for 10 days 
 let second = Series(dateRange (DateTime(2013,1,1)) 10, rand 10)
 
-(*** define-output: create3 ***)
 (round (second*100.0))/100.0
-(*** include-it: create3 ***)
+(*** include-it ***)
 
 (**
 Now we can easily construct a data frame that has two columns - one representing
@@ -96,10 +99,8 @@ the `first` series and another representing the `second` series:
 *)
 
 let df1 = Frame(["first"; "second"], [first; second])
-
-(*** define-output: frame1 ***)
 df1
-(*** include-it: frame1 ***)
+(*** include-it ***)
 
 (** 
 The type representing a data frame has two generic parameters:
@@ -183,11 +184,11 @@ are not explicitly included in the index).
 // Use the Date column as the index & order rows
 let msftOrd = 
   msftCsv
-  |> Frame.indexRowsDate "Date"
+  |> Frame.indexRowsDateTime "Date"
   |> Frame.sortRowsByKey
 
 (**
-The `indexRowsDate` function uses a column of type `DateTime` as a new index.
+The `indexRowsDateTime` function uses a column of type `DateTime` as a new index.
 The library provides other functions for common types of indices (like `indexRowsInt`)
 and you can also use a generic function - when using the generic function, some 
 type annotations may be needed, so it is better to use a specific function.
@@ -209,7 +210,7 @@ msft?Difference <- msft?Open - msft?Close
 // Do the same thing for Facebook
 let fb = 
   fbCsv
-  |> Frame.indexRowsDate "Date"
+  |> Frame.indexRowsDateTime "Date"
   |> Frame.sortRowsByKey
   |> Frame.sliceCols ["Open"; "Close"]
 fb?Difference <- fb?Open - fb?Close
@@ -295,12 +296,10 @@ with time component set to the current time:
 let daysSeries = Series(dateRange DateTime.Today 10, rand 10)
 let obsSeries = Series(dateRange DateTime.Now 10, rand 10)
 
-(*** define-output: days ***)
 (round (daysSeries*100.0))/100.0
-(*** include-it: days ***)
-(*** define-output: obs ***)
+(*** include-it ***)
 (round (obsSeries*100.0))/100.0
-(*** include-it: obs ***)
+(*** include-it ***)
 
 (**
 The indexing operation written as `daysSeries.[date]` uses _exact_ semantics so it will 

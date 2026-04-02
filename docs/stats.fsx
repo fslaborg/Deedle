@@ -20,6 +20,13 @@ open System.Globalization
 open System.IO
 open Deedle
 
+fsi.AddPrinter(fun (o: obj) ->
+  let iface = o.GetType().GetInterface("IFsiFormattable")
+  if iface <> null then
+    let fmt = iface.GetMethod("Format")
+    fmt.Invoke(o, [||]) :?> string
+  else null)
+
 let root = __SOURCE_DIRECTORY__ + "/data/"
 
 (**
@@ -53,14 +60,13 @@ statistics. The following example creates a series (indexed by strings) that
 stores mean, extremes and median of the input series:
 *)
 
-(*** define-output: ozinfo ***)
 series [
   "Mean" => round (Stats.mean ozone)
   "Max" => Stats.max ozone
   "Min" => Stats.min ozone
   "Median" => Stats.median ozone ]
 
-(*** include-it: ozinfo ***)
+(*** include-it ***)
 
 (**
 To make the output simpler, we round the value of the mean (although the result is
@@ -77,7 +83,6 @@ Functions such as `Stats.mean` can be called on series, but also on entire data 
 In that case, they calculate the statistics for each column of a data frame and return
 `Series<'C, float>` where `'C` is the column key of the original frame. 
 *)
-(*** define-output: airinfo ***)
 let info = 
   [ "Min" => Stats.min air
     "Max" => Stats.max air
@@ -93,9 +98,8 @@ let info =
 The `Stats` type provides an efficient implementation of moving window statistics using
 an online algorithm. The moving window function names are prefixed with the word `moving`:
 *)
-(*** define-output:mvmozone ***)
 ozone |> Stats.movingMean 3
-(*** include-it:mvmozone ***)
+(*** include-it ***)
 
 (**
 Statistical moving functions (count, sum, mean, variance, standard deviation, skewness 
@@ -106,9 +110,8 @@ The boundary behavior of the functions that calculate minimum and maximum over a
 differs. Rather than returning _N/A_ for the first _n-1_ values, they return the extreme 
 value over a smaller window:
 *)
-(*** define-output:mvxozone ***)
 ozone |> Stats.movingMin 3
-(*** include-it:mvxozone ***)
+(*** include-it ***)
 
 (**
 <a name="exp"></a>
@@ -146,17 +149,15 @@ We can now access individual columns and calculate statistics over the
 first level (individual months) using functions prefixed with `level`:
 *)
 
-(*** define-output:lvlozone ***)
 byMonth?Ozone |> Stats.levelMean fst
-(*** include-it:lvlozone ***)
+(*** include-it ***)
 
-(*** define-output:lvlall ***)
 byMonth
 |> Frame.sliceCols ["Ozone";"Solar.R";"Wind";"Temp"]
 |> Frame.getNumericCols
 |> Series.mapValues (Stats.levelMean fst)
 |> Frame.ofRows
-(*** include-it:lvlall ***)
+(*** include-it ***)
 
 (**
 

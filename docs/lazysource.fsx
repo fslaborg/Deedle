@@ -20,6 +20,13 @@ open System.Collections.Generic
 open Deedle
 open Deedle.Indices
 
+fsi.AddPrinter(fun (o: obj) ->
+  let iface = o.GetType().GetInterface("IFsiFormattable")
+  if iface <> null then
+    let fmt = iface.GetMethod("Format")
+    fmt.Invoke(o, [||]) :?> string
+  else null)
+
 (**
 
 # Delay-loaded series
@@ -75,10 +82,9 @@ is called only when we access part of the series.
 We can now use the series as usual - for example, to get data for the entire year 2012:
 *)
 
-(*** define-output:slice ***)
 let slice = ls.[DateTime(2012, 1, 1) .. DateTime(2012, 12, 31)]
 slice
-(*** include-it:slice ***)
+(*** include-it ***)
 
 (**
 Similarly, we can add the delayed series to a data frame. When doing this, Deedle will
@@ -86,8 +92,7 @@ only load the data that is needed. In the following example, we add the series t
 and then access only a slice:
 *)
 
-(*** define-output:frame ***)
 let df = frame ["Values" => ls]
 let slicedDf = df.Rows.[DateTime(2012,6,1) .. DateTime(2012,6,30)]
 slicedDf
-(*** include-it:frame ***)
+(*** include-it ***)
