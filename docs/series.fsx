@@ -24,6 +24,13 @@ open System
 open Deedle
 open MathNet.Numerics.Distributions
 
+fsi.AddPrinter(fun (o: obj) ->
+  let iface = o.GetType().GetInterface("IFsiFormattable")
+  if iface <> null then
+    let fmt = iface.GetMethod("Format")
+    fmt.Invoke(o, [||]) :?> string
+  else null)
+
 (**
 
 # Working with series and time series

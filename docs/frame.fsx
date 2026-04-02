@@ -19,6 +19,13 @@ open System
 open System.IO
 open Deedle
 
+fsi.AddPrinter(fun (o: obj) ->
+  let iface = o.GetType().GetInterface("IFsiFormattable")
+  if iface <> null then
+    let fmt = iface.GetMethod("Format")
+    fmt.Invoke(o, [||]) :?> string
+  else null)
+
 let root = __SOURCE_DIRECTORY__ + "/data/"
 
 (**

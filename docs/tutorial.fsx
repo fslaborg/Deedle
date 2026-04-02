@@ -18,6 +18,13 @@ index: 2
 open System
 open Deedle
 
+fsi.AddPrinter(fun (o: obj) ->
+  let iface = o.GetType().GetInterface("IFsiFormattable")
+  if iface <> null then
+    let fmt = iface.GetMethod("Format")
+    fmt.Invoke(o, [||]) :?> string
+  else null)
+
 series [1 => 1.0; 2 => 2.0]
 (*** include-it ***)
 
@@ -92,7 +99,8 @@ the `first` series and another representing the `second` series:
 *)
 
 let df1 = Frame(["first"; "second"], [first; second])
-(*** include-value: df1 ***)
+df1
+(*** include-it ***)
 
 (** 
 The type representing a data frame has two generic parameters:
@@ -176,11 +184,11 @@ are not explicitly included in the index).
 // Use the Date column as the index & order rows
 let msftOrd = 
   msftCsv
-  |> Frame.indexRowsDate "Date"
+  |> Frame.indexRowsDateTime "Date"
   |> Frame.sortRowsByKey
 
 (**
-The `indexRowsDate` function uses a column of type `DateTime` as a new index.
+The `indexRowsDateTime` function uses a column of type `DateTime` as a new index.
 The library provides other functions for common types of indices (like `indexRowsInt`)
 and you can also use a generic function - when using the generic function, some 
 type annotations may be needed, so it is better to use a specific function.
@@ -202,7 +210,7 @@ msft?Difference <- msft?Open - msft?Close
 // Do the same thing for Facebook
 let fb = 
   fbCsv
-  |> Frame.indexRowsDate "Date"
+  |> Frame.indexRowsDateTime "Date"
   |> Frame.sortRowsByKey
   |> Frame.sliceCols ["Open"; "Close"]
 fb?Difference <- fb?Open - fb?Close

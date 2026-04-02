@@ -26,6 +26,13 @@ open Deedle
 open Deedle.Math
 open MathNet.Numerics.LinearAlgebra
 
+fsi.AddPrinter(fun (o: obj) ->
+  let iface = o.GetType().GetInterface("IFsiFormattable")
+  if iface <> null then
+    let fmt = iface.GetMethod("Format")
+    fmt.Invoke(o, [||]) :?> string
+  else null)
+
 let root = __SOURCE_DIRECTORY__ + "/data/"
 
 (**

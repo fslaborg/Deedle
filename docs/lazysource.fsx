@@ -20,6 +20,13 @@ open System.Collections.Generic
 open Deedle
 open Deedle.Indices
 
+fsi.AddPrinter(fun (o: obj) ->
+  let iface = o.GetType().GetInterface("IFsiFormattable")
+  if iface <> null then
+    let fmt = iface.GetMethod("Format")
+    fmt.Invoke(o, [||]) :?> string
+  else null)
+
 (**
 
 # Delay-loaded series
