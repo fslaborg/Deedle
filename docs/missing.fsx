@@ -44,30 +44,26 @@ values are automatically treated as missing:
 
 The following examples show series created from inputs that include missing values:
 *)
-(*** define-output:miss1 ***)
 // float NaN becomes a missing value
 Series.ofValues [ 1.0; Double.NaN; 3.0 ]
-(*** include-it:miss1 ***)
+(*** include-it ***)
 
-(*** define-output:miss2 ***)
 // null in a reference-type series
 Series.ofValues [ "a"; null; "c" ]
-(*** include-it:miss2 ***)
+(*** include-it ***)
 
-(*** define-output:miss3 ***)
 // Nullable<int> without a value
 [ Nullable(1); Nullable(); Nullable(3) ] |> Series.ofValues
-(*** include-it:miss3 ***)
+(*** include-it ***)
 
 (**
 You can also construct a series with explicit missing values using `None`:
 *)
-(*** define-output:miss4 ***)
 Series.ofOptionalObservations
   [ 1 => Some(10.0)
     2 => None
     3 => Some(30.0) ]
-(*** include-it:miss4 ***)
+(*** include-it ***)
 
 (**
 
@@ -81,20 +77,17 @@ is an alias. The total number of keys (including missing) is `KeyCount`:
 let air = Frame.ReadCsv(root + "airquality.csv", separators=";")
 let ozone = air?Ozone
 
-(*** define-output:cnt1 ***)
 // total keys (rows) in the series
 ozone.KeyCount
-(*** include-it:cnt1 ***)
+(*** include-it ***)
 
-(*** define-output:cnt2 ***)
 // present (non-missing) values
 Stats.count ozone
-(*** include-it:cnt2 ***)
+(*** include-it ***)
 
-(*** define-output:cnt3 ***)
 // number of missing values
 ozone.KeyCount - int (Stats.count ozone)
-(*** include-it:cnt3 ***)
+(*** include-it ***)
 
 (**
 
@@ -106,13 +99,11 @@ All functions in the `Stats` module, as well as common projections such as
 `Series.mapValues` and `Series.filter`, automatically skip missing values.
 The operation is applied only to present observations:
 *)
-(*** define-output:stat1 ***)
 Stats.mean ozone      // mean of the 116 present values
-(*** include-it:stat1 ***)
+(*** include-it ***)
 
-(*** define-output:stat2 ***)
 Stats.max ozone       // maximum of the present values
-(*** include-it:stat2 ***)
+(*** include-it ***)
 
 (**
 
@@ -123,19 +114,17 @@ Stats.max ozone       // maximum of the present values
 The safe way to look up a single value by key is `TryGet`, which returns an
 `OptionalValue<'T>`:
 *)
-(*** define-output:tryget ***)
 let v = ozone.TryGet(1)
 match v with
 | OptionalValue.Present x -> sprintf "present: %g" x
 | OptionalValue.Missing   -> "missing"
-(*** include-it:tryget ***)
+(*** include-it ***)
 
 (**
 You can also use `Series.observationsAll` to iterate over all key-value pairs
 including missing ones (as `option`), or `Series.observations` to skip
 missing values:
 *)
-(*** define-output:obsall ***)
 ozone
 |> Series.observationsAll
 |> Seq.truncate 6
@@ -144,7 +133,7 @@ ozone
     | Some x -> sprintf "%d => %g" k x
     | None   -> sprintf "%d => <missing>" k)
 |> Seq.toList
-(*** include-it:obsall ***)
+(*** include-it ***)
 
 (**
 
@@ -156,14 +145,13 @@ ozone
 **or** the missing-ness of each element, use `Series.mapAll`, which receives an
 `option<'T>` for each key:
 *)
-(*** define-output:mapall ***)
 ozone
 |> Series.mapAll (fun k v ->
     match v with
     | None   -> Some 0.0     // replace missing with zero
     | Some x -> Some (x * 2.0)) // double present values
 |> Series.take 5
-(*** include-it:mapall ***)
+(*** include-it ***)
 
 (**
 
@@ -175,9 +163,8 @@ ozone
 
 The simplest strategy replaces every missing value with a fixed constant:
 *)
-(*** define-output:fill1 ***)
 ozone |> Series.fillMissingWith 0.0 |> Series.take 6
-(*** include-it:fill1 ***)
+(*** include-it ***)
 
 (**
 ### Forward and backward fill
@@ -185,15 +172,13 @@ ozone |> Series.fillMissingWith 0.0 |> Series.take 6
 `Series.fillMissing` propagates the most recent available value in the
 specified direction:
 *)
-(*** define-output:fill2 ***)
 // Carry the last known value forward
 ozone |> Series.fillMissing Direction.Forward |> Series.take 6
-(*** include-it:fill2 ***)
+(*** include-it ***)
 
-(*** define-output:fill3 ***)
 // Fill from the next available value backward
 ozone |> Series.fillMissing Direction.Backward |> Series.take 6
-(*** include-it:fill3 ***)
+(*** include-it ***)
 
 (**
 ### Custom fill strategy with `fillMissingUsing`
@@ -202,7 +187,6 @@ For interpolation or other context-sensitive strategies, use
 `Series.fillMissingUsing`. The function receives the missing key and should
 return a replacement value:
 *)
-(*** define-output:fillcustom ***)
 ozone
 |> Series.fillMissingUsing (fun k ->
     // Linear interpolation from neighbours
@@ -214,7 +198,7 @@ ozone
     | _, OptionalValue.Present v -> v
     | _ -> 0.0)
 |> Series.take 6
-(*** include-it:fillcustom ***)
+(*** include-it ***)
 
 (**
 ### Combining fill and drop
@@ -222,12 +206,11 @@ ozone
 Often the cleanest approach is to fill as much as possible in one direction
 and then discard the remaining missing values:
 *)
-(*** define-output:fillcombine ***)
 ozone
 |> Series.fillMissing Direction.Forward
 |> Series.dropMissing
 |> Series.countValues
-(*** include-it:fillcombine ***)
+(*** include-it ***)
 
 (**
 
@@ -239,9 +222,8 @@ ozone
 
 `Series.dropMissing` removes all missing observations from a series:
 *)
-(*** define-output:drop1 ***)
 ozone |> Series.dropMissing |> Series.countValues
-(*** include-it:drop1 ***)
+(*** include-it ***)
 
 (**
 ### Drop sparse rows and columns from a frame
@@ -252,15 +234,13 @@ value; `Frame.dropSparseCols` removes columns with any missing value.
 After reading the air quality CSV the frame has missing values in several
 columns:
 *)
-(*** define-output:sparse1 ***)
 air.RowCount
-(*** include-it:sparse1 ***)
+(*** include-it ***)
 
-(*** define-output:sparse2 ***)
 // Keep only rows that are fully observed
 let airComplete = air |> Frame.dropSparseRows
 airComplete.RowCount
-(*** include-it:sparse2 ***)
+(*** include-it ***)
 
 (**
 
@@ -271,34 +251,31 @@ airComplete.RowCount
 The same filling functions are available at the frame level and operate
 column-by-column:
 *)
-(*** define-output:framefill1 ***)
 // Fill every missing cell with 0.0
 air
 |> Frame.fillMissingWith 0.0
 |> Frame.dropSparseRows   // now no rows should be dropped
 |> fun f -> f.RowCount
-(*** include-it:framefill1 ***)
+(*** include-it ***)
 
-(*** define-output:framefill2 ***)
 // Forward-fill each column independently
 air
 |> Frame.fillMissing Direction.Forward
 |> Frame.dropSparseRows
 |> fun f -> f.RowCount
-(*** include-it:framefill2 ***)
+(*** include-it ***)
 
 (**
 `Frame.fillMissingUsing` accepts a function `Series<'R,'T> -> 'R -> 'T` so it
 can base the fill value on the whole column series:
 *)
-(*** define-output:framefillcol ***)
 air
 |> Frame.fillMissingUsing (fun col key ->
     // Fill with that column's mean
     Stats.mean col)
 |> Frame.dropSparseRows
 |> fun f -> f.RowCount
-(*** include-it:framefillcol ***)
+(*** include-it ***)
 
 (**
 
@@ -321,17 +298,15 @@ which rows are retained:
 let s1 = series [ 1 => 10.0; 2 => 20.0; 3 => 30.0 ]
 let s2 = series [ 2 => 200.0; 3 => 300.0; 4 => 400.0 ]
 
-(*** define-output:join1 ***)
 // Outer join introduces missing values for key 1 (not in s2) and key 4 (not in s1)
 Frame.ofColumns ["A" => s1; "B" => s2]
-(*** include-it:join1 ***)
+(*** include-it ***)
 
-(*** define-output:join2 ***)
 // Inner join keeps only keys present in both
 let f1 = frame ["A" => s1]
 let f2 = frame ["B" => s2]
 f1.Join(f2, JoinKind.Inner)
-(*** include-it:join2 ***)
+(*** include-it ***)
 
 (**
 After an outer join, `Frame.dropSparseRows` or `Frame.fillMissing` can be

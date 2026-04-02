@@ -134,14 +134,13 @@ For frames that contain complex .NET objects as column values, you can use `Fram
 to create a new frame that contains properties of the object as new columns. For example: 
 *)
 
-(*** define-output:ppl ***)
 // Create frame with single column 'People'
 let peopleNested = 
   [ "People" => Series.ofValues peopleRecds ] |> frame
 
 // Expand the 'People' column
 peopleNested |> Frame.expandCols ["People"]
-(*** include-it:ppl ***)
+(*** include-it ***)
 
 (**
 <a name="dataframe"></a>
@@ -237,12 +236,11 @@ ages |> Series.observationsAll
 With ordered series, we can use slicing to get a sub-range:
 *)
 
-(*** define-output:opens ***)
 let opens = msft?Open
 opens.[DateTime(2013, 1, 1) .. DateTime(2013, 1, 31)]
 |> Series.mapKeys (fun k -> k.ToShortDateString())
 
-(*** include-it:opens ***)
+(*** include-it ***)
 
 (**
 <a name="grouping"></a>
@@ -263,13 +261,12 @@ travels |> Series.groupInto
   (fun k v -> k.Length) 
   (fun len people -> Series.countKeys people)
 
-(*** define-output: trav ***)
 travels
 |> Series.mapValues (Seq.countBy id >> series)
 |> Frame.ofRows
 |> Frame.fillMissingWith 0
 
-(*** include-it: trav ***)
+(*** include-it ***)
 
 (**
 ### Grouping data frames
@@ -322,17 +319,15 @@ The first argument specifies the grouping columns; the second specifies the colu
 aggregate; the third is the aggregation function to apply to each group series:
 *)
 
-(*** define-output:aggby1 ***)
 // Average fare by Pclass and Sex
 titanic
 |> Frame.aggregateRowsBy ["Pclass"; "Sex"] ["Fare"] Stats.mean
-(*** include-it:aggby1 ***)
+(*** include-it ***)
 
-(*** define-output:aggby2 ***)
 // Count survivors (sum of bool-as-int) and average age per Pclass
 titanic
 |> Frame.aggregateRowsBy ["Pclass"] ["Age"] Stats.mean
-(*** include-it:aggby2 ***)
+(*** include-it ***)
 
 (**
 <a name="pivot"></a>
@@ -343,7 +338,6 @@ A pivot table is a useful tool if you want to summarize data in the frame based
 on two keys that are available in the rows of the data frame. 
 *)
 
-(*** define-output:pivot1 ***)
 titanic 
 |> Frame.pivotTable 
     // Returns a new row key
@@ -353,9 +347,8 @@ titanic
     // Specifies aggregation for sub-frames
     Frame.countRows 
 
-(*** include-it:pivot1 ***)
+(*** include-it ***)
 
-(*** define-output:pivot2 ***)
 titanic 
 |> Frame.pivotTable 
     (fun k r -> r.GetAs<string>("Sex")) 
@@ -363,7 +356,7 @@ titanic
     (fun frame -> frame?Age |> Stats.mean)
 |> round
 
-(*** include-it:pivot2 ***)
+(*** include-it ***)
 
 (**
 <a name="indexing"></a>
@@ -397,16 +390,14 @@ contain missing values. When constructing series or frames from data, certain va
 are automatically treated as "missing values". This includes `Double.NaN`, `null` values
 for reference types and for nullable types:
 *)
-(*** define-output:misv1 ***)
 Series.ofValues [ Double.NaN; 1.0; 3.14 ]
 
-(*** include-it:misv1 ***)
+(*** include-it ***)
 
-(*** define-output:misv2 ***)
 [ Nullable(1); Nullable(); Nullable(3) ]
 |> Series.ofValues
 
-(*** include-it:misv2 ***)
+(*** include-it ***)
 
 (**
 Missing values are automatically skipped when performing statistical computations such
