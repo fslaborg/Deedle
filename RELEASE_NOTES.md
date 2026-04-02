@@ -5,7 +5,7 @@
 ### Infrastructure
 
 - Migrate to .NET 10 and FSharp.Core 10.0
-- Update fsdocs-tool to 22.0.0-alpha.2
+- Update fsdocs-tool to 22.0.0-alpha.3
 - Remove unnecessary System.Reflection.Emit package references (now in-box on net10.0)
 - Suppress NU1510 warnings for in-box packages pulled transitively via Paket
 - Suppress NU1701 warnings for NetOfficeFw packages (no net10.0 assets)
