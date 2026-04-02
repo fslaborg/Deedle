@@ -13,6 +13,7 @@ index: 1
 #if FSX
 #r "nuget: Deedle,{{fsdocs-package-version}}"
 #endif // FSX
+(*** condition: prepare ***)
 
 open System
 open Deedle

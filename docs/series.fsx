@@ -18,6 +18,7 @@ index: 4
 #r "nuget: MathNet.Numerics"
 #r "nuget: MathNet.Numerics.FSharp"
 #endif // FSX
+(*** condition: prepare ***)
 
 open System
 open Deedle

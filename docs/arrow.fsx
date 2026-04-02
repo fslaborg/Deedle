@@ -16,6 +16,7 @@ index: 7
 #r "nuget: Deedle,{{fsdocs-package-version}}"
 #r "nuget: Deedle.Arrow,{{fsdocs-package-version}}"
 #endif // FSX
+(*** condition: prepare ***)
 
 open System
 open System.IO

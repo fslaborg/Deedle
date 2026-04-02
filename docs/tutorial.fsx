@@ -13,6 +13,7 @@ index: 2
 #if FSX
 #r "nuget: Deedle,{{fsdocs-package-version}}"
 #endif // FSX
+(*** condition: prepare ***)
 
 open System
 open Deedle
@@ -74,13 +75,13 @@ with 10 day value range and random values:
 *)
 
 /// Generate date range from 'first' with 'count' days
-let dateRange (first:System.DateTime) count = (*[omit:(...)]*)
-  seq { for i in 0 .. (count - 1) -> first.AddDays(float i) }(*[/omit]*)
+let dateRange (first:System.DateTime) count =
+  seq { for i in 0 .. (count - 1) -> first.AddDays(float i) }
 
 /// Generate 'count' number of random doubles
-let rand count = (*[omit:(...)]*)
+let rand count =
   let rnd = System.Random()
-  seq { for i in 0 .. (count - 1) -> rnd.NextDouble() }(*[/omit]*)
+  seq { for i in 0 .. (count - 1) -> rnd.NextDouble() }
 
 // A series with values for 10 days 
 let second = Series(dateRange (DateTime(2013,1,1)) 10, rand 10)
