@@ -123,3 +123,55 @@ let ``ewmVolRMS on frame columns are all positive`` () =
   let rmsFrame = Finance.ewmVolRMS(stockReturns, halfLife = 52.)
   let lastRow = (rmsFrame |> Frame.takeLast 1).GetRowAt<float>(0)
   lastRow |> Series.values |> Seq.iter (fun v -> v |> should be (greaterThan 0.))
+
+[<Test>]
+let ``ewmCrossCov of series with itself equals ewmVar`` () =
+  let col = stockReturns.GetColumnAt<float>(0)
+  let crossCov = Finance.ewmCrossCov(col, col, halfLife = 52.)
+  let varSeries = Finance.ewmVar(col, halfLife = 52.)
+  // Both series should have the same length and nearly identical values
+  crossCov.KeyCount |> should equal varSeries.KeyCount
+  let maxDiff =
+    (crossCov - varSeries)
+    |> Series.mapValues Math.Abs
+    |> Stats.max
+  maxDiff |> should beWithin (0. +/- 1e-10)
+
+[<Test>]
+let ``ewmCrossCov between two columns matches off-diagonal of ewmCovMatrix`` () =
+  let halfLife = 52.
+  let col0 = stockReturns.GetColumnAt<float>(0)
+  let col1 = stockReturns.GetColumnAt<float>(1)
+  let crossCov = Finance.ewmCrossCov(col0, col1, halfLife = halfLife)
+  // Get the off-diagonal element from the full EWM covariance matrix at each row
+  let covMatrixSeries = Finance.ewmCovMatrix(stockReturns, halfLife = halfLife)
+  let lastCrossFromMatrix = (covMatrixSeries |> Series.lastValue).[0, 1]
+  let lastCrossFromPair   = crossCov |> Series.lastValue
+  lastCrossFromPair |> should beWithin (lastCrossFromMatrix +/- 1e-10)
+
+[<Test>]
+let ``ewmCrossVol squared equals ewmCrossCov in magnitude`` () =
+  let halfLife = 52.
+  let col0 = stockReturns.GetColumnAt<float>(0)
+  let col1 = stockReturns.GetColumnAt<float>(1)
+  let crossCov = Finance.ewmCrossCov(col0, col1, halfLife = halfLife)
+  let crossVol = Finance.ewmCrossVol(col0, col1, halfLife = halfLife)
+  // |crossVol|^2 should equal |crossCov|
+  let absCrossVolSq = crossVol |> Series.mapValues (fun v -> v * v)
+  let absCrossCov   = crossCov |> Series.mapValues Math.Abs
+  let maxDiff = (absCrossVolSq - absCrossCov) |> Series.mapValues Math.Abs |> Stats.max
+  maxDiff |> should beWithin (0. +/- 1e-10)
+
+[<Test>]
+let ``ewmCrossVol preserves sign of ewmCrossCov`` () =
+  let halfLife = 52.
+  let col0 = stockReturns.GetColumnAt<float>(0)
+  let col1 = stockReturns.GetColumnAt<float>(1)
+  let crossCov = Finance.ewmCrossCov(col0, col1, halfLife = halfLife)
+  let crossVol = Finance.ewmCrossVol(col0, col1, halfLife = halfLife)
+  // sign(crossVol) should equal sign(crossCov) for all elements
+  let signsMatch =
+    crossCov.Values
+    |> Seq.zip crossVol.Values
+    |> Seq.forall (fun (vol, cov) -> Math.Sign cov = Math.Sign vol || (cov = 0. && vol = 0.))
+  signsMatch |> should equal true
