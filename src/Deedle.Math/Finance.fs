@@ -186,3 +186,56 @@ type Finance =
     let alpha = StatsInternal.ewDecay(com, span, halfLife, alpha)
     Finance.ewmCov(df, alpha = alpha)
     |> Series.mapValues(fun v -> v |> Stats.cov2Corr |> snd)
+
+  /// Exponentially weighted moving covariance between two series (mean-corrected).
+  /// Uses the same EWMA update rule as <c>ewmCovMatrix</c>: the EWM mean is tracked for
+  /// each series and the cross-product of deviations from those means is accumulated.
+  /// The two series are aligned on their shared keys; rows where either value is missing
+  /// are dropped before computation. Initialised with the full-sample covariance.
+  ///
+  /// <category>Exponentially Weighted Moving</category>
+  static member ewmCrossCov (x:Series<'R, float>, y:Series<'R, float>, ?com, ?span, ?halfLife, ?alpha) =
+    let alpha = StatsInternal.ewDecay(com, span, halfLife, alpha)
+    let df =
+      Frame.ofColumns(["x", x; "y", y])
+      |> Frame.dropSparseRows
+    if df.RowCount < 2 then
+      Series(df.RowKeys, Array.create df.RowCount nan)
+    else
+      let keys  = df.RowKeys |> Array.ofSeq
+      let xData = df.GetColumn<float>("x").Values |> Array.ofSeq
+      let yData = df.GetColumn<float>("y").Values |> Array.ofSeq
+      let n     = keys.Length
+      let meanX0 = Array.average xData
+      let meanY0 = Array.average yData
+      let initCov =
+        (Array.map2 (fun xi yi -> (xi - meanX0) * (yi - meanY0)) xData yData |> Array.sum)
+        / float (n - 1)
+      let res = Array.zeroCreate n
+      let mutable meanX = xData.[0]
+      let mutable meanY = yData.[0]
+      let mutable cov   = initCov
+      res.[0] <- initCov
+      for i in 1..n-1 do
+        let prevMeanX = meanX
+        let prevMeanY = meanY
+        let cx = xData.[i]
+        let cy = yData.[i]
+        meanX <- (1.0 - alpha) * meanX + alpha * cx
+        meanY <- (1.0 - alpha) * meanY + alpha * cy
+        cov   <- (1.0 - alpha) * cov + alpha * (cx - prevMeanX) * (cy - prevMeanY)
+        res.[i] <- cov
+      Series(keys, res)
+
+  /// Exponentially weighted moving cross-volatility between two series.
+  /// Defined as the signed square root of <c>ewmCrossCov</c>:
+  /// <c>sign(cov) * sqrt(|cov|)</c>, so that squaring recovers the magnitude of the
+  /// covariance and the sign indicates the direction of co-movement.
+  /// The two series are aligned on their shared keys; rows where either value is
+  /// missing are dropped before computation.
+  ///
+  /// <category>Exponentially Weighted Moving</category>
+  static member ewmCrossVol (x:Series<'R, float>, y:Series<'R, float>, ?com, ?span, ?halfLife, ?alpha) =
+    let alpha = StatsInternal.ewDecay(com, span, halfLife, alpha)
+    Finance.ewmCrossCov(x, y, alpha = alpha)
+    |> Series.mapValues (fun cov -> float (Math.Sign cov) * Math.Sqrt(Math.Abs cov))

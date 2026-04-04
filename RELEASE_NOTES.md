@@ -2,6 +2,11 @@
 
 ## 5.0.0 - 2026-04-02
 
+### New operations — Deedle.Math.Finance
+
+- Add `Finance.ewmCrossCov` — EWMA pairwise covariance between two return series (mean-corrected, consistent with `ewmCovMatrix`) ([#81](https://github.com/fslaborg/Deedle/issues/81))
+- Add `Finance.ewmCrossVol` — signed square root of `ewmCrossCov`, giving cross-volatility in vol units with sign indicating direction of co-movement ([#81](https://github.com/fslaborg/Deedle/issues/81))
+
 ### Infrastructure
 
 - Migrate to .NET 10 and FSharp.Core 10.0
