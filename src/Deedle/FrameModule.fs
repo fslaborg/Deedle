@@ -852,13 +852,22 @@ module Frame =
   let stack (frame: Frame<'R, 'C>) : Frame<'R * 'C, string> =
     let rowKeys = frame.RowIndex.Keys
     let colKeys = frame.ColumnIndex.Keys
-    let tupleKeys = ResizeArray<'R * 'C>()
-    let valVec    = ResizeArray<obj>()
-    for rowKey in rowKeys do
-      for colKey in colKeys do
-        let vec = frame.Data.GetValue(frame.ColumnIndex.Locate(colKey))
-        if vec.HasValue then
-          let value = vec.Value.GetObject(frame.RowIndex.Locate(rowKey))
+    // Pre-compute per-column data vectors and per-row addresses once,
+    // avoiding O(rows × cols) index lookups in the inner loop.
+    let colData =
+      colKeys
+      |> Seq.map (fun k -> k, frame.Data.GetValue(frame.ColumnIndex.Locate(k)))
+      |> Seq.toArray
+    let rowAddrs =
+      rowKeys
+      |> Seq.map (fun k -> k, frame.RowIndex.Locate(k))
+      |> Seq.toArray
+    let tupleKeys = ResizeArray<'R * 'C>(rowAddrs.Length * colData.Length)
+    let valVec    = ResizeArray<obj>(rowAddrs.Length * colData.Length)
+    for rowKey, rowAddr in rowAddrs do
+      for colKey, vecOpt in colData do
+        if vecOpt.HasValue then
+          let value = vecOpt.Value.GetObject(rowAddr)
           if value.HasValue then
             tupleKeys.Add((rowKey, colKey))
             valVec.Add(value.Value)
@@ -887,8 +896,18 @@ module Frame =
   /// <category>Grouping, windowing and chunking</category>
   [<CompiledName("Unstack")>]
   let unstack (frame: Frame<'R1 * 'R2, 'C>) : Frame<'R1, 'C * 'R2> =
-    let r1Keys = frame.RowIndex.Keys |> Seq.map fst |> Seq.distinct |> Array.ofSeq
-    let r2Keys = frame.RowIndex.Keys |> Seq.map snd |> Seq.distinct |> Array.ofSeq
+    // Single pass over the row keys to collect both r1 and r2 in first-occurrence order,
+    // instead of two separate passes with Seq.distinct.
+    let r1List = ResizeArray<'R1>()
+    let r2List = ResizeArray<'R2>()
+    let r1Seen = System.Collections.Generic.HashSet<'R1>()
+    let r2Seen = System.Collections.Generic.HashSet<'R2>()
+    for k in frame.RowIndex.Keys do
+      let r1, r2 = k
+      if r1Seen.Add(r1) then r1List.Add(r1)
+      if r2Seen.Add(r2) then r2List.Add(r2)
+    let r1Keys = r1List.ToArray()
+    let r2Keys = r2List.ToArray()
     let cKeys  = frame.ColumnIndex.Keys |> Array.ofSeq
     let newRowIndex = Index.ofKeys r1Keys
     let newColIndex = Index.ofKeys [| for c in cKeys do for r2 in r2Keys do yield (c, r2) |]
