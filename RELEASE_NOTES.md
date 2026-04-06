@@ -2,6 +2,15 @@
 
 ## 5.0.0 - 2026-04-02
 
+### Documentation
+
+- Add `docs/excel.fsx` — comprehensive documentation page for `Deedle.Excel.Reader` (cross-platform xlsx/xls reading) and `Deedle.Excel` (Windows live-Excel integration)
+
+### Performance
+
+- `Frame.stack`: precompute per-column data vectors and per-row addresses before the nested loop, eliminating O(rows × cols) redundant index lookups
+- `Frame.unstack`: single-pass extraction of unique r1 and r2 keys using `HashSet`-backed `ResizeArray`, replacing two separate `Seq.map |> Seq.distinct |> Array.ofSeq` traversals
+
 ### New operations — Deedle.Math.Finance
 
 - Add `Finance.ewmCrossCov` — EWMA pairwise covariance between two return series (mean-corrected, consistent with `ewmCovMatrix`) ([#81](https://github.com/fslaborg/Deedle/issues/81))

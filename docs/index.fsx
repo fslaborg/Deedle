@@ -89,6 +89,9 @@ Then we add nice namings, sort the frame and build a new data frame with a nice 
 
  * [Apache Arrow / Feather integration](arrow.html) — zero-copy columnar I/O with `Deedle.Arrow`
 
+ * [Excel integration](excel.html) — reading `.xlsx`/`.xls` files cross-platform with `Deedle.Excel.Reader`;
+   live read/write via `Deedle.Excel` (Windows)
+
  * [Deedle.Math — MathNet.Numerics integration](math.html) — linear algebra, correlation,
    EWM statistics, PCA, and linear regression via `Deedle.Math`
 
