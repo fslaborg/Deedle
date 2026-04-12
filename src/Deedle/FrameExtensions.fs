@@ -1086,6 +1086,53 @@ type FrameExtensions =
   static member Unnest(series:Series<'TRowKey1, Frame<'TRowKey2, 'TColumnKey>>) =
     series |> Frame.unnest
 
+  /// <summary>
+  /// Converts a data frame to a long-format frame by combining the row index and the
+  /// column index into a 2-tuple row index. Each cell of the original frame becomes a row
+  /// in the result keyed by <c>(rowKey, columnKey)</c>, with a single column named
+  /// <c>"Value"</c>. Missing values are dropped.
+  /// </summary>
+  /// <remarks>
+  /// This is the pandas-style <c>DataFrame.stack()</c> operation. The inverse operation
+  /// is <c>Unstack</c>.
+  /// </remarks>
+  /// <param name="frame">The input data frame to convert to long format.</param>
+  /// <category>Data structure manipulation</category>
+  [<Extension>]
+  static member Stack(frame:Frame<'TRowKey, 'TColumnKey>) : Frame<'TRowKey * 'TColumnKey, string> =
+    frame |> Frame.stack
+
+  /// <summary>
+  /// Converts a data frame with a 2-tuple row index into a wide-format frame by promoting
+  /// the inner (second) element of each row key to the column index. The resulting frame has
+  /// row keys equal to the unique first tuple elements and column keys of the form
+  /// <c>(originalColumnKey, innerRowKey)</c>. Cells with no corresponding entry in the
+  /// input are represented as missing values.
+  /// </summary>
+  /// <remarks>
+  /// This is the pandas-style <c>DataFrame.unstack()</c> operation and is the inverse of
+  /// <c>Stack</c> (modulo column-key wrapping when the input has more than one column).
+  /// </remarks>
+  /// <param name="frame">The input data frame with a 2-tuple row index.</param>
+  /// <category>Data structure manipulation</category>
+  [<Extension>]
+  static member Unstack(frame:Frame<'TRowKey1 * 'TRowKey2, 'TColumnKey>) : Frame<'TRowKey1, 'TColumnKey * 'TRowKey2> =
+    frame |> Frame.unstack
+
+  /// <summary>
+  /// Unpivots a data frame from wide format to long format, similar to pandas
+  /// <c>DataFrame.melt</c>. The specified identity columns are kept as-is; all other
+  /// columns are collapsed into two new columns: <c>"Column"</c> holding the original
+  /// column key and <c>"Value"</c> holding the cell value. Rows with missing values in
+  /// the value columns are dropped.
+  /// </summary>
+  /// <param name="frame">The input data frame to melt.</param>
+  /// <param name="idColumns">Columns to keep as identity columns. All other columns are melted.</param>
+  /// <category>Data structure manipulation</category>
+  [<Extension>]
+  static member MeltBy(frame:Frame<'TRowKey, 'TColumnKey>, [<ParamArray>] idColumns:'TColumnKey[]) : Frame<int, string> =
+    frame |> Frame.meltBy idColumns
+
   // ----------------------------------------------------------------------------------------------
   // Input and output
   // ----------------------------------------------------------------------------------------------
@@ -1409,6 +1456,107 @@ type FrameExtensions =
   [<Extension>]
   static member DistinctRowsBy(frame:Frame<'TRowKey, 'TColumnKey>, [<ParamArray>] columns:'TColumnKey[]) =
     Frame.distinctRowsBy columns frame
+
+  /// <summary>
+  /// Returns a new data frame containing only the rows of the input frame whose
+  /// corresponding value in the boolean mask series is <c>true</c>. Rows whose key
+  /// is missing from the mask are excluded. This enables pandas-style boolean indexing.
+  /// </summary>
+  /// <param name="frame">Input data frame to be filtered.</param>
+  /// <param name="mask">A series of boolean values indexed by the row key type.</param>
+  /// <category>Frame transformations</category>
+  [<Extension>]
+  static member WhereRowsByMask(frame:Frame<'TRowKey, 'TColumnKey>, mask:Series<'TRowKey, bool>) =
+    frame |> Frame.filterRowsByMask mask
+
+  /// <summary>
+  /// Returns a new data frame containing only the columns of the input frame whose
+  /// corresponding value in the boolean mask series is <c>true</c>. Columns whose key
+  /// is missing from the mask are excluded. This enables pandas-style boolean indexing.
+  /// </summary>
+  /// <param name="frame">Input data frame to be filtered.</param>
+  /// <param name="mask">A series of boolean values indexed by the column key type.</param>
+  /// <category>Frame transformations</category>
+  [<Extension>]
+  static member WhereColsByMask(frame:Frame<'TRowKey, 'TColumnKey>, mask:Series<'TColumnKey, bool>) =
+    frame |> Frame.filterColsByMask mask
+
+  /// <summary>
+  /// Returns a new data frame where the specified column has been renamed to the new key.
+  /// If <c>oldKey</c> is not found, the frame is returned unchanged.
+  /// </summary>
+  /// <param name="frame">Source data frame.</param>
+  /// <param name="oldKey">The current key of the column to rename.</param>
+  /// <param name="newKey">The new key to assign to that column.</param>
+  /// <category>Sorting and index manipulation</category>
+  [<Extension>]
+  static member RenameColumn(frame:Frame<'TRowKey, 'TColumnKey>, oldKey:'TColumnKey, newKey:'TColumnKey) =
+    frame |> Frame.renameCol oldKey newKey
+
+  /// <summary>
+  /// Returns a new data frame where all column keys have been transformed by the
+  /// specified mapping function.
+  /// </summary>
+  /// <param name="frame">Source data frame.</param>
+  /// <param name="mapping">A function that maps each current column key to a new column key.</param>
+  /// <category>Sorting and index manipulation</category>
+  [<Extension>]
+  static member RenameColumns(frame:Frame<'TRowKey, 'TColumnKey>, mapping:Func<'TColumnKey, 'TColumnKey2>) =
+    frame |> Frame.renameColsUsing mapping.Invoke
+
+  /// <summary>
+  /// Join two data frames on a shared column, using that column's values as the row index for
+  /// alignment. Both frames must have unique values in the specified column. The join column is
+  /// removed from the data columns of the result and becomes the row index.
+  /// </summary>
+  /// <param name="frame">First (left) data frame.</param>
+  /// <param name="other">Second (right) data frame to join with.</param>
+  /// <param name="kind">Specifies the join kind (Outer, Inner, Left, Right).</param>
+  /// <param name="colKey">The name of the column to join on. Must exist in both frames.</param>
+  /// <category>Joining, merging and zipping</category>
+  [<Extension>]
+  static member JoinOn(frame:Frame<'TRowKey1, 'TColumnKey>, other:Frame<'TRowKey2, 'TColumnKey>, kind:JoinKind, colKey:'TColumnKey) : Frame<'K, 'TColumnKey> =
+    Frame.joinOn kind colKey frame other
+
+  /// <summary>
+  /// Join two data frames on a shared string-valued column. Both frames must have unique values
+  /// in the specified column. The join column becomes the row index of the result frame.
+  /// </summary>
+  /// <param name="frame">First (left) data frame.</param>
+  /// <param name="other">Second (right) data frame to join with.</param>
+  /// <param name="kind">Specifies the join kind (Outer, Inner, Left, Right).</param>
+  /// <param name="colKey">The name of the column to join on.</param>
+  /// <category>Joining, merging and zipping</category>
+  [<Extension>]
+  static member JoinOnString(frame:Frame<'TRowKey1, 'TColumnKey>, other:Frame<'TRowKey2, 'TColumnKey>, kind:JoinKind, colKey:'TColumnKey) : Frame<string, 'TColumnKey> =
+    Frame.joinOnString kind colKey frame other
+
+  /// <summary>
+  /// Join two data frames on a shared int-valued column. Both frames must have unique values
+  /// in the specified column. The join column becomes the row index of the result frame.
+  /// </summary>
+  /// <param name="frame">First (left) data frame.</param>
+  /// <param name="other">Second (right) data frame to join with.</param>
+  /// <param name="kind">Specifies the join kind (Outer, Inner, Left, Right).</param>
+  /// <param name="colKey">The name of the column to join on.</param>
+  /// <category>Joining, merging and zipping</category>
+  [<Extension>]
+  static member JoinOnInt(frame:Frame<'TRowKey1, 'TColumnKey>, other:Frame<'TRowKey2, 'TColumnKey>, kind:JoinKind, colKey:'TColumnKey) : Frame<int, 'TColumnKey> =
+    Frame.joinOnInt kind colKey frame other
+
+  /// <summary>
+  /// Compares two data frames column-by-column and returns a new frame of <c>Diff</c> values.
+  /// Each cell describes whether the value was added, removed, or changed between the two frames.
+  /// Columns present only in this frame contribute <c>Diff.Remove</c> values; columns present only
+  /// in <c>other</c> contribute <c>Diff.Add</c> values; columns present in both are compared
+  /// element-wise.
+  /// </summary>
+  /// <param name="frame">The first (original) frame.</param>
+  /// <param name="other">The second (updated) frame to compare against.</param>
+  /// <category>Joining, merging and zipping</category>
+  [<Extension>]
+  static member Compare(frame:Frame<'TRowKey, 'TColumnKey>, other:Frame<'TRowKey, 'TColumnKey>) =
+    Frame.compare frame other
 
   [<Extension>]
   static member GetRowsAt(frame:Frame<'TRowKey, 'TColumnKey>, [<ParamArray>] indices:int[]) =
