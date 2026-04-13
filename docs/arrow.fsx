@@ -100,13 +100,17 @@ streaming pipelines. Unlike the file format, it does not require seekable storag
 
 *)
 
-// Write to an in-memory stream
-use ms = new MemoryStream()
-Frame.writeArrowStream ms prices
+let arrowStreamExample () =
+    // Write to an in-memory stream
+    use ms = new MemoryStream()
+    Frame.writeArrowStream ms prices
 
-// Rewind and read back
-ms.Position <- 0L
-let prices4 = Frame.readArrowStream ms
+    // Rewind and read back
+    ms.Position <- 0L
+    let prices4 = Frame.readArrowStream ms
+    prices4
+
+let prices4 = arrowStreamExample ()
 (*** include-value: prices4 ***)
 
 (**
