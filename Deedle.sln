@@ -33,8 +33,6 @@ Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Deedle.Tests", "tests\Deedl
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Deedle.Math.Tests", "tests\Deedle.Math.Tests\Deedle.Math.Tests.fsproj", "{AD811C67-091A-4B03-A483-9FA3B1A8CE55}"
 EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Deedle.PerfTests", "tests\Deedle.PerfTests\Deedle.PerfTests.fsproj", "{B8224BD3-4B55-485D-AF3F-54B189D8541E}"
-EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Deedle.Interactive", "src\Deedle.Interactive\Deedle.Interactive.fsproj", "{D71C0930-C2A3-4EDF-82A9-9EE6B431EC0D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Deedle.CSharp.Tests", "tests\Deedle.CSharp.Tests\Deedle.CSharp.Tests.csproj", "{B0584275-6E9D-4DB8-A35D-4F37B623F97E}"
@@ -131,18 +129,6 @@ Global
 		{AD811C67-091A-4B03-A483-9FA3B1A8CE55}.Release|x64.Build.0 = Release|Any CPU
 		{AD811C67-091A-4B03-A483-9FA3B1A8CE55}.Release|x86.ActiveCfg = Release|Any CPU
 		{AD811C67-091A-4B03-A483-9FA3B1A8CE55}.Release|x86.Build.0 = Release|Any CPU
-		{B8224BD3-4B55-485D-AF3F-54B189D8541E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B8224BD3-4B55-485D-AF3F-54B189D8541E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B8224BD3-4B55-485D-AF3F-54B189D8541E}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{B8224BD3-4B55-485D-AF3F-54B189D8541E}.Debug|x64.Build.0 = Debug|Any CPU
-		{B8224BD3-4B55-485D-AF3F-54B189D8541E}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{B8224BD3-4B55-485D-AF3F-54B189D8541E}.Debug|x86.Build.0 = Debug|Any CPU
-		{B8224BD3-4B55-485D-AF3F-54B189D8541E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B8224BD3-4B55-485D-AF3F-54B189D8541E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B8224BD3-4B55-485D-AF3F-54B189D8541E}.Release|x64.ActiveCfg = Release|Any CPU
-		{B8224BD3-4B55-485D-AF3F-54B189D8541E}.Release|x64.Build.0 = Release|Any CPU
-		{B8224BD3-4B55-485D-AF3F-54B189D8541E}.Release|x86.ActiveCfg = Release|Any CPU
-		{B8224BD3-4B55-485D-AF3F-54B189D8541E}.Release|x86.Build.0 = Release|Any CPU
 		{D71C0930-C2A3-4EDF-82A9-9EE6B431EC0D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D71C0930-C2A3-4EDF-82A9-9EE6B431EC0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D71C0930-C2A3-4EDF-82A9-9EE6B431EC0D}.Debug|x64.ActiveCfg = Debug|Any CPU

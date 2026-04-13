@@ -13,8 +13,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Deedle.CSharp.Tests\Deedle.CSharp.Tests.csproj">
     </ProjectReference>
-    <ProjectReference Include="..\Deedle.PerfTests\Deedle.PerfTests.fsproj">
-    </ProjectReference>
     <ProjectReference Include="..\Deedle.Tests\Deedle.Tests.fsproj">
     </ProjectReference>
   </ItemGroup>

@@ -1,10 +1,11 @@
 # Release Notes
 
-## 5.0.1-unreleased
+## 6.0.0 - 2026-04-13
 
 ### Infrastructure
 
-- **Breaking**: `Deedle.Arrow`, `Deedle.Parquet`, and `Deedle.ExcelReader` are now F# namespaces instead of top-level modules. Functions like `readArrow`, `readParquet`, and `readExcel` are no longer brought into scope directly by `open`; use `Frame.readArrow`, `Frame.readParquet`, `Frame.readExcel`, etc. instead. C# static factory types (`ArrowFrame`, `ParquetFrame`, `ExcelFrame`) and extension methods are unchanged.
+- `Deedle.Arrow`, `Deedle.Parquet`, and `Deedle.ExcelReader` are now F# namespaces instead of top-level modules. Functions like `readArrow`, `readParquet`, and `readExcel` are no longer brought into scope directly by `open`; use `Frame.readArrow`, `Frame.readParquet`, `Frame.readExcel`, etc. instead. C# static factory types (`ArrowFrame`, `ParquetFrame`, `ExcelFrame`) and extension methods are unchanged.
+- Removed obsolete `Deedle.PerfTest` and `Deedle.PerfTests` projects (.NET Framework–only performance runner); use `Deedle.Benchmarks` (BenchmarkDotNet) instead
 
 ### New packages
 

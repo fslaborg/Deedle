@@ -1,3 +1,4 @@
+﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.31101.0
@@ -13,13 +14,6 @@ EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Deedle.Tests.Console", "tests\Deedle.Tests.Console\Deedle.Tests.Console.fsproj", "{09D8960B-9703-425E-AF0B-FA39525F5B9C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Deedle.CSharp.Tests", "tests\Deedle.CSharp.Tests\Deedle.CSharp.Tests.csproj", "{B0584275-6E9D-4DB8-A35D-4F37B623F97E}"
-EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Deedle.PerfTests", "tests\Deedle.PerfTests\Deedle.PerfTests.fsproj", "{0275C56B-9A00-4578-A826-A6CF1F089086}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Performance", "Performance", "{DEA1237A-77B6-4988-AC8C-065C546435BB}"
-	ProjectSection(SolutionItems) = preProject
-		tests\PerformanceTools\performance.fsx = tests\PerformanceTools\performance.fsx
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,10 +33,6 @@ Global
 		{B0584275-6E9D-4DB8-A35D-4F37B623F97E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B0584275-6E9D-4DB8-A35D-4F37B623F97E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B0584275-6E9D-4DB8-A35D-4F37B623F97E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0275C56B-9A00-4578-A826-A6CF1F089086}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0275C56B-9A00-4578-A826-A6CF1F089086}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0275C56B-9A00-4578-A826-A6CF1F089086}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0275C56B-9A00-4578-A826-A6CF1F089086}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
