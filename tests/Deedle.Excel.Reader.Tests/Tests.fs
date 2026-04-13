@@ -104,3 +104,53 @@ let ``readExcel handles missing values as missing entries`` () =
     let b = df.["B"] |> Series.tryGet 0
     a.IsSome |> should equal true
     b.IsNone |> should equal true
+
+// ---------------------------------------------------------------------------
+// Frame module API
+// ---------------------------------------------------------------------------
+
+[<Test>]
+let ``Frame.readExcel reads first sheet`` () =
+    let df = Frame.readExcel testFile
+    df.RowCount |> should equal 3
+    df.ColumnKeys |> Seq.toList |> should equal ["Name"; "Age"; "Score"]
+
+[<Test>]
+let ``Frame.readExcelSheet reads named sheet`` () =
+    let df = Frame.readExcelSheet testFile "Prices"
+    df.RowCount |> should equal 2
+    df.ColumnKeys |> Seq.toList |> should equal ["Item"; "Price"; "Quantity"]
+
+[<Test>]
+let ``Frame.readExcelSheetByIndex reads sheet at index`` () =
+    let df = Frame.readExcelSheetByIndex testFile 1
+    df.RowCount |> should equal 2
+
+[<Test>]
+let ``Frame.sheetNames returns all sheet names`` () =
+    Frame.sheetNames testFile |> should equal ["Sheet1"; "Prices"]
+
+// ---------------------------------------------------------------------------
+// ExcelFrame C# API
+// ---------------------------------------------------------------------------
+
+[<Test>]
+let ``ExcelFrame.ReadExcel reads first sheet`` () =
+    let df = ExcelFrame.ReadExcel(testFile)
+    df.RowCount |> should equal 3
+    df.ColumnKeys |> Seq.toList |> should equal ["Name"; "Age"; "Score"]
+
+[<Test>]
+let ``ExcelFrame.ReadExcelSheet reads named sheet`` () =
+    let df = ExcelFrame.ReadExcelSheet(testFile, "Prices")
+    df.RowCount |> should equal 2
+    df.ColumnKeys |> Seq.toList |> should equal ["Item"; "Price"; "Quantity"]
+
+[<Test>]
+let ``ExcelFrame.ReadExcelSheetByIndex reads sheet at index`` () =
+    let df = ExcelFrame.ReadExcelSheetByIndex(testFile, 0)
+    df.RowCount |> should equal 3
+
+[<Test>]
+let ``ExcelFrame.SheetNames returns all sheet names`` () =
+    ExcelFrame.SheetNames(testFile) |> should equal ["Sheet1"; "Prices"]

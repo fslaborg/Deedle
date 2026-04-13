@@ -93,3 +93,75 @@ let sheetNames (path: string) : string list =
     [ yield reader.Name
       while reader.NextResult() do
           yield reader.Name ]
+
+// ------------------------------------------------------------------------------------------------
+// F# Frame module extensions
+// ------------------------------------------------------------------------------------------------
+
+/// <summary>
+/// F# module extensions for reading Excel files.
+/// Open <c>Deedle.ExcelReader</c> and then call these as <c>Frame.readExcel</c>,
+/// <c>Frame.readExcelSheet</c>, etc.
+/// </summary>
+module Frame =
+
+    /// <summary>
+    /// Read the first worksheet of an Excel file as a <c>Frame&lt;int, string&gt;</c>.
+    /// </summary>
+    let readExcel (path: string) : Frame<int, string> =
+        readExcel path
+
+    /// <summary>
+    /// Read a specific worksheet by name from an Excel file.
+    /// </summary>
+    let readExcelSheet (path: string) (sheetName: string) : Frame<int, string> =
+        readExcelSheet path sheetName
+
+    /// <summary>
+    /// Read a specific worksheet by zero-based index from an Excel file.
+    /// </summary>
+    let readExcelSheetByIndex (path: string) (sheetIndex: int) : Frame<int, string> =
+        readExcelSheetByIndex path sheetIndex
+
+    /// <summary>
+    /// Return the names of all worksheets in an Excel file.
+    /// </summary>
+    let sheetNames (path: string) : string list =
+        sheetNames path
+
+// ------------------------------------------------------------------------------------------------
+// C#-friendly API: static factory methods
+// ------------------------------------------------------------------------------------------------
+
+/// <summary>
+/// Static factory methods for reading Excel files, accessible from C# as
+/// <c>ExcelFrame.ReadExcel(path)</c> etc.
+/// </summary>
+type ExcelFrame =
+
+    /// <summary>
+    /// Read the first worksheet of an Excel file (.xls or .xlsx) as a
+    /// <c>Frame&lt;int, string&gt;</c>. The first row is treated as column headers.
+    /// </summary>
+    static member ReadExcel(path: string) : Frame<int, string> =
+        readExcel path
+
+    /// <summary>
+    /// Read a specific worksheet by name from an Excel file (.xls or .xlsx).
+    /// The first row is treated as column headers.
+    /// </summary>
+    static member ReadExcelSheet(path: string, sheetName: string) : Frame<int, string> =
+        readExcelSheet path sheetName
+
+    /// <summary>
+    /// Read a specific worksheet by zero-based index from an Excel file (.xls or .xlsx).
+    /// The first row is treated as column headers.
+    /// </summary>
+    static member ReadExcelSheetByIndex(path: string, sheetIndex: int) : Frame<int, string> =
+        readExcelSheetByIndex path sheetIndex
+
+    /// <summary>
+    /// Return the names of all worksheets in an Excel file.
+    /// </summary>
+    static member SheetNames(path: string) : string list =
+        sheetNames path
