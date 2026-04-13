@@ -22,7 +22,7 @@ dotnet paket restore
 [![Build Status](https://github.com/fslaborg/deedle/actions/workflows/push-master.yml/badge.svg)](https://github.com/fslaborg/Deedle/actions)
 
 [![Deedle Nuget](https://buildstats.info/nuget/Deedle)](https://www.nuget.org/packages/Deedle/) Deedle  
-[![Deedle.Math Nuget](https://buildstats.info/nuget/Deedle.Math)](https://www.nuget.org/packages/Deedle.Math/) Deedle.Math
+[![Deedle.MathNetNumerics Nuget](https://buildstats.info/nuget/Deedle.MathNetNumerics)](https://www.nuget.org/packages/Deedle.MathNetNumerics/) Deedle.MathNetNumerics
 
 Documentation
 -------------
@@ -42,12 +42,12 @@ is available in the [API Reference](http://fslab.org/Deedle/reference/index.html
 * [`Frame` module](http://fslab.org/Deedle/reference/deedle-framemodule.html) for data frame manipulation
 * [`Stats` module](http://fslab.org/Deedle/reference/deedle-stats.html) for statistical functions, moving windows and a lot more.
 
-More functions related to linear algebra, statistical analysis and financial analysis can be found in **Deedle.Math** extension. Deedle.Math has dependency on MathNet.Numerics.
+More functions related to linear algebra, statistical analysis and financial analysis can be found in **Deedle.MathNetNumerics** extension. Deedle.MathNetNumerics has dependency on MathNet.Numerics.
 
-* [`LinearAlgebra` module](http://fslab.org/Deedle/reference/deedle-math-linearalgebra.html) provides linear algebra functions on frame.
-* [`Matrix` module](http://fslab.org/Deedle/reference/deedle-math-matrix.html) provides matrix multiplication between frame, series, matrix and vector. They are also available via type extensions.
-* [`Stats` module](http://fslab.org/Deedle/reference/deedle-math-stats.html) provides extra statistical functions on frame and series by applying existing functions in MathNet.Numerics.
-* [`Finance` module](http://fslab.org/Deedle/reference/deedle-math-finance.html) provides statistical functions specific to finance domain.  
+* [`LinearAlgebra` module](http://fslab.org/Deedle/reference/deedle-mathnetnumerics-linearalgebra.html) provides linear algebra functions on frame.
+* [`Matrix` module](http://fslab.org/Deedle/reference/deedle-mathnetnumerics-matrix.html) provides matrix multiplication between frame, series, matrix and vector. They are also available via type extensions.
+* [`Stats` module](http://fslab.org/Deedle/reference/deedle-mathnetnumerics-stats.html) provides extra statistical functions on frame and series by applying existing functions in MathNet.Numerics.
+* [`Finance` module](http://fslab.org/Deedle/reference/deedle-mathnetnumerics-finance.html) provides statistical functions specific to finance domain.  
 
 Maintainers
 -----------

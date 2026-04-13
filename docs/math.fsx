@@ -1,6 +1,6 @@
 (**
 ---
-title: Deedle.Math — MathNet.Numerics integration
+title: Deedle.MathNetNumerics — MathNet.Numerics integration
 category: Integrations
 categoryindex: 2
 index: 4
@@ -11,13 +11,13 @@ keywords: MathNet, linear algebra, matrix, numerics, regression, integration
 (*** condition: prepare ***)
 #nowarn "211"
 #r "../bin/net10.0/Deedle.dll"
-#r "../bin/net10.0/Deedle.Math.dll"
+#r "../bin/net10.0/Deedle.MathNetNumerics.dll"
 #r "nuget: MathNet.Numerics, 5.0.0"
 #r "nuget: MathNet.Numerics.FSharp, 5.0.0"
 (*** condition: fsx ***)
 #if FSX
 #r "nuget: Deedle,{{fsdocs-package-version}}"
-#r "nuget: Deedle.Math,{{fsdocs-package-version}}"
+#r "nuget: Deedle.MathNetNumerics,{{fsdocs-package-version}}"
 #r "nuget: MathNet.Numerics"
 #r "nuget: MathNet.Numerics.FSharp"
 #endif // FSX
@@ -25,7 +25,7 @@ keywords: MathNet, linear algebra, matrix, numerics, regression, integration
 
 open System
 open Deedle
-open Deedle.Math
+open Deedle.MathNetNumerics
 open MathNet.Numerics.LinearAlgebra
 
 fsi.AddPrinter(fun (o: obj) ->
@@ -39,28 +39,28 @@ let root = __SOURCE_DIRECTORY__ + "/data/"
 
 (**
 
-# Deedle.Math — MathNet.Numerics integration
+# Deedle.MathNetNumerics — MathNet.Numerics integration
 
-`Deedle.Math` is a separate NuGet package that extends Deedle with linear algebra,
+`Deedle.MathNetNumerics` is a separate NuGet package that extends Deedle with linear algebra,
 advanced statistics, PCA, and financial time-series functions via the
 [MathNet.Numerics](https://numerics.mathdotnet.com/) library.
 
 ## Installation
 
 ```
-dotnet add package Deedle.Math
+dotnet add package Deedle.MathNetNumerics
 ```
 
 Then reference in F# script or notebook:
 
 ```fsx
 #r "nuget: Deedle"
-#r "nuget: Deedle.Math"
+#r "nuget: Deedle.MathNetNumerics"
 #r "nuget: MathNet.Numerics"
 #r "nuget: MathNet.Numerics.FSharp"
 
 open Deedle
-open Deedle.Math
+open Deedle.MathNetNumerics
 ```
 
 ---
@@ -69,9 +69,9 @@ open Deedle.Math
 
 ## Frame and Series ↔ Matrix conversions
 
-`Deedle.Math` adds a `Frame` type alias and a `Series` type alias in the `Deedle.Math`
+`Deedle.MathNetNumerics` adds a `Frame` type alias and a `Series` type alias in the `Deedle.MathNetNumerics`
 namespace that provide `toMatrix` / `ofMatrix` and `toVector` / `ofVector` helpers.
-Opening `Deedle.Math` after `Deedle` makes these available without qualifying.
+Opening `Deedle.MathNetNumerics` after `Deedle` makes these available without qualifying.
 
 *)
 
@@ -166,7 +166,7 @@ Other available operations:
 
 ## Descriptive statistics
 
-`Deedle.Math.Stats` extends the base `Deedle.Stats` with richer descriptive statistics
+`Deedle.MathNetNumerics.Stats` extends the base `Deedle.Stats` with richer descriptive statistics
 from MathNet.Numerics.
 
 *)
@@ -290,7 +290,7 @@ let rollingCov = Stats.movingCovarianceParallel 10 numAir
 
 ## Financial time-series: EWM volatility and covariance
 
-`Finance` (in `Deedle.Math`) provides exponentially weighted volatility and covariance
+`Finance` (in `Deedle.MathNetNumerics`) provides exponentially weighted volatility and covariance
 functions that are common in quantitative finance.
 
 *)
@@ -375,7 +375,7 @@ let vecs = PCA.eigenVectors result  // Frame<colKey, string>
 `LinearRegression.ols` fits an ordinary-least-squares model from columns in a frame:
 
 ```fsharp
-open Deedle.Math
+open Deedle.MathNetNumerics
 
 // Fit: Ozone ~ Solar.R + Wind + Temp (with intercept)
 let fit = LinearRegression.ols ["Solar.R"; "Wind"; "Temp"] "Ozone" true numAir
@@ -422,11 +422,11 @@ To fit without an intercept pass `false` as the third argument to `ols`.
 
 ### Working with the full pipeline
 
-A typical quantitative pipeline combines Deedle frame operations with `Deedle.Math`:
+A typical quantitative pipeline combines Deedle frame operations with `Deedle.MathNetNumerics`:
 
 ```fsharp
 open Deedle
-open Deedle.Math
+open Deedle.MathNetNumerics
 
 // 1. Load data
 let prices = Frame.ReadCsv("prices.csv") |> Frame.indexRowsDate "Date"

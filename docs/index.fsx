@@ -96,8 +96,8 @@ Then we add nice namings, sort the frame and build a new data frame with a nice 
  * [Excel integration](excel.html) — reading `.xlsx`/`.xls` files cross-platform with `Deedle.Excel.Reader`;
    live read/write via `Deedle.Excel` (Windows)
 
- * [Deedle.Math — MathNet.Numerics integration](math.html) — linear algebra, correlation,
-   EWM statistics, PCA, and linear regression via `Deedle.Math`
+ * [Deedle.MathNetNumerics — MathNet.Numerics integration](math.html) — linear algebra, correlation,
+   EWM statistics, PCA, and linear regression via `Deedle.MathNetNumerics`
 
  * [Creating lazily loaded series](lazysource.html) — virtual series backed by custom loaders
 

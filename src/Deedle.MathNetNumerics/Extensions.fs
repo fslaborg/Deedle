@@ -1,4 +1,4 @@
-﻿namespace Deedle.Math
+﻿namespace Deedle.MathNetNumerics
 
 open System.Runtime.CompilerServices
 open MathNet.Numerics.LinearAlgebra

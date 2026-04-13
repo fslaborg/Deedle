@@ -11,7 +11,7 @@ keywords: series, time series, sampling, windowing, resampling, F#
 (*** condition: prepare ***)
 #nowarn "211"
 #r "../bin/net10.0/Deedle.dll"
-#r "../bin/net10.0/Deedle.Math.dll"
+#r "../bin/net10.0/Deedle.MathNetNumerics.dll"
 #r "nuget: MathNet.Numerics, 5.0.0"
 #r "nuget: MathNet.Numerics.FSharp, 5.0.0"
 (*** condition: fsx ***)

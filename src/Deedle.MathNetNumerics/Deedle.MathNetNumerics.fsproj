@@ -13,8 +13,9 @@
     <Compile Include="PCA.fs" />
     <Compile Include="LinearRegression.fs" />
     <Compile Include="Finance.fs" />
+    <Compile Include="Deprecated.fs" />
     <None Include="paket.references" />
-    <None Include="Deedle.Math.fsx">
+    <None Include="Deedle.MathNetNumerics.fsx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

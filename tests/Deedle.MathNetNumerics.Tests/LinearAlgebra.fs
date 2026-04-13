@@ -1,20 +1,20 @@
 #if INTERACTIVE
 #I "../../bin/netstandard2.0"
 #load "Deedle.fsx"
-#load "Deedle.Math.fsx"
+#load "Deedle.MathNetNumerics.fsx"
 #r "../../packages/NUnit/lib/net45/nunit.framework.dll"
 #r "../../packages/FsCheck/lib/net452/FsCheck.dll"
 #r "../../packages/FsUnit/lib/net45/FsUnit.NUnit.dll"
 #load "../Common/FsUnit.fs"
 #else
-module Deedle.Math.Tests.LinearAlgebra
+module Deedle.MathNetNumerics.Tests.LinearAlgebra
 #endif
 
 open MathNet.Numerics.LinearAlgebra
 open FsUnit
 open NUnit.Framework
 open Deedle
-open Deedle.Math
+open Deedle.MathNetNumerics
 
 let testMatrix =
     [ "Singular3x3",

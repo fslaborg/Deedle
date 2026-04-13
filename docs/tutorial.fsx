@@ -301,6 +301,6 @@ This quick-start covers the most common Deedle patterns. Dive deeper with:
    missing values interact with joins.
  * [Joining and merging](joining.html) — inner, outer, left, and right joins.
  * [Apache Arrow / Feather](arrow.html) — zero-copy columnar I/O.
- * [Deedle.Math](math.html) — linear algebra, correlation matrices, EWM statistics, PCA,
-   and linear regression via the `Deedle.Math` package.
+ * [Deedle.MathNetNumerics](math.html) — linear algebra, correlation matrices, EWM statistics, PCA,
+   and linear regression via the `Deedle.MathNetNumerics` package.
 *)

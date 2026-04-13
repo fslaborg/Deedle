@@ -1,17 +1,17 @@
 #if INTERACTIVE
 #I "../../bin/netstandard2.0"
 #load "Deedle.fsx"
-#load "Deedle.Math.fsx"
+#load "Deedle.MathNetNumerics.fsx"
 #r "../../packages/NUnit/lib/net45/nunit.framework.dll"
 #r "../../packages/FsCheck/lib/net452/FsCheck.dll"
 #r "../../packages/FsUnit/lib/net45/FsUnit.NUnit.dll"
 #load "../Common/FsUnit.fs"
 #else
-module Deedle.Math.Tests.PCA
+module Deedle.MathNetNumerics.Tests.PCA
 #endif
 
 open Deedle
-open Deedle.Math
+open Deedle.MathNetNumerics
 open MathNet.Numerics
 open NUnit.Framework
 

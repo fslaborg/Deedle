@@ -7,6 +7,7 @@
 - `Deedle.Arrow`, `Deedle.Parquet`, and `Deedle.ExcelReader` are now F# namespaces instead of top-level modules. Functions like `readArrow`, `readParquet`, and `readExcel` are no longer brought into scope directly by `open`; use `Frame.readArrow`, `Frame.readParquet`, `Frame.readExcel`, etc. instead. C# static factory types (`ArrowFrame`, `ParquetFrame`, `ExcelFrame`) and extension methods are unchanged.
 - Removed obsolete `Deedle.PerfTest` and `Deedle.PerfTests` projects (.NET Framework–only performance runner); use `Deedle.Benchmarks` (BenchmarkDotNet) instead
 - Rename `Deedle.Interactive` package to `Deedle.DotNetInteractive` to match the folder name and clarify purpose
+- Rename `Deedle.Math` package and namespace to `Deedle.MathNetNumerics` to clarify the MathNet.Numerics dependency; the old `Deedle.Math` namespace is preserved with `[<Obsolete>]` type aliases
 - Remove stale docs and project solution folders from `Deedle.sln`
 - Reorganise documentation into three categories: Guides, Integrations, Design
 

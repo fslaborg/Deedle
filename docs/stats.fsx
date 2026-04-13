@@ -165,9 +165,9 @@ byMonth
 
 <a name="advanced"></a>
 
-## Advanced statistics with Deedle.Math
+## Advanced statistics with Deedle.MathNetNumerics
 
-The `Deedle.Math` package extends Deedle's statistical capabilities using
+The `Deedle.MathNetNumerics` package extends Deedle's statistical capabilities using
 [MathNet.Numerics](https://numerics.mathnetchr.net). It adds:
 
  * **Correlation and covariance matrices** — `Stats.corr`, `Stats.cov` for full-frame
@@ -184,9 +184,9 @@ The `Deedle.Math` package extends Deedle's statistical capabilities using
 Install with:
 
 ```
-dotnet add package Deedle.Math
+dotnet add package Deedle.MathNetNumerics
 ```
 
-See the [Deedle.Math documentation](math.html) for detailed examples.
+See the [Deedle.MathNetNumerics documentation](math.html) for detailed examples.
 
 *)
