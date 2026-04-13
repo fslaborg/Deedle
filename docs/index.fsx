@@ -89,6 +89,8 @@ Then we add nice namings, sort the frame and build a new data frame with a nice 
 
  * [Apache Arrow / Feather integration](arrow.html) — zero-copy columnar I/O with `Deedle.Arrow`
 
+ * [Apache Parquet integration](parquet.html) — columnar storage I/O with `Deedle.Parquet`
+
  * [Excel integration](excel.html) — reading `.xlsx`/`.xls` files cross-platform with `Deedle.Excel.Reader`;
    live read/write via `Deedle.Excel` (Windows)
 

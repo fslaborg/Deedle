@@ -22,6 +22,7 @@ nuget NetOfficeFw.Excel
 nuget Microsoft.ML
 nuget ExcelDataReader
 nuget ExcelDataReader.DataSet
+nuget Parquet.Net
 
 group interactive
     source https://api.nuget.org/v3/index.json

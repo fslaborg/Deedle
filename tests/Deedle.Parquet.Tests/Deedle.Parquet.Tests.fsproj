@@ -6,7 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Deedle\Deedle.fsproj" />
-    <ProjectReference Include="..\..\src\Deedle.Arrow\Deedle.Arrow.fsproj" />
+    <ProjectReference Include="..\..\src\Deedle.Parquet\Deedle.Parquet.fsproj" />
   </ItemGroup>
 
   <ItemGroup>

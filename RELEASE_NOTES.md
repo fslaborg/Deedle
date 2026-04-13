@@ -2,6 +2,10 @@
 
 ## 5.0.1-unreleased
 
+### New packages
+
+- **Deedle.Parquet**: Apache Parquet interop — `Frame` read/write via Parquet.Net, stream I/O, row-key preservation, C# extensions
+
 ### C# API improvements
 
 - Add `Frame.Stack` / `Frame.Unstack` C# extension methods for reshaping frames between wide and long format

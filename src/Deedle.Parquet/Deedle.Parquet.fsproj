@@ -2,20 +2,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
+    <OutputPath>../../bin/</OutputPath>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Deedle\Deedle.fsproj" />
-    <ProjectReference Include="..\..\src\Deedle.Arrow\Deedle.Arrow.fsproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Include="Tests.fs" />
+    <Compile Include="Parquet.fs" />
     <None Include="paket.references" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="data/**" CopyToOutputDirectory="PreserveNewest" />
+    <ProjectReference Include="..\Deedle\Deedle.fsproj" />
   </ItemGroup>
 
   <Import Project="..\..\.paket\Paket.Restore.targets" />
