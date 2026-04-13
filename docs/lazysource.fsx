@@ -1,9 +1,9 @@
 (**
 ---
-title: Creating lazily loaded series
+title: Delay-loaded series
 category: Guides
 categoryindex: 1
-index: 6
+index: 9
 description: Building series backed by lazy or virtual data sources for on-demand data loading
 keywords: lazy, virtual series, data source, on-demand loading
 ---

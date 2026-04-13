@@ -1,6 +1,6 @@
 (**
 ---
-title: F# Data Frame design notes
+title: Design notes
 category: Design
 categoryindex: 3
 index: 1

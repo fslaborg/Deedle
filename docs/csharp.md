@@ -1,8 +1,8 @@
 ---
-title: Deedle in C# — Cookbook
+title: Deedle in C#
 category: Guides
 categoryindex: 1
-index: 9
+index: 10
 description: Using Deedle data frames and series from C# with extension methods, LINQ, and static API
 keywords: C#, cookbook, extension methods, LINQ, interop
 ---
