@@ -38,8 +38,8 @@ let private withTmpFile (f: string -> unit) =
 let ``Float column round-trips through Arrow file`` () =
     withTmpFile (fun path ->
         let df = frame [ "Value" => Series.ofValues [ 1.0; 2.5; nan; 4.0 ] ]
-        writeArrow path df
-        let df2 = readArrow path
+        Frame.writeArrow path df
+        let df2 = Frame.readArrow path
         let col2 = df2.["Value"] |> Series.values |> Array.ofSeq
         col2.[0] |> should (equalWithin 1e-10) 1.0
         col2.[1] |> should (equalWithin 1e-10) 2.5
@@ -52,8 +52,8 @@ let ``Float column round-trips through Arrow file`` () =
 let ``Int32 column round-trips through Arrow file`` () =
     withTmpFile (fun path ->
         let df = frame [ "Count" => Series.ofValues [ 1; 2; 3; 4; 5 ] ]
-        writeArrow path df
-        let df2 = readArrow path
+        Frame.writeArrow path df
+        let df2 = Frame.readArrow path
         let col2 = df2.["Count"] |> Series.values |> Array.ofSeq
         col2 |> should equal [| 1; 2; 3; 4; 5 |])
 
@@ -61,8 +61,8 @@ let ``Int32 column round-trips through Arrow file`` () =
 let ``Int64 column round-trips through Arrow file`` () =
     withTmpFile (fun path ->
         let df = frame [ "Big" => Series.ofValues [ 1L; Int64.MaxValue; -1L ] ]
-        writeArrow path df
-        let df2 = readArrow path
+        Frame.writeArrow path df
+        let df2 = Frame.readArrow path
         let col2 = df2.["Big"] |> Series.values |> Array.ofSeq
         col2 |> should equal [| 1L; Int64.MaxValue; -1L |])
 
@@ -70,8 +70,8 @@ let ``Int64 column round-trips through Arrow file`` () =
 let ``Bool column round-trips through Arrow file`` () =
     withTmpFile (fun path ->
         let df = frame [ "Flag" => Series.ofValues [ true; false; true ] ]
-        writeArrow path df
-        let df2 = readArrow path
+        Frame.writeArrow path df
+        let df2 = Frame.readArrow path
         let col2 = df2.GetColumn<bool>("Flag") |> Series.values |> Array.ofSeq
         col2 |> should equal [| true; false; true |])
 
@@ -79,8 +79,8 @@ let ``Bool column round-trips through Arrow file`` () =
 let ``String column round-trips through Arrow file`` () =
     withTmpFile (fun path ->
         let df = frame [ "Name" => Series.ofValues [ "Alice"; "Bob"; "Carol" ] ]
-        writeArrow path df
-        let df2 = readArrow path
+        Frame.writeArrow path df
+        let df2 = Frame.readArrow path
         let col2 = df2.GetColumn<string>("Name") |> Series.values |> Array.ofSeq
         col2 |> should equal [| "Alice"; "Bob"; "Carol" |])
 
@@ -90,8 +90,8 @@ let ``DateTime column round-trips through Arrow file`` () =
         let t1 = DateTime(2024, 1, 15, 12, 0, 0, DateTimeKind.Utc)
         let t2 = DateTime(2024, 6, 30,  0, 0, 0, DateTimeKind.Utc)
         let df = frame [ "Date" => Series.ofValues [ t1; t2 ] ]
-        writeArrow path df
-        let df2 = readArrow path
+        Frame.writeArrow path df
+        let df2 = Frame.readArrow path
         let col2 : DateTime[] = df2.GetColumn<DateTime>("Date") |> Series.values |> Array.ofSeq
         abs((col2.[0] - t1).TotalSeconds) |> should (equalWithin 1.0) 0.0
         abs((col2.[1] - t2).TotalSeconds) |> should (equalWithin 1.0) 0.0)
@@ -101,8 +101,8 @@ let ``Missing values are preserved through Arrow file`` () =
     withTmpFile (fun path ->
         let s = Series.ofValues [ 1.0; nan; 3.0; nan; 5.0 ]
         let df = frame [ "V" => s ]
-        writeArrow path df
-        let df2 = readArrow path
+        Frame.writeArrow path df
+        let df2 = Frame.readArrow path
         df2.["V"].ValueCount |> should equal 3
         df2.RowCount          |> should equal 5)
 
@@ -111,8 +111,8 @@ let ``Multi-column float frame round-trips through Arrow file`` () =
     withTmpFile (fun path ->
         let df = frame [ "A" => Series.ofValues [ 1.0; 2.0; 3.0 ]
                          "B" => Series.ofValues [ 4.0; 5.0; 6.0 ] ]
-        writeArrow path df
-        let df2 = readArrow path
+        Frame.writeArrow path df
+        let df2 = Frame.readArrow path
         df2.ColumnCount |> should equal 2
         df2.RowCount    |> should equal 3
         df2.["A"] |> Series.values |> Array.ofSeq |> should equal [| 1.0; 2.0; 3.0 |]
@@ -122,16 +122,16 @@ let ``Multi-column float frame round-trips through Arrow file`` () =
 let ``String column frame round-trips through Arrow file`` () =
     withTmpFile (fun path ->
         let df = frame [ "Name" => Series.ofValues [ "x"; "y"; "z" ] ]
-        writeArrow path df
-        let df2 = readArrow path
+        Frame.writeArrow path df
+        let df2 = Frame.readArrow path
         df2.GetColumn<string>("Name") |> Series.values |> Array.ofSeq |> should equal [| "x"; "y"; "z" |])
 
 [<Test>]
 let ``Empty frame round-trips through Arrow file`` () =
     withTmpFile (fun path ->
         let df = Frame.ofColumns ([] : (string * Series<int, float>) list)
-        writeArrow path df
-        let df2 = readArrow path
+        Frame.writeArrow path df
+        let df2 = Frame.readArrow path
         df2.RowCount    |> should equal 0
         df2.ColumnCount |> should equal 0)
 
@@ -144,9 +144,9 @@ let ``Float frame round-trips through Arrow stream`` () =
     let df = frame [ "X" => Series.ofValues [ 1.0; 2.0; 3.0 ]
                      "Y" => Series.ofValues [ 4.0; 5.0; 6.0 ] ]
     use ms = new MemoryStream()
-    writeArrowStream ms df
+    Frame.writeArrowStream ms df
     ms.Position <- 0L
-    let df2 = readArrowStream ms
+    let df2 = Frame.readArrowStream ms
     df2.ColumnCount |> should equal 2
     df2.RowCount    |> should equal 3
     df2.["X"] |> Series.values |> Array.ofSeq |> should equal [| 1.0; 2.0; 3.0 |]
@@ -156,26 +156,26 @@ let ``Float frame round-trips through Arrow stream`` () =
 // ------------------------------------------------------------------------------------------------
 
 [<Test>]
-let ``frameToRecordBatch preserves column count and row count`` () =
+let ``Frame.toRecordBatch preserves column count and row count`` () =
     let df = frame [ "A" => Series.ofValues [ 1.0; 2.0 ]
                      "B" => Series.ofValues [ 3.0; 4.0 ] ]
-    let batch = frameToRecordBatch df
+    let batch = Frame.toRecordBatch df
     batch.ColumnCount |> should equal 2
     batch.Length      |> should equal 2
 
 [<Test>]
-let ``recordBatchToFrame preserves column names`` () =
+let ``Frame.ofRecordBatch preserves column names`` () =
     let df = frame [ "Alpha" => Series.ofValues [ 1.0; 2.0 ]
                      "Beta"  => Series.ofValues [ 3.0; 4.0 ] ]
-    let batch  = frameToRecordBatch df
-    let df2    = recordBatchToFrame batch
+    let batch  = Frame.toRecordBatch df
+    let df2    = Frame.ofRecordBatch batch
     df2.ColumnKeys |> List.ofSeq |> should equal [ "Alpha"; "Beta" ]
 
 [<Test>]
-let ``recordBatchToFrame row keys are 0-based integers`` () =
+let ``Frame.ofRecordBatch row keys are 0-based integers`` () =
     let df = frame [ "V" => Series.ofValues [ 10; 20; 30 ] ]
-    let batch = frameToRecordBatch df
-    let df2   = recordBatchToFrame batch
+    let batch = Frame.toRecordBatch df
+    let df2   = Frame.ofRecordBatch batch
     df2.RowKeys |> List.ofSeq |> should equal [ 0; 1; 2 ]
 
 // ------------------------------------------------------------------------------------------------
@@ -186,8 +186,8 @@ let ``recordBatchToFrame row keys are 0-based integers`` () =
 let ``UInt8 column round-trips through Arrow file`` () =
     withTmpFile (fun path ->
         let df = frame [ "Byte" => Series.ofValues [ 0uy; 127uy; 255uy ] ]
-        writeArrow path df
-        let df2 = readArrow path
+        Frame.writeArrow path df
+        let df2 = Frame.readArrow path
         let col2 = df2.GetColumn<uint8>("Byte") |> Series.values |> Array.ofSeq
         col2 |> should equal [| 0uy; 127uy; 255uy |])
 
@@ -195,8 +195,8 @@ let ``UInt8 column round-trips through Arrow file`` () =
 let ``UInt16 column round-trips through Arrow file`` () =
     withTmpFile (fun path ->
         let df = frame [ "U16" => Series.ofValues [ 0us; 1000us; 65535us ] ]
-        writeArrow path df
-        let df2 = readArrow path
+        Frame.writeArrow path df
+        let df2 = Frame.readArrow path
         let col2 = df2.GetColumn<uint16>("U16") |> Series.values |> Array.ofSeq
         col2 |> should equal [| 0us; 1000us; 65535us |])
 
@@ -204,8 +204,8 @@ let ``UInt16 column round-trips through Arrow file`` () =
 let ``UInt32 column round-trips through Arrow file`` () =
     withTmpFile (fun path ->
         let df = frame [ "U32" => Series.ofValues [ 0u; 100000u; UInt32.MaxValue ] ]
-        writeArrow path df
-        let df2 = readArrow path
+        Frame.writeArrow path df
+        let df2 = Frame.readArrow path
         let col2 = df2.GetColumn<uint32>("U32") |> Series.values |> Array.ofSeq
         col2 |> should equal [| 0u; 100000u; UInt32.MaxValue |])
 
@@ -213,8 +213,8 @@ let ``UInt32 column round-trips through Arrow file`` () =
 let ``UInt64 column round-trips through Arrow file`` () =
     withTmpFile (fun path ->
         let df = frame [ "U64" => Series.ofValues [ 0UL; 9999999999UL; UInt64.MaxValue ] ]
-        writeArrow path df
-        let df2 = readArrow path
+        Frame.writeArrow path df
+        let df2 = Frame.readArrow path
         let col2 = df2.GetColumn<uint64>("U64") |> Series.values |> Array.ofSeq
         col2 |> should equal [| 0UL; 9999999999UL; UInt64.MaxValue |])
 
@@ -223,8 +223,8 @@ let ``UInt8 missing values are preserved through Arrow file`` () =
     withTmpFile (fun path ->
         let s = Series.ofOptionalObservations [ (0, Some 10uy); (1, None); (2, Some 30uy) ]
         let df = frame [ "B" => s ]
-        writeArrow path df
-        let df2 = readArrow path
+        Frame.writeArrow path df
+        let df2 = Frame.readArrow path
         df2.["B"].ValueCount |> should equal 2
         df2.RowCount          |> should equal 3)
 
@@ -250,7 +250,7 @@ let ``Date32 array is read as DateTime column`` () =
             writer.WriteRecordBatch(batch)
             writer.WriteEnd()
 
-        let df = readArrow tmpPath
+        let df = Frame.readArrow tmpPath
         df.ColumnCount |> should equal 1
         df.RowCount    |> should equal 2
         let col = df.GetColumn<DateTime>("EventDate") |> Series.values |> Array.ofSeq
@@ -277,7 +277,7 @@ let ``Date64 array is read as DateTime column`` () =
             writer.WriteRecordBatch(batch)
             writer.WriteEnd()
 
-        let df = readArrow tmpPath
+        let df = Frame.readArrow tmpPath
         let col = df.GetColumn<DateTime>("Ts") |> Series.values |> Array.ofSeq
         col.[0].Year  |> should equal 2024
         col.[0].Month |> should equal 3
@@ -286,51 +286,51 @@ let ``Date64 array is read as DateTime column`` () =
         if File.Exists(tmpPath) then File.Delete(tmpPath)
 
 // ------------------------------------------------------------------------------------------------
-// Part 2: seriesToArrowArray / arrowArrayToSeries
+// Part 2: Series.toArrowArray / Series.ofArrowArray
 // ------------------------------------------------------------------------------------------------
 
 [<Test>]
-let ``seriesToArrowArray converts float series to DoubleArray`` () =
+let ``Series.toArrowArray converts float series to DoubleArray`` () =
     let s = Series.ofValues [ 1.0; 2.5; 3.0 ]
-    let arr = seriesToArrowArray s
+    let arr = Series.toArrowArray s
     arr :? DoubleArray |> should equal true
     arr.Length         |> should equal 3
 
 [<Test>]
-let ``seriesToArrowArray preserves missing values`` () =
+let ``Series.toArrowArray preserves missing values`` () =
     let s = Series.ofOptionalObservations [ (0, Some 1.0); (1, None); (2, Some 3.0) ]
-    let arr = seriesToArrowArray s
+    let arr = Series.toArrowArray s
     arr.Length         |> should equal 3
     arr.IsNull(0)      |> should equal false
     arr.IsNull(1)      |> should equal true
     arr.IsNull(2)      |> should equal false
 
 [<Test>]
-let ``seriesToArrowArray round-trips int32 series`` () =
+let ``Series.toArrowArray round-trips int32 series`` () =
     let s = Series.ofValues [ 10; 20; 30 ]
-    let arr = seriesToArrowArray s
+    let arr = Series.toArrowArray s
     arr :? Int32Array |> should equal true
     (arr :?> Int32Array).GetValue(1).Value |> should equal 20
 
 [<Test>]
-let ``arrowArrayToSeries returns Series with 0-based int keys`` () =
+let ``Series.ofArrowArray returns Series with 0-based int keys`` () =
     let arr = DoubleArray.Builder().Append(1.0).Append(2.0).Append(3.0).Build()
-    let s = arrowArrayToSeries (arr :> IArrowArray)
+    let s = Series.ofArrowArray (arr :> IArrowArray)
     s.KeyCount   |> should equal 3
     s.Keys |> List.ofSeq |> should equal [ 0; 1; 2 ]
 
 [<Test>]
-let ``arrowArrayToSeries preserves missing values`` () =
+let ``Series.ofArrowArray preserves missing values`` () =
     let arr = DoubleArray.Builder().Append(1.0).AppendNull().Append(3.0).Build()
-    let s = arrowArrayToSeries (arr :> IArrowArray)
+    let s = Series.ofArrowArray (arr :> IArrowArray)
     s.ValueCount |> should equal 2
     s.KeyCount   |> should equal 3
 
 [<Test>]
-let ``seriesToArrowArray and arrowArrayToSeries round-trip floats`` () =
+let ``Series.toArrowArray and Series.ofArrowArray round-trip floats`` () =
     let orig = Series.ofValues [ 1.0; 2.5; 4.0 ]
-    let arr  = seriesToArrowArray orig
-    let back = arrowArrayToSeries arr
+    let arr  = Series.toArrowArray orig
+    let back = Series.ofArrowArray arr
     back.Values |> Seq.map (fun v -> v :?> float) |> Seq.toArray
     |> should equal [| 1.0; 2.5; 4.0 |]
 
@@ -339,13 +339,13 @@ let ``seriesToArrowArray and arrowArrayToSeries round-trip floats`` () =
 // ------------------------------------------------------------------------------------------------
 
 [<Test>]
-let ``writeFeather and readFeather are aliases for writeArrow and readArrow`` () =
+let ``Frame.writeFeather and Frame.readFeather are aliases for Frame.writeArrow and readArrow`` () =
     withTmpFile (fun path ->
         let featherPath = Path.ChangeExtension(path, ".feather")
         try
             let df = frame [ "X" => Series.ofValues [ 1.0; 2.0; 3.0 ] ]
-            writeFeather featherPath df
-            let df2 = readFeather featherPath
+            Frame.writeFeather featherPath df
+            let df2 = Frame.readFeather featherPath
             df2.RowCount    |> should equal 3
             df2.ColumnCount |> should equal 1
             df2.["X"] |> Series.values |> Array.ofSeq |> should equal [| 1.0; 2.0; 3.0 |]
@@ -357,33 +357,33 @@ let ``writeFeather and readFeather are aliases for writeArrow and readArrow`` ()
 // ------------------------------------------------------------------------------------------------
 
 [<Test>]
-let ``writeArrowWithIndex preserves string row keys`` () =
+let ``Frame.writeArrowWithIndex preserves string row keys`` () =
     withTmpFile (fun path ->
         let keys = [| "alice"; "bob"; "carol" |]
         let df = frame [ "Score" => Series(keys, [| 90.0; 85.0; 92.0 |]) ]
-        writeArrowWithIndex path df
-        let df2 = readArrowWithIndex path
+        Frame.writeArrowWithIndex path df
+        let df2 = Frame.readArrowWithIndex path
         df2.RowKeys |> List.ofSeq |> should equal [ "alice"; "bob"; "carol" ]
         df2.ColumnCount |> should equal 1
         df2.GetColumn<float>("Score") |> Series.values |> Array.ofSeq |> should equal [| 90.0; 85.0; 92.0 |])
 
 [<Test>]
-let ``readArrowWithIndex on file without __index__ returns string int keys`` () =
+let ``Frame.readArrowWithIndex on file without __index__ returns string int keys`` () =
     withTmpFile (fun path ->
         let df = frame [ "V" => Series.ofValues [ 1.0; 2.0 ] ]
-        writeArrow path df
-        let df2 = readArrowWithIndex path
+        Frame.writeArrow path df
+        let df2 = Frame.readArrowWithIndex path
         df2.RowKeys |> List.ofSeq |> should equal [ "0"; "1" ])
 
 [<Test>]
-let ``writeFeatherWithIndex and readFeatherWithIndex round-trip row keys`` () =
+let ``Frame.writeFeatherWithIndex and Frame.readFeatherWithIndex round-trip row keys`` () =
     withTmpFile (fun path ->
         let featherPath = Path.ChangeExtension(path, ".feather")
         try
             let keys = [| "x"; "y"; "z" |]
             let df = frame [ "N" => Series(keys, [| 1; 2; 3 |]) ]
-            writeFeatherWithIndex featherPath df
-            let df2 = readFeatherWithIndex featherPath
+            Frame.writeFeatherWithIndex featherPath df
+            let df2 = Frame.readFeatherWithIndex featherPath
             df2.RowKeys |> List.ofSeq |> should equal [ "x"; "y"; "z" ]
         finally
             if File.Exists(featherPath) then File.Delete(featherPath))
@@ -455,47 +455,6 @@ let ``Frame.writeArrowWithIndex and Frame.readArrowWithIndex preserve string row
         if File.Exists(tmpPath) then File.Delete(tmpPath)
 
 // ------------------------------------------------------------------------------------------------
-// Part 3: Series module API tests
-// ------------------------------------------------------------------------------------------------
-
-[<Test>]
-let ``Series.toArrowArray converts float series to DoubleArray`` () =
-    let s = Series.ofValues [ 3.0; 1.0; 4.0; 1.0; 5.0 ]
-    let arr = Series.toArrowArray s
-    arr :? DoubleArray |> should equal true
-    arr.Length         |> should equal 5
-
-[<Test>]
-let ``Series.toArrowArray preserves missing values`` () =
-    let s = Series.ofOptionalObservations [ (0, Some 1.0); (1, None); (2, Some 3.0) ]
-    let arr = Series.toArrowArray s
-    arr.IsNull(0) |> should equal false
-    arr.IsNull(1) |> should equal true
-    arr.IsNull(2) |> should equal false
-
-[<Test>]
-let ``Series.ofArrowArray produces 0-based int key series`` () =
-    let arr = DoubleArray.Builder().Append(7.0).Append(8.0).Append(9.0).Build()
-    let s = Series.ofArrowArray (arr :> IArrowArray)
-    s.KeyCount   |> should equal 3
-    s.Keys |> List.ofSeq |> should equal [ 0; 1; 2 ]
-
-[<Test>]
-let ``Series.toArrowArray and Series.ofArrowArray round-trip floats`` () =
-    let orig = Series.ofValues [ 1.1; 2.2; 3.3 ]
-    let arr  = Series.toArrowArray orig
-    let back = Series.ofArrowArray arr
-    back.Values |> Seq.map (fun v -> v :?> float) |> Seq.toArray
-    |> should equal [| 1.1; 2.2; 3.3 |]
-
-[<Test>]
-let ``Series.toArrowArray round-trips int series`` () =
-    let s = Series.ofValues [ 100; 200; 300 ]
-    let arr = Series.toArrowArray s
-    arr :? Int32Array |> should equal true
-    (arr :?> Int32Array).GetValue(0).Value |> should equal 100
-
-// ------------------------------------------------------------------------------------------------
 // Part 3: Edge case tests
 // ------------------------------------------------------------------------------------------------
 
@@ -506,8 +465,8 @@ let ``Single-row frame round-trips through Arrow file`` () =
         let df =
             frame [ "A" => (Series.ofValues [ 42.0 ]    :> ISeries<int>)
                     "B" => (Series.ofValues [ "hello" ]  :> ISeries<int>) ]
-        writeArrow tmpPath df
-        let df2 = readArrow tmpPath
+        Frame.writeArrow tmpPath df
+        let df2 = Frame.readArrow tmpPath
         df2.RowCount    |> should equal 1
         df2.ColumnCount |> should equal 2
         df2.["A"] |> Series.values |> Array.ofSeq |> should equal [| 42.0 |]
@@ -520,8 +479,8 @@ let ``Single-column frame round-trips through Arrow file`` () =
     let tmpPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N") + ".arrow")
     try
         let df = frame [ "Only" => Series.ofValues [ 1; 2; 3; 4; 5 ] ]
-        writeArrow tmpPath df
-        let df2 = readArrow tmpPath
+        Frame.writeArrow tmpPath df
+        let df2 = Frame.readArrow tmpPath
         df2.ColumnCount |> should equal 1
         df2.RowCount    |> should equal 5
         df2.GetColumn<int>("Only") |> Series.values |> Array.ofSeq |> should equal [| 1; 2; 3; 4; 5 |]
@@ -534,8 +493,8 @@ let ``All-missing column round-trips through Arrow file`` () =
     try
         let s = Series.ofOptionalObservations [ (0, None); (1, None); (2, None) ] : Series<int, float>
         let df = frame [ "AllMissing" => s ]
-        writeArrow tmpPath df
-        let df2 = readArrow tmpPath
+        Frame.writeArrow tmpPath df
+        let df2 = Frame.readArrow tmpPath
         df2.RowCount    |> should equal 3
         df2.["AllMissing"].ValueCount |> should equal 0
     finally
@@ -549,8 +508,8 @@ let ``Mixed-type frame round-trips through Arrow file`` () =
             frame [ "FloatCol" => (Series.ofValues [ 1.0; 2.0; 3.0 ] :> ISeries<int>)
                     "IntCol"   => (Series.ofValues [ 10; 20; 30 ]     :> ISeries<int>)
                     "StrCol"   => (Series.ofValues [ "a"; "b"; "c" ]  :> ISeries<int>) ]
-        writeArrow tmpPath df
-        let df2 = readArrow tmpPath
+        Frame.writeArrow tmpPath df
+        let df2 = Frame.readArrow tmpPath
         df2.ColumnCount |> should equal 3
         df2.RowCount    |> should equal 3
         df2.["FloatCol"] |> Series.values |> Array.ofSeq |> should equal [| 1.0; 2.0; 3.0 |]
@@ -563,9 +522,9 @@ let ``Mixed-type frame round-trips through Arrow file`` () =
 let ``frame with int64 column round-trips through Arrow stream`` () =
     let df = frame [ "Big" => Series.ofValues [ Int64.MinValue; 0L; Int64.MaxValue ] ]
     use ms = new MemoryStream()
-    writeArrowStream ms df
+    Frame.writeArrowStream ms df
     ms.Position <- 0L
-    let df2 = readArrowStream ms
+    let df2 = Frame.readArrowStream ms
     df2.GetColumn<int64>("Big") |> Series.values |> Array.ofSeq
     |> should equal [| Int64.MinValue; 0L; Int64.MaxValue |]
 
@@ -574,8 +533,8 @@ let ``frame with float32 column round-trips through Arrow file`` () =
     let tmpPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N") + ".arrow")
     try
         let df = frame [ "F32" => Series.ofValues [ 1.5f; 2.5f; 3.5f ] ]
-        writeArrow tmpPath df
-        let df2 = readArrow tmpPath
+        Frame.writeArrow tmpPath df
+        let df2 = Frame.readArrow tmpPath
         df2.GetColumn<float32>("F32") |> Series.values |> Array.ofSeq
         |> should equal [| 1.5f; 2.5f; 3.5f |]
     finally
@@ -586,8 +545,8 @@ let ``Empty string column round-trips through Arrow file`` () =
     let tmpPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N") + ".arrow")
     try
         let df = frame [ "S" => Series.ofValues [ ""; "hello"; "" ] ]
-        writeArrow tmpPath df
-        let df2 = readArrow tmpPath
+        Frame.writeArrow tmpPath df
+        let df2 = Frame.readArrow tmpPath
         df2.GetColumn<string>("S") |> Series.values |> Array.ofSeq
         |> should equal [| ""; "hello"; "" |]
     finally
@@ -609,8 +568,8 @@ let ``Property: float frame round-trips through Arrow file (FsCheck)`` () =
             let tmpPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N") + ".arrow")
             try
                 let df = frame [ "V" => Series.ofValues vs ]
-                writeArrow tmpPath df
-                let df2 = readArrow tmpPath
+                Frame.writeArrow tmpPath df
+                let df2 = Frame.readArrow tmpPath
                 let out = df2.["V"] |> Series.values |> Array.ofSeq
                 out = Array.ofList vs
             finally
@@ -625,8 +584,8 @@ let ``Property: int32 frame round-trips through Arrow file (FsCheck)`` () =
             let tmpPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N") + ".arrow")
             try
                 let df = frame [ "I" => Series.ofValues values ]
-                writeArrow tmpPath df
-                let df2 = readArrow tmpPath
+                Frame.writeArrow tmpPath df
+                let df2 = Frame.readArrow tmpPath
                 let out = df2.GetColumn<int>("I") |> Series.values |> Array.ofSeq
                 out = Array.ofList values
             finally
@@ -642,8 +601,8 @@ let ``Property: string frame round-trips through Arrow file (FsCheck)`` () =
             let tmpPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N") + ".arrow")
             try
                 let df = frame [ "S" => Series.ofValues vs ]
-                writeArrow tmpPath df
-                let df2 = readArrow tmpPath
+                Frame.writeArrow tmpPath df
+                let df2 = Frame.readArrow tmpPath
                 let out = df2.GetColumn<string>("S") |> Series.values |> Array.ofSeq
                 out = Array.ofList vs
             finally
@@ -657,8 +616,8 @@ let ``Property: float series round-trips through Arrow array (FsCheck)`` () =
         if vs.IsEmpty then true
         else
             let orig = Series.ofValues vs
-            let arr  = seriesToArrowArray orig
-            let back = arrowArrayToSeries arr
+            let arr  = Series.toArrowArray orig
+            let back = Series.ofArrowArray arr
             let backVals = back.Values |> Seq.map (fun v -> v :?> float) |> Seq.toList
             backVals = vs
     Check.QuickThrowOnFailure check
@@ -672,8 +631,8 @@ let ``Property: recordBatch round-trip preserves column names (FsCheck)`` () =
             let cols =
                 names |> List.map (fun n -> n, Series.ofValues [ 1.0; 2.0 ] :> ISeries<int>)
             let df    = Frame.ofColumns cols
-            let batch = frameToRecordBatch df
-            let df2   = recordBatchToFrame batch
+            let batch = Frame.toRecordBatch df
+            let df2   = Frame.ofRecordBatch batch
             let outNames = df2.ColumnKeys |> List.ofSeq
             outNames = names
     Check.QuickThrowOnFailure check
@@ -685,7 +644,7 @@ let ``Property: recordBatch round-trip preserves column names (FsCheck)`` () =
 [<Test>]
 let ``Read stocks.arrow returns correct columns and row count`` () =
     let path = Path.Combine(dataDir, "stocks.arrow")
-    let df = readArrow path
+    let df = Frame.readArrow path
     df.RowCount    |> should equal 5
     df.ColumnCount |> should equal 5
     df.ColumnKeys |> Seq.toList |> should equal ["Ticker"; "Open"; "Close"; "Volume"; "Date"]
@@ -693,14 +652,14 @@ let ``Read stocks.arrow returns correct columns and row count`` () =
 [<Test>]
 let ``Read stocks.arrow returns correct string column values`` () =
     let path = Path.Combine(dataDir, "stocks.arrow")
-    let df = readArrow path
+    let df = Frame.readArrow path
     let tickers = df.GetColumn<string>("Ticker") |> Series.values |> Array.ofSeq
     tickers |> should equal [| "MSFT"; "AAPL"; "GOOG"; "AMZN"; "META" |]
 
 [<Test>]
 let ``Read stocks.arrow returns correct float column values`` () =
     let path = Path.Combine(dataDir, "stocks.arrow")
-    let df = readArrow path
+    let df = Frame.readArrow path
     let opens = df.["Open"] |> Series.values |> Array.ofSeq
     opens.[0] |> should (equalWithin 1e-10) 420.5
     opens.[1] |> should (equalWithin 1e-10) 185.3
@@ -708,7 +667,7 @@ let ``Read stocks.arrow returns correct float column values`` () =
 [<Test>]
 let ``Read stocks.arrow returns correct int column values`` () =
     let path = Path.Combine(dataDir, "stocks.arrow")
-    let df = readArrow path
+    let df = Frame.readArrow path
     let vols = df.GetColumn<int>("Volume") |> Series.values |> Array.ofSeq
     vols.[0] |> should equal 28000000
     vols.[4] |> should equal 32000000
@@ -716,7 +675,7 @@ let ``Read stocks.arrow returns correct int column values`` () =
 [<Test>]
 let ``Read stocks.arrow returns DateTime column`` () =
     let path = Path.Combine(dataDir, "stocks.arrow")
-    let df = readArrow path
+    let df = Frame.readArrow path
     let dates = df.GetColumn<DateTime>("Date") |> Series.values |> Array.ofSeq
     dates.[0].Year  |> should equal 2024
     dates.[0].Month |> should equal 6
@@ -725,16 +684,16 @@ let ``Read stocks.arrow returns DateTime column`` () =
 [<Test>]
 let ``Read missing.arrow has correct missing value count`` () =
     let path = Path.Combine(dataDir, "missing.arrow")
-    let df = readArrow path
+    let df = Frame.readArrow path
     df.RowCount |> should equal 4
     df.["A"].ValueCount |> should equal 2  // 2 NaN → missing
     df.GetColumn<int>("B") |> Series.values |> Array.ofSeq |> should equal [| 10; 20; 30; 40 |]
     df.GetColumn<string>("C") |> Series.values |> Array.ofSeq |> should equal [| "x"; "y"; "z"; "w" |]
 
 [<Test>]
-let ``Read indexed.arrow with readArrowWithIndex restores row keys`` () =
+let ``Read indexed.arrow with Frame.readArrowWithIndex restores row keys`` () =
     let path = Path.Combine(dataDir, "indexed.arrow")
-    let df = readArrowWithIndex path
+    let df = Frame.readArrowWithIndex path
     df.RowKeys |> List.ofSeq |> should equal [ "Jan"; "Feb"; "Mar"; "Apr" ]
     df.ColumnCount |> should equal 3
     df.ColumnKeys |> Seq.toList |> should equal ["Revenue"; "Cost"; "Profit"]
@@ -743,10 +702,10 @@ let ``Read indexed.arrow with readArrowWithIndex restores row keys`` () =
 [<Test>]
 let ``stocks.arrow round-trips through write and re-read`` () =
     let path = Path.Combine(dataDir, "stocks.arrow")
-    let df = readArrow path
+    let df = Frame.readArrow path
     withTmpFile (fun tmpPath ->
-        writeArrow tmpPath df
-        let df2 = readArrow tmpPath
+        Frame.writeArrow tmpPath df
+        let df2 = Frame.readArrow tmpPath
         df2.RowCount    |> should equal df.RowCount
         df2.ColumnCount |> should equal df.ColumnCount
         df2.GetColumn<string>("Ticker") |> Series.values |> Array.ofSeq

@@ -3,7 +3,9 @@
 title: Apache Parquet integration
 category: Documentation
 categoryindex: 1
-index: 8
+index: 11
+description: Reading and writing Apache Parquet files for efficient columnar storage and cross-platform data exchange
+keywords: parquet, columnar storage, compression, interop, pandas, spark
 ---
 *)
 (*** condition: prepare ***)
@@ -110,8 +112,8 @@ let prices3 = Frame.readParquetStream ms
 ## Preserving row keys (round-trip with named rows)
 
 By default, row keys are dropped when writing Parquet files. Use
-`writeParquetWithIndex` to serialise row keys into a special `__index__` column,
-then `readParquetWithIndex` to restore them.
+`Frame.writeParquetWithIndex` to serialise row keys into a special `__index__` column,
+then `Frame.readParquetWithIndex` to restore them.
 
 *)
 

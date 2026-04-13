@@ -3,7 +3,9 @@
 title: Deedle.Math — MathNet.Numerics integration
 category: Documentation
 categoryindex: 1
-index: 7
+index: 12
+description: Linear algebra, matrix conversions, and numerical methods via MathNet.Numerics integration
+keywords: MathNet, linear algebra, matrix, numerics, regression, integration
 ---
 *)
 (*** condition: prepare ***)

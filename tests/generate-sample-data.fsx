@@ -57,9 +57,9 @@ let indexedDf =
 let arrowDataDir = Path.Combine(__SOURCE_DIRECTORY__, "Deedle.Arrow.Tests", "data")
 Directory.CreateDirectory(arrowDataDir) |> ignore
 
-writeArrow (Path.Combine(arrowDataDir, "stocks.arrow")) stocksDf
-writeArrow (Path.Combine(arrowDataDir, "missing.arrow")) missingDf
-writeArrowWithIndex (Path.Combine(arrowDataDir, "indexed.arrow")) indexedDf
+Frame.writeArrow (Path.Combine(arrowDataDir, "stocks.arrow")) stocksDf
+Frame.writeArrow (Path.Combine(arrowDataDir, "missing.arrow")) missingDf
+Frame.writeArrowWithIndex (Path.Combine(arrowDataDir, "indexed.arrow")) indexedDf
 
 printfn "Arrow sample files written to %s" arrowDataDir
 
@@ -67,9 +67,9 @@ printfn "Arrow sample files written to %s" arrowDataDir
 let parquetDataDir = Path.Combine(__SOURCE_DIRECTORY__, "Deedle.Parquet.Tests", "data")
 Directory.CreateDirectory(parquetDataDir) |> ignore
 
-writeParquet (Path.Combine(parquetDataDir, "stocks.parquet")) stocksDf
-writeParquet (Path.Combine(parquetDataDir, "missing.parquet")) missingDf
-writeParquetWithIndex (Path.Combine(parquetDataDir, "indexed.parquet")) indexedDf
+Frame.writeParquet (Path.Combine(parquetDataDir, "stocks.parquet")) stocksDf
+Frame.writeParquet (Path.Combine(parquetDataDir, "missing.parquet")) missingDf
+Frame.writeParquetWithIndex (Path.Combine(parquetDataDir, "indexed.parquet")) indexedDf
 
 printfn "Parquet sample files written to %s" parquetDataDir
 printfn "Done."

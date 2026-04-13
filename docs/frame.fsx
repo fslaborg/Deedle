@@ -4,6 +4,8 @@ title: Working with data frames in F#
 category: Documentation
 categoryindex: 1
 index: 3
+description: Creating, transforming, filtering, and aggregating data frames using the Deedle F# API
+keywords: data frame, columns, rows, filtering, grouping, aggregation, F#
 ---
 *)
 (*** condition: prepare ***)

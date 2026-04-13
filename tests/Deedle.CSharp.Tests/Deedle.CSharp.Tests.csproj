@@ -8,11 +8,17 @@
   <ItemGroup>
     <Compile Include="Frame.cs" />
     <Compile Include="Series.cs" />
+    <Compile Include="ArrowTests.cs" />
+    <Compile Include="ParquetTests.cs" />
+    <Compile Include="ExcelReaderTests.cs" />
     <None Include="paket.references" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Deedle\Deedle.fsproj">
     </ProjectReference>
+    <ProjectReference Include="..\..\src\Deedle.Arrow\Deedle.Arrow.fsproj" />
+    <ProjectReference Include="..\..\src\Deedle.Parquet\Deedle.Parquet.fsproj" />
+    <ProjectReference Include="..\..\src\Deedle.Excel.Reader\Deedle.Excel.Reader.fsproj" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

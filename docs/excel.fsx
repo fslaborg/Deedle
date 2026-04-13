@@ -3,7 +3,9 @@
 title: Excel integration
 category: Documentation
 categoryindex: 1
-index: 11
+index: 9
+description: Reading .xls and .xlsx Excel files into Deedle data frames using the ExcelDataReader library
+keywords: excel, xls, xlsx, spreadsheet, worksheet, ExcelDataReader
 ---
 *)
 (*** condition: prepare ***)
@@ -81,7 +83,7 @@ let samplePath =
     File.WriteAllBytes(tmp, bytes)
     tmp
 
-let sales : Frame<int, string> = readExcel samplePath
+let sales : Frame<int, string> = Frame.readExcel samplePath
 (*** include-it ***)
 
 (**
@@ -90,23 +92,23 @@ frame rows; the row keys are contiguous integers starting at 0.
 
 ### Reading a specific sheet by name
 
-When a workbook contains multiple worksheets, use `readExcelSheet` to target one
+When a workbook contains multiple worksheets, use `Frame.readExcelSheet` to target one
 by name (case-sensitive):
 *)
 let multiPath =
     File.ReadAllBytes(__SOURCE_DIRECTORY__ + "/data/quarterly.xlsx")
     |> fun b -> let t = Path.GetTempFileName() + ".xlsx" in File.WriteAllBytes(t, b); t
 
-let q1 : Frame<int, string> = readExcelSheet multiPath "Q1 Sales"
+let q1 : Frame<int, string> = Frame.readExcelSheet multiPath "Q1 Sales"
 (*** include-it ***)
 
 (**
 ### Reading a specific sheet by index
 
-Use `readExcelSheetByIndex` with a zero-based index when you know the position
+Use `Frame.readExcelSheetByIndex` with a zero-based index when you know the position
 but not the name:
 *)
-let q2 : Frame<int, string> = readExcelSheetByIndex multiPath 1
+let q2 : Frame<int, string> = Frame.readExcelSheetByIndex multiPath 1
 (*** include-it ***)
 
 (**
@@ -116,9 +118,9 @@ let q2 : Frame<int, string> = readExcelSheetByIndex multiPath 1
 
 ## Listing worksheets
 
-`sheetNames` returns the names of all worksheets in a workbook in order:
+`Frame.sheetNames` returns the names of all worksheets in a workbook in order:
 *)
-let sheets : string list = sheetNames multiPath
+let sheets : string list = Frame.sheetNames multiPath
 (*** include-it ***)
 
 (**
@@ -206,8 +208,8 @@ frame
 
 ## Error handling
 
-`readExcelSheet` raises `System.Exception` if the named sheet does not exist,
-with a message that lists available sheet names. `readExcelSheetByIndex` raises
+`Frame.readExcelSheet` raises `System.Exception` if the named sheet does not exist,
+with a message that lists available sheet names. `Frame.readExcelSheetByIndex` raises
 if the index is out of range.
 
 Both are recoverable with a standard `try/with`:
@@ -215,7 +217,7 @@ Both are recoverable with a standard `try/with`:
 ```fsharp
 let tryReadSheet path name =
     try
-        readExcelSheet path name |> Some
+        Frame.readExcelSheet path name |> Some
     with _ -> None
 ```
 

@@ -4,6 +4,8 @@ title: Creating lazily loaded series
 category: Documentation
 categoryindex: 1
 index: 6
+description: Building series backed by lazy or virtual data sources for on-demand data loading
+keywords: lazy, virtual series, data source, on-demand loading
 ---
 *)
 (*** condition: prepare ***)
