@@ -20,6 +20,8 @@ open Apache.Arrow
 // Helpers
 // ------------------------------------------------------------------------------------------------
 
+let private dataDir = Path.Combine(__SOURCE_DIRECTORY__, "data")
+
 let private tmpFile () =
     Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N") + ".arrow")
 
@@ -675,3 +677,77 @@ let ``Property: recordBatch round-trip preserves column names (FsCheck)`` () =
             let outNames = df2.ColumnKeys |> List.ofSeq
             outNames = names
     Check.QuickThrowOnFailure check
+
+// ------------------------------------------------------------------------------------------------
+// Sample-file tests — reading checked-in .arrow files
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Read stocks.arrow returns correct columns and row count`` () =
+    let path = Path.Combine(dataDir, "stocks.arrow")
+    let df = readArrow path
+    df.RowCount    |> should equal 5
+    df.ColumnCount |> should equal 5
+    df.ColumnKeys |> Seq.toList |> should equal ["Ticker"; "Open"; "Close"; "Volume"; "Date"]
+
+[<Test>]
+let ``Read stocks.arrow returns correct string column values`` () =
+    let path = Path.Combine(dataDir, "stocks.arrow")
+    let df = readArrow path
+    let tickers = df.GetColumn<string>("Ticker") |> Series.values |> Array.ofSeq
+    tickers |> should equal [| "MSFT"; "AAPL"; "GOOG"; "AMZN"; "META" |]
+
+[<Test>]
+let ``Read stocks.arrow returns correct float column values`` () =
+    let path = Path.Combine(dataDir, "stocks.arrow")
+    let df = readArrow path
+    let opens = df.["Open"] |> Series.values |> Array.ofSeq
+    opens.[0] |> should (equalWithin 1e-10) 420.5
+    opens.[1] |> should (equalWithin 1e-10) 185.3
+
+[<Test>]
+let ``Read stocks.arrow returns correct int column values`` () =
+    let path = Path.Combine(dataDir, "stocks.arrow")
+    let df = readArrow path
+    let vols = df.GetColumn<int>("Volume") |> Series.values |> Array.ofSeq
+    vols.[0] |> should equal 28000000
+    vols.[4] |> should equal 32000000
+
+[<Test>]
+let ``Read stocks.arrow returns DateTime column`` () =
+    let path = Path.Combine(dataDir, "stocks.arrow")
+    let df = readArrow path
+    let dates = df.GetColumn<DateTime>("Date") |> Series.values |> Array.ofSeq
+    dates.[0].Year  |> should equal 2024
+    dates.[0].Month |> should equal 6
+    dates.[0].Day   |> should equal 3
+
+[<Test>]
+let ``Read missing.arrow has correct missing value count`` () =
+    let path = Path.Combine(dataDir, "missing.arrow")
+    let df = readArrow path
+    df.RowCount |> should equal 4
+    df.["A"].ValueCount |> should equal 2  // 2 NaN → missing
+    df.GetColumn<int>("B") |> Series.values |> Array.ofSeq |> should equal [| 10; 20; 30; 40 |]
+    df.GetColumn<string>("C") |> Series.values |> Array.ofSeq |> should equal [| "x"; "y"; "z"; "w" |]
+
+[<Test>]
+let ``Read indexed.arrow with readArrowWithIndex restores row keys`` () =
+    let path = Path.Combine(dataDir, "indexed.arrow")
+    let df = readArrowWithIndex path
+    df.RowKeys |> List.ofSeq |> should equal [ "Jan"; "Feb"; "Mar"; "Apr" ]
+    df.ColumnCount |> should equal 3
+    df.ColumnKeys |> Seq.toList |> should equal ["Revenue"; "Cost"; "Profit"]
+    df.["Revenue"] |> Series.values |> Array.ofSeq |> should equal [| 1200.0; 1350.0; 1100.0; 1500.0 |]
+
+[<Test>]
+let ``stocks.arrow round-trips through write and re-read`` () =
+    let path = Path.Combine(dataDir, "stocks.arrow")
+    let df = readArrow path
+    withTmpFile (fun tmpPath ->
+        writeArrow tmpPath df
+        let df2 = readArrow tmpPath
+        df2.RowCount    |> should equal df.RowCount
+        df2.ColumnCount |> should equal df.ColumnCount
+        df2.GetColumn<string>("Ticker") |> Series.values |> Array.ofSeq
+        |> should equal (df.GetColumn<string>("Ticker") |> Series.values |> Array.ofSeq))

@@ -14,5 +14,9 @@
     <None Include="paket.references" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Include="data/**" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
