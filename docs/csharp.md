@@ -2,7 +2,9 @@
 title: Deedle in C# — Cookbook
 category: Documentation
 categoryindex: 1
-index: 10
+index: 13
+description: Using Deedle data frames and series from C# with extension methods, LINQ, and static API
+keywords: C#, cookbook, extension methods, LINQ, interop
 ---
 
 # Deedle in C# — Cookbook
@@ -470,6 +472,140 @@ foreach (var g in byClass.GetAllValues().GroupBy(v => v.Value))
 
 ---
 
+## Reading Excel files
+
+Add the `Deedle.Excel.Reader` package:
+
+```
+dotnet add package Deedle.Excel.Reader
+```
+
+```csharp
+using Deedle;
+using Deedle.ExcelReader;
+```
+
+### Read the first worksheet
+
+```csharp
+var df = ExcelFrame.ReadExcel("data.xlsx");
+// Row keys are 0-based ints, column keys are header strings
+Console.WriteLine($"Rows: {df.RowCount}, Cols: {df.ColumnCount}");
+```
+
+### Read a specific sheet by name or index
+
+```csharp
+var q1 = ExcelFrame.ReadExcelSheet("sales.xlsx", "Q1 Sales");
+var q2 = ExcelFrame.ReadExcelSheetByIndex("sales.xlsx", 1);
+```
+
+### List all worksheet names
+
+```csharp
+var names = ExcelFrame.SheetNames("sales.xlsx");
+foreach (var name in names)
+    Console.WriteLine(name);
+```
+
+---
+
+## Apache Arrow and Feather I/O
+
+Add the `Deedle.Arrow` package:
+
+```
+dotnet add package Deedle.Arrow
+```
+
+```csharp
+using Deedle;
+using Deedle.Arrow;
+```
+
+### Read and write Arrow / Feather files
+
+```csharp
+// Write
+df.WriteArrow("data.arrow");
+df.WriteFeather("data.feather");   // Feather v2 = Arrow IPC format
+
+// Read
+var df1 = ArrowFrame.ReadArrow("data.arrow");
+var df2 = ArrowFrame.ReadFeather("data.feather");
+```
+
+### Preserve row keys across round-trips
+
+```csharp
+// Write with row index stored in __index__ column
+df.WriteArrowWithIndex("indexed.arrow");
+
+// Read back with original row keys
+Frame<string, string> df3 = ArrowFrame.ReadArrowWithIndex("indexed.arrow");
+```
+
+### Stream I/O
+
+```csharp
+using var ms = new MemoryStream();
+df.WriteArrowStream(ms);
+ms.Position = 0;
+var df4 = ArrowFrame.ReadArrowStream(ms);
+```
+
+### Convert to/from Apache Arrow RecordBatch
+
+```csharp
+using Apache.Arrow;
+
+RecordBatch batch = df.ToRecordBatch();
+Console.WriteLine($"Columns: {batch.ColumnCount}, Rows: {batch.Length}");
+```
+
+---
+
+## Apache Parquet I/O
+
+Add the `Deedle.Parquet` package:
+
+```
+dotnet add package Deedle.Parquet
+```
+
+```csharp
+using Deedle;
+using Deedle.Parquet;
+```
+
+### Read and write Parquet files
+
+```csharp
+// Write
+df.WriteParquet("data.parquet");
+
+// Read
+var df1 = ParquetFrame.ReadParquet("data.parquet");
+```
+
+### Preserve row keys across round-trips
+
+```csharp
+df.WriteParquetWithIndex("indexed.parquet");
+Frame<string, string> df2 = ParquetFrame.ReadParquetWithIndex("indexed.parquet");
+```
+
+### Stream I/O
+
+```csharp
+using var ms = new MemoryStream();
+df.WriteParquetStream(ms);
+ms.Position = 0;
+var df3 = ParquetFrame.ReadParquetStream(ms);
+```
+
+---
+
 ## Further Reading
 
 * [Data frame features (F#)](frame.html) — the full API reference with F# examples,
@@ -478,5 +614,8 @@ foreach (var g in byClass.GetAllValues().GroupBy(v => v.Value))
 * [Statistics](stats.html) — summary statistics, moving and expanding windows.
 * [Handling missing values](missing.html) — all fill strategies and propagation rules.
 * [Joining and merging frames](joining.html) — inner, outer, left, and right joins.
+* [Excel integration (F#)](excel.html) — reading `.xls` and `.xlsx` files.
+* [Arrow and Feather integration (F#)](arrow.html) — Arrow IPC file and stream I/O, RecordBatch conversions.
+* [Parquet integration (F#)](parquet.html) — Parquet file and stream I/O.
 * [C# test suite](https://github.com/fslaborg/Deedle/tree/master/tests/Deedle.CSharp.Tests) —
   executable examples covering every major C# API surface.

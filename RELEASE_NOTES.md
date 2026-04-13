@@ -2,6 +2,10 @@
 
 ## 5.0.1-unreleased
 
+### Infrastructure
+
+- **Breaking**: `Deedle.Arrow`, `Deedle.Parquet`, and `Deedle.ExcelReader` are now F# namespaces instead of top-level modules. Functions like `readArrow`, `readParquet`, and `readExcel` are no longer brought into scope directly by `open`; use `Frame.readArrow`, `Frame.readParquet`, `Frame.readExcel`, etc. instead. C# static factory types (`ArrowFrame`, `ParquetFrame`, `ExcelFrame`) and extension methods are unchanged.
+
 ### New packages
 
 - **Deedle.Parquet**: Apache Parquet interop — `Frame` read/write via Parquet.Net, stream I/O, row-key preservation, C# extensions

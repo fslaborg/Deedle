@@ -4,6 +4,8 @@ title: Joining, merging and appending frames
 category: Documentation
 categoryindex: 1
 index: 8
+description: Inner, outer, and ordered joins on frames and series, plus merging and appending
+keywords: join, merge, append, inner join, outer join, align, concatenate
 ---
 *)
 (*** condition: prepare ***)

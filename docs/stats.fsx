@@ -4,6 +4,8 @@ title: Calculating frame and series statistics
 category: Documentation
 categoryindex: 1
 index: 5
+description: Computing mean, variance, standard deviation, correlation, and other statistics on frames and series
+keywords: statistics, mean, variance, standard deviation, correlation, moving average
 ---
 *)
 (*** condition: prepare ***)

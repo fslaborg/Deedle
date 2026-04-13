@@ -3,7 +3,9 @@
 title: Apache Arrow and Feather integration
 category: Documentation
 categoryindex: 1
-index: 7
+index: 10
+description: Reading and writing Arrow IPC and Feather v2 files, converting between Deedle frames and Arrow RecordBatches
+keywords: arrow, feather, IPC, RecordBatch, columnar, interop, pyarrow, pandas
 ---
 *)
 (*** condition: prepare ***)
@@ -155,8 +157,8 @@ let volsBack : Series<int, obj> = Series.ofArrowArray arrowArr
 
 ## Preserving row keys (round-trip with named rows)
 
-By default, row keys are dropped when writing Arrow files. Use `writeArrowWithIndex`
-to serialise row keys into a special `__index__` column, then `readArrowWithIndex`
+By default, row keys are dropped when writing Arrow files. Use `Frame.writeArrowWithIndex`
+to serialise row keys into a special `__index__` column, then `Frame.readArrowWithIndex`
 to restore them.
 
 *)

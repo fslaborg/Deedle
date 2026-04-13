@@ -3,7 +3,9 @@
 title: Handling missing values
 category: Documentation
 categoryindex: 1
-index: 9
+index: 7
+description: Strategies for dealing with missing data including fill, drop, and interpolation
+keywords: missing values, NA, fill, drop, interpolation, optional values
 ---
 *)
 (*** condition: prepare ***)
