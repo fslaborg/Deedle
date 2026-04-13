@@ -1403,7 +1403,7 @@ type IFsiFormattable =
 /// <exclude />
 /// An interface implemented by frames that support nice formatting for .NET interactive notebooks
 /// This seems to be needed as you cannot register formatters for <c>Frame&lt;_,_&gt;</c> in .NET interactive
-/// (The <c>Deedle.Interactive</c> packages uses this interface for registering custom formatters.)
+/// (The <c>Deedle.DotNetInteractive</c> packages uses this interface for registering custom formatters.)
 type IFrameFormattable =
   abstract InteractiveFormat : nRows:int * nCols:int * showColumnTypes:bool -> string [] []
   abstract GetColLevels : unit -> int
@@ -1414,7 +1414,7 @@ type IFrameFormattable =
 /// <exclude />
 /// An interface implemented by series that support nice formatting for .NET interactive notebooks
 /// This seems to be needed as you cannot register formatters for <c>Series&lt;_,_&gt;</c> in .NET interactive
-/// (The `Deedle.Interactive` packages uses this interface for registering custom formatters.)
+/// (The `Deedle.DotNetInteractive` packages uses this interface for registering custom formatters.)
 type ISeriesFormattable =
   abstract InteractiveFormat : int -> string [] []
   abstract GetValueCount : unit -> int

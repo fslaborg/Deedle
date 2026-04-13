@@ -5,26 +5,6 @@ VisualStudioVersion = 17.1.32421.90
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Deedle", "src\Deedle\Deedle.fsproj", "{22729065-4C30-4E43-A63F-4F3338A03878}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{245F1283-32FA-4B38-AC76-448B8AE5F7AC}"
-	ProjectSection(SolutionItems) = preProject
-		docs\design.fsx = docs\design.fsx
-		docs\frame.fsx = docs\frame.fsx
-		docs\index.fsx = docs\index.fsx
-		docs\lazysource.fsx = docs\lazysource.fsx
-		docs\series.fsx = docs\series.fsx
-		docs\stats.fsx = docs\stats.fsx
-		docs\tutorial.fsx = docs\tutorial.fsx
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "project", "project", "{B6AFD701-8A05-4A18-A3F3-EDAF8D7530E8}"
-	ProjectSection(SolutionItems) = preProject
-		nuget\Deedle.Excel.nuspec = nuget\Deedle.Excel.nuspec
-		nuget\Deedle.Interactive.nuspec = nuget\Deedle.Interactive.nuspec
-		nuget\Deedle.nuspec = nuget\Deedle.nuspec
-		README.md = README.md
-		RELEASE_NOTES.md = RELEASE_NOTES.md
-	EndProjectSection
-EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Deedle.Excel", "src\Deedle.Excel\Deedle.Excel.fsproj", "{8C50057D-29EF-41AD-B91A-84B49CDBD047}"
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Deedle.Math", "src\Deedle.Math\Deedle.Math.fsproj", "{62ED9851-0A38-43DF-8C35-78F84EB13CB9}"
@@ -33,7 +13,7 @@ Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Deedle.Tests", "tests\Deedl
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Deedle.Math.Tests", "tests\Deedle.Math.Tests\Deedle.Math.Tests.fsproj", "{AD811C67-091A-4B03-A483-9FA3B1A8CE55}"
 EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Deedle.Interactive", "src\Deedle.Interactive\Deedle.Interactive.fsproj", "{D71C0930-C2A3-4EDF-82A9-9EE6B431EC0D}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Deedle.DotNetInteractive", "src\Deedle.DotNetInteractive\Deedle.DotNetInteractive.fsproj", "{D71C0930-C2A3-4EDF-82A9-9EE6B431EC0D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Deedle.CSharp.Tests", "tests\Deedle.CSharp.Tests\Deedle.CSharp.Tests.csproj", "{B0584275-6E9D-4DB8-A35D-4F37B623F97E}"
 EndProject

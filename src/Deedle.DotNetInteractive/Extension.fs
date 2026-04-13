@@ -1,4 +1,4 @@
-namespace Deedle.Interactive
+namespace Deedle.DotNetInteractive
 
 open System
 open System.Threading.Tasks
@@ -15,13 +15,13 @@ type FormatterKernelExtension() =
       Formatter.Register<IFrameFormattable>(
         Action<_, _>
           (fun item (writer: IO.TextWriter) ->
-            writer.Write(item |> Deedle.Interactive.Formatters.frameToHtmlTable)),
+            writer.Write(item |> Deedle.DotNetInteractive.Formatters.frameToHtmlTable)),
         "text/html"
       )
       Formatter.Register<ISeriesFormattable>(
         Action<_, _>
           (fun item (writer: IO.TextWriter) ->
-            writer.Write(item |> Deedle.Interactive.Formatters.seriesToHtmlTable)),
+            writer.Write(item |> Deedle.DotNetInteractive.Formatters.seriesToHtmlTable)),
         "text/html"
       )
       Task.CompletedTask

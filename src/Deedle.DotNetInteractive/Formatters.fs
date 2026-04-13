@@ -1,4 +1,4 @@
-namespace Deedle.Interactive
+namespace Deedle.DotNetInteractive
 
 open Deedle
 open Deedle.Internal
