@@ -1,7 +1,7 @@
 (**
 ---
 title: Calculating frame and series statistics
-category: Documentation
+category: Guides
 categoryindex: 1
 index: 5
 description: Computing mean, variance, standard deviation, correlation, and other statistics on frames and series

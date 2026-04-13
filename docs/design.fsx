@@ -1,9 +1,9 @@
 (**
 ---
 title: F# Data Frame design notes
-category: Documentation
-categoryindex: 1
-index: 14
+category: Design
+categoryindex: 3
+index: 1
 description: Internal design principles and architecture of the Deedle library
 keywords: design, architecture, internals, data frame, implementation
 ---

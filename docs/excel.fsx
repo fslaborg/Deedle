@@ -1,9 +1,9 @@
 (**
 ---
 title: Excel integration
-category: Documentation
-categoryindex: 1
-index: 9
+category: Integrations
+categoryindex: 2
+index: 1
 description: Reading .xls and .xlsx Excel files into Deedle data frames using the ExcelDataReader library
 keywords: excel, xls, xlsx, spreadsheet, worksheet, ExcelDataReader
 ---

@@ -1,9 +1,9 @@
 (**
 ---
 title: Apache Parquet integration
-category: Documentation
-categoryindex: 1
-index: 11
+category: Integrations
+categoryindex: 2
+index: 3
 description: Reading and writing Apache Parquet files for efficient columnar storage and cross-platform data exchange
 keywords: parquet, columnar storage, compression, interop, pandas, spark
 ---
@@ -93,13 +93,17 @@ expose streams rather than file paths.
 
 *)
 
-// Write to an in-memory stream
-use ms = new MemoryStream()
-Frame.writeParquetStream ms prices
+let streamExample () =
+    // Write to an in-memory stream
+    use ms = new MemoryStream()
+    Frame.writeParquetStream ms prices
 
-// Rewind and read back
-ms.Position <- 0L
-let prices3 = Frame.readParquetStream ms
+    // Rewind and read back
+    ms.Position <- 0L
+    let prices3 = Frame.readParquetStream ms
+    prices3
+
+let prices3 = streamExample ()
 (*** include-value: prices3 ***)
 
 (**

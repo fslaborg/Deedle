@@ -1,11 +1,18 @@
 # Release Notes
 
-## 6.0.0 - 2026-04-13
+## 6.0.1 - 2026-04-13
 
 ### Infrastructure
 
 - `Deedle.Arrow`, `Deedle.Parquet`, and `Deedle.ExcelReader` are now F# namespaces instead of top-level modules. Functions like `readArrow`, `readParquet`, and `readExcel` are no longer brought into scope directly by `open`; use `Frame.readArrow`, `Frame.readParquet`, `Frame.readExcel`, etc. instead. C# static factory types (`ArrowFrame`, `ParquetFrame`, `ExcelFrame`) and extension methods are unchanged.
 - Removed obsolete `Deedle.PerfTest` and `Deedle.PerfTests` projects (.NET Framework–only performance runner); use `Deedle.Benchmarks` (BenchmarkDotNet) instead
+- Rename `Deedle.Interactive` package to `Deedle.DotNetInteractive` to match the folder name and clarify purpose
+- Remove stale docs and project solution folders from `Deedle.sln`
+- Reorganise documentation into three categories: Guides, Integrations, Design
+
+### Documentation
+
+- Add `docs/dotnetinteractive.fsx` — documentation page for `Deedle.DotNetInteractive` notebook formatting with configuration reference
 
 ### New packages
 
@@ -167,7 +174,7 @@
 
 ## 3.0.0-beta.1 - 2022-06-22
 
-- Add Deedle.Interactive package for formatting in dotnet notebooks
+- Add Deedle.DotNetInteractive package for formatting in dotnet notebooks
 - Adjust and extend formatting interfaces accordingly.
 
 ## 2.5.0 - 2021-11-10

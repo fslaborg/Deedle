@@ -9,7 +9,7 @@ Key sub-projects:
 | Project | Path |
 |---|---|
 | Core library | `src/Deedle/` |
-| .NET Interactive formatting | `src/Deedle.Interactive/` |
+| .NET Interactive formatting | `src/Deedle.DotNetInteractive/` |
 | MathNet.Numerics integration | `src/Deedle.Math/` |
 | Excel integration | `src/Deedle.Excel/` |
 

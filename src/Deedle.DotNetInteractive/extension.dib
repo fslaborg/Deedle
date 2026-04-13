@@ -2,5 +2,5 @@
 {"kernelInfo":{"defaultKernelName":"fsharp","items":[{"aliases":[],"languageName":"fsharp","name":"fsharp"}]}}
 
 #!fsharp
-(new Deedle.Interactive.FormatterKernelExtension() :> Microsoft.DotNet.Interactive.IKernelExtension)
+(new Deedle.DotNetInteractive.FormatterKernelExtension() :> Microsoft.DotNet.Interactive.IKernelExtension)
     .OnLoadAsync(null) |> ignore
