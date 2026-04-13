@@ -1,6 +1,6 @@
 (**
 ---
-title: .NET Interactive notebook formatting
+title: Deedle.DotNetInteractive — .NET Interactive notebook formatting
 category: Integrations
 categoryindex: 2
 index: 5
@@ -22,7 +22,7 @@ open Deedle
 
 (**
 
-# .NET Interactive Notebook Formatting
+# Deedle.DotNetInteractive — .NET Interactive Notebook Formatting
 
 The `Deedle.DotNetInteractive` package registers HTML formatters for Deedle frames and
 series in [.NET Interactive](https://github.com/dotnet/interactive) notebooks —

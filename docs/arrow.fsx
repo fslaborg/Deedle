@@ -1,6 +1,6 @@
 (**
 ---
-title: Apache Arrow and Feather integration
+title: Deedle.Arrow — Apache Arrow and Feather integration
 category: Integrations
 categoryindex: 2
 index: 2
@@ -27,7 +27,7 @@ open Deedle.Arrow
 
 (**
 
-# Apache Arrow and Feather Integration
+# Deedle.Arrow — Apache Arrow and Feather Integration
 
 The `Deedle.Arrow` package adds first-class support for [Apache Arrow](https://arrow.apache.org/) —
 the industry-standard columnar in-memory format used by Python (`pyarrow`/`pandas`), R (`arrow`),

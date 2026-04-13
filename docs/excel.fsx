@@ -1,6 +1,6 @@
 (**
 ---
-title: Excel integration
+title: Deedle.Excel.Reader — Excel integration
 category: Integrations
 categoryindex: 2
 index: 1
@@ -30,7 +30,7 @@ open Deedle.ExcelReader
 
 (**
 
-# Excel integration
+# Deedle.Excel.Reader — Excel integration
 
 Deedle provides two separate packages for working with Microsoft Excel files:
 
