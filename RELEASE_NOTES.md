@@ -1,5 +1,16 @@
 # Release Notes
 
+## 5.0.1-unreleased
+
+### C# API improvements
+
+- Add `Frame.Stack` / `Frame.Unstack` C# extension methods for reshaping frames between wide and long format
+- Add `Frame.MeltBy` C# extension method for pandas-style wide-to-long pivot
+- Add `Frame.WhereRowsByMask` / `Frame.WhereColsByMask` C# extension methods for boolean-mask filtering
+- Add `Frame.RenameColumn` / `Frame.RenameColumns` C# extension methods for column renaming
+- Add `Frame.JoinOn` / `Frame.JoinOnString` / `Frame.JoinOnInt` C# extension methods for joining frames on a column value
+- Add `Frame.Compare` C# extension method for column-by-column frame diffing
+
 ## 5.0.0 - 2026-04-02
 
 ### Documentation
