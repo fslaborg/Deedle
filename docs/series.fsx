@@ -61,6 +61,7 @@ let randomPrice seed drift volatility initial (start: DateTimeOffset) (span: Tim
 let today = DateTimeOffset(DateTime.Today)
 let stock1 = randomPrice 1 0.1 3.0 20.0 today 
 let stock2 = randomPrice 2 0.2 1.5 22.0 today
+(*** include-fsi-merged-output ***)
 
 (**
 Call `stock1` or `stock2` with a `TimeSpan` and count to get prices
@@ -76,6 +77,7 @@ with different keys, matching by key or nearest available value.
 let s1 = stock1 (TimeSpan(1, 0, 0)) 6 |> series
 let s2 = stock2 (TimeSpan(0, 30, 0)) 12 |> series
 let s3 = stock1 (TimeSpan(1, 5, 0)) 6 |> series
+(*** include-fsi-merged-output ***)
 
 (**
 ### Zipping series
@@ -103,15 +105,20 @@ let f1 = Frame.ofColumns ["S1" => s1]
 let f2 = Frame.ofColumns ["S2" => s2]
 // Contains values with 65 minute offsets
 let f3 = Frame.ofColumns ["S3" => s3]
+(*** include-fsi-merged-output ***)
 
-// Union keys from both frames and align corresponding values
+(** Union keys from both frames and align corresponding values *)
 f1.Join(f2, JoinKind.Outer)
+(*** include-fsi-merged-output ***)
 
-// Take only keys where both frames contain all values
+(** Take only keys where both frames contain all values *)
 f2.Join(f3, JoinKind.Inner)
 
-// Take keys from the left frame and find nearest smaller value from the right frame
+(** Take keys from the left frame and find nearest smaller value from the right frame *)
+
 f2.Join(f3, JoinKind.Left, Lookup.ExactOrSmaller)
+
+(*** include-fsi-merged-output ***)
 
 // Function syntax equivalents
 Frame.join JoinKind.Outer f1 f2
@@ -133,10 +140,15 @@ let lf = stock1 (TimeSpan(0, 1, 0)) 6 |> series
 
 // Sliding windows of size 4
 lf |> Series.window 4
+(*** include-fsi-merged-output ***)
+
 // Aggregate each window
 lf |> Series.windowInto 4 Stats.mean
+(*** include-fsi-merged-output ***)
+
 // First value of each window
 lf |> Series.windowInto 4 Series.firstValue
+(*** include-fsi-merged-output ***)
 
 (**
 Given input `[1,2,3,4,5,6]`, windows of size 4 produce:
@@ -158,6 +170,7 @@ let lfm2 =
     Stats.mean ds.Data)
 
 Frame.ofColumns [ "Orig" => lf; "Means" => lfm2 ]
+(*** include-fsi-merged-output ***)
 
 (**
 The `DataSegment<T>` type tells you whether a window is `Complete` or `Incomplete`:
@@ -165,6 +178,8 @@ The `DataSegment<T>` type tells you whether a window is `Complete` or `Incomplet
 
 // Simple series with characters
 let st = Series.ofValues [ 'a' .. 'e' ]
+(*** include-fsi-merged-output ***)
+
 st |> Series.windowSizeInto (3, Boundary.AtEnding) (function
   | DataSegment.Complete(ser) -> 
       // Return complete windows as uppercase strings
@@ -172,6 +187,7 @@ st |> Series.windowSizeInto (3, Boundary.AtEnding) (function
   | DataSegment.Incomplete(ser) -> 
       // Return incomplete windows as padded lowercase strings
       String(ser |> Series.values |> Array.ofSeq).PadRight(3, '-') )  
+(*** include-fsi-merged-output ***)
 
 (**
 ### Window size conditions
@@ -180,12 +196,15 @@ Windows can also end based on key distance or a predicate:
 *)
 // Generate prices for each hour over 30 days
 let hourly = stock1 (TimeSpan(1, 0, 0)) (30*24) |> series
+(*** include-fsi-merged-output ***)
 
 // Generate windows of size 1 day
 hourly |> Series.windowDist (TimeSpan(24, 0, 0))
+(*** include-fsi-merged-output ***)
 
 // Generate windows such that date in each window is the same
 hourly |> Series.windowWhile (fun d1 d2 -> d1.Date = d2.Date)
+(*** include-fsi-merged-output ***)
 
 (**
 ### Chunking
@@ -195,16 +214,20 @@ Chunking creates _non-overlapping_ groups (unlike overlapping windows):
 
 // Generate per-second observations over 10 minutes
 let hf = stock1 (TimeSpan(0, 0, 1)) 600 |> series
+(*** include-fsi-merged-output ***)
 
 // Create 10 second chunks with (possible) incomplete chunk at the end
 hf |> Series.chunkSize (10, Boundary.AtEnding) 
+(*** include-fsi-merged-output ***)
 
 // Create 10 second chunks and get the first observation for each (downsample)
 hf |> Series.chunkDistInto (TimeSpan(0, 0, 10)) Series.firstValue
+(*** include-fsi-merged-output ***)
 
 // Create chunks where hh:mm component is the same
 hf |> Series.chunkWhile (fun k1 k2 -> 
   (k1.Hour, k1.Minute) = (k2.Hour, k2.Minute))
+(*** include-fsi-merged-output ***)
 
 (**
 ### Pairwise
@@ -214,9 +237,11 @@ Build pairs of consecutive values — useful for computing returns or difference
 
 // Create a series of pairs from earlier 'hf' input
 hf |> Series.pairwise 
+(*** include-fsi-merged-output ***)
 
 // Calculate differences between the current and previous values
 hf |> Series.pairwiseWith (fun k (v1, v2) -> v2 - v1)
+(*** include-fsi-merged-output ***)
 
 (**
 
@@ -230,12 +255,15 @@ hf |> Series.pairwiseWith (fun k (v1, v2) -> v2 - v1)
 let mf = stock1 (TimeSpan.FromSeconds(13.7)) 6300 |> series
 // Generate keys for all minutes in 24 hours
 let keys = [ for m in 0.0 .. 24.0*60.0-1.0 -> today.AddMinutes(m) ]
+(*** include-fsi-merged-output ***)
 
 // Find value for a given key, or nearest greater key with value
 mf |> Series.lookupAll keys Lookup.ExactOrGreater
+(*** include-fsi-merged-output ***)
 
 // Find value for nearest smaller key
 mf |> Series.lookupAll keys Lookup.ExactOrSmaller
+(*** include-fsi-merged-output ***)
 
 (**
 ### Resampling
@@ -245,10 +273,12 @@ Resample by collecting values between specified keys:
 
 // For each key, collect values for greater keys until the next one
 mf |> Series.resample keys Direction.Forward
+(*** include-fsi-merged-output ***)
 
 // Aggregate each chunk of preceding values using mean
 mf |> Series.resampleInto keys Direction.Backward 
   (fun k s -> Stats.mean s)
+(*** include-fsi-merged-output ***)
 
 (**
 Resample by projecting existing keys (e.g. group by date):
@@ -256,10 +286,14 @@ Resample by projecting existing keys (e.g. group by date):
 
 // Generate 2.5 months of data in 1.7 hour offsets
 let ds = stock1 (TimeSpan.FromHours(1.7)) 1000 |> series
+(*** include-fsi-merged-output ***)
 
 // Sample by day
 ds |> Series.resampleEquiv (fun d -> d.Date)
+(*** include-fsi-merged-output ***)
+
 ds.ResampleEquivalence(fun d -> d.Date)
+(*** include-fsi-merged-output ***)
 
 (**
 ### Uniform resampling
@@ -275,11 +309,13 @@ let days =
 let nu = 
   stock1 (TimeSpan(24,0,0)) 10 |> series
   |> Series.indexWith days |> Series.mapKeys DateTimeOffset.Parse
+(*** include-fsi-merged-output ***)
 
 // Generate uniform resampling based on dates, fill missing with nearest smaller
 let sampled =
   nu |> Series.resampleUniform Lookup.ExactOrSmaller 
     (fun dt -> dt.Date) (fun dt -> dt.AddDays(1.0))
+(*** include-fsi-merged-output ***)
 
 // Turn into frame with multiple columns for each day
 sampled 
@@ -291,13 +327,16 @@ sampled
 *)
 // Generate 1k observations with 1.7 hour offsets
 let pr = stock1 (TimeSpan.FromHours(1.7)) 1000 |> series
+(*** include-fsi-merged-output ***)
 
 // Sample at 2 hour intervals; 'Backward' specifies that we collect all previous values
 pr |> Series.sampleTime (TimeSpan(2, 0, 0)) Direction.Backward
+(*** include-fsi-merged-output ***)
 
 // Get the most recent value, sampled at 2 hour intervals
 pr |> Series.sampleTimeInto
   (TimeSpan(2, 0, 0)) Direction.Backward Series.lastValue
+(*** include-fsi-merged-output ***)
 
 (**
 
@@ -307,12 +346,15 @@ pr |> Series.sampleTimeInto
 *)
 // Generate sample data with 1.7 hour offsets
 let sample = stock1 (TimeSpan.FromHours(1.7)) 6 |> series
+(*** include-fsi-merged-output ***)
 
 // Calculates: new[i] = s[i] - s[i-1]
 let diff1 = sample |> Series.diff 1
+(*** include-fsi-merged-output ***)
 
 // Shift series values by 1
 let shift1 = sample |> Series.shift 1
+(*** include-fsi-merged-output ***)
 
 // Align all results in a frame to see the results
 let alignedDf = 
@@ -320,6 +362,7 @@ let alignedDf =
     "Diff +1" => diff1 
     "Diff" => sample - shift1 
     "Orig" => sample ] |> Frame.ofColumns 
+(*** include-fsi-merged-output ***)
 
 (**
 ### Operators and functions
@@ -330,18 +373,28 @@ Binary operators auto-align two series by key before applying:
 
 // Subtract previous value from the current value
 sample - sample.Shift(1)
+(*** include-fsi-merged-output ***)
+
 // Calculate logarithm of such differences
 log (sample - sample.Shift(1))
+(*** include-fsi-merged-output ***)
+
 // Calculate square of differences
 sample.Diff(1) ** 2.0
+(*** include-fsi-merged-output ***)
+
 // Get absolute value of differences
 abs (sample - sample.Shift(1))
+(*** include-fsi-merged-output ***)
+
 // Get absolute value of distance from the mean
 abs (sample - (Stats.mean sample))
+(*** include-fsi-merged-output ***)
 
 // Apply a custom function to all elements
 let adjust v = min 1.0 (max -1.0 v)
 adjust $ sample.Diff(1)
+(*** include-fsi-merged-output ***)
 
 (**
 ### Frame-level operations
@@ -350,8 +403,12 @@ Many time-series operations apply to entire frames:
 *)
 // Multiply all numeric columns by a given constant
 alignedDf * 0.65
+(*** include-fsi-merged-output ***)
 
 // Sum each column and divide results by a constant
 Stats.sum alignedDf / 6.0
+(*** include-fsi-merged-output ***)
+
 // Divide sum by mean of each frame column
 Stats.sum alignedDf / Stats.mean alignedDf
+(*** include-fsi-merged-output ***)
