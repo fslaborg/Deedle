@@ -84,7 +84,7 @@ let samplePath =
     tmp
 
 let sales : Frame<int, string> = Frame.readExcel samplePath
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 (**
 The first row of the worksheet is used as column headers. Subsequent rows become
@@ -100,7 +100,7 @@ let multiPath =
     |> fun b -> let t = Path.GetTempFileName() + ".xlsx" in File.WriteAllBytes(t, b); t
 
 let q1 : Frame<int, string> = Frame.readExcelSheet multiPath "Q1 Sales"
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 (**
 ### Reading a specific sheet by index
@@ -109,7 +109,7 @@ Use `Frame.readExcelSheetByIndex` with a zero-based index when you know the posi
 but not the name:
 *)
 let q2 : Frame<int, string> = Frame.readExcelSheetByIndex multiPath 1
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 (**
 ---
@@ -121,7 +121,7 @@ let q2 : Frame<int, string> = Frame.readExcelSheetByIndex multiPath 1
 `Frame.sheetNames` returns the names of all worksheets in a workbook in order:
 *)
 let sheets : string list = Frame.sheetNames multiPath
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 (**
 ---
@@ -140,7 +140,7 @@ Use `frame.GetColumn<'T>` to retrieve a typed series:
 *)
 // Get the Revenue column as a float series
 let revenue : Series<int, float> = q1.GetColumn<float>("Revenue")
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 (**
 Column values are returned as `obj` by default; use `GetColumn<'T>` to coerce to
@@ -156,7 +156,7 @@ let q1Indexed =
     q1
     |> Frame.indexRowsString "Month"
     |> Frame.sliceCols ["Revenue"]
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 (**
 ### Combining sheets
@@ -168,7 +168,7 @@ let allRevenue =
     [q1; q2]
     |> List.map (fun f -> f |> Frame.indexRowsString "Month")
     |> List.reduce Frame.merge
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 (**
 ---

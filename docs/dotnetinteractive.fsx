@@ -51,11 +51,11 @@ let prices =
             "Close" => Series.ofValues [ 101.5; 101.0; 103.5; 104.0 ]
             "Vol"   => Series.ofValues [ 12000; 15000; 11000; 14000 ] ]
 
-(*** include-value: prices ***)
+(*** include-fsi-merged-output ***)
 
 let vols = Series.ofValues [ 12000; 15000; 11000; 14000 ]
 
-(*** include-value: vols ***)
+(*** include-fsi-merged-output ***)
 
 (**
 

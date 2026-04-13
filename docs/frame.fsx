@@ -25,7 +25,7 @@ fsi.AddPrinter(fun (o: obj) ->
   let iface = o.GetType().GetInterface("IFsiFormattable")
   if iface <> null then
     let fmt = iface.GetMethod("Format")
-    fmt.Invoke(o, [||]) :?> string
+    "\n" + (fmt.Invoke(o, [||]) :?> string)
   else null)
 
 let root = __SOURCE_DIRECTORY__ + "/data/"
@@ -104,7 +104,7 @@ let people =
   Frame.ofRecords peopleRecds 
   |> Frame.indexRowsString "Name"
 
-(*** include-value: people ***)
+(*** include-fsi-merged-output ***)
 
 (**
 ### Expanding nested objects
@@ -117,7 +117,7 @@ let peopleNested =
   [ "People" => Series.ofValues peopleRecds ] |> frame
 
 peopleNested |> Frame.expandCols ["People"]
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 (**
 
@@ -197,7 +197,7 @@ ages |> Series.observationsAll
 let opens = msft?Open
 opens.[DateTime(2013, 1, 1) .. DateTime(2013, 1, 31)]
 |> Series.mapKeys (fun k -> k.ToShortDateString())
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 (**
 
@@ -219,14 +219,14 @@ let decades = msft |> Frame.groupRowsUsing (fun k _ ->
 
 // Mean Close price per decade
 decades?Close |> Stats.levelMean fst
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 // Means for all numeric columns
 decades
 |> Frame.getNumericCols
 |> Series.mapValues (Stats.levelMean fst)
 |> Frame.ofColumns
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 (**
 ### Multi-level grouping
@@ -242,13 +242,13 @@ let byClassAndPort =
 // Average age per (Embarked, Pclass) group
 byClassAndPort?Age
 |> Stats.levelMean Pair.get1And2Of3
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 // Survival counts per group
 byClassAndPort.GetColumn<bool>("Survived")
 |> Series.applyLevel Pair.get1And2Of3 (Series.values >> Seq.countBy id >> series)
 |> Frame.ofRows
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 (**
 ### Nesting and unnesting
@@ -273,7 +273,7 @@ travels
 |> Series.mapValues (Seq.countBy id >> series)
 |> Frame.ofRows
 |> Frame.fillMissingWith 0
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 (**
 ### aggregateRowsBy
@@ -284,11 +284,11 @@ travels
 
 titanic
 |> Frame.aggregateRowsBy ["Pclass"; "Sex"] ["Fare"] Stats.mean
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 titanic
 |> Frame.aggregateRowsBy ["Pclass"] ["Age"] Stats.mean
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 (**
 ### Pivot tables
@@ -302,7 +302,7 @@ titanic
     (fun k r -> r.GetAs<string>("Sex")) 
     (fun k r -> r.GetAs<bool>("Survived")) 
     Frame.countRows 
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 // Mean age by Sex × Survived
 titanic 
@@ -311,7 +311,7 @@ titanic
     (fun k r -> r.GetAs<bool>("Survived")) 
     (fun frame -> frame?Age |> Stats.mean)
 |> round
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 (**
 
@@ -326,10 +326,10 @@ This section shows how missing values arise and the more advanced `fillMissingUs
 *)
 
 Series.ofValues [ Double.NaN; 1.0; 3.14 ]
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 [ Nullable(1); Nullable(); Nullable(3) ] |> Series.ofValues
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 (**
 ### Custom fill with interpolation

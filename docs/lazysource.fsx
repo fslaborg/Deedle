@@ -26,7 +26,7 @@ fsi.AddPrinter(fun (o: obj) ->
   let iface = o.GetType().GetInterface("IFsiFormattable")
   if iface <> null then
     let fmt = iface.GetMethod("Format")
-    fmt.Invoke(o, [||]) :?> string
+    "\n" + (fmt.Invoke(o, [||]) :?> string)
   else null)
 
 (**
@@ -86,7 +86,7 @@ We can now use the series as usual - for example, to get data for the entire yea
 
 let slice = ls.[DateTime(2012, 1, 1) .. DateTime(2012, 12, 31)]
 slice
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 (**
 Similarly, we can add the delayed series to a data frame. When doing this, Deedle will
@@ -97,4 +97,4 @@ and then access only a slice:
 let df = frame ["Values" => ls]
 let slicedDf = df.Rows.[DateTime(2012,6,1) .. DateTime(2012,6,30)]
 slicedDf
-(*** include-it ***)
+(*** include-fsi-merged-output ***)

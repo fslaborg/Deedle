@@ -64,7 +64,7 @@ let prices =
             "Close" => Series.ofValues [ 101.5; 101.0; 103.5; 104.0 ]
             "Vol"   => Series.ofValues [ 12000; 15000; 11000; 14000 ] ]
 
-(*** include-value: prices ***)
+(*** include-fsi-merged-output ***)
 
 // Write as Parquet file
 Frame.writeParquet "/tmp/prices.parquet" prices
@@ -76,7 +76,7 @@ Frame.writeParquet "/tmp/prices.parquet" prices
 *)
 
 let prices2 = Frame.readParquet "/tmp/prices.parquet"
-(*** include-value: prices2 ***)
+(*** include-fsi-merged-output ***)
 
 (**
 
@@ -104,7 +104,7 @@ let streamExample () =
     prices3
 
 let prices3 = streamExample ()
-(*** include-value: prices3 ***)
+(*** include-fsi-merged-output ***)
 
 (**
 
@@ -128,13 +128,13 @@ let monthly =
         "Revenue", Series(keys, [| 1200.0; 1350.0; 1100.0; 1500.0 |])
         "Cost",    Series(keys, [| 800.0;  900.0;  750.0;  1000.0 |])
     ]
-(*** include-value: monthly ***)
+(*** include-fsi-merged-output ***)
 
 Frame.writeParquetWithIndex "/tmp/monthly.parquet" monthly
 
 // Read back, restoring original string row keys
 let monthly2 : Frame<string, string> = Frame.readParquetWithIndex "/tmp/monthly.parquet"
-(*** include-value: monthly2 ***)
+(*** include-fsi-merged-output ***)
 
 (**
 

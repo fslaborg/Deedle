@@ -66,7 +66,7 @@ let prices =
             "Close" => Series.ofValues [ 101.5; 101.0; 103.5; 104.0 ]
             "Vol"   => Series.ofValues [ 12000; 15000; 11000; 14000 ] ]
 
-(*** include-value: prices ***)
+(*** include-fsi-merged-output ***)
 
 // Write as Arrow IPC file
 Frame.writeArrow "/tmp/prices.arrow" prices
@@ -81,10 +81,10 @@ Frame.writeFeather "/tmp/prices.feather" prices
 *)
 
 let prices2 = Frame.readArrow "/tmp/prices.arrow"
-(*** include-value: prices2 ***)
+(*** include-fsi-merged-output ***)
 
 let prices3 = Frame.readFeather "/tmp/prices.feather"
-(*** include-value: prices3 ***)
+(*** include-fsi-merged-output ***)
 
 (**
 
@@ -111,7 +111,7 @@ let arrowStreamExample () =
     prices4
 
 let prices4 = arrowStreamExample ()
-(*** include-value: prices4 ***)
+(*** include-fsi-merged-output ***)
 
 (**
 
@@ -132,7 +132,7 @@ printfn "Columns: %d, Rows: %d" batch.ColumnCount batch.Length
 
 // Convert a RecordBatch back to a Deedle frame
 let prices5 : Frame<int, string> = Frame.ofRecordBatch batch
-(*** include-value: prices5 ***)
+(*** include-fsi-merged-output ***)
 
 (**
 
@@ -153,7 +153,7 @@ printfn "Arrow array type: %s, length: %d" (arrowArr.GetType().Name) arrowArr.Le
 
 // Convert back to a Series<int, obj>
 let volsBack : Series<int, obj> = Series.ofArrowArray arrowArr
-(*** include-value: volsBack ***)
+(*** include-fsi-merged-output ***)
 
 (**
 
@@ -174,13 +174,13 @@ let monthly =
         "Revenue", Series(keys, [| 1200.0; 1350.0; 1100.0; 1500.0 |])
         "Cost",    Series(keys, [| 800.0;  900.0;  750.0;  1000.0 |])
     ]
-(*** include-value: monthly ***)
+(*** include-fsi-merged-output ***)
 
 Frame.writeArrowWithIndex "/tmp/monthly.arrow" monthly
 
 // Read back, restoring original string row keys
 let monthly2 : Frame<string, string> = Frame.readArrowWithIndex "/tmp/monthly.arrow"
-(*** include-value: monthly2 ***)
+(*** include-fsi-merged-output ***)
 
 (**
 

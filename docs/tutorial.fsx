@@ -26,7 +26,7 @@ fsi.AddPrinter(fun (o: obj) ->
   let iface = o.GetType().GetInterface("IFsiFormattable")
   if iface <> null then
     let fmt = iface.GetMethod("Format")
-    fmt.Invoke(o, [||]) :?> string
+    "\n" + (fmt.Invoke(o, [||]) :?> string)
   else null)
 
 (**
@@ -65,19 +65,19 @@ Let's see what we have:
 *)
 
 titanic.RowCount
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 titanic.ColumnCount
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 titanic.ColumnKeys |> Seq.toList
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 (**
 Print the first few rows:
 *)
 titanic |> Frame.take 5
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 (**
 
@@ -89,11 +89,11 @@ and text columns as `string`:
 
 // A numeric column
 titanic?Age
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 // A text column
 titanic.GetColumn<string>("Name") |> Series.take 3
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 (**
 
@@ -103,16 +103,16 @@ Compute summary statistics on any numeric series:
 *)
 
 titanic?Age |> Stats.mean
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 titanic?Fare |> Stats.mean
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 titanic?Age |> Stats.median
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 titanic?Age |> Stats.stdDev
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 (**
 Missing values (like missing `Age` entries in the Titanic data) are automatically
@@ -128,14 +128,14 @@ let survived = titanic |> Frame.filterRowValues (fun row ->
   row.GetAs<bool>("Survived"))
 
 survived.RowCount
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 // First-class passengers
 let firstClass = titanic |> Frame.filterRowValues (fun row ->
   row.GetAs<int>("Pclass") = 1)
 
 firstClass.RowCount
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 (**
 
@@ -148,7 +148,7 @@ titanic?HasCabin <- titanic.GetColumn<string>("Cabin")
   |> Series.mapAll (fun _ v -> Some(v.IsSome))
 
 titanic.Columns.[ ["Name"; "Pclass"; "HasCabin"] ] |> Frame.take 5
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 (**
 
@@ -161,7 +161,7 @@ Group rows by a column and aggregate — one of Deedle's most powerful features.
 
 titanic
 |> Frame.aggregateRowsBy ["Pclass"] ["Fare"] Stats.mean
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 (**
 ### Survival counts by class and sex
@@ -177,7 +177,7 @@ byClassAndSex.GetColumn<bool>("Survived")
 |> Series.applyLevel Pair.get1And2Of3 (fun s ->
     series (Seq.countBy id s.Values))
 |> Frame.ofRows
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 (**
 ### Average age by class
@@ -185,7 +185,7 @@ byClassAndSex.GetColumn<bool>("Survived")
 
 titanic
 |> Frame.aggregateRowsBy ["Pclass"] ["Age"] Stats.mean
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 (**
 
@@ -200,7 +200,7 @@ titanic
     (fun k r -> r.GetAs<int>("Pclass"))
     Frame.countRows
 
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 (**
 
@@ -215,9 +215,8 @@ automatically skipped by statistics:
 let ageCol = titanic?Age
 let total = ageCol |> Series.countKeys
 let present = ageCol |> Series.countValues
-(*** include-value: total ***)
-(*** include-value: present ***)
-(*** include-value: total - present ***)
+(*** include-fsi-merged-output ***)
+
 
 (**
 Fill strategies let you choose how to handle the gaps:
@@ -225,15 +224,15 @@ Fill strategies let you choose how to handle the gaps:
 
 // Replace missing ages with a constant
 ageCol |> Series.fillMissingWith 0.0 |> Series.take 5
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 // Fill forward (propagate last known value)
 ageCol |> Series.fillMissing Direction.Forward |> Series.take 5
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 // Drop rows with missing values
 ageCol |> Series.dropMissing |> Series.countKeys
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 (**
 
@@ -245,7 +244,7 @@ You can also build data frames from scratch rather than loading CSV.
 // A simple series
 let ages = series [ "Alice" => 30.0; "Bob" => 25.0; "Carol" => 35.0 ]
 ages
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 // Build a frame from columns
 let people = 
@@ -254,7 +253,7 @@ let people =
     "Score" => series [ "Alice" => 90.0; "Bob" => 85.0; "Carol" => 92.0 ]
   ]
 people
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 // Build a frame from records
 type Person = { Name: string; Age: int }
@@ -262,7 +261,7 @@ let records =
   [ { Name = "Alice"; Age = 30 }
     { Name = "Bob"; Age = 25 } ]
 Frame.ofRecords records
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 (**
 
@@ -272,10 +271,10 @@ Pick specific columns with `Frame.sliceCols` or the indexer:
 *)
 
 titanic.Columns.[ ["Name"; "Age"; "Fare"] ] |> Frame.take 3
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 titanic |> Frame.sliceCols ["Pclass"; "Survived"] |> Frame.take 3
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 (**
 
@@ -285,7 +284,7 @@ Sort a frame by column values:
 *)
 
 titanic |> Frame.sortRowsBy "Fare" (fun (v: float) -> -v) |> Frame.take 5
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 (**
 

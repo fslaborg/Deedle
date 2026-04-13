@@ -32,7 +32,7 @@ fsi.AddPrinter(fun (o: obj) ->
   let iface = o.GetType().GetInterface("IFsiFormattable")
   if iface <> null then
     let fmt = iface.GetMethod("Format")
-    fmt.Invoke(o, [||]) :?> string
+    "\n" + (fmt.Invoke(o, [||]) :?> string)
   else null)
 
 let root = __SOURCE_DIRECTORY__ + "/data/"
@@ -84,11 +84,11 @@ let df =
 // Convert frame to a MathNet DenseMatrix
 let m : Matrix<float> = Frame.toMatrix df
 m
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 // Convert matrix back to a frame with named rows and columns
 Frame.ofMatrix [1;2;3] ["A";"B";"C"] m
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 (**
 Series ↔ Vector works the same way:
@@ -97,10 +97,10 @@ Series ↔ Vector works the same way:
 let s = series [ "x" => 1.0; "y" => 2.0; "z" => 3.0 ]
 let v : Vector<float> = Series.toVector s
 v
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 Series.ofVector ["x";"y";"z"] v
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 (**
 
@@ -131,12 +131,12 @@ directly. All operations convert to/from `Matrix<float>` internally.
 
 // Transpose (faster than generic Frame.transpose for numeric frames)
 LinearAlgebra.transpose df
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 // Matrix inverse
 let sq = frame [ "A" => series [1=>4.0;2=>7.0]; "B" => series [1=>3.0;2=>6.0] ]
 LinearAlgebra.inverse sq
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 (**
 Other available operations:
@@ -176,15 +176,15 @@ let ozone = air?Ozone |> Series.dropMissing
 
 // Median (uses MathNet's exact median algorithm)
 Stats.median ozone
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 // 25th and 75th percentile
 Stats.quantile(ozone, 0.25), Stats.quantile(ozone, 0.75)
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 // Ranks (average rank for ties by default)
 ozone |> Stats.ranks |> Series.take 6
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 (**
 All three functions also work on entire frames:
@@ -210,15 +210,15 @@ let numAir = air |> Frame.sliceCols ["Ozone";"Solar.R";"Wind";"Temp"] |> Frame.d
 
 // Pearson correlation matrix (default)
 Stats.corr numAir
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 // Spearman rank correlation
 Stats.corr(numAir, CorrelationMethod.Spearman)
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 // Covariance frame
 Stats.cov numAir
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 (**
 To correlate two individual series:
@@ -262,11 +262,11 @@ let returns =
 
 // EWM mean with span=5
 Stats.ewmMean(returns, span=5.0)
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 // EWM mean on a whole frame (applied column by column)
 Stats.ewmMean(numAir, span=10.0)
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 (**
 
@@ -302,7 +302,7 @@ let dailyReturns = prices.Diff(1) / prices.Shift(1)
 
 // Mean-corrected EWM volatility (standard deviation form) with half-life of 10 days
 Finance.ewmVolStdDev(dailyReturns, halfLife=10.0)
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 (**
 
@@ -351,11 +351,11 @@ let normed = PCA.normalizeColumns numAir
 let result = PCA.pca numAir
 // Eigen values (proportion of variance explained by each PC)
 result.EigenValues
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 // Eigen vectors (loadings): rows = original variables, columns = PC1, PC2, …
 result.EigenVectors
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 (**
 
@@ -389,15 +389,15 @@ let fit = LinearRegression.ols ["Solar.R"; "Wind"; "Temp"] "Ozone" true numAir
 
 // Regression coefficients (Intercept, Solar.R, Wind, Temp)
 LinearRegression.Fit.coefficients fit
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 // Fitted values (ŷ)
 LinearRegression.Fit.fittedValues fit |> Series.take 6
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 // Residuals (y − ŷ)
 LinearRegression.Fit.residuals fit |> Series.take 6
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 (**
 
