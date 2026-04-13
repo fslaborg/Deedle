@@ -24,7 +24,7 @@ fsi.AddPrinter(fun (o: obj) ->
   let iface = o.GetType().GetInterface("IFsiFormattable")
   if iface <> null then
     let fmt = iface.GetMethod("Format")
-    fmt.Invoke(o, [||]) :?> string
+    "\n" + (fmt.Invoke(o, [||]) :?> string)
   else null)
 
 let root = __SOURCE_DIRECTORY__ + "/data/"
@@ -55,15 +55,15 @@ The following examples show series created from inputs that include missing valu
 *)
 // float NaN becomes a missing value
 Series.ofValues [ 1.0; Double.NaN; 3.0 ]
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 // null in a reference-type series
 Series.ofValues [ "a"; null; "c" ]
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 // Nullable<int> without a value
 [ Nullable(1); Nullable(); Nullable(3) ] |> Series.ofValues
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 (**
 You can also construct a series with explicit missing values using `None`:
@@ -72,7 +72,7 @@ Series.ofOptionalObservations
   [ 1 => Some(10.0)
     2 => None
     3 => Some(30.0) ]
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 (**
 
@@ -88,15 +88,15 @@ let ozone = air?Ozone
 
 // total keys (rows) in the series
 ozone.KeyCount
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 // present (non-missing) values
 Stats.count ozone
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 // number of missing values
 ozone.KeyCount - int (Stats.count ozone)
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 (**
 
@@ -109,10 +109,10 @@ All functions in the `Stats` module, as well as common projections such as
 The operation is applied only to present observations:
 *)
 Stats.mean ozone      // mean of the 116 present values
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 Stats.max ozone       // maximum of the present values
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 (**
 
@@ -127,7 +127,7 @@ let v = ozone.TryGet(1)
 match v with
 | OptionalValue.Present x -> sprintf "present: %g" x
 | OptionalValue.Missing   -> "missing"
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 (**
 You can also use `Series.observationsAll` to iterate over all key-value pairs
@@ -142,7 +142,7 @@ ozone
     | Some x -> sprintf "%d => %g" k x
     | None   -> sprintf "%d => <missing>" k)
 |> Seq.toList
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 (**
 
@@ -160,7 +160,7 @@ ozone
     | None   -> Some 0.0     // replace missing with zero
     | Some x -> Some (x * 2.0)) // double present values
 |> Series.take 5
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 (**
 
@@ -173,7 +173,7 @@ ozone
 The simplest strategy replaces every missing value with a fixed constant:
 *)
 ozone |> Series.fillMissingWith 0.0 |> Series.take 6
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 (**
 ### Forward and backward fill
@@ -183,11 +183,11 @@ specified direction:
 *)
 // Carry the last known value forward
 ozone |> Series.fillMissing Direction.Forward |> Series.take 6
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 // Fill from the next available value backward
 ozone |> Series.fillMissing Direction.Backward |> Series.take 6
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 (**
 ### Custom fill strategy with `fillMissingUsing`
@@ -207,7 +207,7 @@ ozone
     | _, OptionalValue.Present v -> v
     | _ -> 0.0)
 |> Series.take 6
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 (**
 ### Combining fill and drop
@@ -219,7 +219,7 @@ ozone
 |> Series.fillMissing Direction.Forward
 |> Series.dropMissing
 |> Series.countValues
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 (**
 
@@ -232,7 +232,7 @@ ozone
 `Series.dropMissing` removes all missing observations from a series:
 *)
 ozone |> Series.dropMissing |> Series.countValues
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 (**
 ### Drop sparse rows and columns from a frame
@@ -244,12 +244,12 @@ After reading the air quality CSV the frame has missing values in several
 columns:
 *)
 air.RowCount
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 // Keep only rows that are fully observed
 let airComplete = air |> Frame.dropSparseRows
 airComplete.RowCount
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 (**
 
@@ -265,14 +265,14 @@ air
 |> Frame.fillMissingWith 0.0
 |> Frame.dropSparseRows   // now no rows should be dropped
 |> fun f -> f.RowCount
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 // Forward-fill each column independently
 air
 |> Frame.fillMissing Direction.Forward
 |> Frame.dropSparseRows
 |> fun f -> f.RowCount
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 (**
 `Frame.fillMissingUsing` accepts a function `Series<'R,'T> -> 'R -> 'T` so it
@@ -284,7 +284,7 @@ air
     Stats.mean col)
 |> Frame.dropSparseRows
 |> fun f -> f.RowCount
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 (**
 
@@ -309,13 +309,13 @@ let s2 = series [ 2 => 200.0; 3 => 300.0; 4 => 400.0 ]
 
 // Outer join introduces missing values for key 1 (not in s2) and key 4 (not in s1)
 Frame.ofColumns ["A" => s1; "B" => s2]
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 // Inner join keeps only keys present in both
 let f1 = frame ["A" => s1]
 let f2 = frame ["B" => s2]
 f1.Join(f2, JoinKind.Inner)
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 (**
 After an outer join, `Frame.dropSparseRows` or `Frame.fillMissing` can be

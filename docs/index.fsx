@@ -68,11 +68,7 @@ of Boolean values. Then we reduce each group using `applyLevel`. This calls a sp
 function for each passenger class. We count the number of survivors and casualties.
 Then we add nice namings, sort the frame and build a new data frame with a nice summary.
 
-### How to get Deedle
-
- * The library is available as [Deedle on NuGet](https://www.nuget.org/packages/Deedle).
-
-## Samples & documentation
+## Tutorials & documentation
 
  * [Quick start tutorial](tutorial.html) — a 10-minute tour of Deedle
 
@@ -89,24 +85,42 @@ Then we add nice namings, sort the frame and build a new data frame with a nice 
 
  * [Joining and merging frames](joining.html) — inner/outer/left/right joins and appending
 
- * [Apache Arrow / Feather integration](arrow.html) — zero-copy columnar I/O with `Deedle.Arrow`
-
- * [Apache Parquet integration](parquet.html) — columnar storage I/O with `Deedle.Parquet`
-
- * [Excel integration](excel.html) — reading `.xlsx`/`.xls` files cross-platform with `Deedle.Excel.Reader`;
-   live read/write via `Deedle.Excel` (Windows)
-
- * [Deedle.MathNetNumerics — MathNet.Numerics integration](math.html) — linear algebra, correlation,
-   EWM statistics, PCA, and linear regression via `Deedle.MathNetNumerics`
-
  * [Creating lazily loaded series](lazysource.html) — virtual series backed by custom loaders
 
  * [`Series` module](reference/deedle-seriesmodule.html) provides functions for working
    with individual data series and time-series values.
+
  * [`Frame` module](reference/deedle-framemodule.html) provides functions that are similar
    to those in the `Series` module, but operate on entire data frames.
+
  * [`Stats` module](reference/deedle-stats.html) implements standard statistical functions,
    moving windows and a lot more.
+
+## Library Integrations
+
+These optional packages integrate Deedle with other libraries:
+
+ * [Deedle.MathNetNumerics — MathNet.Numerics integration](math.html) — linear algebra, correlation,
+   EWM statistics, PCA, and linear regression via `Deedle.MathNetNumerics`
+
+## Data Format Integrations
+
+These optional packages integrate Deedle with other data formats:
+
+ * [Deedle.Arrow](arrow.html) — zero-copy columnar I/O with Apache Arrow
+
+ * [Deedle.Parquet](parquet.html) — columnar storage I/O with Apache Parquet
+
+ * [Deedle.Excel.Reader](excel.html) — reading `.xlsx`/`.xls` files cross-platform with `Deedle.Excel.Reader`;
+   live read/write via `Deedle.Excel` 
+
+## Tooling Integrations
+
+These optional packages integrate Deedle with other interactive tools:
+
+ * [Deedle.Excel](excel.html) — live read/write via `Deedle.Excel` (Windows-only)
+
+ * [Deedle.DotNetInteractive](dotnetinteractive.html) — Deedle support for .NET Interactive notebooks (Jupyter, VS Code, Azure Data Studio)
 
 ## Contributing and copyright
 

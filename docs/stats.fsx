@@ -26,7 +26,7 @@ fsi.AddPrinter(fun (o: obj) ->
   let iface = o.GetType().GetInterface("IFsiFormattable")
   if iface <> null then
     let fmt = iface.GetMethod("Format")
-    fmt.Invoke(o, [||]) :?> string
+    "\n" + (fmt.Invoke(o, [||]) :?> string)
   else null)
 
 let root = __SOURCE_DIRECTORY__ + "/data/"
@@ -52,7 +52,7 @@ using a data set about air quality that contains missing values:
 *)
 let air = Frame.ReadCsv(root + "airquality.csv", separators=";")
 let ozone = air?Ozone
-(*** include-value: ozone ***)
+(*** include-fsi-merged-output ***)
 
 (**
 ### Series statistics
@@ -68,7 +68,7 @@ series [
   "Min" => Stats.min ozone
   "Median" => Stats.median ozone ]
 
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 (**
 To make the output simpler, we round the value of the mean (although the result is
@@ -90,7 +90,7 @@ let info =
     "Max" => Stats.max air
     "Mean" => Stats.mean air
     "+/-" => Stats.stdDev air ] |> frame
-(*** include-value: round(info*100.0)/100.0 ***)
+(*** include-fsi-merged-output ***)
 
 (**
 <a name="moving"></a>
@@ -101,7 +101,7 @@ The `Stats` type provides an efficient implementation of moving window statistic
 an online algorithm. The moving window function names are prefixed with the word `moving`:
 *)
 ozone |> Stats.movingMean 3
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 (**
 Statistical moving functions (count, sum, mean, variance, standard deviation, skewness 
@@ -113,7 +113,7 @@ differs. Rather than returning _N/A_ for the first _n-1_ values, they return the
 value over a smaller window:
 *)
 ozone |> Stats.movingMin 3
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 (**
 <a name="exp"></a>
@@ -128,7 +128,7 @@ let exp =
   [ "Ozone" => ozone 
     "Mean" => Stats.expandingMean(ozone)
     "+/-" => Stats.expandingStdDev(ozone) ] |> frame
-(*** include-value:(round(exp*100.0))/100.0 ***)
+(*** include-fsi-merged-output ***)
 
 (**
 <a name="multi"></a>
@@ -152,14 +152,14 @@ first level (individual months) using functions prefixed with `level`:
 *)
 
 byMonth?Ozone |> Stats.levelMean fst
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 byMonth
 |> Frame.sliceCols ["Ozone";"Solar.R";"Wind";"Temp"]
 |> Frame.getNumericCols
 |> Series.mapValues (Stats.levelMean fst)
 |> Frame.ofRows
-(*** include-it ***)
+(*** include-fsi-merged-output ***)
 
 (**
 

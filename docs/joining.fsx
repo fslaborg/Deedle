@@ -24,7 +24,7 @@ fsi.AddPrinter(fun (o: obj) ->
   let iface = o.GetType().GetInterface("IFsiFormattable")
   if iface <> null then
     let fmt = iface.GetMethod("Format")
-    fmt.Invoke(o, [||]) :?> string
+    "\n" + (fmt.Invoke(o, [||]) :?> string)
   else null)
 
 (**
@@ -69,7 +69,7 @@ let msft =
 *)
 
 let outerJoin = Frame.join JoinKind.Outer aapl msft
-(*** include-value: outerJoin ***)
+(*** include-fsi-merged-output ***)
 
 (**
 
@@ -83,7 +83,7 @@ Missing values appear where one frame had no data for a given key.
 *)
 
 let innerJoin = Frame.join JoinKind.Inner aapl msft
-(*** include-value: innerJoin ***)
+(*** include-fsi-merged-output ***)
 
 (**
 
@@ -92,7 +92,7 @@ let innerJoin = Frame.join JoinKind.Inner aapl msft
 *)
 
 let leftJoin = Frame.join JoinKind.Left aapl msft
-(*** include-value: leftJoin ***)
+(*** include-fsi-merged-output ***)
 
 (**
 
@@ -113,7 +113,7 @@ let sparse =
 
 // Fill missing signal values by carrying forward the last known value
 let aligned = Frame.joinAlign JoinKind.Left Lookup.ExactOrSmaller daily sparse
-(*** include-value: aligned ***)
+(*** include-fsi-merged-output ***)
 
 (**
 
@@ -134,11 +134,11 @@ let s2 = Series.ofValues [ 10.0; 30.0 ]    |> Series.indexWith [| "a"; "c" |]
 
 // Pair up values — missing in s2 where key is absent
 let zipped = Series.zip s1 s2
-(*** include-value: zipped ***)
+(*** include-fsi-merged-output ***)
 
 // Sum corresponding values (inner join semantics — only where both have values)
 let summed = Series.zipInto (fun a b -> a + b) s1 s2
-(*** include-value: summed ***)
+(*** include-fsi-merged-output ***)
 
 (**
 
@@ -162,7 +162,7 @@ let q2 =
 
 // Concatenate the two frames vertically (row-wise)
 let fullYear = Frame.merge q1 q2
-(*** include-value: fullYear ***)
+(*** include-fsi-merged-output ***)
 
 (**
 
@@ -176,7 +176,7 @@ let withExtra =
     fullYear
     |> Frame.addCol "Month" (Series.ofValues [ "Jan"; "Feb"; "Mar"; "Apr"; "May"; "Jun" ]
                               |> Series.indexWith [| 1; 2; 3; 4; 5; 6 |])
-(*** include-value: withExtra ***)
+(*** include-fsi-merged-output ***)
 
 (**
 
@@ -193,7 +193,7 @@ let primary   = Series.ofOptionalObservations [ (1, Some 10.0); (2, None); (3, S
 let secondary = Series.ofOptionalObservations [ (2, Some 20.0); (4, Some 40.0) ]
 
 let merged = Series.merge primary secondary
-(*** include-value: merged ***)
+(*** include-fsi-merged-output ***)
 
 (**
 
