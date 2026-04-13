@@ -56,7 +56,7 @@ let titanic = Frame.ReadCsv(root + "titanic.csv")
 // Read data and set the index column & order rows
 let msft = 
   Frame.ReadCsv(root + "stocks/msft.csv") 
-  |> Frame.indexRowsDate "Date"
+  |> Frame.indexRowsDateTime "Date"
   |> Frame.sortRowsByKey
 
 // Specify column separator
