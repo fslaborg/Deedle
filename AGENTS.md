@@ -10,7 +10,7 @@ Key sub-projects:
 |---|---|
 | Core library | `src/Deedle/` |
 | .NET Interactive formatting | `src/Deedle.DotNetInteractive/` |
-| MathNet.Numerics integration | `src/Deedle.Math/` |
+| MathNet.Numerics integration | `src/Deedle.MathNetNumerics/` |
 | Excel integration | `src/Deedle.Excel/` |
 
 Tests live under `tests/`.
@@ -104,7 +104,7 @@ A PR is considered passing when both the Windows and Ubuntu jobs succeed.
 | Paket errors about missing packages | `dotnet paket restore` was not run |
 | `Deedle.RProvider.Plugin` compile errors | R is not installed or `R_HOME` is unset |
 | Test failures in `Deedle.Tests` | Logic regression in `src/Deedle/` |
-| Test failures in `Deedle.Math.Tests` | Logic regression in `src/Deedle.Math/` |
+| Test failures in `Deedle.MathNetNumerics.Tests` | Logic regression in `src/Deedle.MathNetNumerics/` |
 
 ---
 

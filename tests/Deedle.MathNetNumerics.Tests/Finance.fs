@@ -1,13 +1,13 @@
 #if INTERACTIVE
 #I "../../bin/netstandard2.0"
 #load "Deedle.fsx"
-#load "Deedle.Math.fsx"
+#load "Deedle.MathNetNumerics.fsx"
 #r "../../packages/NUnit/lib/net45/nunit.framework.dll"
 #r "../../packages/FsCheck/lib/net452/FsCheck.dll"
 #r "../../packages/FsUnit/lib/net45/FsUnit.NUnit.dll"
 #load "../Common/FsUnit.fs"
 #else
-module Deedle.Math.Tests.Finance
+module Deedle.MathNetNumerics.Tests.Finance
 #endif
 
 open System
@@ -15,7 +15,7 @@ open FsUnit
 open NUnit.Framework
 open Deedle
 open Deedle.Internal
-open Deedle.Math
+open Deedle.MathNetNumerics
 
 let stockPrices = Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/data/stocks_weekly.csv") |> Frame.indexRowsDate "Dates"
 let stockReturns = stockPrices / (stockPrices |> Frame.shift 1) - 1 |> Frame.dropSparseRows

@@ -1,4 +1,4 @@
-﻿namespace Deedle.Math
+﻿namespace Deedle.MathNetNumerics
 
 module PCA =
   open Deedle

@@ -7,11 +7,11 @@ Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Deedle", "src\Deedle\Deedle
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Deedle.Excel", "src\Deedle.Excel\Deedle.Excel.fsproj", "{8C50057D-29EF-41AD-B91A-84B49CDBD047}"
 EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Deedle.Math", "src\Deedle.Math\Deedle.Math.fsproj", "{62ED9851-0A38-43DF-8C35-78F84EB13CB9}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Deedle.MathNetNumerics", "src\Deedle.MathNetNumerics\Deedle.MathNetNumerics.fsproj", "{62ED9851-0A38-43DF-8C35-78F84EB13CB9}"
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Deedle.Tests", "tests\Deedle.Tests\Deedle.Tests.fsproj", "{EBB029E4-6898-4C48-8A0F-694D8B29475E}"
 EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Deedle.Math.Tests", "tests\Deedle.Math.Tests\Deedle.Math.Tests.fsproj", "{AD811C67-091A-4B03-A483-9FA3B1A8CE55}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Deedle.MathNetNumerics.Tests", "tests\Deedle.MathNetNumerics.Tests\Deedle.MathNetNumerics.Tests.fsproj", "{AD811C67-091A-4B03-A483-9FA3B1A8CE55}"
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Deedle.DotNetInteractive", "src\Deedle.DotNetInteractive\Deedle.DotNetInteractive.fsproj", "{D71C0930-C2A3-4EDF-82A9-9EE6B431EC0D}"
 EndProject

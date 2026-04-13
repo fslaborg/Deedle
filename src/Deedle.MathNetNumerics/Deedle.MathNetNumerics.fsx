@@ -2,7 +2,7 @@
 #r "nuget: MathNet.Numerics"
 #r "nuget: MathNet.Numerics.FSharp"
 #r "nuget: Deedle"
-#r "nuget: Deedle.Math"
+#r "nuget: Deedle.MathNetNumerics"
 
 open MathNet.Numerics
 open MathNet.Numerics.LinearAlgebra
