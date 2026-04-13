@@ -154,7 +154,7 @@ frame:
 // Keep only the Revenue column and use Month as the row index
 let q1Indexed =
     q1
-    |> Frame.indexRows "Month"
+    |> Frame.indexRowsString "Month"
     |> Frame.sliceCols ["Revenue"]
 (*** include-it ***)
 
@@ -166,7 +166,7 @@ or `Frame.append`:
 *)
 let allRevenue =
     [q1; q2]
-    |> List.map (fun f -> f |> Frame.indexRows "Month")
+    |> List.map (fun f -> f |> Frame.indexRowsString "Month")
     |> List.reduce Frame.merge
 (*** include-it ***)
 
