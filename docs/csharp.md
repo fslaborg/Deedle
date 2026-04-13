@@ -7,7 +7,7 @@ description: Using Deedle data frames and series from C# with extension methods,
 keywords: C#, cookbook, extension methods, LINQ, interop
 ---
 
-# Deedle in C# — Cookbook
+# Deedle in C#
 
 Deedle is an F# library, but it exposes a fully usable C# API through .NET standard
 interfaces and extension methods. This page is a practical reference for C# developers.

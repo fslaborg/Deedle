@@ -43,7 +43,7 @@ let root = __SOURCE_DIRECTORY__ + "/data/"
 
 `Deedle.Math` is a separate NuGet package that extends Deedle with linear algebra,
 advanced statistics, PCA, and financial time-series functions via the
-[MathNet.Numerics](https://numerics.mathnetchr.net) library.
+[MathNet.Numerics](https://numerics.mathdotnet.com/) library.
 
 ## Installation
 

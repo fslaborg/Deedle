@@ -1,10 +1,10 @@
 (**
 ---
-title: Working with series and time series data in F#
+title: Series and time series features
 category: Guides
 categoryindex: 1
 index: 4
-description: Creating and manipulating ordered and unordered series, time-series sampling, and windowing
+description: Ordered series, time-series alignment, windowing, chunking, resampling, and arithmetic
 keywords: series, time series, sampling, windowing, resampling, F#
 ---
 *)
@@ -35,65 +35,52 @@ fsi.AddPrinter(fun (o: obj) ->
 
 (**
 
-# Working with series and time series
+# Series and time series features
 
-In this section, we look at F# data frame library features that are useful when working
-with time series data or, more generally, any ordered series. Although we mainly look at
-operations on the `Series` type, many of the operations can be applied to data frame `Frame`
-containing multiple series. Furthermore, data frame provides an elegant way for aligning and
-joining series. 
+This page covers features for working with ordered series and time series —
+alignment, windowing, chunking, resampling, and arithmetic operators.
+For basic series and frame operations, see the [quick start](tutorial.html).
+For frame-specific features, see [data frames](frame.html).
 
-## Generating input data
+## Sample data
 
-For the purpose of this tutorial, we'll need some input data. We use a function which generates
-random prices using the geometric Brownian motion.
+We generate random stock-like prices to demonstrate time series operations.
+The function below uses geometric Brownian motion:
 *)
 
-/// Generates price using geometric Brownian motion
-///  - 'seed' specifies the seed for random number generator
-///  - 'drift' and 'volatility' set properties of the price movement
-///  - 'initial' and 'start' specify the initial price and date
-///  - 'span' specifies time span between individual observations
-///  - 'count' is the number of required values to generate
-let randomPrice seed drift volatility initial start span count = 
+/// Generate random prices with geometric Brownian motion
+let randomPrice seed drift volatility initial (start: DateTimeOffset) (span: TimeSpan) count = 
   let dist = Normal(0.0, 1.0, RandomSource=Random(seed))  
-  let dt = (span:TimeSpan).TotalDays / 250.0
+  let dt = span.TotalDays / 250.0
   let driftExp = (drift - 0.5 * pown volatility 2) * dt
   let randExp = volatility * (sqrt dt)
-  ((start:DateTimeOffset), initial) |> Seq.unfold (fun (dt, price) ->
+  (start, initial) |> Seq.unfold (fun (dt, price) ->
     let price = price * exp (driftExp + randExp * dist.Sample()) 
     Some((dt, price), (dt + span, price))) |> Seq.take count
 
-// 12:00 AM today, in current time zone
 let today = DateTimeOffset(DateTime.Today)
 let stock1 = randomPrice 1 0.1 3.0 20.0 today 
 let stock2 = randomPrice 2 0.2 1.5 22.0 today
 
 (**
-To get random prices, we now only need to call `stock1` or `stock2` with `TimeSpan` and 
-the required number of prices.
+Call `stock1` or `stock2` with a `TimeSpan` and count to get prices
+at different intervals.
 
-<a name="alignment"></a>
+## Alignment and zipping
 
-## Data alignment and zipping
-
-One of the key features of the data frame library for working with time series data is 
-_automatic alignment_ based on the keys. When we have multiple time series with date 
-as the key (here, we use `DateTimeOffset`), we can combine multiple series and align 
-them automatically to specified date keys.
-
-To demonstrate this feature, we generate random prices in 60 minute, 30 minute and 
-65 minute intervals:
+A key time series feature is _automatic alignment_ — combining series
+with different keys, matching by key or nearest available value.
 *)
 
+// Hourly, half-hourly, and 65-minute series
 let s1 = stock1 (TimeSpan(1, 0, 0)) 6 |> series
 let s2 = stock2 (TimeSpan(0, 30, 0)) 12 |> series
 let s3 = stock1 (TimeSpan(1, 5, 0)) 6 |> series
 
 (**
-### Zipping time series 
+### Zipping series
 
-A series exposes `Zip` operation that can combine multiple series into a single series of pairs.
+`Zip` combines two series into a series of pairs, with configurable alignment:
 *)
 // Match values from right series to keys of the left one
 s1.Zip(s2, JoinKind.Left)
@@ -107,8 +94,7 @@ s1.Zip(s2, JoinKind.Left, Lookup.ExactOrSmaller)
 (**
 ### Joining data frames
 
-When we store data in data frames, we can simply use a data frame with multiple columns
-instead of series of tuples. Let's first create three data frames:
+The same alignment works at frame level via `Join`:
 *)
 
 // Contains value for each hour
@@ -127,18 +113,17 @@ f2.Join(f3, JoinKind.Inner)
 // Take keys from the left frame and find nearest smaller value from the right frame
 f2.Join(f3, JoinKind.Left, Lookup.ExactOrSmaller)
 
-// Equivalent using function syntax 
+// Function syntax equivalents
 Frame.join JoinKind.Outer f1 f2
 Frame.joinAlign JoinKind.Left Lookup.ExactOrSmaller f1 f2
 
 (**
-<a name="windowing"></a>
+For more on joins, see [Joining and merging](joining.html).
 
-## Windowing, chunking and pairwise
+## Windowing, chunking, and pairwise
 
-Windowing and chunking are two operations on ordered series that allow aggregating
-the values of series into groups. Both of these operations work on consecutive elements,
-which contrasts with [grouping](tutorial.html#grouping) that does not use order.
+These operations aggregate _consecutive_ elements — unlike grouping, they
+rely on ordering.
 
 ### Sliding windows
 *)
@@ -146,36 +131,26 @@ which contrasts with [grouping](tutorial.html#grouping) that does not use order.
 // Create input series with 6 observations
 let lf = stock1 (TimeSpan(0, 1, 0)) 6 |> series
 
-// Create series of series representing individual windows
+// Sliding windows of size 4
 lf |> Series.window 4
-// Aggregate each window using 'Stats.mean'
+// Aggregate each window
 lf |> Series.windowInto 4 Stats.mean
-// Get first value in each window
+// First value of each window
 lf |> Series.windowInto 4 Series.firstValue
 
 (**
-The functions above create windows of size 4 that move from the left to right.
-Given input `[1,2,3,4,5,6]`, this produces the following three windows:
-`[1,2,3,4]`, `[2,3,4,5]` and `[3,4,5,6]`. 
+Given input `[1,2,3,4,5,6]`, windows of size 4 produce:
+`[1,2,3,4]`, `[2,3,4,5]`, `[3,4,5,6]`.
 
-> **Performance note:** `Series.windowInto` materialises each window as a full series
-> before calling the aggregation function. This gives O(n × window) time and allocation.
-> When computing rolling statistics (mean, standard deviation, variance, etc.), prefer the
-> dedicated `Stats.moving*` functions (e.g. `Stats.movingMean`, `Stats.movingStd`), which
-> use an online algorithm and run in O(n) time:
+> **Performance tip:** For rolling statistics, prefer the dedicated `Stats.moving*`
+> functions which use O(n) online algorithms instead of materialising each window:
 >
->     // Fast – O(n) online algorithm
->     lf |> Stats.movingMean 4
+>     lf |> Stats.movingMean 4     // fast
+>     lf |> Series.windowInto 4 Stats.mean  // slow
 >
->     // Slow – O(n × window), allocates a series per step
->     lf |> Series.windowInto 4 Stats.mean
->
-> See the [Statistics documentation](stats.html#moving) for the full list of `Stats.moving*`
-> and `Stats.expanding*` functions.
+> See [Statistics](stats.html) for the full list.
 
-What if we want to avoid creating `<missing>` values? One approach is to 
-specify that we want to generate windows of smaller sizes at the beginning 
-or at the end. This way, we get _incomplete_ windows at the boundary:
+Incomplete windows at the boundary avoid missing values:
 *)
 let lfm2 = 
   // Create sliding windows with incomplete windows at the beginning
@@ -185,8 +160,7 @@ let lfm2 =
 Frame.ofColumns [ "Orig" => lf; "Means" => lfm2 ]
 
 (**
-In the previous sample, the code that performs aggregation is a lambda that takes `ds`,
-which is of type `DataSegment<T>`. This type informs us whether the window is complete or not:
+The `DataSegment<T>` type tells you whether a window is `Complete` or `Incomplete`:
 *)
 
 // Simple series with characters
@@ -202,10 +176,7 @@ st |> Series.windowSizeInto (3, Boundary.AtEnding) (function
 (**
 ### Window size conditions
 
-There are two other options for specifying when a window ends. 
-
- - Specify the maximal _distance_ between the first and the last key
- - Specify a function that is called with the first and the last key; a window ends when it returns false.
+Windows can also end based on key distance or a predicate:
 *)
 // Generate prices for each hour over 30 days
 let hourly = stock1 (TimeSpan(1, 0, 0)) (30*24) |> series
@@ -217,10 +188,9 @@ hourly |> Series.windowDist (TimeSpan(24, 0, 0))
 hourly |> Series.windowWhile (fun d1 d2 -> d1.Date = d2.Date)
 
 (**
-### Chunking series
+### Chunking
 
-Chunking is similar to windowing, but it creates non-overlapping chunks, 
-rather than (overlapping) sliding windows:
+Chunking creates _non-overlapping_ groups (unlike overlapping windows):
 *)
 
 // Generate per-second observations over 10 minutes
@@ -237,10 +207,9 @@ hf |> Series.chunkWhile (fun k1 k2 ->
   (k1.Hour, k1.Minute) = (k2.Hour, k2.Minute))
 
 (**
-### Pairwise 
+### Pairwise
 
-A special form of windowing is building a series of pairs containing a current
-and previous value from the input series:
+Build pairs of consecutive values — useful for computing returns or differences:
 *)
 
 // Create a series of pairs from earlier 'hf' input
@@ -250,15 +219,12 @@ hf |> Series.pairwise
 hf |> Series.pairwiseWith (fun k (v1, v2) -> v2 - v1)
 
 (**
-<a name="sampling"></a>
 
-## Sampling and resampling time series
+## Sampling and resampling
 
 ### Lookup
 
-Given a series `hf`, you can get a value at a specified key using `hf.Get(key)`.
-It is also possible to find values for larger number of keys at once using 
-`Series.lookupAll` when you want more flexible lookup:
+`Series.lookupAll` retrieves values for many keys at once with flexible matching:
 *)
 // Generate a bit less than 24 hours of data with 13.7sec offsets
 let mf = stock1 (TimeSpan.FromSeconds(13.7)) 6300 |> series
@@ -273,6 +239,8 @@ mf |> Series.lookupAll keys Lookup.ExactOrSmaller
 
 (**
 ### Resampling
+
+Resample by collecting values between specified keys:
 *)
 
 // For each key, collect values for greater keys until the next one
@@ -283,9 +251,7 @@ mf |> Series.resampleInto keys Direction.Backward
   (fun k s -> Stats.mean s)
 
 (**
-The second kind of resampling is based on a projection from existing keys in 
-the series. The typical scenario is when you have time series with date time information
-and want to get information for each day:
+Resample by projecting existing keys (e.g. group by date):
 *)
 
 // Generate 2.5 months of data in 1.7 hour offsets
@@ -298,9 +264,7 @@ ds.ResampleEquivalence(fun d -> d.Date)
 (**
 ### Uniform resampling
 
-If you want to create sampling that assigns value to each key in the range specified
-by the input sequence (including days with no observations), then you can use 
-_uniform resampling_:
+Assign values to every key in a range, filling gaps for days with no observations:
 *)
 
 // Create input data with non-uniformly distributed keys
@@ -323,7 +287,7 @@ sampled
 |> Frame.ofRows
 
 (**
-### Sampling time series
+### Sampling at fixed intervals
 *)
 // Generate 1k observations with 1.7 hour offsets
 let pr = stock1 (TimeSpan.FromHours(1.7)) 1000 |> series
@@ -336,9 +300,8 @@ pr |> Series.sampleTimeInto
   (TimeSpan(2, 0, 0)) Direction.Backward Series.lastValue
 
 (**
-<a name="stats"></a>
 
-## Calculations and statistics
+## Arithmetic and statistics
 
 ### Shifting and differences
 *)
@@ -361,9 +324,8 @@ let alignedDf =
 (**
 ### Operators and functions
 
-Time series supports a large number of standard F# functions such as `log` and `abs`.
-You can also use standard numerical operators to apply some operation to all elements
-of the series, and binary operators automatically align two series before applying:
+Series supports standard F# math functions and binary operators.
+Binary operators auto-align two series by key before applying:
 *)
 
 // Subtract previous value from the current value
@@ -382,9 +344,9 @@ let adjust v = min 1.0 (max -1.0 v)
 adjust $ sample.Diff(1)
 
 (**
-### Data frame operations
+### Frame-level operations
 
-Many of the time series operations can be applied to entire data frames as well:
+Many time-series operations apply to entire frames:
 *)
 // Multiply all numeric columns by a given constant
 alignedDf * 0.65

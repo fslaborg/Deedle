@@ -1,6 +1,6 @@
 (**
 ---
-title: Apache Parquet integration
+title: Deedle.Parquet — Apache Parquet integration
 category: Integrations
 categoryindex: 2
 index: 3
@@ -27,7 +27,7 @@ open Deedle.Parquet
 
 (**
 
-# Apache Parquet Integration
+# Deedle.Parquet — Apache Parquet Integration
 
 The `Deedle.Parquet` package adds support for [Apache Parquet](https://parquet.apache.org/) —
 a columnar storage format optimised for analytics workloads. Parquet files are widely used by
