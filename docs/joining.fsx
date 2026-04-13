@@ -54,6 +54,7 @@ let aapl =
         "AAPL Close", Series.ofValues [ 151.5; 151.0; 153.5; 154.0 ]
     ]
     |> Frame.indexRowsWith [| "2024-01-15"; "2024-01-16"; "2024-01-17"; "2024-01-18" |]
+(*** include-fsi-merged-output ***)
 
 let msft =
     Frame.ofColumns [
@@ -61,6 +62,7 @@ let msft =
         "MSFT Close", Series.ofValues [ 374.0; 373.0; 376.0 ]
     ]
     |> Frame.indexRowsWith [| "2024-01-15"; "2024-01-16"; "2024-01-18" |]
+(*** include-fsi-merged-output ***)
 
 (**
 
@@ -106,10 +108,12 @@ looking up the nearest available value using `Frame.joinAlign`.
 let daily =
     frame [ "Price" => Series.ofValues [ 100.0; 101.0; 102.0; 103.0; 104.0 ] ]
     |> Frame.indexRowsWith [| 1; 2; 3; 4; 5 |]
+(*** include-fsi-merged-output ***)
 
 let sparse =
     frame [ "Signal" => Series.ofValues [ 0.0; 1.0 ] ]
     |> Frame.indexRowsWith [| 1; 3 |]
+(*** include-fsi-merged-output ***)
 
 // Fill missing signal values by carrying forward the last known value
 let aligned = Frame.joinAlign JoinKind.Left Lookup.ExactOrSmaller daily sparse
@@ -131,6 +135,7 @@ aggregated values, aligning on matching keys.
 
 let s1 = Series.ofValues [ 1.0; 2.0; 3.0 ] |> Series.indexWith [| "a"; "b"; "c" |]
 let s2 = Series.ofValues [ 10.0; 30.0 ]    |> Series.indexWith [| "a"; "c" |]
+(*** include-fsi-merged-output ***)
 
 // Pair up values — missing in s2 where key is absent
 let zipped = Series.zip s1 s2
@@ -155,10 +160,12 @@ Use `Frame.appendRowsBy` to stack two frames with compatible columns vertically.
 let q1 =
     frame [ "Sales" => Series.ofValues [ 100.0; 120.0; 130.0 ] ]
     |> Frame.indexRowsWith [| 1; 2; 3 |]
+(*** include-fsi-merged-output ***)
 
 let q2 =
     frame [ "Sales" => Series.ofValues [ 140.0; 110.0; 150.0 ] ]
     |> Frame.indexRowsWith [| 4; 5; 6 |]
+(*** include-fsi-merged-output ***)
 
 // Concatenate the two frames vertically (row-wise)
 let fullYear = Frame.merge q1 q2
@@ -191,6 +198,7 @@ takes priority; values from the *second* are used only where the first is missin
 
 let primary   = Series.ofOptionalObservations [ (1, Some 10.0); (2, None); (3, Some 30.0); (4, None) ]
 let secondary = Series.ofOptionalObservations [ (2, Some 20.0); (4, Some 40.0) ]
+(*** include-fsi-merged-output ***)
 
 let merged = Series.merge primary secondary
 (*** include-fsi-merged-output ***)
