@@ -1,7 +1,7 @@
 (**
 ---
 title: Handling missing values
-category: Documentation
+category: Guides
 categoryindex: 1
 index: 7
 description: Strategies for dealing with missing data including fill, drop, and interpolation

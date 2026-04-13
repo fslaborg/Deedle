@@ -1,7 +1,7 @@
 (**
 ---
 title: Working with series and time series data in F#
-category: Documentation
+category: Guides
 categoryindex: 1
 index: 4
 description: Creating and manipulating ordered and unordered series, time-series sampling, and windowing

@@ -1,7 +1,7 @@
 (**
 ---
 title: Joining, merging and appending frames
-category: Documentation
+category: Guides
 categoryindex: 1
 index: 8
 description: Inner, outer, and ordered joins on frames and series, plus merging and appending

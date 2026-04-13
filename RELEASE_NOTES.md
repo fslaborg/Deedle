@@ -8,6 +8,11 @@
 - Removed obsolete `Deedle.PerfTest` and `Deedle.PerfTests` projects (.NET Framework–only performance runner); use `Deedle.Benchmarks` (BenchmarkDotNet) instead
 - Rename `Deedle.Interactive` package to `Deedle.DotNetInteractive` to match the folder name and clarify purpose
 - Remove stale docs and project solution folders from `Deedle.sln`
+- Reorganise documentation into three categories: Guides, Integrations, Design
+
+### Documentation
+
+- Add `docs/dotnetinteractive.fsx` — documentation page for `Deedle.DotNetInteractive` notebook formatting with configuration reference
 
 ### New packages
 

@@ -1,9 +1,9 @@
 (**
 ---
 title: Apache Parquet integration
-category: Documentation
-categoryindex: 1
-index: 11
+category: Integrations
+categoryindex: 2
+index: 3
 description: Reading and writing Apache Parquet files for efficient columnar storage and cross-platform data exchange
 keywords: parquet, columnar storage, compression, interop, pandas, spark
 ---

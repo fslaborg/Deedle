@@ -1,7 +1,7 @@
 (**
 ---
 title: Deedle: Exploratory data library for .NET
-category: Documentation
+category: Guides
 categoryindex: 1
 index: 1
 description: Deedle is an F# and .NET library for exploratory data analysis with rich support for frames, series, missing values, and time-series alignment

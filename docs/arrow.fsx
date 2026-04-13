@@ -1,9 +1,9 @@
 (**
 ---
 title: Apache Arrow and Feather integration
-category: Documentation
-categoryindex: 1
-index: 10
+category: Integrations
+categoryindex: 2
+index: 2
 description: Reading and writing Arrow IPC and Feather v2 files, converting between Deedle frames and Arrow RecordBatches
 keywords: arrow, feather, IPC, RecordBatch, columnar, interop, pyarrow, pandas
 ---

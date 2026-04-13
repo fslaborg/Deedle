@@ -1,7 +1,7 @@
 (**
 ---
 title: Working with data frames in F#
-category: Documentation
+category: Guides
 categoryindex: 1
 index: 3
 description: Creating, transforming, filtering, and aggregating data frames using the Deedle F# API
