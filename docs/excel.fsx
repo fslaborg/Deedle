@@ -1,23 +1,23 @@
 (**
 ---
-title: Deedle.Excel.Reader — Excel integration
+title: Excel integration — ExcelReader & ExcelWriter
 category: Integrations
 categoryindex: 2
 index: 1
-description: Reading .xls and .xlsx Excel files into Deedle data frames using the ExcelDataReader library
-keywords: excel, xls, xlsx, spreadsheet, worksheet, ExcelDataReader
+description: Reading and writing Excel files with Deedle using Deedle.ExcelReader and Deedle.ExcelWriter
+keywords: excel, xls, xlsx, spreadsheet, worksheet, ExcelDataReader, MiniExcel
 ---
 *)
 (*** condition: prepare ***)
 #nowarn "211"
 #r "../bin/net10.0/Deedle.dll"
-#r "../bin/net10.0/Deedle.Excel.Reader.dll"
+#r "../bin/net10.0/Deedle.ExcelReader.dll"
 #r "nuget: ExcelDataReader, 3.8"
 #r "nuget: ExcelDataReader.DataSet, 3.8"
 (*** condition: fsx ***)
 #if FSX
 #r "nuget: Deedle,{{fsdocs-package-version}}"
-#r "nuget: Deedle.Excel.Reader,{{fsdocs-package-version}}"
+#r "nuget: Deedle.ExcelReader,{{fsdocs-package-version}}"
 #r "nuget: ExcelDataReader"
 #r "nuget: ExcelDataReader.DataSet"
 #endif // FSX
@@ -30,16 +30,17 @@ open Deedle.ExcelReader
 
 (**
 
-# Deedle.Excel.Reader — Excel integration
+# Excel integration — ExcelReader & ExcelWriter
 
-Deedle provides two separate packages for working with Microsoft Excel files:
+Deedle provides three separate packages for working with Microsoft Excel files:
 
 | Package | What it does |
 |---|---|
-| **`Deedle.Excel.Reader`** | Cross-platform reading of `.xlsx` and `.xls` files via [ExcelDataReader](https://github.com/ExcelDataReader/ExcelDataReader) |
+| **`Deedle.ExcelReader`** | Cross-platform reading of `.xlsx` and `.xls` files via [ExcelDataReader](https://github.com/ExcelDataReader/ExcelDataReader) |
+| **`Deedle.ExcelWriter`** | Cross-platform writing of `.xlsx` files via [MiniExcel](https://github.com/mini-software/MiniExcel) |
 | **`Deedle.Excel`** | Live read/write to an open Excel workbook via [NetOffice](https://netoffice.io/) (Windows + Excel required) |
 
-This page covers the cross-platform `Deedle.Excel.Reader`.
+This page covers the cross-platform `Deedle.ExcelReader` and `Deedle.ExcelWriter`.
 
 ---
 
@@ -50,14 +51,16 @@ This page covers the cross-platform `Deedle.Excel.Reader`.
 Install with:
 
 ```
-dotnet add package Deedle.Excel.Reader
+dotnet add package Deedle.ExcelReader
+dotnet add package Deedle.ExcelWriter
 ```
 
-Then open the namespace:
+Then open the namespaces:
 
 ```fsharp
 open Deedle
-open Deedle.ExcelReader
+open Deedle.ExcelReader  // for reading
+open Deedle.ExcelWriter  // for writing
 ```
 
 ---
@@ -223,9 +226,76 @@ let tryReadSheet path name =
 
 ---
 
+<a name="writing"></a>
+
+## Writing Excel files
+
+The `Deedle.ExcelWriter` package provides cross-platform `.xlsx` writing using
+[MiniExcel](https://github.com/mini-software/MiniExcel) — a high-performance,
+low-memory library with no dependency on COM or Windows.
+
+### Writing a single sheet
+
+```fsharp
+open Deedle
+open Deedle.ExcelWriter
+
+let df =
+    frame [ "Name"  => series [0 => "Alice"; 1 => "Bob"; 2 => "Charlie"]
+            "Score" => series [0 => 95.0; 1 => 87.0; 2 => 91.0] ]
+
+// Write to "Sheet1" (default sheet name)
+Frame.writeExcel "/tmp/results.xlsx" df
+
+// Write to a named sheet
+Frame.writeExcelSheet "/tmp/results.xlsx" "Scores" df
+```
+
+Any existing file at the target path is overwritten.
+
+### Writing multiple sheets
+
+Provide a sequence of `(sheetName, frame)` pairs:
+
+```fsharp
+let q1 = frame [ "Month" => series [0 => "Jan"; 1 => "Feb"]
+                 "Revenue" => series [0 => 1000.0; 1 => 1200.0] ]
+let q2 = frame [ "Month" => series [0 => "Apr"; 1 => "May"]
+                 "Revenue" => series [0 => 1300.0; 1 => 1100.0] ]
+
+Frame.writeExcelSheets "/tmp/quarterly.xlsx"
+    (seq { yield ("Q1", q1); yield ("Q2", q2) })
+```
+
+### Writing to a stream
+
+For in-memory scenarios or HTTP responses, write to any `System.IO.Stream`:
+
+```fsharp
+use ms = new System.IO.MemoryStream()
+Frame.writeExcelStream ms df
+// ms now contains a valid .xlsx binary
+```
+
+### Round-trip example
+
+`Deedle.ExcelReader` and `Deedle.ExcelWriter` compose naturally for ETL pipelines:
+
+```fsharp
+open Deedle
+open Deedle.ExcelReader
+open Deedle.ExcelWriter
+
+let input  = Frame.readExcel "input.xlsx"
+let output = input |> Frame.filterRows (fun _ row -> row.GetAs<float>("Score") > 90.0)
+Frame.writeExcel "output.xlsx" output
+```
+
+---
+
 <a name="excel-writer"></a>
 
-## Writing to Excel (Windows only)
+## Live Excel integration (Windows only)
 
 The `Deedle.Excel` package exposes a live read/write API that works by
 communicating with a running Excel instance via [NetOffice](https://netoffice.io/).
@@ -251,9 +321,5 @@ xl?A1 <- myFrame
 xl.KeepInSync <- true
 xl?A1 <- myFrame
 ```
-
-For cross-platform programmatic xlsx generation, consider combining
-`Deedle.Excel.Reader` with a library such as
-[ClosedXML](https://github.com/ClosedXML/ClosedXML) or
-[EPPlus](https://www.epplussoftware.com/) for the write side.
 *)
+

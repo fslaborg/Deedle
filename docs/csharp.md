@@ -474,10 +474,10 @@ foreach (var g in byClass.GetAllValues().GroupBy(v => v.Value))
 
 ## Reading Excel files
 
-Add the `Deedle.Excel.Reader` package:
+Add the `Deedle.ExcelReader` package:
 
 ```
-dotnet add package Deedle.Excel.Reader
+dotnet add package Deedle.ExcelReader
 ```
 
 ```csharp

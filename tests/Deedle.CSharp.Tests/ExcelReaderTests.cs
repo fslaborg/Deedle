@@ -15,13 +15,13 @@ namespace Deedle.CSharp.Tests
         private static string TestFile([CallerFilePath] string source = "")
         {
             return Path.Combine(Path.GetDirectoryName(source),
-                "..", "Deedle.Excel.Reader.Tests", "data", "test.xlsx");
+                "..", "Deedle.ExcelReader.Tests", "data", "test.xlsx");
         }
 
         private static string MissingFile([CallerFilePath] string source = "")
         {
             return Path.Combine(Path.GetDirectoryName(source),
-                "..", "Deedle.Excel.Reader.Tests", "data", "missing.xlsx");
+                "..", "Deedle.ExcelReader.Tests", "data", "missing.xlsx");
         }
 
         // ---------------------------------------------------------------
