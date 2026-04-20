@@ -1,5 +1,11 @@
 # Release Notes
 
+## 6.0.2 - Unreleased
+
+### Bug fixes
+
+- **Deedle.Parquet**: Fix `Frame.writeParquet` and `Frame.writeParquetStream` writing empty files (only column schema, no row data). Root cause: the `IParquetRowGroupWriter` returned by `writer.CreateRowGroup()` was not disposed, so the row group was never committed to the stream. Fixed by using `use rg = writer.CreateRowGroup()`.
+
 ## 6.0.1 - 2026-04-13
 
 ### Infrastructure
