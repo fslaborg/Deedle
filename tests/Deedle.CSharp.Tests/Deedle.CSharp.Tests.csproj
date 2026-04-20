@@ -18,7 +18,7 @@
     </ProjectReference>
     <ProjectReference Include="..\..\src\Deedle.Arrow\Deedle.Arrow.fsproj" />
     <ProjectReference Include="..\..\src\Deedle.Parquet\Deedle.Parquet.fsproj" />
-    <ProjectReference Include="..\..\src\Deedle.Excel.Reader\Deedle.Excel.Reader.fsproj" />
+    <ProjectReference Include="..\..\src\Deedle.ExcelReader\Deedle.ExcelReader.fsproj" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

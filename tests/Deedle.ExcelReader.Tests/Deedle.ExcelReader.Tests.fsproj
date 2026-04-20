@@ -5,7 +5,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Deedle\Deedle.fsproj" />
-    <ProjectReference Include="..\..\src\Deedle.Excel.Reader\Deedle.Excel.Reader.fsproj" />
+    <ProjectReference Include="..\..\src\Deedle.ExcelReader\Deedle.ExcelReader.fsproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="../Common/FsUnit.fs">

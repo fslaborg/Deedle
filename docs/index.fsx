@@ -111,8 +111,9 @@ These optional packages integrate Deedle with other data formats:
 
  * [Deedle.Parquet](parquet.html) — columnar storage I/O with Apache Parquet
 
- * [Deedle.Excel.Reader](excel.html) — reading `.xlsx`/`.xls` files cross-platform with `Deedle.Excel.Reader`;
-   live read/write via `Deedle.Excel` 
+ * [Excel integration](excel.html) — reading `.xlsx`/`.xls` files cross-platform with `Deedle.ExcelReader`;
+   writing `.xlsx` files cross-platform with `Deedle.ExcelWriter`;
+   live read/write via `Deedle.Excel` (Windows-only)
 
 ## Tooling Integrations
 

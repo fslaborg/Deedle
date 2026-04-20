@@ -1,5 +1,15 @@
 # Release Notes
 
+## 6.0.2 - unreleased
+
+### New packages
+
+- **Deedle.ExcelWriter**: cross-platform `.xlsx` writing via [MiniExcel](https://github.com/mini-software/MiniExcel) — `Frame.writeExcel`, `Frame.writeExcelSheet`, `Frame.writeExcelSheets`, stream overloads, C# `ExcelFrameWriter` static API (closes [#714](https://github.com/fslaborg/Deedle/issues/714))
+
+### Infrastructure
+
+- Rename NuGet package `Deedle.Excel.Reader` → `Deedle.ExcelReader` to match the existing `Deedle.ExcelReader` namespace (closes [#713](https://github.com/fslaborg/Deedle/issues/713))
+
 ## 6.0.1 - 2026-04-13
 
 ### Infrastructure

@@ -1,0 +1,7 @@
+FSharp.Core
+NUnit
+Microsoft.NET.Test.Sdk
+NUnit3TestAdapter
+FsUnit
+ExcelDataReader
+ExcelDataReader.DataSet
