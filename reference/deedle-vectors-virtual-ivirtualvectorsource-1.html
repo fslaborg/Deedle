@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en" data-root="/Deedle/">
+<head>
+    <meta charset="UTF-8">
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="Deedle" name="author">
+    <!-- Opengraph properties (https://ogp.me/) -->
+    <meta property="og:site_name" content="Deedle">
+    <meta property="og:title" content="IVirtualVectorSource<'V> (Deedle)" />
+    <meta property="og:url" content="/Deedle/{{fsdocs-source-basename}}.html">
+    <meta property="og:type" content="website" />
+    <!-- Twitter cards (https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/summary-card-with-large-image) -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="/Deedle/">
+    <meta name="twitter:title" content="IVirtualVectorSource<'V> (Deedle)">
+    
+    <title>IVirtualVectorSource<'V> (Deedle) | Deedle</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code&display=swap" rel="stylesheet">
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <link href="/Deedle/img/favicon.ico" rel="icon" sizes="32x32" type="image/png"/>
+    <script type="application/javascript" src="/Deedle/content/fsdocs-theme-set-dark.js"></script>
+    <script type="application/javascript" src="/Deedle/content/fsdocs-details-set-expanded.js"></script>
+    <link href="/Deedle/content/fsdocs-default.css" rel="stylesheet" type="text/css"/>
+    <link href="/Deedle/content/fsdocs-theme.css" rel="stylesheet" type="text/css"/>
+    
+    
+</head>
+<body class="api-docs">
+<header>
+    <div class="start">
+        <div id="menu-toggle">
+            <iconify-icon class="icon closed" height="22" icon="eva:menu-fill" width="22"></iconify-icon>
+            <iconify-icon class="icon open" height="22" icon="mi:close" width="22"></iconify-icon>
+            <input type="checkbox" name="mobile-menu" />
+            <ul class="menu">
+                <li class="nav-header">Links</li>
+                <li class="license-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fslaborg/Deedle/blob/master/LICENSE.md">License</a>
+                </li>
+                <li class="release-notes-menu-item builtin-menu-item nav-item"><a class="nav-link"
+                                        href="https://github.com/fslaborg/Deedle/blob/master/RELEASE_NOTES.md">Release
+                    Notes</a></li>
+                <li class="repository-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fslaborg/Deedle/">Source
+                    Repository</a></li>
+                <li class="nav-header ">
+  Guides
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/tutorial.html">
+    Deedle in 10 minutes
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/frame.html">
+    Data frame features
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/series.html">
+    Series and time series features
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/stats.html">
+    Calculating frame and series statistics
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/missing.html">
+    Handling missing values
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/joining.html">
+    Joining, merging and appending frames
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/lazysource.html">
+    Delay-loaded series
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/csharp.html">
+    Deedle in C#
+  </a>
+</li>             
+<li class="nav-header ">
+  Integrations
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/excel.html">
+    Excel integration — ExcelReader &amp; ExcelWriter
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/arrow.html">
+    Deedle.Arrow — Apache Arrow and Feather integration
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/parquet.html">
+    Deedle.Parquet — Apache Parquet integration
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/math.html">
+    Deedle.MathNetNumerics — MathNet.Numerics integration
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/dotnetinteractive.html">
+    Deedle.DotNetInteractive — .NET Interactive notebook formatting
+  </a>
+</li>             
+<li class="nav-header ">
+  Design
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/design.html">
+    Design notes
+  </a>
+</li>
+                <li class="nav-header">
+  API Reference
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="/Deedle/reference/index.html">
+    All Namespaces
+  </a>
+</li>
+            </ul>
+        </div>
+        <a href="/Deedle/">
+            <img alt="Logo" src="/Deedle/img/logo.png">
+            <strong>Deedle</strong>
+        </a>
+    </div>
+    <div class="end">
+        <a href="https://github.com/fslaborg/Deedle/" target="_blank">
+            <iconify-icon icon="uil:github" width="26" height="26"></iconify-icon>
+        </a>
+        <iconify-icon id="search-btn" icon="carbon:search" class="search" width="24" height="24"></iconify-icon>
+        <fsdocs-theme-toggle></fsdocs-theme-toggle>
+    </div>
+</header>
+<aside id="fsdocs-main-menu">
+    <ul class="menu">
+        <li class="nav-header">Links</li>
+        <li class="license-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fslaborg/Deedle/blob/master/LICENSE.md">License</a>
+        </li>
+        <li class="release-notes-menu-item builtin-menu-item nav-item"><a class="nav-link"
+                                href="https://github.com/fslaborg/Deedle/blob/master/RELEASE_NOTES.md">Release
+            Notes</a></li>
+        <li class="repository-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fslaborg/Deedle/">Source
+            Repository</a></li>
+        <li class="nav-header ">
+  Guides
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/tutorial.html">
+    Deedle in 10 minutes
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/frame.html">
+    Data frame features
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/series.html">
+    Series and time series features
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/stats.html">
+    Calculating frame and series statistics
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/missing.html">
+    Handling missing values
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/joining.html">
+    Joining, merging and appending frames
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/lazysource.html">
+    Delay-loaded series
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/csharp.html">
+    Deedle in C#
+  </a>
+</li>             
+<li class="nav-header ">
+  Integrations
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/excel.html">
+    Excel integration — ExcelReader &amp; ExcelWriter
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/arrow.html">
+    Deedle.Arrow — Apache Arrow and Feather integration
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/parquet.html">
+    Deedle.Parquet — Apache Parquet integration
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/math.html">
+    Deedle.MathNetNumerics — MathNet.Numerics integration
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/dotnetinteractive.html">
+    Deedle.DotNetInteractive — .NET Interactive notebook formatting
+  </a>
+</li>             
+<li class="nav-header ">
+  Design
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/design.html">
+    Design notes
+  </a>
+</li>
+        <li class="nav-header">
+  API Reference
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="/Deedle/reference/index.html">
+    All Namespaces
+  </a>
+</li>
+    </ul>
+</aside>
+<main>
+    <div id="content">
+        <div>
+  <h2>
+    IVirtualVectorSource<'V> Type
+  </h2>
+  <dl class="fsdocs-metadata">
+    <dt>
+      Namespace: 
+      <a href="/Deedle/reference/deedle-vectors-virtual.html">
+        Deedle.Vectors.Virtual
+      </a>
+    </dt>
+    <dt>
+      Assembly: Deedle.dll
+    </dt>
+    <dt>
+      Base Type: 
+      <code>obj</code>
+    </dt>
+    <dt>
+      All Interfaces: 
+      <code><span><a href="/Deedle/reference/deedle-vectors-virtual-ivirtualvectorsource-1.html">IVirtualVectorSource</a>&lt;'V&gt;</span></code>
+      , 
+      <code><a href="/Deedle/reference/deedle-vectors-virtual-ivirtualvectorsource.html">IVirtualVectorSource</a></code>
+    </dt>
+  </dl>
+  <div class="fsdocs-xmldoc">
+    <div>
+      <div class="fsdocs-summary-contents">
+        <p class="fsdocs-summary">
+           Represents a data source for Big Deedle. The interface is used both as a representation
+ of data source for `VirtualVector` (this file) and `VirtualIndex` (another file). The
+ index uses `Length` and `ValueAt` to perform binary search when looking for a key; the
+ vector simply provides an access to values using `ValueAt`.
+        </p>
+      </div>
+    </div>
+  </div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div>
+    <h3>
+      Instance members
+    </h3>
+    <table class="table outer-list fsdocs-member-list">
+      <thead>
+        <tr>
+          <td class="fsdocs-member-list-header">
+            Instance member
+          </td>
+          <td class="fsdocs-member-list-header">
+            Description
+            <fsdocs-details-toggle></fsdocs-details-toggle>
+          </td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="2374" data-fsdocs-tip-unique="2374">
+                <p>
+                  <a id="GetSubVector">
+                    <a href="#GetSubVector">
+                      <code><span>this.GetSubVector</span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="2374">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>this.GetSubVector</span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        arg0
+                      </b>
+                      :
+                      <code><span><a href="/Deedle/reference/deedle-rangerestriction-1.html">RangeRestriction</a>&lt;<a href="/Deedle/reference/deedle-addressing-address.html">Address</a>&gt;</span></code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><a href="/Deedle/reference/deedle-vectors-virtual-ivirtualvectorsource-1.html">IVirtualVectorSource</a>&lt;'V&gt;</span></code>
+                  </span>
+                  <br/>
+                  Modifiers: 
+                  abstract
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                       Returns a virtual source for the specified range (used when performing splicing on the
+ frame/series, both using address or using keys - which are obtained using Lookup)
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:Deedle.Vectors.Virtual.IVirtualVectorSource`1.GetSubVector\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('``cref:M:Deedle.Vectors.Virtual.IVirtualVectorSource`1.GetSubVector``')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    arg0
+                  </span>
+                  :
+                  <code><span><a href="/Deedle/reference/deedle-rangerestriction-1.html">RangeRestriction</a>&lt;<a href="/Deedle/reference/deedle-addressing-address.html">Address</a>&gt;</span></code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+              </dl>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code><span><a href="/Deedle/reference/deedle-vectors-virtual-ivirtualvectorsource-1.html">IVirtualVectorSource</a>&lt;'V&gt;</span></code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="2375" data-fsdocs-tip-unique="2375">
+                <p>
+                  <a id="LookupRange">
+                    <a href="#LookupRange">
+                      <code><span>this.LookupRange</span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="2375">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>this.LookupRange</span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        arg0
+                      </b>
+                      :
+                      <code>'V</code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><a href="/Deedle/reference/deedle-rangerestriction-1.html">RangeRestriction</a>&lt;<a href="/Deedle/reference/deedle-addressing-address.html">Address</a>&gt;</span></code>
+                  </span>
+                  <br/>
+                  Modifiers: 
+                  abstract
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                       Find a range (continuous or a sequence of indices) such that all values in the range are
+ the specified value. This is used, for example, when filtering frame based on column
+ value (say column "PClass" has a value "1").
+
+ If the data source has some "clever" representation of the range, it can return
+ `Custom of IVectorRange` - which is then passed to `GetSubVector`.
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:Deedle.Vectors.Virtual.IVirtualVectorSource`1.LookupRange\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('``cref:M:Deedle.Vectors.Virtual.IVirtualVectorSource`1.LookupRange``')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    arg0
+                  </span>
+                  :
+                  <code>'V</code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+              </dl>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code><span><a href="/Deedle/reference/deedle-rangerestriction-1.html">RangeRestriction</a>&lt;<a href="/Deedle/reference/deedle-addressing-address.html">Address</a>&gt;</span></code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="2376" data-fsdocs-tip-unique="2376">
+                <p>
+                  <a id="LookupValue">
+                    <a href="#LookupValue">
+                      <code><span>this.LookupValue</span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="2376">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>this.LookupValue</span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        arg0
+                      </b>
+                      :
+                      <code>'V</code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        arg1
+                      </b>
+                      :
+                      <code><a href="/Deedle/reference/deedle-lookup.html">Lookup</a></code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        arg2
+                      </b>
+                      :
+                      <code><span><a href="https://learn.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;<span><a href="/Deedle/reference/deedle-addressing-address.html">Address</a>,&#32;bool</span>&gt;</span></code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><a href="/Deedle/reference/deedle-optionalvalue-1.html">OptionalValue</a>&lt;<span>'V&#32;*&#32;<a href="/Deedle/reference/deedle-addressing-address.html">Address</a></span>&gt;</span></code>
+                  </span>
+                  <br/>
+                  Modifiers: 
+                  abstract
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                       Find the address associated with the specified value. This is used by the
+ index and it has the same signature as `IIndex<'K>.Lookup` (see `Index.fs`).
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:Deedle.Vectors.Virtual.IVirtualVectorSource`1.LookupValue\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('``cref:M:Deedle.Vectors.Virtual.IVirtualVectorSource`1.LookupValue``')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    arg0
+                  </span>
+                  :
+                  <code>'V</code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    arg1
+                  </span>
+                  :
+                  <code><a href="/Deedle/reference/deedle-lookup.html">Lookup</a></code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    arg2
+                  </span>
+                  :
+                  <code><span><a href="https://learn.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;<span><a href="/Deedle/reference/deedle-addressing-address.html">Address</a>,&#32;bool</span>&gt;</span></code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+              </dl>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code><span><a href="/Deedle/reference/deedle-optionalvalue-1.html">OptionalValue</a>&lt;<span>'V&#32;*&#32;<a href="/Deedle/reference/deedle-addressing-address.html">Address</a></span>&gt;</span></code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="2377" data-fsdocs-tip-unique="2377">
+                <p>
+                  <a id="MergeWith">
+                    <a href="#MergeWith">
+                      <code><span>this.MergeWith</span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="2377">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>this.MergeWith</span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        arg0
+                      </b>
+                      :
+                      <code><span><span><a href="/Deedle/reference/deedle-vectors-virtual-ivirtualvectorsource-1.html">IVirtualVectorSource</a>&lt;'V&gt;</span>&#32;seq</span></code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><a href="/Deedle/reference/deedle-vectors-virtual-ivirtualvectorsource-1.html">IVirtualVectorSource</a>&lt;'V&gt;</span></code>
+                  </span>
+                  <br/>
+                  Modifiers: 
+                  abstract
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                       Merge the current source with a list of other sources
+ (used by functions such as `Frame.merge` and `Frame.mergeAll`)
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:Deedle.Vectors.Virtual.IVirtualVectorSource`1.MergeWith\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('``cref:M:Deedle.Vectors.Virtual.IVirtualVectorSource`1.MergeWith``')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    arg0
+                  </span>
+                  :
+                  <code><span><span><a href="/Deedle/reference/deedle-vectors-virtual-ivirtualvectorsource-1.html">IVirtualVectorSource</a>&lt;'V&gt;</span>&#32;seq</span></code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+              </dl>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code><span><a href="/Deedle/reference/deedle-vectors-virtual-ivirtualvectorsource-1.html">IVirtualVectorSource</a>&lt;'V&gt;</span></code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="2378" data-fsdocs-tip-unique="2378">
+                <p>
+                  <a id="ValueAt">
+                    <a href="#ValueAt">
+                      <code><span>this.ValueAt</span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="2378">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>this.ValueAt</span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        arg0
+                      </b>
+                      :
+                      <code><a href="/Deedle/reference/deedle-ivectorlocation.html">IVectorLocation</a></code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><a href="/Deedle/reference/deedle-optionalvalue-1.html">OptionalValue</a>&lt;'V&gt;</span></code>
+                  </span>
+                  <br/>
+                  Modifiers: 
+                  abstract
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                       Returns the value at the specifid address. We assume that the address is in range
+ [0L, Length-1L] and that each location has a value (or has a missing value, but is valid)
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:Deedle.Vectors.Virtual.IVirtualVectorSource`1.ValueAt\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('``cref:M:Deedle.Vectors.Virtual.IVirtualVectorSource`1.ValueAt``')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    arg0
+                  </span>
+                  :
+                  <code><a href="/Deedle/reference/deedle-ivectorlocation.html">IVectorLocation</a></code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+              </dl>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code><span><a href="/Deedle/reference/deedle-optionalvalue-1.html">OptionalValue</a>&lt;'V&gt;</span></code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div></div>
+</div>
+        
+    </div>
+</main>
+<aside id="fsdocs-page-menu">
+    <p id="on-this-page">On this page</p>
+    <div class="empty"></div>
+</aside>
+<dialog>
+    <input type="search" placeholder="Search docs" />
+    <div class="results">
+        <ul></ul>
+        <p class="empty">Type something to start searching.</p>
+    </div>
+</dialog>
+<script type="module" src="/Deedle/content/fsdocs-tips.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-theme-toggle.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-details-toggle.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-theme.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-search.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-copy-button.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,4615 @@
+<!DOCTYPE html>
+<html lang="en" data-root="/Deedle/">
+<head>
+    <meta charset="UTF-8">
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="Deedle" name="author">
+    <!-- Opengraph properties (https://ogp.me/) -->
+    <meta property="og:site_name" content="Deedle">
+    <meta property="og:title" content="F# Frame extensions (Deedle)" />
+    <meta property="og:url" content="/Deedle/{{fsdocs-source-basename}}.html">
+    <meta property="og:type" content="website" />
+    <!-- Twitter cards (https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/summary-card-with-large-image) -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="/Deedle/">
+    <meta name="twitter:title" content="F# Frame extensions (Deedle)">
+    
+    <title>F# Frame extensions (Deedle) | Deedle</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code&display=swap" rel="stylesheet">
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <link href="/Deedle/img/favicon.ico" rel="icon" sizes="32x32" type="image/png"/>
+    <script type="application/javascript" src="/Deedle/content/fsdocs-theme-set-dark.js"></script>
+    <script type="application/javascript" src="/Deedle/content/fsdocs-details-set-expanded.js"></script>
+    <link href="/Deedle/content/fsdocs-default.css" rel="stylesheet" type="text/css"/>
+    <link href="/Deedle/content/fsdocs-theme.css" rel="stylesheet" type="text/css"/>
+    
+    
+</head>
+<body class="api-docs">
+<header>
+    <div class="start">
+        <div id="menu-toggle">
+            <iconify-icon class="icon closed" height="22" icon="eva:menu-fill" width="22"></iconify-icon>
+            <iconify-icon class="icon open" height="22" icon="mi:close" width="22"></iconify-icon>
+            <input type="checkbox" name="mobile-menu" />
+            <ul class="menu">
+                <li class="nav-header">Links</li>
+                <li class="license-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fslaborg/Deedle/blob/master/LICENSE.md">License</a>
+                </li>
+                <li class="release-notes-menu-item builtin-menu-item nav-item"><a class="nav-link"
+                                        href="https://github.com/fslaborg/Deedle/blob/master/RELEASE_NOTES.md">Release
+                    Notes</a></li>
+                <li class="repository-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fslaborg/Deedle/">Source
+                    Repository</a></li>
+                <li class="nav-header ">
+  Guides
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/tutorial.html">
+    Deedle in 10 minutes
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/frame.html">
+    Data frame features
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/series.html">
+    Series and time series features
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/stats.html">
+    Calculating frame and series statistics
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/missing.html">
+    Handling missing values
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/joining.html">
+    Joining, merging and appending frames
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/lazysource.html">
+    Delay-loaded series
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/csharp.html">
+    Deedle in C#
+  </a>
+</li>             
+<li class="nav-header ">
+  Integrations
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/excel.html">
+    Excel integration — ExcelReader &amp; ExcelWriter
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/arrow.html">
+    Deedle.Arrow — Apache Arrow and Feather integration
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/parquet.html">
+    Deedle.Parquet — Apache Parquet integration
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/math.html">
+    Deedle.MathNetNumerics — MathNet.Numerics integration
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/dotnetinteractive.html">
+    Deedle.DotNetInteractive — .NET Interactive notebook formatting
+  </a>
+</li>             
+<li class="nav-header ">
+  Design
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/design.html">
+    Design notes
+  </a>
+</li>
+                <li class="nav-header">
+  API Reference
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="/Deedle/reference/index.html">
+    All Namespaces
+  </a>
+</li>
+            </ul>
+        </div>
+        <a href="/Deedle/">
+            <img alt="Logo" src="/Deedle/img/logo.png">
+            <strong>Deedle</strong>
+        </a>
+    </div>
+    <div class="end">
+        <a href="https://github.com/fslaborg/Deedle/" target="_blank">
+            <iconify-icon icon="uil:github" width="26" height="26"></iconify-icon>
+        </a>
+        <iconify-icon id="search-btn" icon="carbon:search" class="search" width="24" height="24"></iconify-icon>
+        <fsdocs-theme-toggle></fsdocs-theme-toggle>
+    </div>
+</header>
+<aside id="fsdocs-main-menu">
+    <ul class="menu">
+        <li class="nav-header">Links</li>
+        <li class="license-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fslaborg/Deedle/blob/master/LICENSE.md">License</a>
+        </li>
+        <li class="release-notes-menu-item builtin-menu-item nav-item"><a class="nav-link"
+                                href="https://github.com/fslaborg/Deedle/blob/master/RELEASE_NOTES.md">Release
+            Notes</a></li>
+        <li class="repository-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fslaborg/Deedle/">Source
+            Repository</a></li>
+        <li class="nav-header ">
+  Guides
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/tutorial.html">
+    Deedle in 10 minutes
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/frame.html">
+    Data frame features
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/series.html">
+    Series and time series features
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/stats.html">
+    Calculating frame and series statistics
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/missing.html">
+    Handling missing values
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/joining.html">
+    Joining, merging and appending frames
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/lazysource.html">
+    Delay-loaded series
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/csharp.html">
+    Deedle in C#
+  </a>
+</li>             
+<li class="nav-header ">
+  Integrations
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/excel.html">
+    Excel integration — ExcelReader &amp; ExcelWriter
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/arrow.html">
+    Deedle.Arrow — Apache Arrow and Feather integration
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/parquet.html">
+    Deedle.Parquet — Apache Parquet integration
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/math.html">
+    Deedle.MathNetNumerics — MathNet.Numerics integration
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/dotnetinteractive.html">
+    Deedle.DotNetInteractive — .NET Interactive notebook formatting
+  </a>
+</li>             
+<li class="nav-header ">
+  Design
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/design.html">
+    Design notes
+  </a>
+</li>
+        <li class="nav-header">
+  API Reference
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="/Deedle/reference/index.html">
+    All Namespaces
+  </a>
+</li>
+    </ul>
+</aside>
+<main>
+    <div id="content">
+        <div>
+  <h2>
+    F# Frame extensions Module
+  </h2>
+  <dl class="fsdocs-metadata">
+    <dt>
+      Namespace: 
+      <a href="/Deedle/reference/deedle.html">
+        Deedle
+      </a>
+    </dt>
+    <dt>
+      Assembly: Deedle.dll
+    </dt>
+  </dl>
+  <div class="fsdocs-xmldoc">
+    <div>
+      <div class="fsdocs-summary-contents">
+        <p class="fsdocs-summary">
+          
+ This module contains F# functions and extensions for working with frames. This
+ includes operations for creating frames such as the `frame` function, `=&gt;` operator
+ and `Frame.ofRows`, `Frame.ofColumns` and `Frame.ofRowKeys` functions. The module
+ also provides additional F# extension methods including `ReadCsv`, `SaveCsv` and `PivotTable`.
+ 
+        </p>
+      </div>
+    </div>
+    <p class="fsdocs-remarks">
+      <p class='fsdocs-para'>Frame construction:</p><p class='fsdocs-para'>
+ The functions and methods in this group can be used to create frames. If you are creating
+ a frame from a number of sample values, you can use `frame` and the `=&gt;` operator (or the
+ `=?&gt;` opreator which is useful if you have multiple series of distinct types):
+ </p><p class='fsdocs-para'>
+     frame [ &quot;Column 1&quot; =&gt; series [ 1 =&gt; 1.0; 2 =&gt; 2.0 ]
+             &quot;Column 2&quot; =&gt; series [ 3 =&gt; 3.0 ] ]
+ </p><p class='fsdocs-para'>
+ Aside from this, the various type extensions let you write `Frame.ofXyz` to construct frames
+ from data in various formats - `Frame.ofRows` and `Frame.ofColumns` create frame from a series
+ or a sequence of rows or columns; `Frame.ofRecords` creates a frame from .NET objects using
+ Reflection and `Frame.ofRowKeys` creates an empty frame with the specified keys.
+ </p><p class='fsdocs-para'>Frame operations:</p><p class='fsdocs-para'>
+ The group contains two overloads of the F#-friendly version of the `PivotTable` method.
+ </p><p class='fsdocs-para'>Input and output:</p><p class='fsdocs-para'>
+ This group of extensions includes a number of overloads for the `ReadCsv` and `SaveCsv`
+ methods. The methods here are designed to be used from F# and so they are F#-style extensions
+ and they use F#-style optional arguments. In general, the overlads take either a path or
+ `TextReader`/`TextWriter`. Also note that `ReadCsv&lt;&#39;R&gt;(path, indexCol, ...)` lets you specify
+ the column to be used as the index.
+ </p>
+    </p>
+  </div>
+  <h3>
+    Table of contents
+  </h3>
+  <ul>
+    <li>
+      <a href="#section0">
+        Frame construction
+      </a>
+    </li>
+    <li>
+      <a href="#section1">
+        Frame operations
+      </a>
+    </li>
+    <li>
+      <a href="#section2">
+        Input and output
+      </a>
+    </li>
+  </ul>
+  <h2 id="section0">
+    Frame construction
+  </h2>
+  <div>
+    <h3>
+      Functions and values
+    </h3>
+    <table class="table outer-list fsdocs-member-list">
+      <thead>
+        <tr>
+          <td class="fsdocs-member-list-header">
+            Function or value
+          </td>
+          <td class="fsdocs-member-list-header">
+            Description
+            <fsdocs-details-toggle></fsdocs-details-toggle>
+          </td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="13" data-fsdocs-tip-unique="13">
+                <p>
+                  <a id="(=>)">
+                    <a href="#(=>)">
+                      <code><span>a&#32;=&gt;&#32;b</span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="13">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>a&#32;=&gt;&#32;b</span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        a
+                      </b>
+                      :
+                      <code>'a</code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        b
+                      </b>
+                      :
+                      <code>'b</code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span>'a&#32;*&#32;'b</span></code>
+                  </span>
+                  <br/>
+                  Type parameters: 
+                  &#39;a, &#39;b
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                      
+ Custom operator that can be used when constructing series from observations
+ or frames from key-row or key-column pairs. The operator simply returns a
+ tuple, but it provides a more convenient syntax. For example:
+
+     series [ &quot;k1&quot; =&gt; 1; &quot;k2&quot; =&gt; 15 ]
+ 
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:Deedle.F# Frame extensions.op_EqualsGreater``2\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('```cref:M:Deedle.F# Frame extensions.op_EqualsGreater``2```')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    a
+                  </span>
+                  :
+                  <code>'a</code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    b
+                  </span>
+                  :
+                  <code>'b</code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+              </dl>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code><span>'a&#32;*&#32;'b</span></code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="14" data-fsdocs-tip-unique="14">
+                <p>
+                  <a id="(=?>)">
+                    <a href="#(=?>)">
+                      <code><span>a&#32;=?&gt;&#32;b</span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="14">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>a&#32;=?&gt;&#32;b</span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        a
+                      </b>
+                      :
+                      <code>'a</code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        b
+                      </b>
+                      :
+                      <code><span><a href="/Deedle/reference/deedle-iseries-1.html">ISeries</a>&lt;'b&gt;</span></code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span>'a&#32;*&#32;<span><a href="/Deedle/reference/deedle-iseries-1.html">ISeries</a>&lt;'b&gt;</span></span></code>
+                  </span>
+                  <br/>
+                  Type parameters: 
+                  &#39;a, &#39;b (requires equality)
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                      
+ Custom operator that can be used when constructing a frame from observations
+ of series. The operator simply returns a tuple, but it upcasts the series
+ argument so you don&#39;t have to do manual casting. For example:
+
+     frame [ &quot;k1&quot; =?&gt; series [0 =&gt; &quot;a&quot;]; &quot;k2&quot; =?&gt; series [&quot;x&quot; =&gt; &quot;y&quot;] ]
+ 
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:Deedle.F# Frame extensions.op_EqualsQmarkGreater``2\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('```cref:M:Deedle.F# Frame extensions.op_EqualsQmarkGreater``2```')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    a
+                  </span>
+                  :
+                  <code>'a</code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    b
+                  </span>
+                  :
+                  <code><span><a href="/Deedle/reference/deedle-iseries-1.html">ISeries</a>&lt;'b&gt;</span></code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+              </dl>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code><span>'a&#32;*&#32;<span><a href="/Deedle/reference/deedle-iseries-1.html">ISeries</a>&lt;'b&gt;</span></span></code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="15" data-fsdocs-tip-unique="15">
+                <p>
+                  <a id="frame">
+                    <a href="#frame">
+                      <code><span>frame&#32;<span>columns</span></span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="15">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>frame&#32;<span>columns</span></span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        columns
+                      </b>
+                      :
+                      <code><span><span>(<span>'a&#32;*&#32;'b</span>)</span>&#32;seq</span></code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><a href="/Deedle/reference/deedle-frame-2.html">Frame</a>&lt;<span>'c,&#32;'a</span>&gt;</span></code>
+                  </span>
+                  <br/>
+                  Type parameters: 
+                  &#39;a, &#39;b, &#39;c (requires equality and :&gt; Deedle.ISeries&lt;&#39;c&gt; and equality)
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                      
+ A function for constructing data frame from a sequence of name - column pairs.
+ This provides a nicer syntactic sugar for `Frame.ofColumns`.
+ 
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:Deedle.F# Frame extensions.frame``3\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('```cref:M:Deedle.F# Frame extensions.frame``3```')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    columns
+                  </span>
+                  :
+                  <code><span><span>(<span>'a&#32;*&#32;'b</span>)</span>&#32;seq</span></code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+              </dl>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code><span><a href="/Deedle/reference/deedle-frame-2.html">Frame</a>&lt;<span>'c,&#32;'a</span>&gt;</span></code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+              <h5 class="fsdocs-example-header">
+                Example
+              </h5>
+              <p class="fsdocs-example" id="example">
+                
+ To create a simple frame with two columns, you can write:
+ <pre class="fssnip highlighted"><code lang="fsharp"> <span class="id">frame</span> <span class="pn">[</span> <span class="s">&quot;A&quot;</span> <span class="o">=&gt;</span> <span class="id">series</span> <span class="pn">[</span> <span class="n">1</span> <span class="o">=&gt;</span> <span class="n">30.0</span><span class="pn">;</span> <span class="n">2</span> <span class="o">=&gt;</span> <span class="n">35.0</span> <span class="pn">]</span>
+         <span class="s">&quot;B&quot;</span> <span class="o">=&gt;</span> <span class="id">series</span> <span class="pn">[</span> <span class="n">1</span> <span class="o">=&gt;</span> <span class="n">30.0</span><span class="pn">;</span> <span class="n">3</span> <span class="o">=&gt;</span> <span class="n">40.0</span> <span class="pn">]</span> <span class="pn">]</span>
+</code></pre>
+
+
+              </p>
+            </details>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div>
+    <h3>
+      Type extensions
+    </h3>
+    <table class="table outer-list fsdocs-member-list">
+      <thead>
+        <tr>
+          <td class="fsdocs-member-list-header">
+            Type extension
+          </td>
+          <td class="fsdocs-member-list-header">
+            Description
+            <fsdocs-details-toggle></fsdocs-details-toggle>
+          </td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="16" data-fsdocs-tip-unique="16">
+                <p>
+                  <a id="ofArray2D">
+                    <a href="#ofArray2D">
+                      <code><span>Frame.ofArray2D&#32;<span>array</span></span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="16">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>Frame.ofArray2D&#32;<span>array</span></span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        array
+                      </b>
+                      :
+                      <code><span>'T[,]</span></code>
+                       - 
+                      A two-dimensional array to be converted into a data frame
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><a href="/Deedle/reference/deedle-frame-2.html">Frame</a>&lt;<span>int,&#32;int</span>&gt;</span></code>
+                  </span>
+                  <br/>
+                  Type parameters: 
+                  &#39;T
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                      
+ Create data frame from a 2D array of values. The first dimension of the array
+ is used as rows and the second dimension is treated as columns. Rows and columns
+ of the returned frame are indexed with the element&#39;s offset in the array.
+ 
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:Deedle.F# Frame extensions.Frame.ofArray2D.Static``1\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('```cref:M:Deedle.F# Frame extensions.Frame.ofArray2D.Static``1```')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <p>
+                Extended Type: 
+                <code><a href="/Deedle/reference/deedle-frame.html">Frame</a></code>
+              </p>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    array
+                  </span>
+                  :
+                  <code><span>'T[,]</span></code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    A two-dimensional array to be converted into a data frame
+                  </p>
+                </dd>
+              </dl>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code><span><a href="/Deedle/reference/deedle-frame-2.html">Frame</a>&lt;<span>int,&#32;int</span>&gt;</span></code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="17" data-fsdocs-tip-unique="17">
+                <p>
+                  <a id="ofColumns">
+                    <a href="#ofColumns">
+                      <code><span>Frame.ofColumns&#32;<span>cols</span></span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="17">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>Frame.ofColumns&#32;<span>cols</span></span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        cols
+                      </b>
+                      :
+                      <code><span><a href="/Deedle/reference/deedle-series-2.html">Series</a>&lt;<span>'C,&#32;'a</span>&gt;</span></code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><a href="/Deedle/reference/deedle-frame-2.html">Frame</a>&lt;<span>'R,&#32;'C</span>&gt;</span></code>
+                  </span>
+                  <br/>
+                  Type parameters: 
+                  &#39;C, &#39;a, &#39;R (requires equality and :&gt; Deedle.ISeries&lt;&#39;R&gt; and equality)
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                      
+ Creates a frame from a series that maps column keys to a nested series
+ containing values for each column.
+ 
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:Deedle.F# Frame extensions.Frame.ofColumns.Static``3\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('```cref:M:Deedle.F# Frame extensions.Frame.ofColumns.Static``3```')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <p>
+                Extended Type: 
+                <code><a href="/Deedle/reference/deedle-frame.html">Frame</a></code>
+              </p>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    cols
+                  </span>
+                  :
+                  <code><span><a href="/Deedle/reference/deedle-series-2.html">Series</a>&lt;<span>'C,&#32;'a</span>&gt;</span></code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+              </dl>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code><span><a href="/Deedle/reference/deedle-frame-2.html">Frame</a>&lt;<span>'R,&#32;'C</span>&gt;</span></code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="18" data-fsdocs-tip-unique="18">
+                <p>
+                  <a id="ofColumns">
+                    <a href="#ofColumns">
+                      <code><span>Frame.ofColumns&#32;<span>cols</span></span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="18">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>Frame.ofColumns&#32;<span>cols</span></span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        cols
+                      </b>
+                      :
+                      <code><span><span>(<span>'C&#32;*&#32;'a</span>)</span>&#32;seq</span></code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><a href="/Deedle/reference/deedle-frame-2.html">Frame</a>&lt;<span>'R,&#32;'C</span>&gt;</span></code>
+                  </span>
+                  <br/>
+                  Type parameters: 
+                  &#39;C, &#39;a, &#39;R (requires equality and :&gt; Deedle.ISeries&lt;&#39;R&gt; and equality)
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                      
+ Creates a frame from a sequence of column keys and column series pairs.
+ The column series can contain values of any type, but it has to be the same
+ for all the series - if you have heterogenously typed series, use `=?&gt;`.
+ 
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:Deedle.F# Frame extensions.Frame.ofColumns.Static``3\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('```cref:M:Deedle.F# Frame extensions.Frame.ofColumns.Static``3```')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <p>
+                Extended Type: 
+                <code><a href="/Deedle/reference/deedle-frame.html">Frame</a></code>
+              </p>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    cols
+                  </span>
+                  :
+                  <code><span><span>(<span>'C&#32;*&#32;'a</span>)</span>&#32;seq</span></code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+              </dl>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code><span><a href="/Deedle/reference/deedle-frame-2.html">Frame</a>&lt;<span>'R,&#32;'C</span>&gt;</span></code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="19" data-fsdocs-tip-unique="19">
+                <p>
+                  <a id="ofJaggedArray">
+                    <a href="#ofJaggedArray">
+                      <code><span>Frame.ofJaggedArray&#32;<span>jArray</span></span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="19">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>Frame.ofJaggedArray&#32;<span>jArray</span></span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        jArray
+                      </b>
+                      :
+                      <code><span><span>'T[]</span>[]</span></code>
+                       - 
+                      A jagged array to be converted into a data frame
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><a href="/Deedle/reference/deedle-frame-2.html">Frame</a>&lt;<span>int,&#32;int</span>&gt;</span></code>
+                  </span>
+                  <br/>
+                  Type parameters: 
+                  &#39;T
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                      
+ Create data frame from a jagged array of values. The first dimension of the array
+ is used as rows and the second dimension is treated as columns. Rows and columns
+ of the returned frame are indexed with the element&#39;s offset in the array.
+ 
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:Deedle.F# Frame extensions.Frame.ofJaggedArray.Static``1\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('```cref:M:Deedle.F# Frame extensions.Frame.ofJaggedArray.Static``1```')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <p class="fsdocs-remarks">
+                
+ Please note that this function will fail when the inner arrays of the input do not have the same lengths.
+ 
+              </p>
+              <p>
+                Extended Type: 
+                <code><a href="/Deedle/reference/deedle-frame.html">Frame</a></code>
+              </p>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    jArray
+                  </span>
+                  :
+                  <code><span><span>'T[]</span>[]</span></code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    A jagged array to be converted into a data frame
+                  </p>
+                </dd>
+              </dl>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code><span><a href="/Deedle/reference/deedle-frame-2.html">Frame</a>&lt;<span>int,&#32;int</span>&gt;</span></code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="20" data-fsdocs-tip-unique="20">
+                <p>
+                  <a id="ofRecords">
+                    <a href="#ofRecords">
+                      <code><span>Frame.ofRecords&#32;<span>series</span></span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="20">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>Frame.ofRecords&#32;<span>series</span></span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        series
+                      </b>
+                      :
+                      <code><span><a href="/Deedle/reference/deedle-series-2.html">Series</a>&lt;<span>'K,&#32;'R</span>&gt;</span></code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><a href="/Deedle/reference/deedle-frame-2.html">Frame</a>&lt;<span>'K,&#32;string</span>&gt;</span></code>
+                  </span>
+                  <br/>
+                  Type parameters: 
+                  &#39;K, &#39;R (requires equality)
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                      
+ Creates a data frame from a series containing any .NET objects. The method uses reflection
+ over the specified type parameter `&#39;T` and turns its properties to columns.
+ 
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:Deedle.F# Frame extensions.Frame.ofRecords.Static``2\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('```cref:M:Deedle.F# Frame extensions.Frame.ofRecords.Static``2```')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <p>
+                Extended Type: 
+                <code><a href="/Deedle/reference/deedle-frame.html">Frame</a></code>
+              </p>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    series
+                  </span>
+                  :
+                  <code><span><a href="/Deedle/reference/deedle-series-2.html">Series</a>&lt;<span>'K,&#32;'R</span>&gt;</span></code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+              </dl>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code><span><a href="/Deedle/reference/deedle-frame-2.html">Frame</a>&lt;<span>'K,&#32;string</span>&gt;</span></code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="21" data-fsdocs-tip-unique="21">
+                <p>
+                  <a id="ofRecords">
+                    <a href="#ofRecords">
+                      <code><span>Frame.ofRecords&#32;<span>values</span></span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="21">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>Frame.ofRecords&#32;<span>values</span></span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        values
+                      </b>
+                      :
+                      <code><span>'T&#32;seq</span></code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><a href="/Deedle/reference/deedle-frame-2.html">Frame</a>&lt;<span>int,&#32;string</span>&gt;</span></code>
+                  </span>
+                  <br/>
+                  Type parameters: 
+                  &#39;T
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                      
+ Creates a data frame from a sequence of any .NET objects. The method uses reflection
+ over the specified type parameter `&#39;T` and turns its properties to columns.
+ 
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:Deedle.F# Frame extensions.Frame.ofRecords.Static``1\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('```cref:M:Deedle.F# Frame extensions.Frame.ofRecords.Static``1```')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <p>
+                Extended Type: 
+                <code><a href="/Deedle/reference/deedle-frame.html">Frame</a></code>
+              </p>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    values
+                  </span>
+                  :
+                  <code><span>'T&#32;seq</span></code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+              </dl>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code><span><a href="/Deedle/reference/deedle-frame-2.html">Frame</a>&lt;<span>int,&#32;string</span>&gt;</span></code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="22" data-fsdocs-tip-unique="22">
+                <p>
+                  <a id="ofRecords">
+                    <a href="#ofRecords">
+                      <code><span>Frame.ofRecords&#32;<span><span>(<span>values,&#32;indexCol</span>)</span></span></span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="22">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>Frame.ofRecords&#32;<span><span>(<span>values,&#32;indexCol</span>)</span></span></span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        values
+                      </b>
+                      :
+                      <code><a href="https://learn.microsoft.com/dotnet/api/system.collections.ienumerable">IEnumerable</a></code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        indexCol
+                      </b>
+                      :
+                      <code>string</code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><a href="/Deedle/reference/deedle-frame-2.html">Frame</a>&lt;<span>'R,&#32;string</span>&gt;</span></code>
+                  </span>
+                  <br/>
+                  Type parameters: 
+                  &#39;R (requires equality)
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                      
+ Creates a data frame from a sequence of any .NET objects. The method uses reflection
+ over the specified type parameter `&#39;T` and turns its properties to columns.
+ 
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:Deedle.F# Frame extensions.Frame.ofRecords.Static``1\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('```cref:M:Deedle.F# Frame extensions.Frame.ofRecords.Static``1```')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <p>
+                Extended Type: 
+                <code><a href="/Deedle/reference/deedle-frame.html">Frame</a></code>
+              </p>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    values
+                  </span>
+                  :
+                  <code><a href="https://learn.microsoft.com/dotnet/api/system.collections.ienumerable">IEnumerable</a></code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    indexCol
+                  </span>
+                  :
+                  <code>string</code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+              </dl>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code><span><a href="/Deedle/reference/deedle-frame-2.html">Frame</a>&lt;<span>'R,&#32;string</span>&gt;</span></code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="23" data-fsdocs-tip-unique="23">
+                <p>
+                  <a id="ofRowKeys">
+                    <a href="#ofRowKeys">
+                      <code><span>Frame.ofRowKeys&#32;<span>keys</span></span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="23">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>Frame.ofRowKeys&#32;<span>keys</span></span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        keys
+                      </b>
+                      :
+                      <code><span>'R&#32;seq</span></code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><a href="/Deedle/reference/deedle-frame-2.html">Frame</a>&lt;<span>'R,&#32;string</span>&gt;</span></code>
+                  </span>
+                  <br/>
+                  Type parameters: 
+                  &#39;R (requires equality)
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                      
+ Creates a frame with the specified row keys, but no columns (and no data).
+ This is useful if you want to build a frame gradually and restrict all the
+ later added data to a sequence of row keys known in advance.
+ 
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:Deedle.F# Frame extensions.Frame.ofRowKeys.Static``1\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('```cref:M:Deedle.F# Frame extensions.Frame.ofRowKeys.Static``1```')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <p>
+                Extended Type: 
+                <code><a href="/Deedle/reference/deedle-frame.html">Frame</a></code>
+              </p>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    keys
+                  </span>
+                  :
+                  <code><span>'R&#32;seq</span></code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+              </dl>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code><span><a href="/Deedle/reference/deedle-frame-2.html">Frame</a>&lt;<span>'R,&#32;string</span>&gt;</span></code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="24" data-fsdocs-tip-unique="24">
+                <p>
+                  <a id="ofRows">
+                    <a href="#ofRows">
+                      <code><span>Frame.ofRows&#32;<span>rows</span></span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="24">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>Frame.ofRows&#32;<span>rows</span></span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        rows
+                      </b>
+                      :
+                      <code><span><span>(<span>'R&#32;*&#32;'a</span>)</span>&#32;seq</span></code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><a href="/Deedle/reference/deedle-frame-2.html">Frame</a>&lt;<span>'R,&#32;'C</span>&gt;</span></code>
+                  </span>
+                  <br/>
+                  Type parameters: 
+                  &#39;R, &#39;a, &#39;C (requires equality and :&gt; Deedle.ISeries&lt;&#39;C&gt; and equality)
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                      
+ Creates a frame from a sequence of row keys and row series pairs.
+ The row series can contain values of any type, but it has to be the same
+ for all the series - if you have heterogenously typed series, use `=?&gt;`.
+ 
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:Deedle.F# Frame extensions.Frame.ofRows.Static``3\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('```cref:M:Deedle.F# Frame extensions.Frame.ofRows.Static``3```')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <p>
+                Extended Type: 
+                <code><a href="/Deedle/reference/deedle-frame.html">Frame</a></code>
+              </p>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    rows
+                  </span>
+                  :
+                  <code><span><span>(<span>'R&#32;*&#32;'a</span>)</span>&#32;seq</span></code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+              </dl>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code><span><a href="/Deedle/reference/deedle-frame-2.html">Frame</a>&lt;<span>'R,&#32;'C</span>&gt;</span></code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="25" data-fsdocs-tip-unique="25">
+                <p>
+                  <a id="ofRows">
+                    <a href="#ofRows">
+                      <code><span>Frame.ofRows&#32;<span>rows</span></span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="25">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>Frame.ofRows&#32;<span>rows</span></span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        rows
+                      </b>
+                      :
+                      <code><span><a href="/Deedle/reference/deedle-series-2.html">Series</a>&lt;<span>'R,&#32;'a</span>&gt;</span></code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><a href="/Deedle/reference/deedle-frame-2.html">Frame</a>&lt;<span>'R,&#32;'C</span>&gt;</span></code>
+                  </span>
+                  <br/>
+                  Type parameters: 
+                  &#39;R, &#39;a, &#39;C (requires equality and :&gt; Deedle.ISeries&lt;&#39;C&gt; and equality)
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                      
+ Creates a frame from a series that maps row keys to a nested series
+ containing values for each row.
+ 
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:Deedle.F# Frame extensions.Frame.ofRows.Static``3\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('```cref:M:Deedle.F# Frame extensions.Frame.ofRows.Static``3```')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <p>
+                Extended Type: 
+                <code><a href="/Deedle/reference/deedle-frame.html">Frame</a></code>
+              </p>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    rows
+                  </span>
+                  :
+                  <code><span><a href="/Deedle/reference/deedle-series-2.html">Series</a>&lt;<span>'R,&#32;'a</span>&gt;</span></code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+              </dl>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code><span><a href="/Deedle/reference/deedle-frame-2.html">Frame</a>&lt;<span>'R,&#32;'C</span>&gt;</span></code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="26" data-fsdocs-tip-unique="26">
+                <p>
+                  <a id="ofRowsOrdinal">
+                    <a href="#ofRowsOrdinal">
+                      <code><span>Frame.ofRowsOrdinal&#32;<span>rows</span></span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="26">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>Frame.ofRowsOrdinal&#32;<span>rows</span></span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        rows
+                      </b>
+                      :
+                      <code><span>'a&#32;seq</span></code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><a href="/Deedle/reference/deedle-frame-2.html">Frame</a>&lt;<span>int64,&#32;'K</span>&gt;</span></code>
+                  </span>
+                  <br/>
+                  Type parameters: 
+                  &#39;a, &#39;K, &#39;V (requires :&gt; Deedle.Series&lt;&#39;K,&#39;V&gt; and equality)
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                      
+ Creates a frame with ordinal Integer index from a sequence of rows.
+ The column indices of individual rows are unioned, so if a row has fewer
+ columns, it will be successfully added, but there will be missing values.
+ 
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:Deedle.F# Frame extensions.Frame.ofRowsOrdinal.Static``3\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('```cref:M:Deedle.F# Frame extensions.Frame.ofRowsOrdinal.Static``3```')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <p>
+                Extended Type: 
+                <code><a href="/Deedle/reference/deedle-frame.html">Frame</a></code>
+              </p>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    rows
+                  </span>
+                  :
+                  <code><span>'a&#32;seq</span></code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+              </dl>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code><span><a href="/Deedle/reference/deedle-frame-2.html">Frame</a>&lt;<span>int64,&#32;'K</span>&gt;</span></code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="27" data-fsdocs-tip-unique="27">
+                <p>
+                  <a id="ofValues">
+                    <a href="#ofValues">
+                      <code><span>Frame.ofValues&#32;<span>values</span></span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="27">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>Frame.ofValues&#32;<span>values</span></span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        values
+                      </b>
+                      :
+                      <code><span><span>(<span>'R&#32;*&#32;'C&#32;*&#32;'V</span>)</span>&#32;seq</span></code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><a href="/Deedle/reference/deedle-frame-2.html">Frame</a>&lt;<span>'R,&#32;'C</span>&gt;</span></code>
+                  </span>
+                  <br/>
+                  Type parameters: 
+                  &#39;R, &#39;C, &#39;V (requires equality and equality)
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                      
+ Create a data frame from a sequence of tuples containing row key, column key and a value.
+ 
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:Deedle.F# Frame extensions.Frame.ofValues.Static``3\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('```cref:M:Deedle.F# Frame extensions.Frame.ofValues.Static``3```')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <p>
+                Extended Type: 
+                <code><a href="/Deedle/reference/deedle-frame.html">Frame</a></code>
+              </p>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    values
+                  </span>
+                  :
+                  <code><span><span>(<span>'R&#32;*&#32;'C&#32;*&#32;'V</span>)</span>&#32;seq</span></code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+              </dl>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code><span><a href="/Deedle/reference/deedle-frame-2.html">Frame</a>&lt;<span>'R,&#32;'C</span>&gt;</span></code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <h2 id="section1">
+    Frame operations
+  </h2>
+  <div></div>
+  <div>
+    <h3>
+      Type extensions
+    </h3>
+    <table class="table outer-list fsdocs-member-list">
+      <thead>
+        <tr>
+          <td class="fsdocs-member-list-header">
+            Type extension
+          </td>
+          <td class="fsdocs-member-list-header">
+            Description
+            <fsdocs-details-toggle></fsdocs-details-toggle>
+          </td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="28" data-fsdocs-tip-unique="28">
+                <p>
+                  <a id="PivotTable">
+                    <a href="#PivotTable">
+                      <code><span>this.PivotTable</span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="28">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>this.PivotTable</span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        r
+                      </b>
+                      :
+                      <code>'TColumnKey</code>
+                       - 
+                      A column key to group on for the resulting row index
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        c
+                      </b>
+                      :
+                      <code>'TColumnKey</code>
+                       - 
+                      A column key to group on for the resulting col index
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        op
+                      </b>
+                      :
+                      <code><span><span><a href="/Deedle/reference/deedle-frame-2.html">Frame</a>&lt;<span>'TRowKey,&#32;'TColumnKey</span>&gt;</span>&#32;->&#32;'T</span></code>
+                       - 
+                      A function computing a value from the corresponding bucket frame
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><a href="/Deedle/reference/deedle-frame-2.html">Frame</a>&lt;<span>'R,&#32;'C</span>&gt;</span></code>
+                  </span>
+                  <br/>
+                  Type parameters: 
+                  &#39;R, &#39;C, &#39;T (requires equality and equality)
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                      
+ Creates a new data frame resulting from a &#39;pivot&#39; operation. Consider a denormalized data
+ frame representing a table: column labels are field names &amp; table values are observations
+ of those fields. pivotTable buckets the rows along two axes, according to the values of
+ the columns `r` and `c`; and then computes a value for the frame of rows that land in each
+ bucket.
+ 
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:Deedle.F# Frame extensions.Frame`2.PivotTable``5\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('```cref:M:Deedle.F# Frame extensions.Frame`2.PivotTable``5```')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <p>
+                Extended Type: 
+                <code><a href="/Deedle/reference/deedle-frame-2.html">Frame</a></code>
+              </p>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    r
+                  </span>
+                  :
+                  <code>'TColumnKey</code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    A column key to group on for the resulting row index
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    c
+                  </span>
+                  :
+                  <code>'TColumnKey</code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    A column key to group on for the resulting col index
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    op
+                  </span>
+                  :
+                  <code><span><span><a href="/Deedle/reference/deedle-frame-2.html">Frame</a>&lt;<span>'TRowKey,&#32;'TColumnKey</span>&gt;</span>&#32;->&#32;'T</span></code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    A function computing a value from the corresponding bucket frame
+                  </p>
+                </dd>
+              </dl>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code><span><a href="/Deedle/reference/deedle-frame-2.html">Frame</a>&lt;<span>'R,&#32;'C</span>&gt;</span></code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <h2 id="section2">
+    Input and output
+  </h2>
+  <div></div>
+  <div>
+    <h3>
+      Type extensions
+    </h3>
+    <table class="table outer-list fsdocs-member-list">
+      <thead>
+        <tr>
+          <td class="fsdocs-member-list-header">
+            Type extension
+          </td>
+          <td class="fsdocs-member-list-header">
+            Description
+            <fsdocs-details-toggle></fsdocs-details-toggle>
+          </td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="29" data-fsdocs-tip-unique="29">
+                <p>
+                  <a id="ReadCsv">
+                    <a href="#ReadCsv">
+                      <code><span>Frame.ReadCsv<span><span>(<span>path,&#32;indexCol,&#32;?hasHeaders,&#32;?inferTypes,&#32;?inferRows,&#32;?schema,&#32;?separators,&#32;?culture,&#32;?maxRows,&#32;?missingValues,&#32;?preferOptions,&#32;?typeResolver,&#32;?encoding</span>)</span></span></span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="29">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>Frame.ReadCsv<span><span>(<span>path,&#32;indexCol,&#32;?hasHeaders,&#32;?inferTypes,&#32;?inferRows,&#32;?schema,&#32;?separators,&#32;?culture,&#32;?maxRows,&#32;?missingValues,&#32;?preferOptions,&#32;?typeResolver,&#32;?encoding</span>)</span></span></span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        path
+                      </b>
+                      :
+                      <code>string</code>
+                       - 
+                      Specifies a file name or an web location of the resource.
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        indexCol
+                      </b>
+                      :
+                      <code>string</code>
+                       - 
+                      Specifies the column that should be used as an index in the resulting frame. The type is specified via a type parameter, e.g. use <code>Frame.ReadCsv&lt;int&gt;(&quot;file.csv&quot;, indexCol=&quot;Day&quot;)</code>.
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?hasHeaders
+                      </b>
+                      :
+                      <code>bool</code>
+                       - 
+                      Specifies whether the input CSV file has header row
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?inferTypes
+                      </b>
+                      :
+                      <code>bool</code>
+                       - 
+                      Specifies whether the method should attempt to infer types of columns automatically (set this to `false` if you want to specify schema)
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?inferRows
+                      </b>
+                      :
+                      <code>int</code>
+                       - 
+                      If `inferTypes=true`, this parameter specifies the number of rows to use for type inference. The default value is 100. Value 0 means all rows.
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?schema
+                      </b>
+                      :
+                      <code>string</code>
+                       - 
+                      A string that specifies CSV schema. See the documentation for information about the schema format.
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?separators
+                      </b>
+                      :
+                      <code>string</code>
+                       - 
+                      A string that specifies one or more (single character) separators that are used to separate columns in the CSV file. Use for example `&quot;;&quot;` to parse semicolon separated files.
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?culture
+                      </b>
+                      :
+                      <code>string</code>
+                       - 
+                      Specifies the name of the culture that is used when parsing values in the CSV file (such as `&quot;en-US&quot;`). The default is invariant culture.
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?maxRows
+                      </b>
+                      :
+                      <code>int</code>
+                       - 
+                      The maximal number of rows that should be read from the CSV file.
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?missingValues
+                      </b>
+                      :
+                      <code><span>string[]</span></code>
+                       - 
+                      An array of strings that contains values which should be treated as missing when reading the file. The default value is: &quot;NaN&quot;; &quot;NA&quot;; &quot;#N/A&quot;; &quot;:&quot;; &quot;-&quot;; &quot;TBA&quot;; &quot;TBD&quot;.
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?preferOptions
+                      </b>
+                      :
+                      <code>bool</code>
+                       - 
+                      Specifies whether to prefer optional values when parsing CSV data.
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?typeResolver
+                      </b>
+                      :
+                      <code><span>string&#32;->&#32;<span>string&#32;option</span></span></code>
+                       - 
+                      An optional function that maps a column name to a type name string (e.g. `&quot;int&quot;`, `&quot;float&quot;`, `&quot;string&quot;`, `&quot;bool&quot;`, `&quot;date&quot;`, `&quot;guid&quot;`). Return `None` to let Deedle infer the type for that column. When both `typeResolver` and `schema` are provided, explicit `schema` overrides take precedence for any conflicting column.
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?encoding
+                      </b>
+                      :
+                      <code><a href="https://learn.microsoft.com/dotnet/api/system.text.encoding">Encoding</a></code>
+                       - 
+                      Specifies the character encoding to use when reading the CSV file. When not set, UTF-8 with BOM detection is used.
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><a href="/Deedle/reference/deedle-frame-2.html">Frame</a>&lt;<span>'R,&#32;string</span>&gt;</span></code>
+                  </span>
+                  <br/>
+                  Type parameters: 
+                  &#39;R (requires equality)
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                      
+ Load data frame from a CSV file. The operation automatically reads column names from the
+ CSV file (if they are present) and infers the type of values for each column. Columns
+ of primitive types (`int`, `float`, etc.) are converted to the right type. Columns of other
+ types (such as dates) are not converted automatically.
+ 
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:Deedle.F# Frame extensions.Frame.ReadCsv.Static``1\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('```cref:M:Deedle.F# Frame extensions.Frame.ReadCsv.Static``1```')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <p>
+                Extended Type: 
+                <code><a href="/Deedle/reference/deedle-frame.html">Frame</a></code>
+              </p>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    path
+                  </span>
+                  :
+                  <code>string</code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    Specifies a file name or an web location of the resource.
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    indexCol
+                  </span>
+                  :
+                  <code>string</code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    Specifies the column that should be used as an index in the resulting frame. The type is specified via a type parameter, e.g. use <code>Frame.ReadCsv&lt;int&gt;(&quot;file.csv&quot;, indexCol=&quot;Day&quot;)</code>.
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?hasHeaders
+                  </span>
+                  :
+                  <code>bool</code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    Specifies whether the input CSV file has header row
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?inferTypes
+                  </span>
+                  :
+                  <code>bool</code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    Specifies whether the method should attempt to infer types of columns automatically (set this to `false` if you want to specify schema)
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?inferRows
+                  </span>
+                  :
+                  <code>int</code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    If `inferTypes=true`, this parameter specifies the number of rows to use for type inference. The default value is 100. Value 0 means all rows.
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?schema
+                  </span>
+                  :
+                  <code>string</code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    A string that specifies CSV schema. See the documentation for information about the schema format.
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?separators
+                  </span>
+                  :
+                  <code>string</code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    A string that specifies one or more (single character) separators that are used to separate columns in the CSV file. Use for example `&quot;;&quot;` to parse semicolon separated files.
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?culture
+                  </span>
+                  :
+                  <code>string</code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    Specifies the name of the culture that is used when parsing values in the CSV file (such as `&quot;en-US&quot;`). The default is invariant culture.
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?maxRows
+                  </span>
+                  :
+                  <code>int</code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    The maximal number of rows that should be read from the CSV file.
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?missingValues
+                  </span>
+                  :
+                  <code><span>string[]</span></code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    An array of strings that contains values which should be treated as missing when reading the file. The default value is: &quot;NaN&quot;; &quot;NA&quot;; &quot;#N/A&quot;; &quot;:&quot;; &quot;-&quot;; &quot;TBA&quot;; &quot;TBD&quot;.
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?preferOptions
+                  </span>
+                  :
+                  <code>bool</code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    Specifies whether to prefer optional values when parsing CSV data.
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?typeResolver
+                  </span>
+                  :
+                  <code><span>string&#32;->&#32;<span>string&#32;option</span></span></code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    An optional function that maps a column name to a type name string (e.g. `&quot;int&quot;`, `&quot;float&quot;`, `&quot;string&quot;`, `&quot;bool&quot;`, `&quot;date&quot;`, `&quot;guid&quot;`). Return `None` to let Deedle infer the type for that column. When both `typeResolver` and `schema` are provided, explicit `schema` overrides take precedence for any conflicting column.
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?encoding
+                  </span>
+                  :
+                  <code><a href="https://learn.microsoft.com/dotnet/api/system.text.encoding">Encoding</a></code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    Specifies the character encoding to use when reading the CSV file. When not set, UTF-8 with BOM detection is used.
+                  </p>
+                </dd>
+              </dl>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code><span><a href="/Deedle/reference/deedle-frame-2.html">Frame</a>&lt;<span>'R,&#32;string</span>&gt;</span></code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="30" data-fsdocs-tip-unique="30">
+                <p>
+                  <a id="ReadCsv">
+                    <a href="#ReadCsv">
+                      <code><span>Frame.ReadCsv<span><span>(<span>path,&#32;?hasHeaders,&#32;?inferTypes,&#32;?inferRows,&#32;?schema,&#32;?separators,&#32;?culture,&#32;?maxRows,&#32;?missingValues,&#32;?preferOptions,&#32;?typeResolver,&#32;?encoding</span>)</span></span></span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="30">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>Frame.ReadCsv<span><span>(<span>path,&#32;?hasHeaders,&#32;?inferTypes,&#32;?inferRows,&#32;?schema,&#32;?separators,&#32;?culture,&#32;?maxRows,&#32;?missingValues,&#32;?preferOptions,&#32;?typeResolver,&#32;?encoding</span>)</span></span></span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        path
+                      </b>
+                      :
+                      <code>string</code>
+                       - 
+                      Specifies a file name or an web location of the resource.
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?hasHeaders
+                      </b>
+                      :
+                      <code>bool</code>
+                       - 
+                      Specifies whether the input CSV file has header row
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?inferTypes
+                      </b>
+                      :
+                      <code>bool</code>
+                       - 
+                      Specifies whether the method should attempt to infer types of columns automatically (set this to `false` if you want to specify schema)
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?inferRows
+                      </b>
+                      :
+                      <code>int</code>
+                       - 
+                      If `inferTypes=true`, this parameter specifies the number of rows to use for type inference. The default value is 100.
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?schema
+                      </b>
+                      :
+                      <code>string</code>
+                       - 
+                      A string that specifies CSV schema. See the documentation for information about the schema format.
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?separators
+                      </b>
+                      :
+                      <code>string</code>
+                       - 
+                      A string that specifies one or more (single character) separators that are used to separate columns in the CSV file. Use for example `&quot;;&quot;` to parse semicolon separated files.
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?culture
+                      </b>
+                      :
+                      <code>string</code>
+                       - 
+                      Specifies the name of the culture that is used when parsing values in the CSV file (such as `&quot;en-US&quot;`). The default is invariant culture.
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?maxRows
+                      </b>
+                      :
+                      <code>int</code>
+                       - 
+                      The maximal number of rows that should be read from the CSV file.
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?missingValues
+                      </b>
+                      :
+                      <code><span>string[]</span></code>
+                       - 
+                      An array of strings that contains values which should be treated as missing when reading the file. The default value is: &quot;NaN&quot;; &quot;NA&quot;; &quot;#N/A&quot;; &quot;:&quot;; &quot;-&quot;; &quot;TBA&quot;; &quot;TBD&quot;.
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?preferOptions
+                      </b>
+                      :
+                      <code>bool</code>
+                       - 
+                      Specifies whether to prefer optional values when parsing CSV data.
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?typeResolver
+                      </b>
+                      :
+                      <code><span>string&#32;->&#32;<span>string&#32;option</span></span></code>
+                       - 
+                      An optional function that maps a column name to a type name string (e.g. `&quot;int&quot;`, `&quot;float&quot;`, `&quot;string&quot;`, `&quot;bool&quot;`, `&quot;date&quot;`, `&quot;guid&quot;`). Return `None` to let Deedle infer the type for that column. When both `typeResolver` and `schema` are provided, explicit `schema` overrides take precedence for any conflicting column.
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?encoding
+                      </b>
+                      :
+                      <code><a href="https://learn.microsoft.com/dotnet/api/system.text.encoding">Encoding</a></code>
+                       - 
+                      Specifies the character encoding to use when reading the CSV file. When not set, UTF-8 with BOM detection is used.
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><a href="/Deedle/reference/deedle-frame-2.html">Frame</a>&lt;<span>int,&#32;string</span>&gt;</span></code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                      
+ Load data frame from a CSV file. The operation automatically reads column names from the
+ CSV file (if they are present) and infers the type of values for each column. Columns
+ of primitive types (`int`, `float`, etc.) are converted to the right type. Columns of other
+ types (such as dates) are not converted automatically.
+ 
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:Deedle.F# Frame extensions.Frame.ReadCsv.Static\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:M:Deedle.F# Frame extensions.Frame.ReadCsv.Static`')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <p>
+                Extended Type: 
+                <code><a href="/Deedle/reference/deedle-frame.html">Frame</a></code>
+              </p>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    path
+                  </span>
+                  :
+                  <code>string</code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    Specifies a file name or an web location of the resource.
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?hasHeaders
+                  </span>
+                  :
+                  <code>bool</code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    Specifies whether the input CSV file has header row
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?inferTypes
+                  </span>
+                  :
+                  <code>bool</code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    Specifies whether the method should attempt to infer types of columns automatically (set this to `false` if you want to specify schema)
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?inferRows
+                  </span>
+                  :
+                  <code>int</code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    If `inferTypes=true`, this parameter specifies the number of rows to use for type inference. The default value is 100.
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?schema
+                  </span>
+                  :
+                  <code>string</code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    A string that specifies CSV schema. See the documentation for information about the schema format.
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?separators
+                  </span>
+                  :
+                  <code>string</code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    A string that specifies one or more (single character) separators that are used to separate columns in the CSV file. Use for example `&quot;;&quot;` to parse semicolon separated files.
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?culture
+                  </span>
+                  :
+                  <code>string</code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    Specifies the name of the culture that is used when parsing values in the CSV file (such as `&quot;en-US&quot;`). The default is invariant culture.
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?maxRows
+                  </span>
+                  :
+                  <code>int</code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    The maximal number of rows that should be read from the CSV file.
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?missingValues
+                  </span>
+                  :
+                  <code><span>string[]</span></code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    An array of strings that contains values which should be treated as missing when reading the file. The default value is: &quot;NaN&quot;; &quot;NA&quot;; &quot;#N/A&quot;; &quot;:&quot;; &quot;-&quot;; &quot;TBA&quot;; &quot;TBD&quot;.
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?preferOptions
+                  </span>
+                  :
+                  <code>bool</code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    Specifies whether to prefer optional values when parsing CSV data.
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?typeResolver
+                  </span>
+                  :
+                  <code><span>string&#32;->&#32;<span>string&#32;option</span></span></code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    An optional function that maps a column name to a type name string (e.g. `&quot;int&quot;`, `&quot;float&quot;`, `&quot;string&quot;`, `&quot;bool&quot;`, `&quot;date&quot;`, `&quot;guid&quot;`). Return `None` to let Deedle infer the type for that column. When both `typeResolver` and `schema` are provided, explicit `schema` overrides take precedence for any conflicting column.
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?encoding
+                  </span>
+                  :
+                  <code><a href="https://learn.microsoft.com/dotnet/api/system.text.encoding">Encoding</a></code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    Specifies the character encoding to use when reading the CSV file. When not set, UTF-8 with BOM detection is used.
+                  </p>
+                </dd>
+              </dl>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code><span><a href="/Deedle/reference/deedle-frame-2.html">Frame</a>&lt;<span>int,&#32;string</span>&gt;</span></code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="31" data-fsdocs-tip-unique="31">
+                <p>
+                  <a id="ReadCsv">
+                    <a href="#ReadCsv">
+                      <code><span>Frame.ReadCsv<span><span>(<span>stream,&#32;?hasHeaders,&#32;?inferTypes,&#32;?inferRows,&#32;?schema,&#32;?separators,&#32;?culture,&#32;?maxRows,&#32;?missingValues,&#32;?preferOptions,&#32;?typeResolver,&#32;?encoding</span>)</span></span></span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="31">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>Frame.ReadCsv<span><span>(<span>stream,&#32;?hasHeaders,&#32;?inferTypes,&#32;?inferRows,&#32;?schema,&#32;?separators,&#32;?culture,&#32;?maxRows,&#32;?missingValues,&#32;?preferOptions,&#32;?typeResolver,&#32;?encoding</span>)</span></span></span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        stream
+                      </b>
+                      :
+                      <code><a href="https://learn.microsoft.com/dotnet/api/system.io.stream">Stream</a></code>
+                       - 
+                      Specifies the input stream, opened at the beginning of CSV data
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?hasHeaders
+                      </b>
+                      :
+                      <code>bool</code>
+                       - 
+                      Specifies whether the input CSV file has header row
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?inferTypes
+                      </b>
+                      :
+                      <code>bool</code>
+                       - 
+                      Specifies whether the method should attempt to infer types of columns automatically (set this to `false` if you want to specify schema)
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?inferRows
+                      </b>
+                      :
+                      <code>int</code>
+                       - 
+                      If `inferTypes=true`, this parameter specifies the number of rows to use for type inference. The default value is 100.
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?schema
+                      </b>
+                      :
+                      <code>string</code>
+                       - 
+                      A string that specifies CSV schema. See the documentation for information about the schema format.
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?separators
+                      </b>
+                      :
+                      <code>string</code>
+                       - 
+                      A string that specifies one or more (single character) separators that are used to separate columns in the CSV file. Use for example `&quot;;&quot;` to parse semicolon separated files.
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?culture
+                      </b>
+                      :
+                      <code>string</code>
+                       - 
+                      Specifies the name of the culture that is used when parsing values in the CSV file (such as `&quot;en-US&quot;`). The default is invariant culture.
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?maxRows
+                      </b>
+                      :
+                      <code>int</code>
+                       - 
+                      The maximal number of rows that should be read from the CSV file.
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?missingValues
+                      </b>
+                      :
+                      <code><span>string[]</span></code>
+                       - 
+                      An array of strings that contains values which should be treated as missing when reading the file. The default value is: &quot;NaN&quot;; &quot;NA&quot;; &quot;#N/A&quot;; &quot;:&quot;; &quot;-&quot;; &quot;TBA&quot;; &quot;TBD&quot;.
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?preferOptions
+                      </b>
+                      :
+                      <code>bool</code>
+                       - 
+                      Specifies whether to prefer optional values when parsing CSV data.
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?typeResolver
+                      </b>
+                      :
+                      <code><span>string&#32;->&#32;<span>string&#32;option</span></span></code>
+                       - 
+                      An optional function that maps a column name to a type name string (e.g. `&quot;int&quot;`, `&quot;float&quot;`, `&quot;string&quot;`, `&quot;bool&quot;`, `&quot;date&quot;`, `&quot;guid&quot;`). Return `None` to let Deedle infer the type for that column. When both `typeResolver` and `schema` are provided, explicit `schema` overrides take precedence for any conflicting column.
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?encoding
+                      </b>
+                      :
+                      <code><a href="https://learn.microsoft.com/dotnet/api/system.text.encoding">Encoding</a></code>
+                       - 
+                      Specifies the character encoding to use when reading the CSV stream. When not set, UTF-8 with BOM detection is used.
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><a href="/Deedle/reference/deedle-frame-2.html">Frame</a>&lt;<span>int,&#32;string</span>&gt;</span></code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                      
+ Load data frame from a CSV file. The operation automatically reads column names from the
+ CSV file (if they are present) and infers the type of values for each column. Columns
+ of primitive types (`int`, `float`, etc.) are converted to the right type. Columns of other
+ types (such as dates) are not converted automatically.
+ 
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:Deedle.F# Frame extensions.Frame.ReadCsv.Static\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:M:Deedle.F# Frame extensions.Frame.ReadCsv.Static`')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <p>
+                Extended Type: 
+                <code><a href="/Deedle/reference/deedle-frame.html">Frame</a></code>
+              </p>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    stream
+                  </span>
+                  :
+                  <code><a href="https://learn.microsoft.com/dotnet/api/system.io.stream">Stream</a></code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    Specifies the input stream, opened at the beginning of CSV data
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?hasHeaders
+                  </span>
+                  :
+                  <code>bool</code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    Specifies whether the input CSV file has header row
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?inferTypes
+                  </span>
+                  :
+                  <code>bool</code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    Specifies whether the method should attempt to infer types of columns automatically (set this to `false` if you want to specify schema)
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?inferRows
+                  </span>
+                  :
+                  <code>int</code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    If `inferTypes=true`, this parameter specifies the number of rows to use for type inference. The default value is 100.
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?schema
+                  </span>
+                  :
+                  <code>string</code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    A string that specifies CSV schema. See the documentation for information about the schema format.
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?separators
+                  </span>
+                  :
+                  <code>string</code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    A string that specifies one or more (single character) separators that are used to separate columns in the CSV file. Use for example `&quot;;&quot;` to parse semicolon separated files.
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?culture
+                  </span>
+                  :
+                  <code>string</code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    Specifies the name of the culture that is used when parsing values in the CSV file (such as `&quot;en-US&quot;`). The default is invariant culture.
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?maxRows
+                  </span>
+                  :
+                  <code>int</code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    The maximal number of rows that should be read from the CSV file.
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?missingValues
+                  </span>
+                  :
+                  <code><span>string[]</span></code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    An array of strings that contains values which should be treated as missing when reading the file. The default value is: &quot;NaN&quot;; &quot;NA&quot;; &quot;#N/A&quot;; &quot;:&quot;; &quot;-&quot;; &quot;TBA&quot;; &quot;TBD&quot;.
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?preferOptions
+                  </span>
+                  :
+                  <code>bool</code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    Specifies whether to prefer optional values when parsing CSV data.
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?typeResolver
+                  </span>
+                  :
+                  <code><span>string&#32;->&#32;<span>string&#32;option</span></span></code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    An optional function that maps a column name to a type name string (e.g. `&quot;int&quot;`, `&quot;float&quot;`, `&quot;string&quot;`, `&quot;bool&quot;`, `&quot;date&quot;`, `&quot;guid&quot;`). Return `None` to let Deedle infer the type for that column. When both `typeResolver` and `schema` are provided, explicit `schema` overrides take precedence for any conflicting column.
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?encoding
+                  </span>
+                  :
+                  <code><a href="https://learn.microsoft.com/dotnet/api/system.text.encoding">Encoding</a></code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    Specifies the character encoding to use when reading the CSV stream. When not set, UTF-8 with BOM detection is used.
+                  </p>
+                </dd>
+              </dl>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code><span><a href="/Deedle/reference/deedle-frame-2.html">Frame</a>&lt;<span>int,&#32;string</span>&gt;</span></code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="32" data-fsdocs-tip-unique="32">
+                <p>
+                  <a id="ReadCsv">
+                    <a href="#ReadCsv">
+                      <code><span>Frame.ReadCsv<span><span>(<span>reader,&#32;?hasHeaders,&#32;?inferTypes,&#32;?inferRows,&#32;?schema,&#32;?separators,&#32;?culture,&#32;?maxRows,&#32;?missingValues,&#32;?preferOptions,&#32;?typeResolver</span>)</span></span></span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="32">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>Frame.ReadCsv<span><span>(<span>reader,&#32;?hasHeaders,&#32;?inferTypes,&#32;?inferRows,&#32;?schema,&#32;?separators,&#32;?culture,&#32;?maxRows,&#32;?missingValues,&#32;?preferOptions,&#32;?typeResolver</span>)</span></span></span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        reader
+                      </b>
+                      :
+                      <code><a href="https://learn.microsoft.com/dotnet/api/system.io.textreader">TextReader</a></code>
+                       - 
+                      Specifies the `TextReader`, positioned at the beginning of CSV data
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?hasHeaders
+                      </b>
+                      :
+                      <code>bool</code>
+                       - 
+                      Specifies whether the input CSV file has header row
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?inferTypes
+                      </b>
+                      :
+                      <code>bool</code>
+                       - 
+                      Specifies whether the method should attempt to infer types of columns automatically (set this to `false` if you want to specify schema)
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?inferRows
+                      </b>
+                      :
+                      <code>int</code>
+                       - 
+                      If `inferTypes=true`, this parameter specifies the number of rows to use for type inference. The default value is 100.
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?schema
+                      </b>
+                      :
+                      <code>string</code>
+                       - 
+                      A string that specifies CSV schema. See the documentation for information about the schema format.
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?separators
+                      </b>
+                      :
+                      <code>string</code>
+                       - 
+                      A string that specifies one or more (single character) separators that are used to separate columns in the CSV file. Use for example `&quot;;&quot;` to parse semicolon separated files.
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?culture
+                      </b>
+                      :
+                      <code>string</code>
+                       - 
+                      Specifies the name of the culture that is used when parsing values in the CSV file (such as `&quot;en-US&quot;`). The default is invariant culture.
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?maxRows
+                      </b>
+                      :
+                      <code>int</code>
+                       - 
+                      The maximal number of rows that should be read from the CSV file.
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?missingValues
+                      </b>
+                      :
+                      <code><span>string[]</span></code>
+                       - 
+                      An array of strings that contains values which should be treated as missing when reading the file. The default value is: &quot;NaN&quot;; &quot;NA&quot;; &quot;#N/A&quot;; &quot;:&quot;; &quot;-&quot;; &quot;TBA&quot;; &quot;TBD&quot;.
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?preferOptions
+                      </b>
+                      :
+                      <code>bool</code>
+                       - 
+                      Specifies whether to prefer optional values when parsing CSV data.
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?typeResolver
+                      </b>
+                      :
+                      <code><span>string&#32;->&#32;<span>string&#32;option</span></span></code>
+                       - 
+                      An optional function that maps a column name to a type name string (e.g. `&quot;int&quot;`, `&quot;float&quot;`, `&quot;string&quot;`, `&quot;bool&quot;`, `&quot;date&quot;`, `&quot;guid&quot;`). Return `None` to let Deedle infer the type for that column. When both `typeResolver` and `schema` are provided, explicit `schema` overrides take precedence for any conflicting column.
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><a href="/Deedle/reference/deedle-frame-2.html">Frame</a>&lt;<span>int,&#32;string</span>&gt;</span></code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                      
+ Load data frame from a CSV file. The operation automatically reads column names from the
+ CSV file (if they are present) and infers the type of values for each column. Columns
+ of primitive types (`int`, `float`, etc.) are converted to the right type. Columns of other
+ types (such as dates) are not converted automatically.
+ 
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:Deedle.F# Frame extensions.Frame.ReadCsv.Static\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:M:Deedle.F# Frame extensions.Frame.ReadCsv.Static`')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <p>
+                Extended Type: 
+                <code><a href="/Deedle/reference/deedle-frame.html">Frame</a></code>
+              </p>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    reader
+                  </span>
+                  :
+                  <code><a href="https://learn.microsoft.com/dotnet/api/system.io.textreader">TextReader</a></code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    Specifies the `TextReader`, positioned at the beginning of CSV data
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?hasHeaders
+                  </span>
+                  :
+                  <code>bool</code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    Specifies whether the input CSV file has header row
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?inferTypes
+                  </span>
+                  :
+                  <code>bool</code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    Specifies whether the method should attempt to infer types of columns automatically (set this to `false` if you want to specify schema)
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?inferRows
+                  </span>
+                  :
+                  <code>int</code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    If `inferTypes=true`, this parameter specifies the number of rows to use for type inference. The default value is 100.
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?schema
+                  </span>
+                  :
+                  <code>string</code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    A string that specifies CSV schema. See the documentation for information about the schema format.
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?separators
+                  </span>
+                  :
+                  <code>string</code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    A string that specifies one or more (single character) separators that are used to separate columns in the CSV file. Use for example `&quot;;&quot;` to parse semicolon separated files.
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?culture
+                  </span>
+                  :
+                  <code>string</code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    Specifies the name of the culture that is used when parsing values in the CSV file (such as `&quot;en-US&quot;`). The default is invariant culture.
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?maxRows
+                  </span>
+                  :
+                  <code>int</code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    The maximal number of rows that should be read from the CSV file.
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?missingValues
+                  </span>
+                  :
+                  <code><span>string[]</span></code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    An array of strings that contains values which should be treated as missing when reading the file. The default value is: &quot;NaN&quot;; &quot;NA&quot;; &quot;#N/A&quot;; &quot;:&quot;; &quot;-&quot;; &quot;TBA&quot;; &quot;TBD&quot;.
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?preferOptions
+                  </span>
+                  :
+                  <code>bool</code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    Specifies whether to prefer optional values when parsing CSV data.
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?typeResolver
+                  </span>
+                  :
+                  <code><span>string&#32;->&#32;<span>string&#32;option</span></span></code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    An optional function that maps a column name to a type name string (e.g. `&quot;int&quot;`, `&quot;float&quot;`, `&quot;string&quot;`, `&quot;bool&quot;`, `&quot;date&quot;`, `&quot;guid&quot;`). Return `None` to let Deedle infer the type for that column. When both `typeResolver` and `schema` are provided, explicit `schema` overrides take precedence for any conflicting column.
+                  </p>
+                </dd>
+              </dl>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code><span><a href="/Deedle/reference/deedle-frame-2.html">Frame</a>&lt;<span>int,&#32;string</span>&gt;</span></code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="33" data-fsdocs-tip-unique="33">
+                <p>
+                  <a id="ReadCsvString">
+                    <a href="#ReadCsvString">
+                      <code><span>Frame.ReadCsvString<span><span>(<span>csvString,&#32;?hasHeaders,&#32;?inferTypes,&#32;?inferRows,&#32;?schema,&#32;?separators,&#32;?culture,&#32;?maxRows,&#32;?missingValues,&#32;?preferOptions,&#32;?typeResolver</span>)</span></span></span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="33">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>Frame.ReadCsvString<span><span>(<span>csvString,&#32;?hasHeaders,&#32;?inferTypes,&#32;?inferRows,&#32;?schema,&#32;?separators,&#32;?culture,&#32;?maxRows,&#32;?missingValues,&#32;?preferOptions,&#32;?typeResolver</span>)</span></span></span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        csvString
+                      </b>
+                      :
+                      <code>string</code>
+                       - 
+                      Specifies the input string containing the CSV
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?hasHeaders
+                      </b>
+                      :
+                      <code>bool</code>
+                       - 
+                      Specifies whether the input CSV string has header row
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?inferTypes
+                      </b>
+                      :
+                      <code>bool</code>
+                       - 
+                      Specifies whether the method should attempt to infer types of columns automatically (set this to `false` if you want to specify schema)
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?inferRows
+                      </b>
+                      :
+                      <code>int</code>
+                       - 
+                      If `inferTypes=true`, this parameter specifies the number of rows to use for type inference. The default value is 100.
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?schema
+                      </b>
+                      :
+                      <code>string</code>
+                       - 
+                      A string that specifies CSV schema. See the documentation for information about the schema format.
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?separators
+                      </b>
+                      :
+                      <code>string</code>
+                       - 
+                      A string that specifies one or more (single character) separators that are used to separate columns in the CSV string. Use for example `&quot;;&quot;` to parse semicolon separated files.
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?culture
+                      </b>
+                      :
+                      <code>string</code>
+                       - 
+                      Specifies the name of the culture that is used when parsing values in the CSV string (such as `&quot;en-US&quot;`). The default is invariant culture.
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?maxRows
+                      </b>
+                      :
+                      <code>int</code>
+                       - 
+                      The maximal number of rows that should be read from the CSV string.
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?missingValues
+                      </b>
+                      :
+                      <code><span>string[]</span></code>
+                       - 
+                      An array of strings that contains values which should be treated as missing when reading the file. The default value is: &quot;NaN&quot;; &quot;NA&quot;; &quot;#N/A&quot;; &quot;:&quot;; &quot;-&quot;; &quot;TBA&quot;; &quot;TBD&quot;.
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?preferOptions
+                      </b>
+                      :
+                      <code>bool</code>
+                       - 
+                      Specifies whether to prefer optional values when parsing CSV data.
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?typeResolver
+                      </b>
+                      :
+                      <code><span>string&#32;->&#32;<span>string&#32;option</span></span></code>
+                       - 
+                      An optional function that maps a column name to a type name string (e.g. `&quot;int&quot;`, `&quot;float&quot;`, `&quot;string&quot;`, `&quot;bool&quot;`, `&quot;date&quot;`, `&quot;guid&quot;`). Return `None` to let Deedle infer the type for that column. When both `typeResolver` and `schema` are provided, explicit `schema` overrides take precedence for any conflicting column.
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><a href="/Deedle/reference/deedle-frame-2.html">Frame</a>&lt;<span>int,&#32;string</span>&gt;</span></code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                      
+ Load data frame from a string representing a UTF8-encoded CSV file. The operation automatically
+ reads column names from the string (if they are present) and infers the type of values for each column. Columns
+ of primitive types (`int`, `float`, etc.) are converted to the right type. Columns of other
+ types (such as dates) are not converted automatically.
+ 
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:Deedle.F# Frame extensions.Frame.ReadCsvString.Static\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:M:Deedle.F# Frame extensions.Frame.ReadCsvString.Static`')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <p>
+                Extended Type: 
+                <code><a href="/Deedle/reference/deedle-frame.html">Frame</a></code>
+              </p>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    csvString
+                  </span>
+                  :
+                  <code>string</code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    Specifies the input string containing the CSV
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?hasHeaders
+                  </span>
+                  :
+                  <code>bool</code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    Specifies whether the input CSV string has header row
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?inferTypes
+                  </span>
+                  :
+                  <code>bool</code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    Specifies whether the method should attempt to infer types of columns automatically (set this to `false` if you want to specify schema)
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?inferRows
+                  </span>
+                  :
+                  <code>int</code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    If `inferTypes=true`, this parameter specifies the number of rows to use for type inference. The default value is 100.
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?schema
+                  </span>
+                  :
+                  <code>string</code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    A string that specifies CSV schema. See the documentation for information about the schema format.
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?separators
+                  </span>
+                  :
+                  <code>string</code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    A string that specifies one or more (single character) separators that are used to separate columns in the CSV string. Use for example `&quot;;&quot;` to parse semicolon separated files.
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?culture
+                  </span>
+                  :
+                  <code>string</code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    Specifies the name of the culture that is used when parsing values in the CSV string (such as `&quot;en-US&quot;`). The default is invariant culture.
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?maxRows
+                  </span>
+                  :
+                  <code>int</code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    The maximal number of rows that should be read from the CSV string.
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?missingValues
+                  </span>
+                  :
+                  <code><span>string[]</span></code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    An array of strings that contains values which should be treated as missing when reading the file. The default value is: &quot;NaN&quot;; &quot;NA&quot;; &quot;#N/A&quot;; &quot;:&quot;; &quot;-&quot;; &quot;TBA&quot;; &quot;TBD&quot;.
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?preferOptions
+                  </span>
+                  :
+                  <code>bool</code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    Specifies whether to prefer optional values when parsing CSV data.
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?typeResolver
+                  </span>
+                  :
+                  <code><span>string&#32;->&#32;<span>string&#32;option</span></span></code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    An optional function that maps a column name to a type name string (e.g. `&quot;int&quot;`, `&quot;float&quot;`, `&quot;string&quot;`, `&quot;bool&quot;`, `&quot;date&quot;`, `&quot;guid&quot;`). Return `None` to let Deedle infer the type for that column. When both `typeResolver` and `schema` are provided, explicit `schema` overrides take precedence for any conflicting column.
+                  </p>
+                </dd>
+              </dl>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code><span><a href="/Deedle/reference/deedle-frame-2.html">Frame</a>&lt;<span>int,&#32;string</span>&gt;</span></code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="34" data-fsdocs-tip-unique="34">
+                <p>
+                  <a id="SaveCsv">
+                    <a href="#SaveCsv">
+                      <code><span>this.SaveCsv</span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="34">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>this.SaveCsv</span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        writer
+                      </b>
+                      :
+                      <code><a href="https://learn.microsoft.com/dotnet/api/system.io.textwriter">TextWriter</a></code>
+                       - 
+                      Specifies the TextWriter to which the CSV data should be written
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?includeRowKeys
+                      </b>
+                      :
+                      <code>bool</code>
+                       - 
+                      When set to `true`, the row key is also written to the output file
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?keyNames
+                      </b>
+                      :
+                      <code><span>string&#32;seq</span></code>
+                       - 
+                      Can be used to specify the CSV headers for row key (or keys, for multi-level index)
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?separator
+                      </b>
+                      :
+                      <code>char</code>
+                       - 
+                      Specify the column separator in the file (the default is `\t` for TSV files and `,` for CSV files)
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?culture
+                      </b>
+                      :
+                      <code><a href="https://learn.microsoft.com/dotnet/api/system.globalization.cultureinfo">CultureInfo</a></code>
+                       - 
+                      Specify the `CultureInfo` object used for formatting numerical data
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                      
+ Save data frame to a CSV file or a `TextWriter`. When calling the operation,
+ you can specify whether you want to save the row keys or not (and headers for the keys)
+ and you can also specify the separator (use `\t` for writing TSV files). When specifying
+ file name ending with `.tsv`, the `\t` separator is used automatically.
+ 
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:Deedle.F# Frame extensions.Frame`2.SaveCsv``2\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('```cref:M:Deedle.F# Frame extensions.Frame`2.SaveCsv``2```')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <p>
+                Extended Type: 
+                <code><a href="/Deedle/reference/deedle-frame-2.html">Frame</a></code>
+              </p>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    writer
+                  </span>
+                  :
+                  <code><a href="https://learn.microsoft.com/dotnet/api/system.io.textwriter">TextWriter</a></code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    Specifies the TextWriter to which the CSV data should be written
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?includeRowKeys
+                  </span>
+                  :
+                  <code>bool</code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    When set to `true`, the row key is also written to the output file
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?keyNames
+                  </span>
+                  :
+                  <code><span>string&#32;seq</span></code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    Can be used to specify the CSV headers for row key (or keys, for multi-level index)
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?separator
+                  </span>
+                  :
+                  <code>char</code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    Specify the column separator in the file (the default is `\t` for TSV files and `,` for CSV files)
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?culture
+                  </span>
+                  :
+                  <code><a href="https://learn.microsoft.com/dotnet/api/system.globalization.cultureinfo">CultureInfo</a></code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    Specify the `CultureInfo` object used for formatting numerical data
+                  </p>
+                </dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="35" data-fsdocs-tip-unique="35">
+                <p>
+                  <a id="SaveCsv">
+                    <a href="#SaveCsv">
+                      <code><span>this.SaveCsv</span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="35">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>this.SaveCsv</span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        path
+                      </b>
+                      :
+                      <code>string</code>
+                       - 
+                      Specifies the output file name where the CSV data should be written
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?includeRowKeys
+                      </b>
+                      :
+                      <code>bool</code>
+                       - 
+                      When set to `true`, the row key is also written to the output file
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?keyNames
+                      </b>
+                      :
+                      <code><span>string&#32;seq</span></code>
+                       - 
+                      Can be used to specify the CSV headers for row key (or keys, for multi-level index)
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?separator
+                      </b>
+                      :
+                      <code>char</code>
+                       - 
+                      Specify the column separator in the file (the default is `\t` for TSV files and `,` for CSV files)
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?culture
+                      </b>
+                      :
+                      <code><a href="https://learn.microsoft.com/dotnet/api/system.globalization.cultureinfo">CultureInfo</a></code>
+                       - 
+                      Specify the `CultureInfo` object used for formatting numerical data
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                      
+ Save data frame to a CSV file or a `TextWriter`. When calling the operation,
+ you can specify whether you want to save the row keys or not (and headers for the keys)
+ and you can also specify the separator (use `\t` for writing TSV files). When specifying
+ file name ending with `.tsv`, the `\t` separator is used automatically.
+ 
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:Deedle.F# Frame extensions.Frame`2.SaveCsv``2\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('```cref:M:Deedle.F# Frame extensions.Frame`2.SaveCsv``2```')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <p>
+                Extended Type: 
+                <code><a href="/Deedle/reference/deedle-frame-2.html">Frame</a></code>
+              </p>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    path
+                  </span>
+                  :
+                  <code>string</code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    Specifies the output file name where the CSV data should be written
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?includeRowKeys
+                  </span>
+                  :
+                  <code>bool</code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    When set to `true`, the row key is also written to the output file
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?keyNames
+                  </span>
+                  :
+                  <code><span>string&#32;seq</span></code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    Can be used to specify the CSV headers for row key (or keys, for multi-level index)
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?separator
+                  </span>
+                  :
+                  <code>char</code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    Specify the column separator in the file (the default is `\t` for TSV files and `,` for CSV files)
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?culture
+                  </span>
+                  :
+                  <code><a href="https://learn.microsoft.com/dotnet/api/system.globalization.cultureinfo">CultureInfo</a></code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    Specify the `CultureInfo` object used for formatting numerical data
+                  </p>
+                </dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="36" data-fsdocs-tip-unique="36">
+                <p>
+                  <a id="SaveCsv">
+                    <a href="#SaveCsv">
+                      <code><span>this.SaveCsv</span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="36">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>this.SaveCsv</span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        path
+                      </b>
+                      :
+                      <code>string</code>
+                       - 
+                      Specifies the output file name where the CSV data should be written
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        keyNames
+                      </b>
+                      :
+                      <code><span>string&#32;seq</span></code>
+                       - 
+                      Specifies the CSV headers for row key (or keys, for multi-level index)
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                      
+ Save data frame to a CSV file or to a `TextWriter`. When calling the operation,
+ you can specify whether you want to save the row keys or not (and headers for the keys)
+ and you can also specify the separator (use `\t` for writing TSV files). When specifying
+ file name ending with `.tsv`, the `\t` separator is used automatically.
+ 
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:Deedle.F# Frame extensions.Frame`2.SaveCsv``2\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('```cref:M:Deedle.F# Frame extensions.Frame`2.SaveCsv``2```')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <p>
+                Extended Type: 
+                <code><a href="/Deedle/reference/deedle-frame-2.html">Frame</a></code>
+              </p>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    path
+                  </span>
+                  :
+                  <code>string</code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    Specifies the output file name where the CSV data should be written
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    keyNames
+                  </span>
+                  :
+                  <code><span>string&#32;seq</span></code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    Specifies the CSV headers for row key (or keys, for multi-level index)
+                  </p>
+                </dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="37" data-fsdocs-tip-unique="37">
+                <p>
+                  <a id="SaveJson">
+                    <a href="#SaveJson">
+                      <code><span>this.SaveJson</span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="37">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>this.SaveJson</span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        writer
+                      </b>
+                      :
+                      <code><a href="https://learn.microsoft.com/dotnet/api/system.io.textwriter">TextWriter</a></code>
+                       - 
+                      The <code>TextWriter</code> to write the JSON to.
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?orient
+                      </b>
+                      :
+                      <code>string</code>
+                       - 
+                      Controls the JSON layout (see <code>ToJson</code>).
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                      
+ Save the data frame as a JSON file.
+ 
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:Deedle.F# Frame extensions.Frame`2.SaveJson``2\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('```cref:M:Deedle.F# Frame extensions.Frame`2.SaveJson``2```')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <p>
+                Extended Type: 
+                <code><a href="/Deedle/reference/deedle-frame-2.html">Frame</a></code>
+              </p>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    writer
+                  </span>
+                  :
+                  <code><a href="https://learn.microsoft.com/dotnet/api/system.io.textwriter">TextWriter</a></code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    The <code>TextWriter</code> to write the JSON to.
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?orient
+                  </span>
+                  :
+                  <code>string</code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    Controls the JSON layout (see <code>ToJson</code>).
+                  </p>
+                </dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="38" data-fsdocs-tip-unique="38">
+                <p>
+                  <a id="SaveJson">
+                    <a href="#SaveJson">
+                      <code><span>this.SaveJson</span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="38">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>this.SaveJson</span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        path
+                      </b>
+                      :
+                      <code>string</code>
+                       - 
+                      The output file path.
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?orient
+                      </b>
+                      :
+                      <code>string</code>
+                       - 
+                      Controls the JSON layout (see <code>ToJson</code>).
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                      
+ Save the data frame as a JSON file.
+ 
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:Deedle.F# Frame extensions.Frame`2.SaveJson``2\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('```cref:M:Deedle.F# Frame extensions.Frame`2.SaveJson``2```')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <p>
+                Extended Type: 
+                <code><a href="/Deedle/reference/deedle-frame-2.html">Frame</a></code>
+              </p>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    path
+                  </span>
+                  :
+                  <code>string</code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    The output file path.
+                  </p>
+                </dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?orient
+                  </span>
+                  :
+                  <code>string</code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    Controls the JSON layout (see <code>ToJson</code>).
+                  </p>
+                </dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="39" data-fsdocs-tip-unique="39">
+                <p>
+                  <a id="ToDataTable">
+                    <a href="#ToDataTable">
+                      <code><span>this.ToDataTable</span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="39">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>this.ToDataTable</span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        rowKeyNames
+                      </b>
+                      :
+                      <code><span>string&#32;seq</span></code>
+                       - 
+                      Specifies the names of the row key components (or just a single row key name if the row index is not hierarchical).
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><a href="https://learn.microsoft.com/dotnet/api/system.data.datatable">DataTable</a></code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                      
+ Returns the data of the frame as a .NET `DataTable` object. The column keys are
+ automatically converted to strings that are used as column names. The row index is
+ turned into an additional column with the specified name (the function takes the name
+ as a sequence to support hierarchical keys, but typically you can write just
+ `frame.ToDataTable([&quot;KeyName&quot;])`.
+ 
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:Deedle.F# Frame extensions.Frame`2.ToDataTable``2\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('```cref:M:Deedle.F# Frame extensions.Frame`2.ToDataTable``2```')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <p>
+                Extended Type: 
+                <code><a href="/Deedle/reference/deedle-frame-2.html">Frame</a></code>
+              </p>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    rowKeyNames
+                  </span>
+                  :
+                  <code><span>string&#32;seq</span></code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    Specifies the names of the row key components (or just a single row key name if the row index is not hierarchical).
+                  </p>
+                </dd>
+              </dl>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code><a href="https://learn.microsoft.com/dotnet/api/system.data.datatable">DataTable</a></code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="40" data-fsdocs-tip-unique="40">
+                <p>
+                  <a id="ToJson">
+                    <a href="#ToJson">
+                      <code><span>this.ToJson</span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="40">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>this.ToJson</span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        ?orient
+                      </b>
+                      :
+                      <code>string</code>
+                       - 
+                      
+ Controls the JSON layout. Allowed values:
+ <code>&quot;columns&quot;</code> (default) — column-major <code>{&quot;col&quot;:{&quot;row&quot;:v}}</code>;
+ <code>&quot;index&quot;</code> — row-major <code>{&quot;row&quot;:{&quot;col&quot;:v}}</code>;
+ <code>&quot;records&quot;</code> — array of row objects <code>[{&quot;col&quot;:v}]</code>.
+ 
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code>string</code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                      
+ Serialize the data frame to a JSON string.
+ 
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:Deedle.F# Frame extensions.Frame`2.ToJson``2\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('```cref:M:Deedle.F# Frame extensions.Frame`2.ToJson``2```')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <p>
+                Extended Type: 
+                <code><a href="/Deedle/reference/deedle-frame-2.html">Frame</a></code>
+              </p>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?orient
+                  </span>
+                  :
+                  <code>string</code>
+                </dt>
+                <dd class="fsdocs-param-docs">
+                  <p>
+                    
+ Controls the JSON layout. Allowed values:
+ <code>&quot;columns&quot;</code> (default) — column-major <code>{&quot;col&quot;:{&quot;row&quot;:v}}</code>;
+ <code>&quot;index&quot;</code> — row-major <code>{&quot;row&quot;:{&quot;col&quot;:v}}</code>;
+ <code>&quot;records&quot;</code> — array of row objects <code>[{&quot;col&quot;:v}]</code>.
+ 
+                  </p>
+                </dd>
+              </dl>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code>string</code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+</div>
+        
+    </div>
+</main>
+<aside id="fsdocs-page-menu">
+    <p id="on-this-page">On this page</p>
+    <div class="empty"></div>
+</aside>
+<dialog>
+    <input type="search" placeholder="Search docs" />
+    <div class="results">
+        <ul></ul>
+        <p class="empty">Type something to start searching.</p>
+    </div>
+</dialog>
+<script type="module" src="/Deedle/content/fsdocs-tips.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-theme-toggle.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-details-toggle.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-theme.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-search.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-copy-button.js"></script>
+
+</body>
+</html>

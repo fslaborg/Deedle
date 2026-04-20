@@ -1,0 +1,1638 @@
+<!DOCTYPE html>
+<html lang="en" data-root="/Deedle/">
+<head>
+    <meta charset="UTF-8">
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="Deedle.Arrow" name="author">
+    <!-- Opengraph properties (https://ogp.me/) -->
+    <meta property="og:site_name" content="Deedle">
+    <meta property="og:title" content="Handling missing values" />
+    <meta property="og:url" content="/Deedle/missing.html">
+    <meta property="og:type" content="website" />
+    <!-- Twitter cards (https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/summary-card-with-large-image) -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="/Deedle/">
+    <meta name="twitter:title" content="Handling missing values">
+    <meta name="description" content="Strategies for dealing with missing data including fill, drop, and interpolation">
+<meta name="twitter:site" content="Strategies for dealing with missing data including fill, drop, and interpolation">
+<meta name="og:description" content="Strategies for dealing with missing data including fill, drop, and interpolation">
+<meta name="keywords" content="missing values, NA, fill, drop, interpolation, optional values">
+    <title>Handling missing values | Deedle</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code&display=swap" rel="stylesheet">
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <link href="/Deedle/img/favicon.ico" rel="icon" sizes="32x32" type="image/png"/>
+    <script type="application/javascript" src="/Deedle/content/fsdocs-theme-set-dark.js"></script>
+    <script type="application/javascript" src="/Deedle/content/fsdocs-details-set-expanded.js"></script>
+    <link href="/Deedle/content/fsdocs-default.css" rel="stylesheet" type="text/css"/>
+    <link href="/Deedle/content/fsdocs-theme.css" rel="stylesheet" type="text/css"/>
+    
+    
+</head>
+<body class="content">
+<header>
+    <div class="start">
+        <div id="menu-toggle">
+            <iconify-icon class="icon closed" height="22" icon="eva:menu-fill" width="22"></iconify-icon>
+            <iconify-icon class="icon open" height="22" icon="mi:close" width="22"></iconify-icon>
+            <input type="checkbox" name="mobile-menu" />
+            <ul class="menu">
+                <li class="nav-header">Links</li>
+                <li class="license-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fslaborg/Deedle/blob/master/LICENSE.md">License</a>
+                </li>
+                <li class="release-notes-menu-item builtin-menu-item nav-item"><a class="nav-link"
+                                        href="https://github.com/fslaborg/Deedle/blob/master/RELEASE_NOTES.md">Release
+                    Notes</a></li>
+                <li class="repository-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fslaborg/Deedle/">Source
+                    Repository</a></li>
+                <li class="nav-header active">
+  Guides
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/tutorial.html">
+    Deedle in 10 minutes
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/frame.html">
+    Data frame features
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/series.html">
+    Series and time series features
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/stats.html">
+    Calculating frame and series statistics
+  </a>
+</li>             
+<li class="nav-item active">
+  <a class="nav-link" href="/Deedle/missing.html">
+    Handling missing values
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/joining.html">
+    Joining, merging and appending frames
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/lazysource.html">
+    Delay-loaded series
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/csharp.html">
+    Deedle in C#
+  </a>
+</li>             
+<li class="nav-header ">
+  Integrations
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/excel.html">
+    Excel integration — ExcelReader &amp; ExcelWriter
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/arrow.html">
+    Deedle.Arrow — Apache Arrow and Feather integration
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/parquet.html">
+    Deedle.Parquet — Apache Parquet integration
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/math.html">
+    Deedle.MathNetNumerics — MathNet.Numerics integration
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/dotnetinteractive.html">
+    Deedle.DotNetInteractive — .NET Interactive notebook formatting
+  </a>
+</li>             
+<li class="nav-header ">
+  Design
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/design.html">
+    Design notes
+  </a>
+</li>
+                <li class="nav-header">
+  API Reference
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="/Deedle/reference/index.html">
+    All Namespaces
+  </a>
+</li>
+            </ul>
+        </div>
+        <a href="/Deedle/">
+            <img alt="Logo" src="/Deedle/img/logo.png">
+            <strong>Deedle</strong>
+        </a>
+    </div>
+    <div class="end">
+        <a href="https://github.com/fslaborg/Deedle/" target="_blank">
+            <iconify-icon icon="uil:github" width="26" height="26"></iconify-icon>
+        </a>
+        <iconify-icon id="search-btn" icon="carbon:search" class="search" width="24" height="24"></iconify-icon>
+        <fsdocs-theme-toggle></fsdocs-theme-toggle>
+    </div>
+</header>
+<aside id="fsdocs-main-menu">
+    <ul class="menu">
+        <li class="nav-header">Links</li>
+        <li class="license-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fslaborg/Deedle/blob/master/LICENSE.md">License</a>
+        </li>
+        <li class="release-notes-menu-item builtin-menu-item nav-item"><a class="nav-link"
+                                href="https://github.com/fslaborg/Deedle/blob/master/RELEASE_NOTES.md">Release
+            Notes</a></li>
+        <li class="repository-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fslaborg/Deedle/">Source
+            Repository</a></li>
+        <li class="nav-header active">
+  Guides
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/tutorial.html">
+    Deedle in 10 minutes
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/frame.html">
+    Data frame features
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/series.html">
+    Series and time series features
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/stats.html">
+    Calculating frame and series statistics
+  </a>
+</li>             
+<li class="nav-item active">
+  <a class="nav-link" href="/Deedle/missing.html">
+    Handling missing values
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/joining.html">
+    Joining, merging and appending frames
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/lazysource.html">
+    Delay-loaded series
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/csharp.html">
+    Deedle in C#
+  </a>
+</li>             
+<li class="nav-header ">
+  Integrations
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/excel.html">
+    Excel integration — ExcelReader &amp; ExcelWriter
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/arrow.html">
+    Deedle.Arrow — Apache Arrow and Feather integration
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/parquet.html">
+    Deedle.Parquet — Apache Parquet integration
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/math.html">
+    Deedle.MathNetNumerics — MathNet.Numerics integration
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/dotnetinteractive.html">
+    Deedle.DotNetInteractive — .NET Interactive notebook formatting
+  </a>
+</li>             
+<li class="nav-header ">
+  Design
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/design.html">
+    Design notes
+  </a>
+</li>
+        <li class="nav-header">
+  API Reference
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="/Deedle/reference/index.html">
+    All Namespaces
+  </a>
+</li>
+    </ul>
+</aside>
+<main>
+    <div id="content">
+        
+<h1><a name="Handling-missing-values" class="anchor" href="#Handling-missing-values">Handling missing values</a></h1>
+<p>Missing-value support is a first-class feature of Deedle. Every series and frame
+can contain missing values; the library tracks them explicitly and handles them
+consistently across all operations.</p>
+<a name="representation"></a>
+<h2><a name="How-missing-values-are-represented" class="anchor" href="#How-missing-values-are-represented">How missing values are represented</a></h2>
+<p>Deedle uses <code>OptionalValue&lt;'T&gt;</code> to represent a value that may or may not be
+present. You rarely construct <code>OptionalValue</code> directly; instead, certain input
+values are automatically treated as missing:</p>
+<table>
+<thead>
+<tr class="header">
+<th><p>Input type</p></th>
+<th><p>Treated as missing when</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><p><code>float</code> / <code>double</code></p></td>
+<td><p>Value is <code>Double.NaN</code></p></td>
+</tr>
+<tr class="even">
+<td><p>Reference type (string, obj …)</p></td>
+<td><p>Value is <code>null</code></p></td>
+</tr>
+<tr class="odd">
+<td><p><code>Nullable&lt;T&gt;</code></p></td>
+<td><p><code>.HasValue</code> is <code>false</code></p></td>
+</tr>
+</tbody>
+</table>
+
+<p>The following examples show series created from inputs that include missing values:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// float NaN becomes a missing value</span>
+<span data-fsdocs-tip="fs14" data-fsdocs-tip-unique="19" class="rt">Series</span><span class="pn">.</span><span data-fsdocs-tip="fs15" data-fsdocs-tip-unique="20" class="id">ofValues</span> <span class="pn">[</span> <span class="n">1.0</span><span class="pn">;</span> <span data-fsdocs-tip="fs16" data-fsdocs-tip-unique="21" class="vt">Double</span><span class="pn">.</span><span data-fsdocs-tip="fs17" data-fsdocs-tip-unique="22" class="id">NaN</span><span class="pn">;</span> <span class="n">3.0</span> <span class="pn">]</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val it: Series&lt;int,float&gt; = 
+0 -&gt; 1         
+1 -&gt; &lt;missing&gt; 
+2 -&gt; 3</code></pre></td></tr></table>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// null in a reference-type series</span>
+<span data-fsdocs-tip="fs14" data-fsdocs-tip-unique="23" class="rt">Series</span><span class="pn">.</span><span data-fsdocs-tip="fs15" data-fsdocs-tip-unique="24" class="id">ofValues</span> <span class="pn">[</span> <span class="s">&quot;a&quot;</span><span class="pn">;</span> <span class="k">null</span><span class="pn">;</span> <span class="s">&quot;c&quot;</span> <span class="pn">]</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val it: Series&lt;int,string&gt; = 
+0 -&gt; a         
+1 -&gt; &lt;missing&gt; 
+2 -&gt; c</code></pre></td></tr></table>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// Nullable&lt;int&gt; without a value</span>
+<span class="pn">[</span> <span data-fsdocs-tip="fs18" data-fsdocs-tip-unique="25" class="fn">Nullable</span><span class="pn">(</span><span class="n">1</span><span class="pn">)</span><span class="pn">;</span> <span data-fsdocs-tip="fs18" data-fsdocs-tip-unique="26" class="fn">Nullable</span><span class="pn">(</span><span class="pn">)</span><span class="pn">;</span> <span data-fsdocs-tip="fs18" data-fsdocs-tip-unique="27" class="fn">Nullable</span><span class="pn">(</span><span class="n">3</span><span class="pn">)</span> <span class="pn">]</span> <span class="o">|&gt;</span> <span data-fsdocs-tip="fs14" data-fsdocs-tip-unique="28" class="rt">Series</span><span class="pn">.</span><span data-fsdocs-tip="fs15" data-fsdocs-tip-unique="29" class="id">ofValues</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val it: Series&lt;int,Nullable&lt;int&gt;&gt; =
+  
+0 -&gt; 1         
+1 -&gt; &lt;missing&gt; 
+2 -&gt; 3</code></pre></td></tr></table>
+<p>You can also construct a series with explicit missing values using <code>None</code>:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span data-fsdocs-tip="fs14" data-fsdocs-tip-unique="30" class="rt">Series</span><span class="pn">.</span><span data-fsdocs-tip="fs19" data-fsdocs-tip-unique="31" class="id">ofOptionalObservations</span>
+  <span class="pn">[</span> <span class="n">1</span> <span class="o">=&gt;</span> <span data-fsdocs-tip="fs20" data-fsdocs-tip-unique="32" class="uc">Some</span><span class="pn">(</span><span class="n">10.0</span><span class="pn">)</span>
+    <span class="n">2</span> <span class="o">=&gt;</span> <span data-fsdocs-tip="fs21" data-fsdocs-tip-unique="33" class="uc">None</span>
+    <span class="n">3</span> <span class="o">=&gt;</span> <span data-fsdocs-tip="fs20" data-fsdocs-tip-unique="34" class="uc">Some</span><span class="pn">(</span><span class="n">30.0</span><span class="pn">)</span> <span class="pn">]</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val it: Series&lt;int,float&gt; = 
+1 -&gt; 10        
+2 -&gt; &lt;missing&gt; 
+3 -&gt; 30</code></pre></td></tr></table>
+<a name="counting"></a>
+<h2><a name="Counting-present-and-missing-values" class="anchor" href="#Counting-present-and-missing-values">Counting present and missing values</a></h2>
+<p><code>Stats.count</code> counts the number of <strong>present</strong> values; <code>Series.countValues</code>
+is an alias. The total number of keys (including missing) is <code>KeyCount</code>:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span data-fsdocs-tip="fs22" data-fsdocs-tip-unique="35" class="id">air</span> <span class="o">=</span> <span data-fsdocs-tip="fs23" data-fsdocs-tip-unique="36" class="rt">Frame</span><span class="pn">.</span><span data-fsdocs-tip="fs24" data-fsdocs-tip-unique="37" class="id">ReadCsv</span><span class="pn">(</span><span data-fsdocs-tip="fs13" data-fsdocs-tip-unique="38" class="id">root</span> <span class="o">+</span> <span class="s">&quot;airquality.csv&quot;</span><span class="pn">,</span> <span class="fn">separators</span><span class="o">=</span><span class="s">&quot;;&quot;</span><span class="pn">)</span>
+<span class="k">let</span> <span data-fsdocs-tip="fs25" data-fsdocs-tip-unique="39" class="id">ozone</span> <span class="o">=</span> <span data-fsdocs-tip="fs22" data-fsdocs-tip-unique="40" class="id">air</span><span class="pn">?</span><span class="id">Ozone</span>
+
+<span class="c">// total keys (rows) in the series</span>
+<span data-fsdocs-tip="fs25" data-fsdocs-tip-unique="41" class="id">ozone</span><span class="pn">.</span><span data-fsdocs-tip="fs26" data-fsdocs-tip-unique="42" class="id">KeyCount</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val air: Frame&lt;int,string&gt; =
+  
+       Ozone     Solar.R   Wind Temp Month Day 
+0   -&gt; &lt;missing&gt; 190       7.4  67   5     1   
+1   -&gt; 36        118       8    72   5     2   
+2   -&gt; 12        149       12.6 74   5     3   
+3   -&gt; 18        313       11.5 62   5     4   
+4   -&gt; &lt;missing&gt; &lt;missing&gt; 14.3 56   5     5   
+5   -&gt; 28        &lt;missing&gt; 14.9 66   5     6   
+6   -&gt; 23        299       8.6  65   5     7   
+7   -&gt; 19        99        13.8 59   5     8   
+8   -&gt; 8         19        20.1 61   5     9   
+9   -&gt; &lt;missing&gt; 194       8.6  69   5     10  
+10  -&gt; 7         &lt;missing&gt; 6.9  74   5     11  
+11  -&gt; 16        256       9.7  69   5     12  
+12  -&gt; 11        290       9.2  66   5     13  
+13  -&gt; 14        274       10.9 68   5     14  
+14  -&gt; 18        65        13.2 58   5     15  
+:      ...       ...       ...  ...  ...   ... 
+138 -&gt; 46        237       6.9  78   9     16  
+139 -&gt; 18        224       13.8 67   9     17  
+140 -&gt; 13        27        10.3 76   9     18  
+141 -&gt; 24        238       10.3 68   9     19  
+142 -&gt; 16        201       8    82   9     20  
+143 -&gt; 13        238       12.6 64   9     21  
+144 -&gt; 23        14        9.2  71   9     22  
+145 -&gt; 36        139       10.3 81   9     23  
+146 -&gt; 7         49        10.3 69   9     24  
+147 -&gt; 14        20        16.6 63   9     25  
+148 -&gt; 30        193       6.9  70   9     26  
+149 -&gt; &lt;missing&gt; 145       13.2 77   9     27  
+150 -&gt; 14        191       14.3 75   9     28  
+151 -&gt; 18        131       8    76   9     29  
+152 -&gt; 20        223       11.5 68   9     30  
+
+val ozone: Series&lt;int,float&gt; =
+  
+0   -&gt; &lt;missing&gt; 
+1   -&gt; 36        
+2   -&gt; 12        
+3   -&gt; 18        
+4   -&gt; &lt;missing&gt; 
+5   -&gt; 28        
+6   -&gt; 23        
+7   -&gt; 19        
+8   -&gt; 8         
+9   -&gt; &lt;missing&gt; 
+10  -&gt; 7         
+11  -&gt; 16        
+12  -&gt; 11        
+13  -&gt; 14        
+14  -&gt; 18        
+... -&gt; ...       
+138 -&gt; 46        
+139 -&gt; 18        
+140 -&gt; 13        
+141 -&gt; 24        
+142 -&gt; 16        
+143 -&gt; 13        
+144 -&gt; 23        
+145 -&gt; 36        
+146 -&gt; 7         
+147 -&gt; 14        
+148 -&gt; 30        
+149 -&gt; &lt;missing&gt; 
+150 -&gt; 14        
+151 -&gt; 18        
+152 -&gt; 20        
+
+val it: int = 153</code></pre></td></tr></table>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// present (non-missing) values</span>
+<span data-fsdocs-tip="fs27" data-fsdocs-tip-unique="43" class="rt">Stats</span><span class="pn">.</span><span data-fsdocs-tip="fs28" data-fsdocs-tip-unique="44" class="id">count</span> <span data-fsdocs-tip="fs25" data-fsdocs-tip-unique="45" class="id">ozone</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val it: int = 115</code></pre></td></tr></table>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// number of missing values</span>
+<span data-fsdocs-tip="fs25" data-fsdocs-tip-unique="46" class="id">ozone</span><span class="pn">.</span><span data-fsdocs-tip="fs26" data-fsdocs-tip-unique="47" class="id">KeyCount</span> <span class="o">-</span> <span data-fsdocs-tip="fs29" data-fsdocs-tip-unique="48" class="fn">int</span> <span class="pn">(</span><span data-fsdocs-tip="fs27" data-fsdocs-tip-unique="49" class="rt">Stats</span><span class="pn">.</span><span data-fsdocs-tip="fs28" data-fsdocs-tip-unique="50" class="id">count</span> <span data-fsdocs-tip="fs25" data-fsdocs-tip-unique="51" class="id">ozone</span><span class="pn">)</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val it: int = 38</code></pre></td></tr></table>
+<a name="statistics"></a>
+<h2><a name="Statistics-skip-missing-values" class="anchor" href="#Statistics-skip-missing-values">Statistics skip missing values</a></h2>
+<p>All functions in the <code>Stats</code> module, as well as common projections such as
+<code>Series.mapValues</code> and <code>Series.filter</code>, automatically skip missing values.
+The operation is applied only to present observations:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span data-fsdocs-tip="fs27" data-fsdocs-tip-unique="52" class="rt">Stats</span><span class="pn">.</span><span data-fsdocs-tip="fs30" data-fsdocs-tip-unique="53" class="id">mean</span> <span data-fsdocs-tip="fs25" data-fsdocs-tip-unique="54" class="id">ozone</span>      <span class="c">// mean of the 116 present values</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val it: float = 42.13913043</code></pre></td></tr></table>
+<pre class="fssnip highlighted"><code lang="fsharp"><span data-fsdocs-tip="fs27" data-fsdocs-tip-unique="55" class="rt">Stats</span><span class="pn">.</span><span data-fsdocs-tip="fs31" data-fsdocs-tip-unique="56" class="id">max</span> <span data-fsdocs-tip="fs25" data-fsdocs-tip-unique="57" class="id">ozone</span>       <span class="c">// maximum of the present values</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val it: float = 168.0</code></pre></td></tr></table>
+<a name="accessing"></a>
+<h2><a name="Accessing-values-with" class="anchor" href="#Accessing-values-with">Accessing values with <code>TryGet</code></a></h2>
+<p>The safe way to look up a single value by key is <code>TryGet</code>, which returns an
+<code>OptionalValue&lt;'T&gt;</code>:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span data-fsdocs-tip="fs32" data-fsdocs-tip-unique="58" class="id">v</span> <span class="o">=</span> <span data-fsdocs-tip="fs25" data-fsdocs-tip-unique="59" class="id">ozone</span><span class="pn">.</span><span data-fsdocs-tip="fs33" data-fsdocs-tip-unique="60" class="id">TryGet</span><span class="pn">(</span><span class="n">1</span><span class="pn">)</span>
+<span class="k">match</span> <span data-fsdocs-tip="fs32" data-fsdocs-tip-unique="61" class="id">v</span> <span class="k">with</span>
+<span class="pn">|</span> <span data-fsdocs-tip="fs34" data-fsdocs-tip-unique="62" class="m">OptionalValue</span><span class="pn">.</span><span data-fsdocs-tip="fs35" data-fsdocs-tip-unique="63" class="id">Present</span> <span data-fsdocs-tip="fs36" data-fsdocs-tip-unique="64" class="fn">x</span> <span class="k">-&gt;</span> <span data-fsdocs-tip="fs37" data-fsdocs-tip-unique="65" class="fn">sprintf</span> <span class="s">&quot;present: </span><span class="pf">%g</span><span class="s">&quot;</span> <span data-fsdocs-tip="fs36" data-fsdocs-tip-unique="66" class="fn">x</span>
+<span class="pn">|</span> <span data-fsdocs-tip="fs34" data-fsdocs-tip-unique="67" class="m">OptionalValue</span><span class="pn">.</span><span data-fsdocs-tip="fs38" data-fsdocs-tip-unique="68" class="id">Missing</span>   <span class="k">-&gt;</span> <span class="s">&quot;missing&quot;</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val v: OptionalValue&lt;float&gt; = 36
+val it: string = "present: 36"</code></pre></td></tr></table>
+<p>You can also use <code>Series.observationsAll</code> to iterate over all key-value pairs
+including missing ones (as <code>option</code>), or <code>Series.observations</code> to skip
+missing values:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span data-fsdocs-tip="fs25" data-fsdocs-tip-unique="69" class="id">ozone</span>
+<span class="o">|&gt;</span> <span data-fsdocs-tip="fs14" data-fsdocs-tip-unique="70" class="m">Series</span><span class="pn">.</span><span data-fsdocs-tip="fs39" data-fsdocs-tip-unique="71" class="id">observationsAll</span>
+<span class="o">|&gt;</span> <span data-fsdocs-tip="fs40" data-fsdocs-tip-unique="72" class="m">Seq</span><span class="pn">.</span><span data-fsdocs-tip="fs41" data-fsdocs-tip-unique="73" class="id">truncate</span> <span class="n">6</span>
+<span class="o">|&gt;</span> <span data-fsdocs-tip="fs40" data-fsdocs-tip-unique="74" class="m">Seq</span><span class="pn">.</span><span data-fsdocs-tip="fs42" data-fsdocs-tip-unique="75" class="id">map</span> <span class="pn">(</span><span class="k">fun</span> <span class="pn">(</span><span data-fsdocs-tip="fs43" data-fsdocs-tip-unique="76" class="fn">k</span><span class="pn">,</span> <span data-fsdocs-tip="fs44" data-fsdocs-tip-unique="77" class="fn">v</span><span class="pn">)</span> <span class="k">-&gt;</span>
+    <span class="k">match</span> <span data-fsdocs-tip="fs44" data-fsdocs-tip-unique="78" class="fn">v</span> <span class="k">with</span>
+    <span class="pn">|</span> <span data-fsdocs-tip="fs20" data-fsdocs-tip-unique="79" class="uc">Some</span> <span data-fsdocs-tip="fs36" data-fsdocs-tip-unique="80" class="fn">x</span> <span class="k">-&gt;</span> <span data-fsdocs-tip="fs37" data-fsdocs-tip-unique="81" class="fn">sprintf</span> <span class="s">&quot;</span><span class="pf">%d</span><span class="s"> =&gt; </span><span class="pf">%g</span><span class="s">&quot;</span> <span data-fsdocs-tip="fs43" data-fsdocs-tip-unique="82" class="fn">k</span> <span data-fsdocs-tip="fs36" data-fsdocs-tip-unique="83" class="fn">x</span>
+    <span class="pn">|</span> <span data-fsdocs-tip="fs21" data-fsdocs-tip-unique="84" class="uc">None</span>   <span class="k">-&gt;</span> <span data-fsdocs-tip="fs37" data-fsdocs-tip-unique="85" class="fn">sprintf</span> <span class="s">&quot;</span><span class="pf">%d</span><span class="s"> =&gt; &lt;missing&gt;&quot;</span> <span data-fsdocs-tip="fs43" data-fsdocs-tip-unique="86" class="fn">k</span><span class="pn">)</span>
+<span class="o">|&gt;</span> <span data-fsdocs-tip="fs40" data-fsdocs-tip-unique="87" class="m">Seq</span><span class="pn">.</span><span data-fsdocs-tip="fs45" data-fsdocs-tip-unique="88" class="id">toList</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val it: string list =
+  ["0 =&gt; &lt;missing&gt;"; "1 =&gt; 36"; "2 =&gt; 12"; "3 =&gt; 18"; "4 =&gt; &lt;missing&gt;";
+   "5 =&gt; 28"]</code></pre></td></tr></table>
+<a name="mapall"></a>
+<h2><a name="Custom-handling-with" class="anchor" href="#Custom-handling-with">Custom handling with <code>Series.mapAll</code></a></h2>
+<p><code>Series.mapValues</code> skips missing values. When you need to transform the value
+<strong>or</strong> the missing-ness of each element, use <code>Series.mapAll</code>, which receives an
+<code>option&lt;'T&gt;</code> for each key:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span data-fsdocs-tip="fs25" data-fsdocs-tip-unique="89" class="id">ozone</span>
+<span class="o">|&gt;</span> <span data-fsdocs-tip="fs14" data-fsdocs-tip-unique="90" class="m">Series</span><span class="pn">.</span><span data-fsdocs-tip="fs46" data-fsdocs-tip-unique="91" class="id">mapAll</span> <span class="pn">(</span><span class="k">fun</span> <span data-fsdocs-tip="fs43" data-fsdocs-tip-unique="92" class="fn">k</span> <span data-fsdocs-tip="fs44" data-fsdocs-tip-unique="93" class="fn">v</span> <span class="k">-&gt;</span>
+    <span class="k">match</span> <span data-fsdocs-tip="fs44" data-fsdocs-tip-unique="94" class="fn">v</span> <span class="k">with</span>
+    <span class="pn">|</span> <span data-fsdocs-tip="fs21" data-fsdocs-tip-unique="95" class="uc">None</span>   <span class="k">-&gt;</span> <span data-fsdocs-tip="fs20" data-fsdocs-tip-unique="96" class="uc">Some</span> <span class="n">0.0</span>     <span class="c">// replace missing with zero</span>
+    <span class="pn">|</span> <span data-fsdocs-tip="fs20" data-fsdocs-tip-unique="97" class="uc">Some</span> <span data-fsdocs-tip="fs36" data-fsdocs-tip-unique="98" class="fn">x</span> <span class="k">-&gt;</span> <span data-fsdocs-tip="fs20" data-fsdocs-tip-unique="99" class="uc">Some</span> <span class="pn">(</span><span data-fsdocs-tip="fs36" data-fsdocs-tip-unique="100" class="fn">x</span> <span class="o">*</span> <span class="n">2.0</span><span class="pn">)</span><span class="pn">)</span> <span class="c">// double present values</span>
+<span class="o">|&gt;</span> <span data-fsdocs-tip="fs14" data-fsdocs-tip-unique="101" class="m">Series</span><span class="pn">.</span><span data-fsdocs-tip="fs47" data-fsdocs-tip-unique="102" class="id">take</span> <span class="n">5</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val it: Series&lt;int,float&gt; = 
+0 -&gt; 0  
+1 -&gt; 72 
+2 -&gt; 24 
+3 -&gt; 36 
+4 -&gt; 0</code></pre></td></tr></table>
+<a name="filling"></a>
+<h2><a name="Filling-missing-values" class="anchor" href="#Filling-missing-values">Filling missing values</a></h2>
+<h3><a name="Fill-with-a-constant" class="anchor" href="#Fill-with-a-constant">Fill with a constant</a></h3>
+<p>The simplest strategy replaces every missing value with a fixed constant:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span data-fsdocs-tip="fs25" data-fsdocs-tip-unique="103" class="id">ozone</span> <span class="o">|&gt;</span> <span data-fsdocs-tip="fs14" data-fsdocs-tip-unique="104" class="m">Series</span><span class="pn">.</span><span data-fsdocs-tip="fs48" data-fsdocs-tip-unique="105" class="id">fillMissingWith</span> <span class="n">0.0</span> <span class="o">|&gt;</span> <span data-fsdocs-tip="fs14" data-fsdocs-tip-unique="106" class="m">Series</span><span class="pn">.</span><span data-fsdocs-tip="fs47" data-fsdocs-tip-unique="107" class="id">take</span> <span class="n">6</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val it: Series&lt;int,float&gt; =
+  
+0 -&gt; 0  
+1 -&gt; 36 
+2 -&gt; 12 
+3 -&gt; 18 
+4 -&gt; 0  
+5 -&gt; 28</code></pre></td></tr></table>
+<h3><a name="Forward-and-backward-fill" class="anchor" href="#Forward-and-backward-fill">Forward and backward fill</a></h3>
+<p><code>Series.fillMissing</code> propagates the most recent available value in the
+specified direction:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// Carry the last known value forward</span>
+<span data-fsdocs-tip="fs25" data-fsdocs-tip-unique="108" class="id">ozone</span> <span class="o">|&gt;</span> <span data-fsdocs-tip="fs14" data-fsdocs-tip-unique="109" class="m">Series</span><span class="pn">.</span><span data-fsdocs-tip="fs49" data-fsdocs-tip-unique="110" class="id">fillMissing</span> <span data-fsdocs-tip="fs50" data-fsdocs-tip-unique="111" class="en">Direction</span><span class="pn">.</span><span data-fsdocs-tip="fs51" data-fsdocs-tip-unique="112" class="id">Forward</span> <span class="o">|&gt;</span> <span data-fsdocs-tip="fs14" data-fsdocs-tip-unique="113" class="m">Series</span><span class="pn">.</span><span data-fsdocs-tip="fs47" data-fsdocs-tip-unique="114" class="id">take</span> <span class="n">6</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val it: Series&lt;int,float&gt; =
+  
+0 -&gt; &lt;missing&gt; 
+1 -&gt; 36        
+2 -&gt; 12        
+3 -&gt; 18        
+4 -&gt; 18        
+5 -&gt; 28</code></pre></td></tr></table>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// Fill from the next available value backward</span>
+<span data-fsdocs-tip="fs25" data-fsdocs-tip-unique="115" class="id">ozone</span> <span class="o">|&gt;</span> <span data-fsdocs-tip="fs14" data-fsdocs-tip-unique="116" class="m">Series</span><span class="pn">.</span><span data-fsdocs-tip="fs49" data-fsdocs-tip-unique="117" class="id">fillMissing</span> <span data-fsdocs-tip="fs50" data-fsdocs-tip-unique="118" class="en">Direction</span><span class="pn">.</span><span data-fsdocs-tip="fs52" data-fsdocs-tip-unique="119" class="id">Backward</span> <span class="o">|&gt;</span> <span data-fsdocs-tip="fs14" data-fsdocs-tip-unique="120" class="m">Series</span><span class="pn">.</span><span data-fsdocs-tip="fs47" data-fsdocs-tip-unique="121" class="id">take</span> <span class="n">6</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val it: Series&lt;int,float&gt; =
+  
+0 -&gt; 36 
+1 -&gt; 36 
+2 -&gt; 12 
+3 -&gt; 18 
+4 -&gt; 28 
+5 -&gt; 28</code></pre></td></tr></table>
+<h3><a name="Custom-fill-strategy-with" class="anchor" href="#Custom-fill-strategy-with">Custom fill strategy with <code>fillMissingUsing</code></a></h3>
+<p>For interpolation or other context-sensitive strategies, use
+<code>Series.fillMissingUsing</code>. The function receives the missing key and should
+return a replacement value:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span data-fsdocs-tip="fs25" data-fsdocs-tip-unique="122" class="id">ozone</span>
+<span class="o">|&gt;</span> <span data-fsdocs-tip="fs14" data-fsdocs-tip-unique="123" class="m">Series</span><span class="pn">.</span><span data-fsdocs-tip="fs53" data-fsdocs-tip-unique="124" class="id">fillMissingUsing</span> <span class="pn">(</span><span class="k">fun</span> <span data-fsdocs-tip="fs43" data-fsdocs-tip-unique="125" class="fn">k</span> <span class="k">-&gt;</span>
+    <span class="c">// Linear interpolation from neighbours</span>
+    <span class="k">let</span> <span data-fsdocs-tip="fs54" data-fsdocs-tip-unique="126" class="fn">prev</span> <span class="o">=</span> <span data-fsdocs-tip="fs25" data-fsdocs-tip-unique="127" class="id">ozone</span><span class="pn">.</span><span data-fsdocs-tip="fs33" data-fsdocs-tip-unique="128" class="id">TryGet</span><span class="pn">(</span><span data-fsdocs-tip="fs43" data-fsdocs-tip-unique="129" class="fn">k</span><span class="pn">,</span> <span data-fsdocs-tip="fs55" data-fsdocs-tip-unique="130" class="en">Lookup</span><span class="pn">.</span><span data-fsdocs-tip="fs56" data-fsdocs-tip-unique="131" class="id">ExactOrSmaller</span><span class="pn">)</span>
+    <span class="k">let</span> <span data-fsdocs-tip="fs57" data-fsdocs-tip-unique="132" class="fn">next</span> <span class="o">=</span> <span data-fsdocs-tip="fs25" data-fsdocs-tip-unique="133" class="id">ozone</span><span class="pn">.</span><span data-fsdocs-tip="fs33" data-fsdocs-tip-unique="134" class="id">TryGet</span><span class="pn">(</span><span data-fsdocs-tip="fs43" data-fsdocs-tip-unique="135" class="fn">k</span><span class="pn">,</span> <span data-fsdocs-tip="fs55" data-fsdocs-tip-unique="136" class="en">Lookup</span><span class="pn">.</span><span data-fsdocs-tip="fs58" data-fsdocs-tip-unique="137" class="id">ExactOrGreater</span><span class="pn">)</span>
+    <span class="k">match</span> <span data-fsdocs-tip="fs54" data-fsdocs-tip-unique="138" class="fn">prev</span><span class="pn">,</span> <span data-fsdocs-tip="fs57" data-fsdocs-tip-unique="139" class="fn">next</span> <span class="k">with</span>
+    <span class="pn">|</span> <span data-fsdocs-tip="fs34" data-fsdocs-tip-unique="140" class="m">OptionalValue</span><span class="pn">.</span><span data-fsdocs-tip="fs35" data-fsdocs-tip-unique="141" class="id">Present</span> <span data-fsdocs-tip="fs59" data-fsdocs-tip-unique="142" class="fn">p</span><span class="pn">,</span> <span data-fsdocs-tip="fs34" data-fsdocs-tip-unique="143" class="m">OptionalValue</span><span class="pn">.</span><span data-fsdocs-tip="fs35" data-fsdocs-tip-unique="144" class="id">Present</span> <span data-fsdocs-tip="fs60" data-fsdocs-tip-unique="145" class="fn">n</span> <span class="k">-&gt;</span> <span class="pn">(</span><span data-fsdocs-tip="fs59" data-fsdocs-tip-unique="146" class="fn">p</span> <span class="o">+</span> <span data-fsdocs-tip="fs60" data-fsdocs-tip-unique="147" class="fn">n</span><span class="pn">)</span> <span class="o">/</span> <span class="n">2.0</span>
+    <span class="pn">|</span> <span data-fsdocs-tip="fs34" data-fsdocs-tip-unique="148" class="m">OptionalValue</span><span class="pn">.</span><span data-fsdocs-tip="fs35" data-fsdocs-tip-unique="149" class="id">Present</span> <span data-fsdocs-tip="fs61" data-fsdocs-tip-unique="150" class="fn">v</span><span class="pn">,</span> <span class="id">_</span>
+    <span class="pn">|</span> <span class="id">_</span><span class="pn">,</span> <span data-fsdocs-tip="fs34" data-fsdocs-tip-unique="151" class="m">OptionalValue</span><span class="pn">.</span><span data-fsdocs-tip="fs35" data-fsdocs-tip-unique="152" class="id">Present</span> <span data-fsdocs-tip="fs61" data-fsdocs-tip-unique="153" class="fn">v</span> <span class="k">-&gt;</span> <span data-fsdocs-tip="fs61" data-fsdocs-tip-unique="154" class="fn">v</span>
+    <span class="pn">|</span> <span class="id">_</span> <span class="k">-&gt;</span> <span class="n">0.0</span><span class="pn">)</span>
+<span class="o">|&gt;</span> <span data-fsdocs-tip="fs14" data-fsdocs-tip-unique="155" class="m">Series</span><span class="pn">.</span><span data-fsdocs-tip="fs47" data-fsdocs-tip-unique="156" class="id">take</span> <span class="n">6</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val it: Series&lt;int,float&gt; =
+  
+0 -&gt; 36 
+1 -&gt; 36 
+2 -&gt; 12 
+3 -&gt; 18 
+4 -&gt; 23 
+5 -&gt; 28</code></pre></td></tr></table>
+<h3><a name="Combining-fill-and-drop" class="anchor" href="#Combining-fill-and-drop">Combining fill and drop</a></h3>
+<p>Often the cleanest approach is to fill as much as possible in one direction
+and then discard the remaining missing values:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span data-fsdocs-tip="fs25" data-fsdocs-tip-unique="157" class="id">ozone</span>
+<span class="o">|&gt;</span> <span data-fsdocs-tip="fs14" data-fsdocs-tip-unique="158" class="m">Series</span><span class="pn">.</span><span data-fsdocs-tip="fs49" data-fsdocs-tip-unique="159" class="id">fillMissing</span> <span data-fsdocs-tip="fs50" data-fsdocs-tip-unique="160" class="en">Direction</span><span class="pn">.</span><span data-fsdocs-tip="fs51" data-fsdocs-tip-unique="161" class="id">Forward</span>
+<span class="o">|&gt;</span> <span data-fsdocs-tip="fs14" data-fsdocs-tip-unique="162" class="m">Series</span><span class="pn">.</span><span data-fsdocs-tip="fs62" data-fsdocs-tip-unique="163" class="id">dropMissing</span>
+<span class="o">|&gt;</span> <span data-fsdocs-tip="fs14" data-fsdocs-tip-unique="164" class="m">Series</span><span class="pn">.</span><span data-fsdocs-tip="fs63" data-fsdocs-tip-unique="165" class="id">countValues</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val it: int = 152</code></pre></td></tr></table>
+<a name="dropping"></a>
+<h2><a name="Dropping-missing-values" class="anchor" href="#Dropping-missing-values">Dropping missing values</a></h2>
+<h3><a name="Drop-from-a-series" class="anchor" href="#Drop-from-a-series">Drop from a series</a></h3>
+<p><code>Series.dropMissing</code> removes all missing observations from a series:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span data-fsdocs-tip="fs25" data-fsdocs-tip-unique="166" class="id">ozone</span> <span class="o">|&gt;</span> <span data-fsdocs-tip="fs14" data-fsdocs-tip-unique="167" class="m">Series</span><span class="pn">.</span><span data-fsdocs-tip="fs62" data-fsdocs-tip-unique="168" class="id">dropMissing</span> <span class="o">|&gt;</span> <span data-fsdocs-tip="fs14" data-fsdocs-tip-unique="169" class="m">Series</span><span class="pn">.</span><span data-fsdocs-tip="fs63" data-fsdocs-tip-unique="170" class="id">countValues</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val it: int = 115</code></pre></td></tr></table>
+<h3><a name="Drop-sparse-rows-and-columns-from-a-frame" class="anchor" href="#Drop-sparse-rows-and-columns-from-a-frame">Drop sparse rows and columns from a frame</a></h3>
+<p><code>Frame.dropSparseRows</code> removes any row that contains at least one missing
+value; <code>Frame.dropSparseCols</code> removes columns with any missing value.</p>
+<p>After reading the air quality CSV the frame has missing values in several
+columns:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span data-fsdocs-tip="fs22" data-fsdocs-tip-unique="171" class="id">air</span><span class="pn">.</span><span data-fsdocs-tip="fs64" data-fsdocs-tip-unique="172" class="id">RowCount</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val it: int = 153</code></pre></td></tr></table>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// Keep only rows that are fully observed</span>
+<span class="k">let</span> <span data-fsdocs-tip="fs65" data-fsdocs-tip-unique="173" class="id">airComplete</span> <span class="o">=</span> <span data-fsdocs-tip="fs22" data-fsdocs-tip-unique="174" class="id">air</span> <span class="o">|&gt;</span> <span data-fsdocs-tip="fs23" data-fsdocs-tip-unique="175" class="m">Frame</span><span class="pn">.</span><span data-fsdocs-tip="fs66" data-fsdocs-tip-unique="176" class="id">dropSparseRows</span>
+<span data-fsdocs-tip="fs65" data-fsdocs-tip-unique="177" class="id">airComplete</span><span class="pn">.</span><span data-fsdocs-tip="fs64" data-fsdocs-tip-unique="178" class="id">RowCount</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val airComplete: Frame&lt;int,string&gt; =
+  
+       Ozone Solar.R Wind Temp Month Day 
+1   -&gt; 36    118     8    72   5     2   
+2   -&gt; 12    149     12.6 74   5     3   
+3   -&gt; 18    313     11.5 62   5     4   
+6   -&gt; 23    299     8.6  65   5     7   
+7   -&gt; 19    99      13.8 59   5     8   
+8   -&gt; 8     19      20.1 61   5     9   
+11  -&gt; 16    256     9.7  69   5     12  
+12  -&gt; 11    290     9.2  66   5     13  
+13  -&gt; 14    274     10.9 68   5     14  
+14  -&gt; 18    65      13.2 58   5     15  
+15  -&gt; 14    334     11.5 64   5     16  
+16  -&gt; 34    307     12   66   5     17  
+17  -&gt; 6     78      18.4 57   5     18  
+18  -&gt; 30    322     11.5 68   5     19  
+19  -&gt; 11    44      9.7  62   5     20  
+:      ...   ...     ...  ...  ...   ... 
+137 -&gt; 13    112     11.5 71   9     15  
+138 -&gt; 46    237     6.9  78   9     16  
+139 -&gt; 18    224     13.8 67   9     17  
+140 -&gt; 13    27      10.3 76   9     18  
+141 -&gt; 24    238     10.3 68   9     19  
+142 -&gt; 16    201     8    82   9     20  
+143 -&gt; 13    238     12.6 64   9     21  
+144 -&gt; 23    14      9.2  71   9     22  
+145 -&gt; 36    139     10.3 81   9     23  
+146 -&gt; 7     49      10.3 69   9     24  
+147 -&gt; 14    20      16.6 63   9     25  
+148 -&gt; 30    193     6.9  70   9     26  
+150 -&gt; 14    191     14.3 75   9     28  
+151 -&gt; 18    131     8    76   9     29  
+152 -&gt; 20    223     11.5 68   9     30  
+
+val it: int = 110</code></pre></td></tr></table>
+<a name="frames"></a>
+<h2><a name="Missing-values-in-frames" class="anchor" href="#Missing-values-in-frames">Missing values in frames</a></h2>
+<p>The same filling functions are available at the frame level and operate
+column-by-column:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// Fill every missing cell with 0.0</span>
+<span data-fsdocs-tip="fs22" data-fsdocs-tip-unique="179" class="id">air</span>
+<span class="o">|&gt;</span> <span data-fsdocs-tip="fs23" data-fsdocs-tip-unique="180" class="m">Frame</span><span class="pn">.</span><span data-fsdocs-tip="fs67" data-fsdocs-tip-unique="181" class="id">fillMissingWith</span> <span class="n">0.0</span>
+<span class="o">|&gt;</span> <span data-fsdocs-tip="fs23" data-fsdocs-tip-unique="182" class="m">Frame</span><span class="pn">.</span><span data-fsdocs-tip="fs66" data-fsdocs-tip-unique="183" class="id">dropSparseRows</span>   <span class="c">// now no rows should be dropped</span>
+<span class="o">|&gt;</span> <span class="k">fun</span> <span data-fsdocs-tip="fs68" data-fsdocs-tip-unique="184" class="fn">f</span> <span class="k">-&gt;</span> <span data-fsdocs-tip="fs68" data-fsdocs-tip-unique="185" class="fn">f</span><span class="pn">.</span><span data-fsdocs-tip="fs64" data-fsdocs-tip-unique="186" class="id">RowCount</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val it: int = 153</code></pre></td></tr></table>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// Forward-fill each column independently</span>
+<span data-fsdocs-tip="fs22" data-fsdocs-tip-unique="187" class="id">air</span>
+<span class="o">|&gt;</span> <span data-fsdocs-tip="fs23" data-fsdocs-tip-unique="188" class="m">Frame</span><span class="pn">.</span><span data-fsdocs-tip="fs69" data-fsdocs-tip-unique="189" class="id">fillMissing</span> <span data-fsdocs-tip="fs50" data-fsdocs-tip-unique="190" class="en">Direction</span><span class="pn">.</span><span data-fsdocs-tip="fs51" data-fsdocs-tip-unique="191" class="id">Forward</span>
+<span class="o">|&gt;</span> <span data-fsdocs-tip="fs23" data-fsdocs-tip-unique="192" class="m">Frame</span><span class="pn">.</span><span data-fsdocs-tip="fs66" data-fsdocs-tip-unique="193" class="id">dropSparseRows</span>
+<span class="o">|&gt;</span> <span class="k">fun</span> <span data-fsdocs-tip="fs68" data-fsdocs-tip-unique="194" class="fn">f</span> <span class="k">-&gt;</span> <span data-fsdocs-tip="fs68" data-fsdocs-tip-unique="195" class="fn">f</span><span class="pn">.</span><span data-fsdocs-tip="fs64" data-fsdocs-tip-unique="196" class="id">RowCount</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val it: int = 152</code></pre></td></tr></table>
+<p><code>Frame.fillMissingUsing</code> accepts a function <code>Series&lt;'R,'T&gt; -&gt; 'R -&gt; 'T</code> so it
+can base the fill value on the whole column series:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span data-fsdocs-tip="fs22" data-fsdocs-tip-unique="197" class="id">air</span>
+<span class="o">|&gt;</span> <span data-fsdocs-tip="fs23" data-fsdocs-tip-unique="198" class="m">Frame</span><span class="pn">.</span><span data-fsdocs-tip="fs70" data-fsdocs-tip-unique="199" class="id">fillMissingUsing</span> <span class="pn">(</span><span class="k">fun</span> <span data-fsdocs-tip="fs71" data-fsdocs-tip-unique="200" class="fn">col</span> <span data-fsdocs-tip="fs72" data-fsdocs-tip-unique="201" class="fn">key</span> <span class="k">-&gt;</span>
+    <span class="c">// Fill with that column&#39;s mean</span>
+    <span data-fsdocs-tip="fs27" data-fsdocs-tip-unique="202" class="rt">Stats</span><span class="pn">.</span><span data-fsdocs-tip="fs30" data-fsdocs-tip-unique="203" class="id">mean</span> <span data-fsdocs-tip="fs71" data-fsdocs-tip-unique="204" class="fn">col</span><span class="pn">)</span>
+<span class="o">|&gt;</span> <span data-fsdocs-tip="fs23" data-fsdocs-tip-unique="205" class="m">Frame</span><span class="pn">.</span><span data-fsdocs-tip="fs66" data-fsdocs-tip-unique="206" class="id">dropSparseRows</span>
+<span class="o">|&gt;</span> <span class="k">fun</span> <span data-fsdocs-tip="fs68" data-fsdocs-tip-unique="207" class="fn">f</span> <span class="k">-&gt;</span> <span data-fsdocs-tip="fs68" data-fsdocs-tip-unique="208" class="fn">f</span><span class="pn">.</span><span data-fsdocs-tip="fs64" data-fsdocs-tip-unique="209" class="id">RowCount</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val it: int = 153</code></pre></td></tr></table>
+<a name="joins"></a>
+<h2><a name="Missing-values-in-joins" class="anchor" href="#Missing-values-in-joins">Missing values in joins</a></h2>
+<p>When two frames or series are joined, rows that exist in one source but not
+the other receive missing values for the absent columns. The join kind controls
+which rows are retained:</p>
+<table>
+<thead>
+<tr class="header">
+<th><p>Join kind</p></th>
+<th><p>Rows kept</p></th>
+<th><p>Missing values introduced</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><p><code>JoinKind.Inner</code></p></td>
+<td><p>Only rows present in <strong>both</strong></p></td>
+<td><p>None</p></td>
+</tr>
+<tr class="even">
+<td><p><code>JoinKind.Left</code></p></td>
+<td><p>All rows from the <strong>left</strong></p></td>
+<td><p>Right columns for unmatched rows</p></td>
+</tr>
+<tr class="odd">
+<td><p><code>JoinKind.Right</code></p></td>
+<td><p>All rows from the <strong>right</strong></p></td>
+<td><p>Left columns for unmatched rows</p></td>
+</tr>
+<tr class="even">
+<td><p><code>JoinKind.Outer</code></p></td>
+<td><p>All rows from <strong>either</strong></p></td>
+<td><p>Both sides for unmatched rows</p></td>
+</tr>
+</tbody>
+</table>
+
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span data-fsdocs-tip="fs73" data-fsdocs-tip-unique="210" class="id">s1</span> <span class="o">=</span> <span data-fsdocs-tip="fs74" data-fsdocs-tip-unique="211" class="fn">series</span> <span class="pn">[</span> <span class="n">1</span> <span class="o">=&gt;</span> <span class="n">10.0</span><span class="pn">;</span> <span class="n">2</span> <span class="o">=&gt;</span> <span class="n">20.0</span><span class="pn">;</span> <span class="n">3</span> <span class="o">=&gt;</span> <span class="n">30.0</span> <span class="pn">]</span>
+<span class="k">let</span> <span data-fsdocs-tip="fs75" data-fsdocs-tip-unique="212" class="id">s2</span> <span class="o">=</span> <span data-fsdocs-tip="fs74" data-fsdocs-tip-unique="213" class="fn">series</span> <span class="pn">[</span> <span class="n">2</span> <span class="o">=&gt;</span> <span class="n">200.0</span><span class="pn">;</span> <span class="n">3</span> <span class="o">=&gt;</span> <span class="n">300.0</span><span class="pn">;</span> <span class="n">4</span> <span class="o">=&gt;</span> <span class="n">400.0</span> <span class="pn">]</span>
+
+<span class="c">// Outer join introduces missing values for key 1 (not in s2) and key 4 (not in s1)</span>
+<span data-fsdocs-tip="fs23" data-fsdocs-tip-unique="214" class="rt">Frame</span><span class="pn">.</span><span data-fsdocs-tip="fs76" data-fsdocs-tip-unique="215" class="id">ofColumns</span> <span class="pn">[</span><span class="s">&quot;A&quot;</span> <span class="o">=&gt;</span> <span data-fsdocs-tip="fs73" data-fsdocs-tip-unique="216" class="id">s1</span><span class="pn">;</span> <span class="s">&quot;B&quot;</span> <span class="o">=&gt;</span> <span data-fsdocs-tip="fs75" data-fsdocs-tip-unique="217" class="id">s2</span><span class="pn">]</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val s1: Series&lt;int,float&gt; = 
+1 -&gt; 10 
+2 -&gt; 20 
+3 -&gt; 30 
+
+val s2: Series&lt;int,float&gt; = 
+2 -&gt; 200 
+3 -&gt; 300 
+4 -&gt; 400 
+
+val it: Frame&lt;int,string&gt; =
+  
+     A         B         
+1 -&gt; 10        &lt;missing&gt; 
+2 -&gt; 20        200       
+3 -&gt; 30        300       
+4 -&gt; &lt;missing&gt; 400</code></pre></td></tr></table>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// Inner join keeps only keys present in both</span>
+<span class="k">let</span> <span data-fsdocs-tip="fs77" data-fsdocs-tip-unique="218" class="id">f1</span> <span class="o">=</span> <span data-fsdocs-tip="fs78" data-fsdocs-tip-unique="219" class="fn">frame</span> <span class="pn">[</span><span class="s">&quot;A&quot;</span> <span class="o">=&gt;</span> <span data-fsdocs-tip="fs73" data-fsdocs-tip-unique="220" class="id">s1</span><span class="pn">]</span>
+<span class="k">let</span> <span data-fsdocs-tip="fs79" data-fsdocs-tip-unique="221" class="id">f2</span> <span class="o">=</span> <span data-fsdocs-tip="fs78" data-fsdocs-tip-unique="222" class="fn">frame</span> <span class="pn">[</span><span class="s">&quot;B&quot;</span> <span class="o">=&gt;</span> <span data-fsdocs-tip="fs75" data-fsdocs-tip-unique="223" class="id">s2</span><span class="pn">]</span>
+<span data-fsdocs-tip="fs77" data-fsdocs-tip-unique="224" class="id">f1</span><span class="pn">.</span><span data-fsdocs-tip="fs80" data-fsdocs-tip-unique="225" class="id">Join</span><span class="pn">(</span><span data-fsdocs-tip="fs79" data-fsdocs-tip-unique="226" class="id">f2</span><span class="pn">,</span> <span data-fsdocs-tip="fs81" data-fsdocs-tip-unique="227" class="en">JoinKind</span><span class="pn">.</span><span data-fsdocs-tip="fs82" data-fsdocs-tip-unique="228" class="id">Inner</span><span class="pn">)</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val f1: Frame&lt;int,string&gt; = 
+     A  
+1 -&gt; 10 
+2 -&gt; 20 
+3 -&gt; 30 
+
+val f2: Frame&lt;int,string&gt; = 
+     B   
+2 -&gt; 200 
+3 -&gt; 300 
+4 -&gt; 400 
+
+val it: Frame&lt;int,string&gt; = 
+     A  B   
+2 -&gt; 20 200 
+3 -&gt; 30 300</code></pre></td></tr></table>
+<p>After an outer join, <code>Frame.dropSparseRows</code> or <code>Frame.fillMissing</code> can be
+used to bring the frame back to a fully populated state.</p>
+<h2><a name="Summary" class="anchor" href="#Summary">Summary</a></h2>
+<table>
+<thead>
+<tr class="header">
+<th><p>Goal</p></th>
+<th><p>Function</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><p>Count present values</p></td>
+<td><p><code>Stats.count series</code></p></td>
+</tr>
+<tr class="even">
+<td><p>Count keys (incl. missing)</p></td>
+<td><p><code>series.KeyCount</code></p></td>
+</tr>
+<tr class="odd">
+<td><p>Safe lookup</p></td>
+<td><p><code>series.TryGet(key)</code> → <code>OptionalValue&lt;T&gt;</code></p></td>
+</tr>
+<tr class="even">
+<td><p>Iterate with missing</p></td>
+<td><p><code>Series.observationsAll</code></p></td>
+</tr>
+<tr class="odd">
+<td><p>Handle in a transform</p></td>
+<td><p><code>Series.mapAll</code></p></td>
+</tr>
+<tr class="even">
+<td><p>Fill with constant</p></td>
+<td><p><code>Series.fillMissingWith value</code> / <code>Frame.fillMissingWith value</code></p></td>
+</tr>
+<tr class="odd">
+<td><p>Carry forward/back</p></td>
+<td><p><code>Series.fillMissing Direction.*</code> / <code>Frame.fillMissing Direction.*</code></p></td>
+</tr>
+<tr class="even">
+<td><p>Custom fill</p></td>
+<td><p><code>Series.fillMissingUsing f</code> / <code>Frame.fillMissingUsing f</code></p></td>
+</tr>
+<tr class="odd">
+<td><p>Remove missing rows</p></td>
+<td><p><code>Series.dropMissing</code> / <code>Frame.dropSparseRows</code></p></td>
+</tr>
+<tr class="even">
+<td><p>Remove missing cols</p></td>
+<td><p><code>Frame.dropSparseCols</code></p></td>
+</tr>
+</tbody>
+</table>
+
+<h2><a name="See-also" class="anchor" href="#See-also">See also</a></h2>
+<ul>
+<li><a href="joining.html">Joining and merging frames</a> — how joins interact with missing values.</li>
+<li>
+<a href="frame.html">Data frame features</a> — the frame overview including a shorter introduction
+to missing values in context.
+</li>
+<li>
+<a href="series.html">Series features</a> — windowing and resampling functions that produce missing
+values at boundaries.
+</li>
+<li><a href="stats.html">Statistics</a> — how <code>Stats.*</code> functions skip over missing values.</li>
+</ul>
+
+        <div popover class="fsdocs-tip" id="fs1">namespace System</div>
+<div popover class="fsdocs-tip" id="fs2">namespace Deedle</div>
+<div popover class="fsdocs-tip" id="fs3">val fsi: FSharp.Compiler.Interactive.InteractiveSession</div>
+<div popover class="fsdocs-tip" id="fs4">member FSharp.Compiler.Interactive.InteractiveSession.AddPrinter: (&#39;T -&gt; string) -&gt; unit</div>
+<div popover class="fsdocs-tip" id="fs5">val o: obj</div>
+<div popover class="fsdocs-tip" id="fs6">type obj = Object</div>
+<div popover class="fsdocs-tip" id="fs7">val iface: Type</div>
+<div popover class="fsdocs-tip" id="fs8">Object.GetType() : Type</div>
+<div popover class="fsdocs-tip" id="fs9">val fmt: Reflection.MethodInfo</div>
+<div popover class="fsdocs-tip" id="fs10">
+Type.GetMethod(name: string) : Reflection.MethodInfo<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />
+Type.GetMethod(name: string, types: Type array) : Reflection.MethodInfo<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />
+Type.GetMethod(name: string, bindingAttr: Reflection.BindingFlags) : Reflection.MethodInfo<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />
+Type.GetMethod(name: string, types: Type array, modifiers: Reflection.ParameterModifier array) : Reflection.MethodInfo<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />
+Type.GetMethod(name: string, bindingAttr: Reflection.BindingFlags, types: Type array) : Reflection.MethodInfo<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />
+Type.GetMethod(name: string, genericParameterCount: int, types: Type array) : Reflection.MethodInfo<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />
+Type.GetMethod(name: string, genericParameterCount: int, types: Type array, modifiers: Reflection.ParameterModifier array) : Reflection.MethodInfo<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />
+Type.GetMethod(name: string, genericParameterCount: int, bindingAttr: Reflection.BindingFlags, types: Type array) : Reflection.MethodInfo<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />
+Type.GetMethod(name: string, bindingAttr: Reflection.BindingFlags, binder: Reflection.Binder, types: Type array, modifiers: Reflection.ParameterModifier array) : Reflection.MethodInfo<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />
+Type.GetMethod(name: string, bindingAttr: Reflection.BindingFlags, binder: Reflection.Binder, callConvention: Reflection.CallingConventions, types: Type array, modifiers: Reflection.ParameterModifier array) : Reflection.MethodInfo<br />&#160;&#160;&#160;<em>(+0 other overloads)</em></div>
+<div popover class="fsdocs-tip" id="fs11">Reflection.MethodBase.Invoke(obj: obj, parameters: obj array) : obj<br />Reflection.MethodBase.Invoke(obj: obj, invokeAttr: Reflection.BindingFlags, binder: Reflection.Binder, parameters: obj array, culture: Globalization.CultureInfo) : obj</div>
+<div popover class="fsdocs-tip" id="fs12">Multiple items<br />val string: value: &#39;T -&gt; string<br /><br />--------------------<br />type string = String</div>
+<div popover class="fsdocs-tip" id="fs13">val root: string</div>
+<div popover class="fsdocs-tip" id="fs14">Multiple items<br />module Series
+
+from Deedle<br /><em>&lt;summary&gt;
+ The `Series` module provides an F#-friendly API for working with data and time series.
+ The API follows the usual design for collection-processing in F#, so the functions work
+ well with the pipelining (&lt;c&gt;|&amp;gt;&lt;/c&gt;) operator. For example, given a series with ages,
+ we can use `Series.filterValues` to filter outliers and then `Stats.mean` to calculate
+ the mean:
+
+     ages
+     |&amp;gt; Series.filterValues (fun v -&amp;gt; v &amp;gt; 0.0 &amp;amp;&amp;amp; v &amp;lt; 120.0)
+     |&amp;gt; Stats.mean
+
+ The module provides comprehensive set of functions for working with series. The same
+ API is also exposed using C#-friendly extension methods. In C#, the above snippet could
+ be written as:
+
+     [lang=csharp]
+     ages
+       .Where(kvp =&amp;gt; kvp.Value &amp;gt; 0.0 &amp;amp;&amp;amp; kvp.Value &amp;lt; 120.0)
+       .Mean()
+
+ For more information about similar frame-manipulation functions, see the `Frame` module.
+ For more information about C#-friendly extensions, see `SeriesExtensions`. The functions
+ in the `Series` module are grouped in a number of categories and documented below.
+
+ Accessing series data and lookup
+ --------------------------------
+
+ Functions in this category provide access to the values in the series.
+
+  - The term _observation_ is used for a key value pair in the series.
+  - When working with a sorted series, it is possible to perform lookup using
+    keys that are not present in the series - you can specify to search for the
+    previous or next available value using _lookup behavior_.
+  - Functions such as `get` and `getAll` have their counterparts `lookup` and
+    `lookupAll` that let you specify lookup behavior.
+  - For most of the functions that may fail, there is a `try[Foo]` variant that
+    returns `None` instead of failing.
+  - Functions with a name ending with `At` perform lookup based on the absolute
+    integer offset (and ignore the keys of the series)
+
+ Series transformations
+ ----------------------
+
+ Functions in this category perform standard transformations on series including
+ projections, filtering, taking some sub-series of the series, aggregating values
+ using scanning and so on.
+
+ Projection and filtering functions generally skip over missing values, but there
+ are variants `filterAll` and `mapAll` that let you handle missing values explicitly.
+ Keys can be transformed using `mapKeys`. When you do not need to consider the keys,
+ and only care about values, use `filterValues` and `mapValues` (which is also aliased
+ as the `$` operator).
+
+ Series supports standard set of folding functions including `reduce` and `fold` (to
+ reduce series values into a single value) as well as the `scan[All]` function, which
+ can be used to fold values of a series into a series of intermeidate folding results.
+
+ The functions `take[Last]` and `skip[Last]` can be used to take a sub-series of the
+ original source series by skipping a specified number of elements. Note that this
+ does not require an ordered series and it ignores the index - for index-based lookup
+ use slicing, such as `series.[lo .. hi]`, instead.
+
+ Finally the `shift` function can be used to obtain a series with values shifted by
+ the specified offset. This can be used e.g. to get previous value for each key using
+ `Series.shift 1 ts`. The `diff` function calculates difference from previous value using
+ `ts - (Series.shift offs ts)`.
+
+ Processing series with exceptions
+ ---------------------------------
+
+ The functions in this group can be used to write computations over series that may fail.
+ They use the type &lt;c&gt;tryval&amp;lt;&#39;T&amp;gt;&lt;/c&gt; which is defined as a discriminated union
+ with two cases: Success containing a value, or Error containing an exception.
+
+ The function `tryMap` lets you create &lt;c&gt;Series&amp;lt;&#39;K, tryval&amp;lt;&#39;T&amp;gt;&amp;gt;&lt;/c&gt; by mapping over values
+ of an original series. You can then extract values using `tryValues`, which throws
+ `AggregateException` if there were any errors. Functions `tryErrors` and `trySuccesses`
+ give series containing only errors and successes. You can fill failed values with
+ a constant using `fillErrorsWith`.
+
+ Hierarchical index operations
+ -----------------------------
+
+ When the key of a series is tuple, the elements of the tuple can be treated
+ as multiple levels of a index. For example &lt;c&gt;Series&amp;lt;&#39;K1 * &#39;K2, &#39;V&amp;gt;&lt;/c&gt; has two
+ levels with keys of types &lt;c&gt;&#39;K1&lt;/c&gt; and &lt;c&gt;&#39;K2&lt;/c&gt; respectively.
+
+ The functions in this cateogry provide a way for aggregating values in the
+ series at one of the levels. For example, given a series `input` indexed by
+ two-element tuple, you can calculate mean for different first-level values as
+ follows:
+
+     input |&amp;gt; applyLevel fst Stats.mean
+
+ Note that the `Stats` module provides helpers for typical statistical operations,
+ so the above could be written just as `input |&amp;gt; Stats.levelMean fst`.
+
+ Grouping, windowing and chunking
+ --------------------------------
+
+ This category includes functions that group data from a series in some way. Two key
+ concepts here are _window_ and _chunk_. Window refers to (overlapping) sliding windows
+ over the input series while chunk refers to non-overlapping blocks of the series.
+
+ The boundary behavior can be specified using the `Boundary` flags. The value
+ `Skip` means that boundaries (incomplete windows or chunks) should be skipped. The value
+ `AtBeginning` and `AtEnding` can be used to define at which side should the boundary be
+ returned (or skipped). For chunking, `AtBeginning ||| Skip` makes sense and it means that
+ the incomplete chunk at the beginning should be skipped (aligning the last chunk with the end).
+
+ The behavior may be specified in a number of ways (which is reflected in the name):
+  - `dist` - using an absolute distance between the keys
+  - `while` - using a condition on the first and last key
+  - `size` - by specifying the absolute size of the window/chunk
+
+ The functions ending with `Into` take a function to be applied to the window/chunk.
+ The functions `window`, `windowInto` and `chunk`, `chunkInto` are simplified versions
+ that take a size. There is also `pairwise` function for sliding window of size two.
+
+ Missing values
+ --------------
+
+ This group of functions provides a way of working with missing values in a series.
+ The `dropMissing` function drops all keys for which there are no values in the series.
+ The `withMissingFrom` function lets you copy missing values from another series.
+ The remaining functions provide different mechanism for filling the missing values.
+
+  * `fillMissingWith` fills missing values with a specified constant
+  * `fillMissingUsing` calls a specified function for every missing value
+  * `fillMissing` and variants propagates values from previous/later keys
+
+ Sorting and index manipulation
+ ------------------------------
+
+ A series that is sorted by keys allows a number of additional operations (such as lookup
+ using the `Lookp.ExactOrSmaller` lookup behavior). However, it is also possible to sort
+ series based on the values - although the functions for manipulation with series do not
+ guarantee that the order will be preserved.
+
+ To sort series by keys, use `sortByKey`. Other sorting functions let you sort the series
+ using a specified comparer function (`sortWith`), using a projection function (`sortBy`)
+ and using the default comparison (`sort`).
+
+ In addition, you can also replace the keys of a series with other keys using `indexWith`
+ or with integers using `indexOrdinally`. To pick and reorder series values using to match
+ a list of keys use `realign`.
+
+ Sampling, resampling and advanced lookup
+ ----------------------------------------
+
+ Given a (typically) time series sampling or resampling makes it possible to
+ get time series with representative values at lower or uniform frequency.
+ We use the following terminology:
+
+  - `lookup` and `sample` functions find values at specified key; if a key is not
+    available, they can look for value associated with the nearest smaller or
+    the nearest greater key.
+
+  - `resample` function aggregate values values into chunks based
+    on a specified collection of keys (e.g. explicitly provided times), or
+    based on some relation between keys (e.g. date times having the same date).
+
+  - `resampleUniform` is similar to resampling, but we specify keys by
+    providing functions that generate a uniform sequence of keys (e.g. days),
+    the operation also fills value for days that have no corresponding
+    observations in the input sequence.
+
+ Joining, merging and zipping
+ ----------------------------
+
+ Given two series, there are two ways to combine the values. If the keys in the series
+ are not overlapping (or you want to throw away values from one or the other series),
+ then you can use `merge` or `mergeUsing`. To merge more than 2 series efficiently, use
+ the `mergeAll` function, which has been optimized for large number of series.
+
+ If you want to align two series, you can use the _zipping_ operation. This aligns
+ two series based on their keys and gives you tuples of values. The default behavior
+ (`zip`) uses outer join and exact matching. For ordered series, you can specify
+ other forms of key lookups (e.g. find the greatest smaller key) using `zipAlign`.
+ functions ending with `Into` are generally easier to use as they call a specified
+ function to turn the tuple (of possibly missing values) into a new value.
+
+ For more complicated behaviors, it is often convenient to use joins on frames instead
+ of working with series. Create two frames with single columns and then use the join
+ operation. The result will be a frame with two columns (which is easier to use than
+ series of tuples).
+ &lt;/summary&gt;<br />&lt;category&gt;Frame and series operations&lt;/category&gt;</em><br /><br />--------------------<br />type Series =
+  static member ofNullables: values: Nullable&lt;&#39;a&gt; seq -&gt; Series&lt;int,&#39;a&gt; (requires default constructor and value type and &#39;a :&gt; ValueType)
+  static member ofObservations: observations: (&#39;a * &#39;b) seq -&gt; Series&lt;&#39;a,&#39;b&gt; (requires equality)
+  static member ofOptionalObservations: observations: (&#39;K * &#39;a option) seq -&gt; Series&lt;&#39;K,&#39;a&gt; (requires equality)
+  static member ofValues: values: &#39;a seq -&gt; Series&lt;int,&#39;a&gt;<br /><br />--------------------<br />type Series&lt;&#39;K,&#39;V (requires equality)&gt; =
+  interface ISeriesFormattable
+  interface IFsiFormattable
+  interface ISeries&lt;&#39;K&gt;
+  new: index: IIndex&lt;&#39;K&gt; * vector: IVector&lt;&#39;V&gt; * vectorBuilder: IVectorBuilder * indexBuilder: IIndexBuilder -&gt; Series&lt;&#39;K,&#39;V&gt; + 3 overloads
+  member After: lowerExclusive: &#39;K -&gt; Series&lt;&#39;K,&#39;V&gt;
+  member Aggregate: aggregation: Aggregation&lt;&#39;K&gt; * keySelector: Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,&#39;TNewKey&gt; * valueSelector: Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,OptionalValue&lt;&#39;R&gt;&gt; -&gt; Series&lt;&#39;TNewKey,&#39;R&gt; (requires equality) + 1 overload
+  member AsyncMaterialize: unit -&gt; Async&lt;Series&lt;&#39;K,&#39;V&gt;&gt;
+  member Before: upperExclusive: &#39;K -&gt; Series&lt;&#39;K,&#39;V&gt;
+  member Between: lowerInclusive: &#39;K * upperInclusive: &#39;K -&gt; Series&lt;&#39;K,&#39;V&gt;
+  member Compare: another: Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,Diff&lt;&#39;V&gt;&gt;
+  ...<br /><em>&lt;summary&gt;
+ The type &lt;c&gt;Series&amp;lt;K, V&amp;gt;&lt;/c&gt; represents a data series consisting of values `V` indexed by
+ keys `K`. The keys of a series may or may not be ordered
+ &lt;/summary&gt;<br />&lt;category&gt;Core frame and series types&lt;/category&gt;</em><br /><br />--------------------<br />new: pairs: Collections.Generic.KeyValuePair&lt;&#39;K,&#39;V&gt; seq -&gt; Series&lt;&#39;K,&#39;V&gt;<br />new: keys: &#39;K seq * values: &#39;V seq -&gt; Series&lt;&#39;K,&#39;V&gt;<br />new: keys: &#39;K array * values: &#39;V array -&gt; Series&lt;&#39;K,&#39;V&gt;<br />new: index: Indices.IIndex&lt;&#39;K&gt; * vector: IVector&lt;&#39;V&gt; * vectorBuilder: Vectors.IVectorBuilder * indexBuilder: Indices.IIndexBuilder -&gt; Series&lt;&#39;K,&#39;V&gt;</div>
+<div popover class="fsdocs-tip" id="fs15">static member Series.ofValues: values: &#39;a seq -&gt; Series&lt;int,&#39;a&gt;</div>
+<div popover class="fsdocs-tip" id="fs16">
+type Double =
+  member CompareTo: value: float -&gt; int + 1 overload
+  member Equals: obj: float -&gt; bool + 1 overload
+  member GetHashCode: unit -&gt; int
+  member GetTypeCode: unit -&gt; TypeCode
+  member ToString: unit -&gt; string + 3 overloads
+  member TryFormat: utf8Destination: Span&lt;byte&gt; * bytesWritten: byref&lt;int&gt; * ?format: ReadOnlySpan&lt;char&gt; * ?provider: IFormatProvider -&gt; bool + 1 overload
+  static member (&lt;) : left: float * right: float -&gt; bool
+  static member (&lt;=) : left: float * right: float -&gt; bool
+  static member (&lt;&gt;) : left: float * right: float -&gt; bool
+  static member (=) : left: float * right: float -&gt; bool
+  ...<br /><em>&lt;summary&gt;Represents a double-precision floating-point number.&lt;/summary&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs17">field Double.NaN: float = NaN</div>
+<div popover class="fsdocs-tip" id="fs18">Multiple items<br />type Nullable =
+  static member Compare&lt;&#39;T (requires default constructor and value type and &#39;T :&gt; ValueType)&gt; : n1: Nullable&lt;&#39;T&gt; * n2: Nullable&lt;&#39;T&gt; -&gt; int
+  static member Equals&lt;&#39;T (requires default constructor and value type and &#39;T :&gt; ValueType)&gt; : n1: Nullable&lt;&#39;T&gt; * n2: Nullable&lt;&#39;T&gt; -&gt; bool
+  static member GetUnderlyingType: nullableType: Type -&gt; Type
+  static member GetValueRefOrDefaultRef&lt;&#39;T (requires default constructor and value type and &#39;T :&gt; ValueType)&gt; : nullable: inref&lt;Nullable&lt;&#39;T&gt;&gt; -&gt; inref&lt;&#39;T&gt;<br /><em>&lt;summary&gt;Supports a value type that can be assigned &lt;see langword=&quot;null&quot; /&gt;. This class cannot be inherited.&lt;/summary&gt;</em><br /><br />--------------------<br />
+type Nullable&lt;&#39;T (requires default constructor and value type and &#39;T :&gt; ValueType)&gt; =
+  new: value: &#39;T -&gt; unit
+  member Equals: other: obj -&gt; bool
+  member GetHashCode: unit -&gt; int
+  member GetValueOrDefault: unit -&gt; &#39;T + 1 overload
+  member ToString: unit -&gt; string
+  static member op_Explicit: value: Nullable&lt;&#39;T&gt; -&gt; &#39;T
+  static member op_Implicit: value: &#39;T -&gt; Nullable&lt;&#39;T&gt;
+  member HasValue: bool
+  member Value: &#39;T<br /><em>&lt;summary&gt;Represents a value type that can be assigned &lt;see langword=&quot;null&quot; /&gt;.&lt;/summary&gt;<br />&lt;typeparam name=&quot;T&quot;&gt;The underlying value type of the &lt;see cref=&quot;T:System.Nullable`1&quot; /&gt; generic type.&lt;/typeparam&gt;</em><br /><br />--------------------<br />Nullable ()<br />Nullable(value: &#39;T) : Nullable&lt;&#39;T&gt;</div>
+<div popover class="fsdocs-tip" id="fs19">static member Series.ofOptionalObservations: observations: (&#39;K * &#39;a option) seq -&gt; Series&lt;&#39;K,&#39;a&gt; (requires equality)</div>
+<div popover class="fsdocs-tip" id="fs20">union case Option.Some: Value: &#39;T -&gt; Option&lt;&#39;T&gt;</div>
+<div popover class="fsdocs-tip" id="fs21">union case Option.None: Option&lt;&#39;T&gt;</div>
+<div popover class="fsdocs-tip" id="fs22">val air: Frame&lt;int,string&gt;</div>
+<div popover class="fsdocs-tip" id="fs23">Multiple items<br />module Frame
+
+from Deedle<br /><em>&lt;summary&gt;
+ The `Frame` module provides an F#-friendly API for working with data frames.
+ The module follows the usual desing for collection-processing in F#, so the
+ functions work well with the pipelining operator (`|&amp;gt;`). For example, given
+ a frame with two columns representing prices, we can use `Frame.pctChange` to
+ calculate daily returns like this:
+
+     let df = frame [ &quot;MSFT&quot; =&amp;gt; prices1; &quot;AAPL&quot; =&amp;gt; prices2 ]
+     let rets = df |&amp;gt; Frame.pctChange 1
+     rets |&amp;gt; Stats.mean
+
+ Note that the `Stats.mean` operation is overloaded and works both on series
+ (returning a number) and on frames (returning a series). You can also use
+ `Frame.diff` if you need absolute differences rather than relative changes.
+
+ The functions in this module are designed to be used from F#. For a C#-friendly
+ API, see the `FrameExtensions` type. For working with individual series, see the
+ `Series` module. The functions in the `Frame` module are grouped in a number of
+ categories and documented below.
+
+ Accessing frame data and lookup
+ -------------------------------
+
+ Functions in this category provide access to the values in the fame. You can
+ also add and remove columns from a frame (which both return a new value).
+
+ - `addCol`, `replaceCol` and `dropCol` can be used to create a new data frame
+   with a new column, by replacing an existing column with a new one, or by dropping
+   an existing column
+
+ - `cols` and `rows` return the columns or rows of a frame as a series containing
+   objects; `getCols` and `getRows` return a generic series and cast the values to
+   the type inferred from the context (columns or rows of incompatible types are skipped);
+   `getNumericCols` returns columns of a type convertible to `float` for convenience.
+
+ - You can get a specific row or column using `get[Col|Row]` or `lookup[Col|Row]` functions.
+   The `lookup` variant lets you specify lookup behavior for key matching (e.g. find the
+   nearest smaller key than the specified value). There are also `[try]get` and `[try]Lookup`
+   functions that return optional values and functions returning entire observations
+   (key together with the series).
+
+ - `sliceCols` and `sliceRows` return a sub-frame containing only the specified columns
+   or rows. Finally, `toArray2D` returns the frame data as a 2D array.
+
+ Grouping, windowing and chunking
+ --------------------------------
+
+ The basic grouping functions in this category can be used to group the rows of a
+ data frame by a specified projection or column to create a frame with hierarchical
+ index such as &lt;c&gt;Frame&amp;lt;&#39;K1 * &#39;K2, &#39;C&amp;gt;&lt;/c&gt;. The functions always aggregate rows, so if you
+ want to group columns, you need to use `Frame.transpose` first.
+
+ The function `groupRowsBy` groups rows by the value of a specified column. Use
+ `groupRowsBy[Int|Float|String...]` if you want to specify the type of the column in
+ an easier way than using type inference; `groupRowsUsing` groups rows using the
+ specified _projection function_ and `groupRowsByIndex` projects the grouping key just
+ from the row index.
+
+ More advanced functions include: `aggregateRowsBy` which groups the rows by a
+ specified sequence of columns and aggregates each group into a single value;
+ `pivotTable` implements the pivoting operation [as documented in the
+ tutorials](../frame.html#pivot).
+
+ The `melt` and `unmelt` functions turn the data frame into a single data frame
+ containing columns `Row`, `Column` and `Value` containing the data of the original
+ frame; `unmelt` can be used to turn this representation back into an original frame.
+
+ The `stack` and `unstack` functions implement pandas-style reshape operations.
+ `stack` converts `Frame&amp;lt;&#39;R,&#39;C&amp;gt;` to a long-format `Frame&amp;lt;&#39;R*&#39;C, string&amp;gt;` where each
+ cell becomes a row keyed by `(rowKey, colKey)` with a single `&quot;Value&quot;` column.
+ `unstack` promotes the inner row-key level to column keys, producing
+ `Frame&amp;lt;&#39;R1, &#39;C*&#39;R2&amp;gt;` from `Frame&amp;lt;&#39;R1*&#39;R2,&#39;C&amp;gt;`.
+
+ A simple windowing functions that are exposed for an entire frame operations are
+ `window` and `windowInto`. For more complex windowing operations, you currently have
+ to use `mapRows` or `mapCols` and apply windowing on individual series.
+
+ Sorting and index manipulation
+ ------------------------------
+
+ A frame is indexed by row keys and column keys. Both of these indices can be sorted
+ (by the keys). A frame that is sorted allows a number of additional operations (such
+ as lookup using the `Lookp.ExactOrSmaller` lookup behavior). The functions in this
+ category provide ways for manipulating the indices. It is expected that most operations
+ are done on rows and so more functions are available in a row-wise way. A frame can
+ alwyas be transposed using `Frame.transpose`.
+
+ Index operations:
+
+ The existing row/column keys can be replaced by a sequence of new keys using the
+ `indexColsWith` and `indexRowsWith` functions. Row keys can also be replaced by
+ ordinal numbers using `indexRowsOrdinally`.
+
+ The function `indexRows` uses the specified column of the original frame as the
+ index. It removes the column from the resulting frame (to avoid this, use overloaded
+ `IndexRows` method). This function infers the type of row keys from the context, so it
+ is usually more convenient to use `indexRows[Date|String|Int|...]` functions. Finally,
+ if you want to calculate the index value based on multiple columns of the row, you
+ can use `indexRowsUsing`.
+
+ Sorting frame rows:
+
+ Frame rows can be sorted according to the value of a specified column using the
+ `sortRows` function; `sortRowsBy` takes a projection function which lets you
+ transform the value of a column (e.g. to project a part of the value).
+
+ The functions `sortRowsByKey` and `sortColsByKey` sort the rows or columns
+ using the default ordering on the key values. The result is a frame with ordered
+ index.
+
+ Expanding columns:
+
+ When the frame contains a series with complex .NET objects such as F# records or
+ C# classes, it can be useful to &quot;expand&quot; the column. This operation looks at the
+ type of the objects, gets all properties of the objects (recursively) and
+ generates multiple series representing the properties as columns.
+
+ The function `expandCols` expands the specified columns while `expandAllCols`
+ applies the expansion to all columns of the data frame.
+
+ Frame transformations
+ ---------------------
+
+ Functions in this category perform standard transformations on data frames including
+ projections, filtering, taking some sub-frame of the frame, aggregating values
+ using scanning and so on.
+
+ Projection and filtering functions such as `[map|filter][Cols|Rows]` call the
+ specified function with the column or row key and an &lt;c&gt;ObjectSeries&amp;lt;&#39;K&amp;gt;&lt;/c&gt; representing
+ the column or row. You can use functions ending with `Values` (such as `mapRowValues`)
+ when you do not require the row key, but only the row series; `mapRowKeys` and
+ `mapColKeys` can be used to transform the keys.
+
+ You can use `reduceValues` to apply a custom reduction to values of columns. Other
+ aggregations are available in the `Stats` module. You can also get a row with the
+ greaterst or smallest value of a given column using `[min|max]RowBy`.
+
+ The functions `take[Last]` and `skip[Last]` can be used to take a sub-frame of the
+ original source frame by skipping a specified number of rows. Note that this
+ does not require an ordered frame and it ignores the index - for index-based lookup
+ use slicing, such as `df.Rows.[lo .. hi]`, instead.
+
+ Finally the `shift` function can be used to obtain a frame with values shifted by
+ the specified offset. This can be used e.g. to get previous value for each key using
+ `Frame.shift 1 df`. The `diff` function calculates difference from previous value using
+ `df - (Frame.shift offs df)`.
+
+ Processing frames with exceptions
+ ---------------------------------
+
+ The functions in this group can be used to write computations over frames that may fail.
+ They use the type &lt;c&gt;tryval&amp;lt;&#39;T&amp;gt;&lt;/c&gt; which is defined as a discriminated union
+ with two cases: Success containing a value, or Error containing an exception.
+
+ Using &lt;c&gt;tryval&amp;lt;&#39;T&amp;gt;&lt;/c&gt; as a value in a data frame is not generally recommended, because
+ the type of values cannot be tracked in the type. For this reason, it is better to use
+ &lt;c&gt;tryval&amp;lt;&#39;T&amp;gt;&lt;/c&gt; with individual series. However, `tryValues` and `fillErrorsWith` functions
+ can be used to get values, or fill failed values inside an entire data frame.
+
+ The `tryMapRows` function is more useful. It can be used to write a transformation
+ that applies a computation (which may fail) to each row of a data frame. The resulting
+ series is of type &lt;c&gt;Series&amp;lt;&#39;R, tryval&amp;lt;&#39;T&amp;gt;&amp;gt;&lt;/c&gt; and can be processed using the &lt;c&gt;Series&lt;/c&gt; module
+ functions.
+
+ Missing values
+ --------------
+
+ This group of functions provides a way of working with missing values in a data frame.
+ The category provides the following functions that can be used to fill missing values:
+
+  * `fillMissingWith` fills missing values with a specified constant
+  * `fillMissingUsing` calls a specified function for every missing value
+  * `fillMissing` and variants propagates values from previous/later keys
+
+ We use the terms _sparse_ and _dense_ to denote series that contain some missing values
+ or do not contain any missing values, respectively. The functions `denseCols` and
+ `denseRows` return a series that contains only dense columns or rows and all sparse
+ rows or columns are replaced with a missing value. The `dropSparseCols` and `dropSparseRows`
+ functions drop these missing values and return a frame with no missing values.
+
+ Joining, merging and zipping
+ ----------------------------
+
+ The simplest way to join two frames is to use the `join` operation which can be used to
+ perform left, right, outer or inner join of two frames. When the row keys of the frames do
+ not match exactly, you can use `joinAlign` which takes an additional parameter that specifies
+ how to find matching key in left/right join (e.g. by taking the nearest smaller available key).
+
+ Frames that do not contian overlapping values can be combined using `merge` (when combining
+ just two frames) or using `mergeAll` (for larger number of frames). Tha latter is optimized
+ to work well for a large number of data frames.
+
+ Finally, frames with overlapping values can be combined using `zip`. It takes a function
+ that is used to combine the overlapping values. A `zipAlign` function provides a variant
+ with more flexible row key matching (as in `joinAlign`)
+
+ Hierarchical index operations
+ -----------------------------
+
+ A data frame has a hierarchical row index if the row index is formed by a tuple, such as
+ &lt;c&gt;Frame&amp;lt;&#39;R1 * &#39;R2, &#39;C&amp;gt;&lt;/c&gt;. Frames of this kind are returned, for example, by the grouping
+ functions such as &lt;c&gt;Frame.groupRowsBy&lt;/c&gt;. The functions in this category provide ways for
+ working with data frames that have hierarchical row keys.
+
+ The functions &lt;c&gt;applyLevel&lt;/c&gt; and &lt;c&gt;reduceLevel&lt;/c&gt; can be used to reduce values according to
+ one of the levels. The &lt;c&gt;applyLevel&lt;/c&gt; function takes a reduction of type &lt;c&gt;Series&amp;lt;&#39;K, &#39;T&amp;gt; -&amp;gt; &#39;T&lt;/c&gt;
+ while &lt;c&gt;reduceLevel&lt;/c&gt; reduces individual values using a function of type &lt;c&gt;&#39;T -&amp;gt; &#39;T -&amp;gt; &#39;T&lt;/c&gt;.
+
+ The functions &lt;c&gt;nest&lt;/c&gt; and &lt;c&gt;unnest&lt;/c&gt; can be used to convert between frames with
+ hierarchical indices (&lt;c&gt;Frame&amp;lt;&#39;K1 * &#39;K2, &#39;C&amp;gt;&lt;/c&gt;) and series of frames that represent
+ individual groups (&lt;c&gt;Series&amp;lt;&#39;K1, Frame&amp;lt;&#39;K2, &#39;C&amp;gt;&amp;gt;&lt;/c&gt;). The &lt;c&gt;nestBy&lt;/c&gt; function can be
+ used to perform group by operation and return the result as a series of frems.
+ &lt;/summary&gt;<br />&lt;category&gt;Frame and series operations&lt;/category&gt;</em><br /><br />--------------------<br />type Frame =
+  static member ReadCsv: location: string * hasHeaders: Nullable&lt;bool&gt; * inferTypes: Nullable&lt;bool&gt; * inferRows: Nullable&lt;int&gt; * schema: string * separators: string * culture: string * maxRows: Nullable&lt;int&gt; * missingValues: string array * preferOptions: bool * encoding: Encoding -&gt; Frame&lt;int,string&gt; + 1 overload
+  static member ReadReader: reader: IDataReader -&gt; Frame&lt;int,string&gt;
+  static member CustomExpanders: Dictionary&lt;Type,Func&lt;obj,(string * Type * obj) seq&gt;&gt;
+  static member NonExpandableInterfaces: ResizeArray&lt;Type&gt;
+  static member NonExpandableTypes: HashSet&lt;Type&gt;<br /><em>&lt;summary&gt;
+ Provides static methods for creating frames, reading frame data
+ from CSV files and database (via IDataReader). The type also provides
+ global configuration for reflection-based expansion.
+ &lt;/summary&gt;<br />&lt;category&gt;Frame and series operations&lt;/category&gt;</em><br /><br />--------------------<br />type Frame&lt;&#39;TRowKey,&#39;TColumnKey (requires equality and equality)&gt; =
+  interface IDynamicMetaObjectProvider
+  interface INotifyCollectionChanged
+  interface IFrameFormattable
+  interface IFsiFormattable
+  interface IFrame
+  new: rowIndex: IIndex&lt;&#39;TRowKey&gt; * columnIndex: IIndex&lt;&#39;TColumnKey&gt; * data: IVector&lt;IVector&gt; * indexBuilder: IIndexBuilder * vectorBuilder: IVectorBuilder -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; + 1 overload
+  member AddColumn: column: &#39;TColumnKey * series: &#39;V seq -&gt; unit + 3 overloads
+  member AggregateRowsBy: groupBy: &#39;TColumnKey seq * aggBy: &#39;TColumnKey seq * aggFunc: Func&lt;Series&lt;&#39;TRowKey,&#39;a&gt;,&#39;b&gt; -&gt; Frame&lt;int,&#39;TColumnKey&gt;
+  member Clone: unit -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;
+  member ColumnApply: f: Func&lt;Series&lt;&#39;TRowKey,&#39;T&gt;,ISeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; + 1 overload
+  ...<br /><em>&lt;summary&gt;
+ A frame is the key Deedle data structure (together with series). It represents a
+ data table (think spreadsheet or CSV file) with multiple rows and columns. The frame
+ consists of row index, column index and data. The indices are used for efficient
+ lookup when accessing data by the row key `&#39;TRowKey` or by the column key
+ `&#39;TColumnKey`. Deedle frames are optimized for the scenario when all values in a given
+ column are of the same type (but types of different columns can differ).
+ &lt;/summary&gt;<br />&lt;remarks&gt;&lt;para&gt;Joining, zipping and appending:&lt;/para&gt;&lt;para&gt;
+ More info
+ &lt;/para&gt;&lt;/remarks&gt;<br />&lt;category&gt;Core frame and series types&lt;/category&gt;</em><br /><br />--------------------<br />new: names: &#39;TColumnKey seq * columns: ISeries&lt;&#39;TRowKey&gt; seq -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />new: rowIndex: Indices.IIndex&lt;&#39;TRowKey&gt; * columnIndex: Indices.IIndex&lt;&#39;TColumnKey&gt; * data: IVector&lt;IVector&gt; * indexBuilder: Indices.IIndexBuilder * vectorBuilder: Vectors.IVectorBuilder -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;</div>
+<div popover class="fsdocs-tip" id="fs24">static member Frame.ReadCsv: reader: IO.TextReader * ?hasHeaders: bool * ?inferTypes: bool * ?inferRows: int * ?schema: string * ?separators: string * ?culture: string * ?maxRows: int * ?missingValues: string array * ?preferOptions: bool * ?typeResolver: (string -&gt; string option) -&gt; Frame&lt;int,string&gt;<br />static member Frame.ReadCsv: stream: IO.Stream * hasHeaders: Nullable&lt;bool&gt; * inferTypes: Nullable&lt;bool&gt; * inferRows: Nullable&lt;int&gt; * schema: string * separators: string * culture: string * maxRows: Nullable&lt;int&gt; * missingValues: string array * preferOptions: Nullable&lt;bool&gt; * encoding: Text.Encoding -&gt; Frame&lt;int,string&gt;<br />static member Frame.ReadCsv: location: string * hasHeaders: Nullable&lt;bool&gt; * inferTypes: Nullable&lt;bool&gt; * inferRows: Nullable&lt;int&gt; * schema: string * separators: string * culture: string * maxRows: Nullable&lt;int&gt; * missingValues: string array * preferOptions: bool * encoding: Text.Encoding -&gt; Frame&lt;int,string&gt;<br />static member Frame.ReadCsv: path: string * ?hasHeaders: bool * ?inferTypes: bool * ?inferRows: int * ?schema: string * ?separators: string * ?culture: string * ?maxRows: int * ?missingValues: string array * ?preferOptions: bool * ?typeResolver: (string -&gt; string option) * ?encoding: Text.Encoding -&gt; Frame&lt;int,string&gt;<br />static member Frame.ReadCsv: stream: IO.Stream * ?hasHeaders: bool * ?inferTypes: bool * ?inferRows: int * ?schema: string * ?separators: string * ?culture: string * ?maxRows: int * ?missingValues: string array * ?preferOptions: bool * ?typeResolver: (string -&gt; string option) * ?encoding: Text.Encoding -&gt; Frame&lt;int,string&gt;<br />static member Frame.ReadCsv: path: string * indexCol: string * ?hasHeaders: bool * ?inferTypes: bool * ?inferRows: int * ?schema: string * ?separators: string * ?culture: string * ?maxRows: int * ?missingValues: string array * ?preferOptions: bool * ?typeResolver: (string -&gt; string option) * ?encoding: Text.Encoding -&gt; Frame&lt;&#39;R,string&gt; (requires equality)</div>
+<div popover class="fsdocs-tip" id="fs25">val ozone: Series&lt;int,float&gt;</div>
+<div popover class="fsdocs-tip" id="fs26">property Series.KeyCount: int with get<br /><em>&lt;summary&gt;
+ Returns the total number of keys in the specified series. This returns
+ the total length of the series, including keys for which there is no
+ value available.
+ &lt;/summary&gt;<br />&lt;category&gt;Series data&lt;/category&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs27">type Stats =
+  static member corr: series1: Series&lt;&#39;K,&#39;V1&gt; -&gt; series2: Series&lt;&#39;K,&#39;V2&gt; -&gt; float (requires equality)
+  static member corrFrame: frame: Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;C,&#39;C&gt; (requires equality and equality)
+  static member count: series: Series&lt;&#39;K,&#39;V&gt; -&gt; int (requires equality) + 1 overload
+  static member cov: series1: Series&lt;&#39;K,&#39;V1&gt; -&gt; series2: Series&lt;&#39;K,&#39;V2&gt; -&gt; float (requires equality)
+  static member covFrame: frame: Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;C,&#39;C&gt; (requires equality and equality)
+  static member describe: series: Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;string,float&gt; (requires equality and equality) + 1 overload
+  static member expandingCount: series: Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,float&gt; (requires equality)
+  static member expandingKurt: series: Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,float&gt; (requires equality)
+  static member expandingMax: series: Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,float&gt; (requires equality)
+  static member expandingMean: series: Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,float&gt; (requires equality)
+  ...</div>
+<div popover class="fsdocs-tip" id="fs28">static member Stats.count: frame: Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,int&gt; (requires equality and equality)<br />static member Stats.count: series: Series&lt;&#39;K,&#39;V&gt; -&gt; int (requires equality)</div>
+<div popover class="fsdocs-tip" id="fs29">Multiple items<br />val int: value: &#39;T -&gt; int (requires member op_Explicit)<br /><br />--------------------<br />type int = int32<br /><br />--------------------<br />type int&lt;&#39;Measure&gt; =
+  int</div>
+<div popover class="fsdocs-tip" id="fs30">static member Stats.mean: frame: Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt; (requires equality and equality)<br />static member Stats.mean: series: Series&lt;&#39;K,&#39;V&gt; -&gt; float (requires equality)</div>
+<div popover class="fsdocs-tip" id="fs31">static member Stats.max: frame: Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt; (requires equality and equality)<br />static member Stats.max: series: Series&lt;&#39;K,&#39;V&gt; -&gt; float (requires equality)</div>
+<div popover class="fsdocs-tip" id="fs32">val v: OptionalValue&lt;float&gt;</div>
+<div popover class="fsdocs-tip" id="fs33">member Series.TryGet: key: &#39;K -&gt; OptionalValue&lt;&#39;V&gt;<br />member Series.TryGet: key: &#39;K * lookup: Lookup -&gt; OptionalValue&lt;&#39;V&gt;</div>
+<div popover class="fsdocs-tip" id="fs34">Multiple items<br />module OptionalValue
+
+from Deedle<br /><em>&lt;summary&gt;
+ Provides various helper functions for using the &lt;c&gt;OptionalValue&amp;lt;T&amp;gt;&lt;/c&gt; type from F#
+ (The functions are similar to those in the standard &lt;c&gt;Option&lt;/c&gt; module).
+ &lt;/summary&gt;<br />&lt;category&gt;Primitive types and values&lt;/category&gt;</em><br /><br />--------------------<br />type OptionalValue =
+  class end<br /><em>&lt;summary&gt;
+ Non-generic type that makes it easier to create &lt;c&gt;OptionalValue&amp;lt;T&amp;gt;&lt;/c&gt; values
+ from C# by benefiting the type inference for generic method invocations.
+ &lt;/summary&gt;<br />&lt;category&gt;Primitive types and values&lt;/category&gt;</em><br /><br />--------------------<br />
+type OptionalValue&lt;&#39;T&gt; =
+  new: value: &#39;T -&gt; OptionalValue&lt;&#39;T&gt;
+  override Equals: y: obj -&gt; bool
+  override GetHashCode: unit -&gt; int
+  override ToString: unit -&gt; string
+  member HasValue: bool
+  member Value: &#39;T
+  member ValueOrDefault: &#39;T
+  static member Missing: OptionalValue&lt;&#39;T&gt;<br /><em>&lt;summary&gt;
+ Value type that represents a potentially missing value. This is similar to
+ &lt;c&gt;System.Nullable&amp;lt;T&amp;gt;&lt;/c&gt;, but does not restrict the contained value to be a value
+ type, so it can be used for storing values of any types. When obtained from
+ &lt;c&gt;DataFrame&amp;lt;R, C&amp;gt;&lt;/c&gt; or &lt;c&gt;Series&amp;lt;K, T&amp;gt;&lt;/c&gt;, the &lt;c&gt;Value&lt;/c&gt; will never be &lt;c&gt;Double.NaN&lt;/c&gt; or &lt;c&gt;null&lt;/c&gt;
+ (but this is not, in general, checked when constructing the value).
+
+ The type is only used in C#-friendly API. F# operations generally use expose
+ standard F# &lt;c&gt;option&amp;lt;T&amp;gt;&lt;/c&gt; type instead. However, there the &lt;c&gt;OptionalValue&lt;/c&gt; module
+ contains helper functions for using this type from F# as well as &lt;c&gt;Missing&lt;/c&gt; and
+ &lt;c&gt;Present&lt;/c&gt; active patterns.
+ &lt;/summary&gt;<br />&lt;category&gt;Primitive types and values&lt;/category&gt;</em><br /><br />--------------------<br />OptionalValue ()<br />new: value: &#39;T -&gt; OptionalValue&lt;&#39;T&gt;</div>
+<div popover class="fsdocs-tip" id="fs35">active recognizer Present: &#39;T opt -&gt; Choice&lt;unit,&#39;T&gt;<br /><em>&lt;summary&gt;
+ Complete active pattern that can be used to pattern match on `OptionalValue&amp;lt;T&amp;gt;`.
+ For example:
+
+     let optVal = OptionalValue(42)
+     match optVal with
+     | OptionalValue.Missing -&amp;gt; printfn &quot;Empty&quot;
+     | OptionalValue.Present(v) -&amp;gt; printfn &quot;Contains %d&quot; v
+
+&lt;/summary&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs36">val x: float</div>
+<div popover class="fsdocs-tip" id="fs37">val sprintf: format: Printf.StringFormat&lt;&#39;T&gt; -&gt; &#39;T</div>
+<div popover class="fsdocs-tip" id="fs38">Multiple items<br />active recognizer Missing: &#39;T opt -&gt; Choice&lt;unit,&#39;T&gt;<br /><em>&lt;summary&gt;
+ Complete active pattern that can be used to pattern match on `OptionalValue&amp;lt;T&amp;gt;`.
+ For example:
+
+     let optVal = OptionalValue(42)
+     match optVal with
+     | OptionalValue.Missing -&amp;gt; printfn &quot;Empty&quot;
+     | OptionalValue.Present(v) -&amp;gt; printfn &quot;Contains %d&quot; v
+
+&lt;/summary&gt;</em><br /><br />--------------------<br />property OptionalValue.Missing: OptionalValue&lt;&#39;T&gt; with get<br /><em>&lt;summary&gt;
+ Returns a new instance of `OptionalValue&amp;lt;T&amp;gt;` that does not contain a value.
+&lt;/summary&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs39">val observationsAll: series: Series&lt;&#39;K,&#39;T&gt; -&gt; (&#39;K * &#39;T option) seq (requires equality)<br /><em>&lt;summary&gt;
+ Returns all keys from the sequence, together with the associated (optional) values.
+ &lt;/summary&gt;<br />&lt;category&gt;Accessing series data and lookup&lt;/category&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs40">module Seq
+
+from Microsoft.FSharp.Collections</div>
+<div popover class="fsdocs-tip" id="fs41">val truncate: count: int -&gt; source: &#39;T seq -&gt; &#39;T seq</div>
+<div popover class="fsdocs-tip" id="fs42">val map: mapping: (&#39;T -&gt; &#39;U) -&gt; source: &#39;T seq -&gt; &#39;U seq</div>
+<div popover class="fsdocs-tip" id="fs43">val k: int</div>
+<div popover class="fsdocs-tip" id="fs44">val v: float option</div>
+<div popover class="fsdocs-tip" id="fs45">val toList: source: &#39;T seq -&gt; &#39;T list</div>
+<div popover class="fsdocs-tip" id="fs46">val mapAll: f: (&#39;K -&gt; &#39;T option -&gt; &#39;R option) -&gt; series: Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;R&gt; (requires equality)<br /><em>&lt;summary&gt;
+ Returns a new series whose values are the results of applying the given function to
+ values of the original series. This specified function is called even when the value
+ is missing. It returns &lt;c&gt;option&amp;lt;&#39;T&amp;gt;&lt;/c&gt; so that it can create/eliminate missing values in
+ the result.
+ &lt;/summary&gt;<br />&lt;category&gt;Series transformations&lt;/category&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs47">val take: count: int -&gt; series: Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt; (requires equality)<br /><em>&lt;summary&gt;
+ Returns a series that contains the specified number of keys from the original series.
+ &lt;/summary&gt;<br />&lt;param name=&quot;count&quot;&gt;Number of keys to take; must be smaller or equal to the original number of keys&lt;/param&gt;<br />&lt;param name=&quot;series&quot;&gt;Input series from which the keys are taken&lt;/param&gt;<br />&lt;category&gt;Series transformations&lt;/category&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs48">val fillMissingWith: value: &#39;a -&gt; series: Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt; (requires equality)<br /><em>&lt;summary&gt;
+ Fill missing values in the series with a constant value.
+ &lt;/summary&gt;<br />&lt;param name=&quot;series&quot;&gt;An input series that is to be filled&lt;/param&gt;<br />&lt;param name=&quot;value&quot;&gt;A constant value that is used to fill all missing values&lt;/param&gt;<br />&lt;category&gt;Missing values&lt;/category&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs49">val fillMissing: direction: Direction -&gt; series: Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt; (requires equality)<br /><em>&lt;summary&gt;
+ Fill missing values in the series with the nearest available value
+ (using the specified direction). Note that the series may still contain
+ missing values after call to this function. This operation can only be
+ used on ordered series.
+ &lt;/summary&gt;<br />&lt;param name=&quot;series&quot;&gt;An input series that is to be filled&lt;/param&gt;<br />&lt;param name=&quot;direction&quot;&gt;Specifies the direction used when searching for the nearest available value. `Backward` means that we want to look for the first value with a smaller key while `Forward` searches for the nearest greater key.&lt;/param&gt;<br />&lt;example&gt;&lt;code&gt;
+ let sample = Series.ofValues [ Double.NaN; 1.0; Double.NaN; 3.0 ]
+
+ // Returns a series consisting of [1; 1; 3; 3]
+ sample |&amp;gt; Series.fillMissing Direction.Backward
+
+ // Returns a series consisting of [&amp;lt;missing&amp;gt;; 1; 1; 3]
+ sample |&amp;gt; Series.fillMissing Direction.Forward
+ &lt;/code&gt;&lt;/example&gt;<br />&lt;category&gt;Missing values&lt;/category&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs50">
+type Direction =
+  | Backward = 0
+  | Forward = 1<br /><em>&lt;summary&gt;
+ Specifies in which direction should we look when performing operations such as
+ `Series.Pairwise`.
+ &lt;/summary&gt;<br />&lt;example&gt;&lt;code&gt;
+ let abc =
+   [ 1 =&amp;gt; &quot;a&quot;; 2 =&amp;gt; &quot;b&quot;; 3 =&amp;gt; &quot;c&quot; ]
+   |&amp;gt; Series.ofObservations
+
+ // Using &#39;Forward&#39; the key of the first element is used
+ abc.Pairwise(direction=Direction.Forward)
+ // [ 1 =&amp;gt; (&quot;a&quot;, &quot;b&quot;); 2 =&amp;gt; (&quot;b&quot;, &quot;c&quot;) ]
+
+ // Using &#39;Backward&#39; the key of the second element is used
+ abc.Pairwise(direction=Direction.Backward)
+ // [ 2 =&amp;gt; (&quot;a&quot;, &quot;b&quot;); 3 =&amp;gt; (&quot;b&quot;, &quot;c&quot;) ]
+ &lt;/code&gt;&lt;/example&gt;<br />&lt;category&gt;Parameters and results of various operations&lt;/category&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs51">Direction.Forward: Direction = 1</div>
+<div popover class="fsdocs-tip" id="fs52">Direction.Backward: Direction = 0</div>
+<div popover class="fsdocs-tip" id="fs53">val fillMissingUsing: f: (&#39;K -&gt; &#39;T) -&gt; series: Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt; (requires equality)<br /><em>&lt;summary&gt;
+ Fill missing values in the series using the specified function.
+ The specified function is called with all keys for which the series
+ does not contain value and the result of the call is used in place
+ of the missing value.
+ &lt;/summary&gt;<br />&lt;param name=&quot;series&quot;&gt;An input series that is to be filled&lt;/param&gt;<br />&lt;param name=&quot;f&quot;&gt;A function that takes key `K` and generates a value to be used in a place where the original series contains a missing value.&lt;/param&gt;<br />&lt;remarks&gt;
+ This function can be used to implement more complex interpolation.
+ For example see [handling missing values in the tutorial](../frame.html#missing)
+ &lt;/remarks&gt;<br />&lt;category&gt;Missing values&lt;/category&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs54">val prev: OptionalValue&lt;float&gt;</div>
+<div popover class="fsdocs-tip" id="fs55">
+type Lookup =
+  | Exact = 1
+  | ExactOrGreater = 3
+  | ExactOrSmaller = 5
+  | Greater = 2
+  | Smaller = 4<br /><em>&lt;summary&gt;
+ Represents different behaviors of key lookup in series. For unordered series,
+ the only available option is `Lookup.Exact` which finds the exact key - methods
+ fail or return missing value if the key is not available in the index. For ordered
+ series `Lookup.Greater` finds the first greater key (e.g. later date) with
+ a value. `Lookup.Smaller` searches for the first smaller key. The options
+ `Lookup.ExactOrGreater` and `Lookup.ExactOrSmaller` finds the exact key (if it is
+ present) and otherwise search for the nearest larger or smaller key, respectively.
+ &lt;/summary&gt;<br />&lt;category&gt;Parameters and results of various operations&lt;/category&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs56">Lookup.ExactOrSmaller: Lookup = 5<br /><em>&lt;summary&gt;
+ Lookup a value associated with the specified key or with the nearest
+ smaller key that has a value available. Fails (or returns missing value)
+ only when the specified key is smaller than all available keys.
+&lt;/summary&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs57">val next: OptionalValue&lt;float&gt;</div>
+<div popover class="fsdocs-tip" id="fs58">Lookup.ExactOrGreater: Lookup = 3<br /><em>&lt;summary&gt;
+ Lookup a value associated with the specified key or with the nearest
+ greater key that has a value available. Fails (or returns missing value)
+ only when the specified key is greater than all available keys.
+&lt;/summary&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs59">val p: float</div>
+<div popover class="fsdocs-tip" id="fs60">val n: float</div>
+<div popover class="fsdocs-tip" id="fs61">val v: float</div>
+<div popover class="fsdocs-tip" id="fs62">val dropMissing: series: Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt; (requires equality)<br /><em>&lt;summary&gt;
+ Drop missing values from the specified series. The returned series contains
+ only those keys for which there is a value available in the original one.
+ &lt;/summary&gt;<br />&lt;param name=&quot;series&quot;&gt;An input series to be filtered&lt;/param&gt;<br />&lt;example&gt;&lt;code&gt;
+ let s = series [ 1 =&amp;gt; 1.0; 2 =&amp;gt; Double.NaN ]
+ s |&amp;gt; Series.dropMissing
+ // val it : Series&amp;lt;int,float&amp;gt; = series [ 1 =&amp;gt; 1]
+ &lt;/code&gt;&lt;/example&gt;<br />&lt;category&gt;Missing values&lt;/category&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs63">val countValues: series: Series&lt;&#39;K,&#39;T&gt; -&gt; int (requires equality)<br /><em>&lt;summary&gt;
+ Returns the total number of values in the specified series. This excludes
+ missing values or not available values (such as values created from `null`,
+ `Double.NaN`, or those that are missing due to outer join etc.).
+ &lt;/summary&gt;<br />&lt;category&gt;Accessing series data and lookup&lt;/category&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs64">property Frame.RowCount: int with get</div>
+<div popover class="fsdocs-tip" id="fs65">val airComplete: Frame&lt;int,string&gt;</div>
+<div popover class="fsdocs-tip" id="fs66">val dropSparseRows: frame: Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt; (requires equality and equality)<br /><em>&lt;summary&gt;
+ Creates a new data frame that contains only those rows of the original
+ data frame that are _dense_, meaning that they have a value for each column.
+ The resulting data frame has the same number of columns, but may have
+ fewer rows (or no rows at all).
+ &lt;/summary&gt;<br />&lt;category&gt;Missing values&lt;/category&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs67">val fillMissingWith: value: &#39;T -&gt; frame: Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt; (requires equality and equality)<br /><em>&lt;summary&gt;
+ Fill missing values of a given type in the frame with a constant value.
+ The fill value is applied to columns whose element type matches the fill value type
+ (using safe numeric widening). This includes both cases where the column type can be
+ widened to the fill value type (e.g. decimal columns filled with a float value) and
+ cases where the fill value can be widened to the column type (e.g. an integer fill
+ value filling float columns).
+ Columns whose element type is incompatible with the fill value type are left unchanged.
+ &lt;/summary&gt;<br />&lt;param name=&quot;frame&quot;&gt;An input data frame that is to be filled&lt;/param&gt;<br />&lt;param name=&quot;value&quot;&gt;A constant value that is used to fill all missing values&lt;/param&gt;<br />&lt;category&gt;Missing values&lt;/category&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs68">val f: Frame&lt;int,string&gt;</div>
+<div popover class="fsdocs-tip" id="fs69">val fillMissing: direction: Direction -&gt; frame: Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt; (requires equality and equality)<br /><em>&lt;summary&gt;
+ Fill missing values in the data frame with the nearest available value
+ (using the specified direction). Note that the frame may still contain
+ missing values after call to this function (e.g. if the first value is not available
+ and we attempt to fill series with previous values). This operation can only be
+ used on ordered frames.
+ &lt;/summary&gt;<br />&lt;param name=&quot;frame&quot;&gt;An input data frame that is to be filled&lt;/param&gt;<br />&lt;param name=&quot;direction&quot;&gt;Specifies the direction used when searching for the nearest available value. `Backward` means that we want to look for the first value with a smaller key while `Forward` searches for the nearest greater key.&lt;/param&gt;<br />&lt;category&gt;Missing values&lt;/category&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs70">val fillMissingUsing: f: (Series&lt;&#39;R,&#39;T&gt; -&gt; &#39;R -&gt; &#39;T) -&gt; frame: Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt; (requires equality and equality)<br /><em>&lt;summary&gt;
+ Fill missing values in the frame using the specified function. The specified
+ function is called with all series and keys for which the frame does not
+ contain value and the result of the call is used in place of the missing value.
+
+ The operation is only applied to columns (series) that contain values of the
+ same type as the return type of the provided filling function. The operation
+ does not attempt to convert between numeric values (so a series containing
+ `float` will not be converted to a series of `int`).
+ &lt;/summary&gt;<br />&lt;param name=&quot;frame&quot;&gt;An input data frame that is to be filled&lt;/param&gt;<br />&lt;param name=&quot;f&quot;&gt;A function that takes a series &lt;c&gt;Series&amp;lt;R, T&amp;gt;&lt;/c&gt; together with a key `K` in the series and generates a value to be used in a place where the original series contains a missing value.&lt;/param&gt;<br />&lt;category&gt;Missing values&lt;/category&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs71">val col: Series&lt;int,float&gt;</div>
+<div popover class="fsdocs-tip" id="fs72">val key: int</div>
+<div popover class="fsdocs-tip" id="fs73">val s1: Series&lt;int,float&gt;</div>
+<div popover class="fsdocs-tip" id="fs74">val series: observations: (&#39;a * &#39;b) seq -&gt; Series&lt;&#39;a,&#39;b&gt; (requires equality)<br /><em>&lt;summary&gt;
+ Create a series from a sequence of key-value pairs that represent
+ the observations of the series. This function can be used together
+ with the `=&amp;gt;` operator to create key-value pairs.
+ &lt;/summary&gt;<br />&lt;example&gt;
+
+     // Creates a series with squares of numbers
+     let sqs = series [ 1 =&amp;gt; 1.0; 2 =&amp;gt; 4.0; 3 =&amp;gt; 9.0 ]
+ &lt;/example&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs75">val s2: Series&lt;int,float&gt;</div>
+<div popover class="fsdocs-tip" id="fs76">static member Frame.ofColumns: cols: Series&lt;&#39;C,#ISeries&lt;&#39;R&gt;&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt; (requires equality and equality)<br />static member Frame.ofColumns: cols: (&#39;C * #ISeries&lt;&#39;R&gt;) seq -&gt; Frame&lt;&#39;R,&#39;C&gt; (requires equality and equality)</div>
+<div popover class="fsdocs-tip" id="fs77">val f1: Frame&lt;int,string&gt;</div>
+<div popover class="fsdocs-tip" id="fs78">val frame: columns: (&#39;a * #ISeries&lt;&#39;c&gt;) seq -&gt; Frame&lt;&#39;c,&#39;a&gt; (requires equality and equality)<br /><em>&lt;summary&gt;
+ A function for constructing data frame from a sequence of name - column pairs.
+ This provides a nicer syntactic sugar for `Frame.ofColumns`.
+ &lt;/summary&gt;<br />&lt;example&gt;
+ To create a simple frame with two columns, you can write:
+ &lt;code&gt;
+ frame [ &quot;A&quot; =&amp;gt; series [ 1 =&amp;gt; 30.0; 2 =&amp;gt; 35.0 ]
+         &quot;B&quot; =&amp;gt; series [ 1 =&amp;gt; 30.0; 3 =&amp;gt; 40.0 ] ]
+ &lt;/code&gt;&lt;/example&gt;<br />&lt;category&gt;Frame construction&lt;/category&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs79">val f2: Frame&lt;int,string&gt;</div>
+<div popover class="fsdocs-tip" id="fs80">member Frame.Join: otherFrame: Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />member Frame.Join: colKey: &#39;TColumnKey * series: Series&lt;&#39;TRowKey,&#39;V&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />member Frame.Join: otherFrame: Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * kind: JoinKind -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />member Frame.Join: colKey: &#39;TColumnKey * series: Series&lt;&#39;TRowKey,&#39;V&gt; * kind: JoinKind -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />member Frame.Join: otherFrame: Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * kind: JoinKind * lookup: Lookup -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />member Frame.Join: colKey: &#39;TColumnKey * series: Series&lt;&#39;TRowKey,&#39;V&gt; * kind: JoinKind * lookup: Lookup -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;</div>
+<div popover class="fsdocs-tip" id="fs81">
+type JoinKind =
+  | Outer = 0
+  | Inner = 1
+  | Left = 2
+  | Right = 3<br /><em>&lt;summary&gt;
+ This enumeration specifies joining behavior for `Join` method provided
+ by `Series` and `Frame`. Outer join unions the keys (and may introduce
+ missing values), inner join takes the intersection of keys; left and
+ right joins take the keys of the first or the second series/frame.
+ &lt;/summary&gt;<br />&lt;category&gt;Parameters and results of various operations&lt;/category&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs82">JoinKind.Inner: JoinKind = 1<br /><em>&lt;summary&gt;
+ Take the intersection of the keys available in both structures and align the
+ values of the two structures. The resulting structure cannot contain missing values.
+&lt;/summary&gt;</em></div>
+
+    </div>
+</main>
+<aside id="fsdocs-page-menu">
+    <p id="on-this-page">On this page</p>
+    <ul>
+  <li class="level-1">
+    <a href="#Handling-missing-values">
+      Handling missing values
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#How-missing-values-are-represented">
+      How missing values are represented
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Counting-present-and-missing-values">
+      Counting present and missing values
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Statistics-skip-missing-values">
+      Statistics skip missing values
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Filling-missing-values">
+      Filling missing values
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Fill-with-a-constant">
+      Fill with a constant
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Forward-and-backward-fill">
+      Forward and backward fill
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Combining-fill-and-drop">
+      Combining fill and drop
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Dropping-missing-values">
+      Dropping missing values
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Drop-from-a-series">
+      Drop from a series
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Drop-sparse-rows-and-columns-from-a-frame">
+      Drop sparse rows and columns from a frame
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Missing-values-in-frames">
+      Missing values in frames
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Missing-values-in-joins">
+      Missing values in joins
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Summary">
+      Summary
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#See-also">
+      See also
+    </a>
+  </li>
+</ul>
+</aside>
+<dialog>
+    <input type="search" placeholder="Search docs" />
+    <div class="results">
+        <ul></ul>
+        <p class="empty">Type something to start searching.</p>
+    </div>
+</dialog>
+<script type="module" src="/Deedle/content/fsdocs-tips.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-theme-toggle.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-details-toggle.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-theme.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-search.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-copy-button.js"></script>
+
+</body>
+</html>

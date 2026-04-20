@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en" data-root="/Deedle/">
+<head>
+    <meta charset="UTF-8">
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="Deedle.Arrow" name="author">
+    <!-- Opengraph properties (https://ogp.me/) -->
+    <meta property="og:site_name" content="Deedle">
+    <meta property="og:title" content="Delay-loaded series" />
+    <meta property="og:url" content="/Deedle/lazysource.html">
+    <meta property="og:type" content="website" />
+    <!-- Twitter cards (https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/summary-card-with-large-image) -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="/Deedle/">
+    <meta name="twitter:title" content="Delay-loaded series">
+    <meta name="description" content="Building series backed by lazy or virtual data sources for on-demand data loading">
+<meta name="twitter:site" content="Building series backed by lazy or virtual data sources for on-demand data loading">
+<meta name="og:description" content="Building series backed by lazy or virtual data sources for on-demand data loading">
+<meta name="keywords" content="lazy, virtual series, data source, on-demand loading">
+    <title>Delay-loaded series | Deedle</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code&display=swap" rel="stylesheet">
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <link href="/Deedle/img/favicon.ico" rel="icon" sizes="32x32" type="image/png"/>
+    <script type="application/javascript" src="/Deedle/content/fsdocs-theme-set-dark.js"></script>
+    <script type="application/javascript" src="/Deedle/content/fsdocs-details-set-expanded.js"></script>
+    <link href="/Deedle/content/fsdocs-default.css" rel="stylesheet" type="text/css"/>
+    <link href="/Deedle/content/fsdocs-theme.css" rel="stylesheet" type="text/css"/>
+    
+    
+</head>
+<body class="content">
+<header>
+    <div class="start">
+        <div id="menu-toggle">
+            <iconify-icon class="icon closed" height="22" icon="eva:menu-fill" width="22"></iconify-icon>
+            <iconify-icon class="icon open" height="22" icon="mi:close" width="22"></iconify-icon>
+            <input type="checkbox" name="mobile-menu" />
+            <ul class="menu">
+                <li class="nav-header">Links</li>
+                <li class="license-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fslaborg/Deedle/blob/master/LICENSE.md">License</a>
+                </li>
+                <li class="release-notes-menu-item builtin-menu-item nav-item"><a class="nav-link"
+                                        href="https://github.com/fslaborg/Deedle/blob/master/RELEASE_NOTES.md">Release
+                    Notes</a></li>
+                <li class="repository-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fslaborg/Deedle/">Source
+                    Repository</a></li>
+                <li class="nav-header active">
+  Guides
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/tutorial.html">
+    Deedle in 10 minutes
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/frame.html">
+    Data frame features
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/series.html">
+    Series and time series features
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/stats.html">
+    Calculating frame and series statistics
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/missing.html">
+    Handling missing values
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/joining.html">
+    Joining, merging and appending frames
+  </a>
+</li>             
+<li class="nav-item active">
+  <a class="nav-link" href="/Deedle/lazysource.html">
+    Delay-loaded series
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/csharp.html">
+    Deedle in C#
+  </a>
+</li>             
+<li class="nav-header ">
+  Integrations
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/excel.html">
+    Excel integration — ExcelReader &amp; ExcelWriter
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/arrow.html">
+    Deedle.Arrow — Apache Arrow and Feather integration
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/parquet.html">
+    Deedle.Parquet — Apache Parquet integration
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/math.html">
+    Deedle.MathNetNumerics — MathNet.Numerics integration
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/dotnetinteractive.html">
+    Deedle.DotNetInteractive — .NET Interactive notebook formatting
+  </a>
+</li>             
+<li class="nav-header ">
+  Design
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/design.html">
+    Design notes
+  </a>
+</li>
+                <li class="nav-header">
+  API Reference
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="/Deedle/reference/index.html">
+    All Namespaces
+  </a>
+</li>
+            </ul>
+        </div>
+        <a href="/Deedle/">
+            <img alt="Logo" src="/Deedle/img/logo.png">
+            <strong>Deedle</strong>
+        </a>
+    </div>
+    <div class="end">
+        <a href="https://github.com/fslaborg/Deedle/" target="_blank">
+            <iconify-icon icon="uil:github" width="26" height="26"></iconify-icon>
+        </a>
+        <iconify-icon id="search-btn" icon="carbon:search" class="search" width="24" height="24"></iconify-icon>
+        <fsdocs-theme-toggle></fsdocs-theme-toggle>
+    </div>
+</header>
+<aside id="fsdocs-main-menu">
+    <ul class="menu">
+        <li class="nav-header">Links</li>
+        <li class="license-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fslaborg/Deedle/blob/master/LICENSE.md">License</a>
+        </li>
+        <li class="release-notes-menu-item builtin-menu-item nav-item"><a class="nav-link"
+                                href="https://github.com/fslaborg/Deedle/blob/master/RELEASE_NOTES.md">Release
+            Notes</a></li>
+        <li class="repository-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fslaborg/Deedle/">Source
+            Repository</a></li>
+        <li class="nav-header active">
+  Guides
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/tutorial.html">
+    Deedle in 10 minutes
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/frame.html">
+    Data frame features
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/series.html">
+    Series and time series features
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/stats.html">
+    Calculating frame and series statistics
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/missing.html">
+    Handling missing values
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/joining.html">
+    Joining, merging and appending frames
+  </a>
+</li>             
+<li class="nav-item active">
+  <a class="nav-link" href="/Deedle/lazysource.html">
+    Delay-loaded series
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/csharp.html">
+    Deedle in C#
+  </a>
+</li>             
+<li class="nav-header ">
+  Integrations
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/excel.html">
+    Excel integration — ExcelReader &amp; ExcelWriter
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/arrow.html">
+    Deedle.Arrow — Apache Arrow and Feather integration
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/parquet.html">
+    Deedle.Parquet — Apache Parquet integration
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/math.html">
+    Deedle.MathNetNumerics — MathNet.Numerics integration
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/dotnetinteractive.html">
+    Deedle.DotNetInteractive — .NET Interactive notebook formatting
+  </a>
+</li>             
+<li class="nav-header ">
+  Design
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/design.html">
+    Design notes
+  </a>
+</li>
+        <li class="nav-header">
+  API Reference
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="/Deedle/reference/index.html">
+    All Namespaces
+  </a>
+</li>
+    </ul>
+</aside>
+<main>
+    <div id="content">
+        
+<h1><a name="Delay-loaded-series" class="anchor" href="#Delay-loaded-series">Delay-loaded series</a></h1>
+<p>The <code>DelayedSeries</code> type provides an efficient way to create series whose data is loaded
+on-demand. For example, you may have a large time series stored in a CSV file or in a
+database and you do not want to load all the data in memory if the user only needs a
+small part of it.</p>
+<p>When you create a delayed series, you specify the overall range of the series (i.e. the
+minimum and maximum key value) and you provide a function that loads a specified sub-range
+of the series. When the user accesses a continuous range of the series, the loading function
+is called to retrieve the data.</p>
+<a name="create"></a>
+<h2><a name="Creating-a-delayed-series" class="anchor" href="#Creating-a-delayed-series">Creating a delayed series</a></h2>
+<p>To create a delayed series, we need a function that generates data for a given range.
+The following function generates a series with random data for a given date range with
+a day frequency:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span data-fsdocs-tip="fs16" data-fsdocs-tip-unique="23" class="fn">generate</span> <span class="pn">(</span><span data-fsdocs-tip="fs17" data-fsdocs-tip-unique="24" class="fn">low</span><span class="pn">:</span><span data-fsdocs-tip="fs18" data-fsdocs-tip-unique="25" class="vt">DateTime</span><span class="pn">)</span> <span class="pn">(</span><span data-fsdocs-tip="fs19" data-fsdocs-tip-unique="26" class="fn">high</span><span class="pn">:</span><span data-fsdocs-tip="fs18" data-fsdocs-tip-unique="27" class="vt">DateTime</span><span class="pn">)</span> <span class="pn">:</span> <span data-fsdocs-tip="fs20" data-fsdocs-tip-unique="28" class="if">seq</span><span class="pn">&lt;</span><span data-fsdocs-tip="fs21" data-fsdocs-tip-unique="29" class="vt">KeyValuePair</span><span class="pn">&lt;</span><span data-fsdocs-tip="fs18" data-fsdocs-tip-unique="30" class="vt">DateTime</span><span class="pn">,</span><span data-fsdocs-tip="fs22" data-fsdocs-tip-unique="31" class="vt">float</span><span class="pn">&gt;</span><span class="pn">&gt;</span> <span class="o">=</span> 
+    <span class="k">let</span> <span data-fsdocs-tip="fs23" data-fsdocs-tip-unique="32" class="fn">rnd</span> <span class="o">=</span> <span data-fsdocs-tip="fs24" data-fsdocs-tip-unique="33" class="fn">Random</span><span class="pn">(</span><span class="pn">)</span>
+    <span class="k">let</span> <span data-fsdocs-tip="fs25" data-fsdocs-tip-unique="34" class="fn">days</span> <span class="o">=</span> <span data-fsdocs-tip="fs26" data-fsdocs-tip-unique="35" class="fn">int</span> <span class="prop">(</span><span data-fsdocs-tip="fs19" data-fsdocs-tip-unique="36" class="fn">high</span> <span class="o">-</span> <span data-fsdocs-tip="fs17" data-fsdocs-tip-unique="37" class="fn">low</span><span class="pn">)</span><span class="pn">.</span><span class="id">TotalDays</span>
+    <span data-fsdocs-tip="fs20" data-fsdocs-tip-unique="38" class="fn">seq</span> <span class="pn">[</span> <span class="k">for</span> <span data-fsdocs-tip="fs27" data-fsdocs-tip-unique="39" class="fn">d</span> <span class="k">in</span> <span class="n">0</span> <span class="o">..</span> <span data-fsdocs-tip="fs25" data-fsdocs-tip-unique="40" class="fn">days</span> <span class="k">-&gt;</span> <span data-fsdocs-tip="fs21" data-fsdocs-tip-unique="41" class="fn">KeyValuePair</span><span class="pn">(</span><span data-fsdocs-tip="fs17" data-fsdocs-tip-unique="42" class="fn">low</span><span class="pn">.</span><span data-fsdocs-tip="fs28" data-fsdocs-tip-unique="43" class="id">AddDays</span><span class="pn">(</span><span data-fsdocs-tip="fs22" data-fsdocs-tip-unique="44" class="fn">float</span> <span data-fsdocs-tip="fs27" data-fsdocs-tip-unique="45" class="fn">d</span><span class="pn">)</span><span class="pn">,</span> <span data-fsdocs-tip="fs23" data-fsdocs-tip-unique="46" class="fn">rnd</span><span class="pn">.</span><span data-fsdocs-tip="fs29" data-fsdocs-tip-unique="47" class="id">NextDouble</span><span class="pn">(</span><span class="pn">)</span><span class="pn">)</span> <span class="pn">]</span>
+</code></pre>
+<p>Now we use <code>DelayedSeries.FromValueLoader</code> to create a delayed series. It takes the overall
+minimum and maximum key of the series and a function that loads data for a sub-range. The
+loading function gets the lower and upper bound as a tuple of <code>(key, BoundaryBehavior)</code>
+values where <code>BoundaryBehavior</code> is either <code>Inclusive</code> or <code>Exclusive</code>:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span data-fsdocs-tip="fs30" data-fsdocs-tip-unique="48" class="id">min</span> <span class="o">=</span> <span data-fsdocs-tip="fs18" data-fsdocs-tip-unique="49" class="fn">DateTime</span><span class="pn">(</span><span class="n">2010</span><span class="pn">,</span> <span class="n">1</span><span class="pn">,</span> <span class="n">1</span><span class="pn">)</span>
+<span class="k">let</span> <span data-fsdocs-tip="fs31" data-fsdocs-tip-unique="50" class="id">max</span> <span class="o">=</span> <span data-fsdocs-tip="fs18" data-fsdocs-tip-unique="51" class="fn">DateTime</span><span class="pn">(</span><span class="n">2013</span><span class="pn">,</span> <span class="n">1</span><span class="pn">,</span> <span class="n">1</span><span class="pn">)</span>
+
+<span class="k">let</span> <span data-fsdocs-tip="fs32" data-fsdocs-tip-unique="52" class="id">ls</span> <span class="o">=</span> <span data-fsdocs-tip="fs33" data-fsdocs-tip-unique="53" class="rt">DelayedSeries</span><span class="pn">.</span><span data-fsdocs-tip="fs34" data-fsdocs-tip-unique="54" class="id">FromValueLoader</span><span class="pn">(</span><span data-fsdocs-tip="fs30" data-fsdocs-tip-unique="55" class="id">min</span><span class="pn">,</span> <span data-fsdocs-tip="fs31" data-fsdocs-tip-unique="56" class="id">max</span><span class="pn">,</span> <span class="k">fun</span> <span class="pn">(</span><span data-fsdocs-tip="fs35" data-fsdocs-tip-unique="57" class="fn">lo</span><span class="pn">,</span> <span data-fsdocs-tip="fs36" data-fsdocs-tip-unique="58" class="fn">lob</span><span class="pn">)</span> <span class="pn">(</span><span data-fsdocs-tip="fs37" data-fsdocs-tip-unique="59" class="fn">hi</span><span class="pn">,</span> <span data-fsdocs-tip="fs38" data-fsdocs-tip-unique="60" class="fn">hib</span><span class="pn">)</span> <span class="k">-&gt;</span> <span data-fsdocs-tip="fs39" data-fsdocs-tip-unique="61" class="k">async</span> <span class="pn">{</span>
+    <span data-fsdocs-tip="fs40" data-fsdocs-tip-unique="62" class="fn">printfn</span> <span class="s">&quot;Query: </span><span class="pf">%A</span><span class="s"> - </span><span class="pf">%A</span><span class="s">&quot;</span> <span data-fsdocs-tip="fs35" data-fsdocs-tip-unique="63" class="fn">lo</span> <span data-fsdocs-tip="fs37" data-fsdocs-tip-unique="64" class="fn">hi</span>
+    <span class="k">let</span> <span data-fsdocs-tip="fs35" data-fsdocs-tip-unique="65" class="fn">lo</span> <span class="o">=</span> <span class="k">if</span> <span data-fsdocs-tip="fs36" data-fsdocs-tip-unique="66" class="fn">lob</span> <span class="o">=</span> <span data-fsdocs-tip="fs41" data-fsdocs-tip-unique="67" class="rt">BoundaryBehavior</span><span class="pn">.</span><span data-fsdocs-tip="fs42" data-fsdocs-tip-unique="68" class="id">Inclusive</span> <span class="k">then</span> <span data-fsdocs-tip="fs35" data-fsdocs-tip-unique="69" class="fn">lo</span> <span class="k">else</span> <span data-fsdocs-tip="fs35" data-fsdocs-tip-unique="70" class="fn">lo</span><span class="pn">.</span><span data-fsdocs-tip="fs28" data-fsdocs-tip-unique="71" class="id">AddDays</span><span class="pn">(</span><span class="n">1.0</span><span class="pn">)</span>
+    <span class="k">let</span> <span data-fsdocs-tip="fs37" data-fsdocs-tip-unique="72" class="fn">hi</span> <span class="o">=</span> <span class="k">if</span> <span data-fsdocs-tip="fs38" data-fsdocs-tip-unique="73" class="fn">hib</span> <span class="o">=</span> <span data-fsdocs-tip="fs41" data-fsdocs-tip-unique="74" class="rt">BoundaryBehavior</span><span class="pn">.</span><span data-fsdocs-tip="fs42" data-fsdocs-tip-unique="75" class="id">Inclusive</span> <span class="k">then</span> <span data-fsdocs-tip="fs37" data-fsdocs-tip-unique="76" class="fn">hi</span> <span class="k">else</span> <span data-fsdocs-tip="fs37" data-fsdocs-tip-unique="77" class="fn">hi</span><span class="pn">.</span><span data-fsdocs-tip="fs28" data-fsdocs-tip-unique="78" class="id">AddDays</span><span class="pn">(</span><span class="o">-</span><span class="n">1.0</span><span class="pn">)</span>
+    <span class="k">return</span> <span data-fsdocs-tip="fs16" data-fsdocs-tip-unique="79" class="fn">generate</span> <span data-fsdocs-tip="fs35" data-fsdocs-tip-unique="80" class="fn">lo</span> <span data-fsdocs-tip="fs37" data-fsdocs-tip-unique="81" class="fn">hi</span> <span class="pn">}</span><span class="pn">)</span>
+</code></pre>
+<p>The key thing about the above is that, so far, no data has been loaded. The loading function
+is called only when we access part of the series.</p>
+<a name="slicing"></a>
+<h2><a name="Slicing-and-using-delayed-series" class="anchor" href="#Slicing-and-using-delayed-series">Slicing and using delayed series</a></h2>
+<p>We can now use the series as usual - for example, to get data for the entire year 2012:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span data-fsdocs-tip="fs43" data-fsdocs-tip-unique="82" class="id">slice</span> <span class="o">=</span> <span data-fsdocs-tip="fs32" data-fsdocs-tip-unique="83" class="id">ls</span><span class="pn">.</span><span class="pn">[</span><span data-fsdocs-tip="fs18" data-fsdocs-tip-unique="84" class="fn">DateTime</span><span class="pn">(</span><span class="n">2012</span><span class="pn">,</span> <span class="n">1</span><span class="pn">,</span> <span class="n">1</span><span class="pn">)</span> <span class="o">..</span> <span data-fsdocs-tip="fs18" data-fsdocs-tip-unique="85" class="fn">DateTime</span><span class="pn">(</span><span class="n">2012</span><span class="pn">,</span> <span class="n">12</span><span class="pn">,</span> <span class="n">31</span><span class="pn">)</span><span class="pn">]</span>
+<span data-fsdocs-tip="fs43" data-fsdocs-tip-unique="86" class="id">slice</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val slice: Series&lt;DateTime,float&gt; =
+  
+(Delayed series [01/01/2012 .. 12/31/2012]) 
+
+val it: Series&lt;DateTime,float&gt; =
+  
+(Delayed series [01/01/2012 .. 12/31/2012])</code></pre></td></tr></table>
+<p>Similarly, we can add the delayed series to a data frame. When doing this, Deedle will
+only load the data that is needed. In the following example, we add the series to a frame
+and then access only a slice:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span data-fsdocs-tip="fs44" data-fsdocs-tip-unique="87" class="id">df</span> <span class="o">=</span> <span data-fsdocs-tip="fs45" data-fsdocs-tip-unique="88" class="fn">frame</span> <span class="pn">[</span><span class="s">&quot;Values&quot;</span> <span class="o">=&gt;</span> <span data-fsdocs-tip="fs32" data-fsdocs-tip-unique="89" class="id">ls</span><span class="pn">]</span>
+<span class="k">let</span> <span data-fsdocs-tip="fs46" data-fsdocs-tip-unique="90" class="id">slicedDf</span> <span class="o">=</span> <span data-fsdocs-tip="fs44" data-fsdocs-tip-unique="91" class="id">df</span><span class="pn">.</span><span data-fsdocs-tip="fs47" data-fsdocs-tip-unique="92" class="id">Rows</span><span class="pn">.</span><span class="pn">[</span><span data-fsdocs-tip="fs18" data-fsdocs-tip-unique="93" class="fn">DateTime</span><span class="pn">(</span><span class="n">2012</span><span class="pn">,</span><span class="n">6</span><span class="pn">,</span><span class="n">1</span><span class="pn">)</span> <span class="o">..</span> <span data-fsdocs-tip="fs18" data-fsdocs-tip-unique="94" class="fn">DateTime</span><span class="pn">(</span><span class="n">2012</span><span class="pn">,</span><span class="n">6</span><span class="pn">,</span><span class="n">30</span><span class="pn">)</span><span class="pn">]</span>
+<span data-fsdocs-tip="fs46" data-fsdocs-tip-unique="95" class="id">slicedDf</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>Query: 01/01/2010 00:00:00 - 01/01/2013 00:00:00
+Query: 06/01/2012 00:00:00 - 06/30/2012 00:00:00
+val df: Frame&lt;DateTime,string&gt; =
+  
+              Values               
+01/01/2010 -&gt; 0.691411767882025    
+01/02/2010 -&gt; 0.21630737384299692  
+01/03/2010 -&gt; 0.5147811724472805   
+01/04/2010 -&gt; 0.5277889057140656   
+01/05/2010 -&gt; 0.7387464785798774   
+01/06/2010 -&gt; 0.3165302271707673   
+01/07/2010 -&gt; 0.4987231014859703   
+01/08/2010 -&gt; 0.6971597512248952   
+01/09/2010 -&gt; 0.723400697664676    
+01/10/2010 -&gt; 0.8403083110595437   
+01/11/2010 -&gt; 0.3744407568234661   
+01/12/2010 -&gt; 0.9181757949549477   
+01/13/2010 -&gt; 0.9226156794861001   
+01/14/2010 -&gt; 0.8618074216108712   
+01/15/2010 -&gt; 0.7070537033888754   
+:             ...                  
+12/18/2012 -&gt; 0.5445171907201191   
+12/19/2012 -&gt; 0.552884184617721    
+12/20/2012 -&gt; 0.4053383802353545   
+12/21/2012 -&gt; 0.7996439721474405   
+12/22/2012 -&gt; 0.29640721176297324  
+12/23/2012 -&gt; 0.7262034365370138   
+12/24/2012 -&gt; 0.49610350150865823  
+12/25/2012 -&gt; 0.4685601282540547   
+12/26/2012 -&gt; 0.9193814488016621   
+12/27/2012 -&gt; 0.051332702235431404 
+12/28/2012 -&gt; 0.11726190840963613  
+12/29/2012 -&gt; 0.8153633718141889   
+12/30/2012 -&gt; 0.4993334363203027   
+12/31/2012 -&gt; 0.1623673697775173   
+01/01/2013 -&gt; 0.6075050416388001   
+
+val slicedDf: Frame&lt;DateTime,string&gt; =
+  
+              Values               
+06/01/2012 -&gt; 0.8397077670334059   
+06/02/2012 -&gt; 0.48995858463118247  
+06/03/2012 -&gt; 0.8556474422447676   
+06/04/2012 -&gt; 0.36712507750767664  
+06/05/2012 -&gt; 0.5994109103491133   
+06/06/2012 -&gt; 0.019116133449335604 
+06/07/2012 -&gt; 0.9204292631274315   
+06/08/2012 -&gt; 0.9744466695454872   
+06/09/2012 -&gt; 0.7239151469793861   
+06/10/2012 -&gt; 0.8333120017426314   
+06/11/2012 -&gt; 0.12696519155188712  
+06/12/2012 -&gt; 0.2930685170303532   
+06/13/2012 -&gt; 0.00249529994236386  
+06/14/2012 -&gt; 0.9927938647150711   
+06/15/2012 -&gt; 0.6679693823532193   
+06/16/2012 -&gt; 0.03469015232557404  
+06/17/2012 -&gt; 0.17273085690216117  
+06/18/2012 -&gt; 0.4377502699129664   
+06/19/2012 -&gt; 0.9657642831675639   
+06/20/2012 -&gt; 0.3894354223873453   
+06/21/2012 -&gt; 0.27679859994533085  
+06/22/2012 -&gt; 0.4558170218527857   
+06/23/2012 -&gt; 0.8790706110697235   
+06/24/2012 -&gt; 0.20834426217705948  
+06/25/2012 -&gt; 0.3152926345937901   
+06/26/2012 -&gt; 0.5759152790734996   
+06/27/2012 -&gt; 0.259294808788338    
+06/28/2012 -&gt; 0.7335636585292011   
+06/29/2012 -&gt; 0.9822835157708749   
+06/30/2012 -&gt; 0.9359772993144009   
+
+val it: Frame&lt;DateTime,string&gt; =
+  
+              Values               
+06/01/2012 -&gt; 0.8397077670334059   
+06/02/2012 -&gt; 0.48995858463118247  
+06/03/2012 -&gt; 0.8556474422447676   
+06/04/2012 -&gt; 0.36712507750767664  
+06/05/2012 -&gt; 0.5994109103491133   
+06/06/2012 -&gt; 0.019116133449335604 
+06/07/2012 -&gt; 0.9204292631274315   
+06/08/2012 -&gt; 0.9744466695454872   
+06/09/2012 -&gt; 0.7239151469793861   
+06/10/2012 -&gt; 0.8333120017426314   
+06/11/2012 -&gt; 0.12696519155188712  
+06/12/2012 -&gt; 0.2930685170303532   
+06/13/2012 -&gt; 0.00249529994236386  
+06/14/2012 -&gt; 0.9927938647150711   
+06/15/2012 -&gt; 0.6679693823532193   
+06/16/2012 -&gt; 0.03469015232557404  
+06/17/2012 -&gt; 0.17273085690216117  
+06/18/2012 -&gt; 0.4377502699129664   
+06/19/2012 -&gt; 0.9657642831675639   
+06/20/2012 -&gt; 0.3894354223873453   
+06/21/2012 -&gt; 0.27679859994533085  
+06/22/2012 -&gt; 0.4558170218527857   
+06/23/2012 -&gt; 0.8790706110697235   
+06/24/2012 -&gt; 0.20834426217705948  
+06/25/2012 -&gt; 0.3152926345937901   
+06/26/2012 -&gt; 0.5759152790734996   
+06/27/2012 -&gt; 0.259294808788338    
+06/28/2012 -&gt; 0.7335636585292011   
+06/29/2012 -&gt; 0.9822835157708749   
+06/30/2012 -&gt; 0.9359772993144009</code></pre></td></tr></table>
+
+        <div popover class="fsdocs-tip" id="fs1">namespace System</div>
+<div popover class="fsdocs-tip" id="fs2">namespace System.Collections</div>
+<div popover class="fsdocs-tip" id="fs3">namespace System.Collections.Generic</div>
+<div popover class="fsdocs-tip" id="fs4">namespace Deedle</div>
+<div popover class="fsdocs-tip" id="fs5">namespace Deedle.Indices</div>
+<div popover class="fsdocs-tip" id="fs6">val fsi: FSharp.Compiler.Interactive.InteractiveSession</div>
+<div popover class="fsdocs-tip" id="fs7">member FSharp.Compiler.Interactive.InteractiveSession.AddPrinter: (&#39;T -&gt; string) -&gt; unit</div>
+<div popover class="fsdocs-tip" id="fs8">val o: obj</div>
+<div popover class="fsdocs-tip" id="fs9">type obj = Object</div>
+<div popover class="fsdocs-tip" id="fs10">val iface: Type</div>
+<div popover class="fsdocs-tip" id="fs11">Object.GetType() : Type</div>
+<div popover class="fsdocs-tip" id="fs12">val fmt: Reflection.MethodInfo</div>
+<div popover class="fsdocs-tip" id="fs13">
+Type.GetMethod(name: string) : Reflection.MethodInfo<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />
+Type.GetMethod(name: string, types: Type array) : Reflection.MethodInfo<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />
+Type.GetMethod(name: string, bindingAttr: Reflection.BindingFlags) : Reflection.MethodInfo<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />
+Type.GetMethod(name: string, types: Type array, modifiers: Reflection.ParameterModifier array) : Reflection.MethodInfo<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />
+Type.GetMethod(name: string, bindingAttr: Reflection.BindingFlags, types: Type array) : Reflection.MethodInfo<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />
+Type.GetMethod(name: string, genericParameterCount: int, types: Type array) : Reflection.MethodInfo<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />
+Type.GetMethod(name: string, genericParameterCount: int, types: Type array, modifiers: Reflection.ParameterModifier array) : Reflection.MethodInfo<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />
+Type.GetMethod(name: string, genericParameterCount: int, bindingAttr: Reflection.BindingFlags, types: Type array) : Reflection.MethodInfo<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />
+Type.GetMethod(name: string, bindingAttr: Reflection.BindingFlags, binder: Reflection.Binder, types: Type array, modifiers: Reflection.ParameterModifier array) : Reflection.MethodInfo<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />
+Type.GetMethod(name: string, bindingAttr: Reflection.BindingFlags, binder: Reflection.Binder, callConvention: Reflection.CallingConventions, types: Type array, modifiers: Reflection.ParameterModifier array) : Reflection.MethodInfo<br />&#160;&#160;&#160;<em>(+0 other overloads)</em></div>
+<div popover class="fsdocs-tip" id="fs14">Reflection.MethodBase.Invoke(obj: obj, parameters: obj array) : obj<br />Reflection.MethodBase.Invoke(obj: obj, invokeAttr: Reflection.BindingFlags, binder: Reflection.Binder, parameters: obj array, culture: Globalization.CultureInfo) : obj</div>
+<div popover class="fsdocs-tip" id="fs15">Multiple items<br />val string: value: &#39;T -&gt; string<br /><br />--------------------<br />type string = String</div>
+<div popover class="fsdocs-tip" id="fs16">val generate: low: DateTime -&gt; high: DateTime -&gt; KeyValuePair&lt;DateTime,float&gt; seq</div>
+<div popover class="fsdocs-tip" id="fs17">val low: DateTime</div>
+<div popover class="fsdocs-tip" id="fs18">Multiple items<br />
+type DateTime =
+  new: date: DateOnly * time: TimeOnly -&gt; unit + 16 overloads
+  member Add: value: TimeSpan -&gt; DateTime
+  member AddDays: value: float -&gt; DateTime
+  member AddHours: value: float -&gt; DateTime
+  member AddMicroseconds: value: float -&gt; DateTime
+  member AddMilliseconds: value: float -&gt; DateTime
+  member AddMinutes: value: float -&gt; DateTime
+  member AddMonths: months: int -&gt; DateTime
+  member AddSeconds: value: float -&gt; DateTime
+  member AddTicks: value: int64 -&gt; DateTime
+  ...<br /><em>&lt;summary&gt;Represents an instant in time, typically expressed as a date and time of day.&lt;/summary&gt;</em><br /><br />--------------------<br />DateTime ()<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(ticks: int64) : DateTime<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(date: DateOnly, time: TimeOnly) : DateTime<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(ticks: int64, kind: DateTimeKind) : DateTime<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(date: DateOnly, time: TimeOnly, kind: DateTimeKind) : DateTime<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(year: int, month: int, day: int) : DateTime<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(year: int, month: int, day: int, calendar: Globalization.Calendar) : DateTime<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(year: int, month: int, day: int, hour: int, minute: int, second: int) : DateTime<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(year: int, month: int, day: int, hour: int, minute: int, second: int, kind: DateTimeKind) : DateTime<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(year: int, month: int, day: int, hour: int, minute: int, second: int, calendar: Globalization.Calendar) : DateTime<br />&#160;&#160;&#160;<em>(+0 other overloads)</em></div>
+<div popover class="fsdocs-tip" id="fs19">val high: DateTime</div>
+<div popover class="fsdocs-tip" id="fs20">Multiple items<br />val seq: sequence: &#39;T seq -&gt; &#39;T seq<br /><br />--------------------<br />type &#39;T seq = IEnumerable&lt;&#39;T&gt;</div>
+<div popover class="fsdocs-tip" id="fs21">Multiple items<br />type KeyValuePair =
+  static member Create&lt;&#39;TKey,&#39;TValue&gt; : key: &#39;TKey * value: &#39;TValue -&gt; KeyValuePair&lt;&#39;TKey,&#39;TValue&gt;<br /><em>&lt;summary&gt;Creates instances of the &lt;see cref=&quot;T:System.Collections.Generic.KeyValuePair`2&quot; /&gt; struct.&lt;/summary&gt;</em><br /><br />--------------------<br />
+type KeyValuePair&lt;&#39;TKey,&#39;TValue&gt; =
+  new: key: &#39;TKey * value: &#39;TValue -&gt; unit
+  member Deconstruct: key: byref&lt;&#39;TKey&gt; * value: byref&lt;&#39;TValue&gt; -&gt; unit
+  member ToString: unit -&gt; string
+  member Key: &#39;TKey
+  member Value: &#39;TValue<br /><em>&lt;summary&gt;Defines a key/value pair that can be set or retrieved.&lt;/summary&gt;<br />&lt;typeparam name=&quot;TKey&quot;&gt;The type of the key.&lt;/typeparam&gt;<br />&lt;typeparam name=&quot;TValue&quot;&gt;The type of the value.&lt;/typeparam&gt;</em><br /><br />--------------------<br />KeyValuePair ()<br />KeyValuePair(key: &#39;TKey, value: &#39;TValue) : KeyValuePair&lt;&#39;TKey,&#39;TValue&gt;</div>
+<div popover class="fsdocs-tip" id="fs22">Multiple items<br />val float: value: &#39;T -&gt; float (requires member op_Explicit)<br /><br />--------------------<br />type float = Double<br /><br />--------------------<br />type float&lt;&#39;Measure&gt; =
+  float</div>
+<div popover class="fsdocs-tip" id="fs23">val rnd: Random</div>
+<div popover class="fsdocs-tip" id="fs24">Multiple items<br />type Random =
+  new: unit -&gt; unit + 1 overload
+  member GetHexString: stringLength: int * ?lowercase: bool -&gt; string + 1 overload
+  member GetItems&lt;&#39;T&gt; : choices: ReadOnlySpan&lt;&#39;T&gt; * length: int -&gt; &#39;T array + 2 overloads
+  member GetString: choices: ReadOnlySpan&lt;char&gt; * length: int -&gt; string
+  member Next: unit -&gt; int + 2 overloads
+  member NextBytes: buffer: byte array -&gt; unit + 1 overload
+  member NextDouble: unit -&gt; float
+  member NextInt64: unit -&gt; int64 + 2 overloads
+  member NextSingle: unit -&gt; float32
+  member Shuffle&lt;&#39;T&gt; : values: Span&lt;&#39;T&gt; -&gt; unit + 1 overload
+  ...<br /><em>&lt;summary&gt;Represents a pseudo-random number generator, which is an algorithm that produces a sequence of numbers that meet certain statistical requirements for randomness.&lt;/summary&gt;</em><br /><br />--------------------<br />Random() : Random<br />Random(Seed: int) : Random</div>
+<div popover class="fsdocs-tip" id="fs25">val days: int</div>
+<div popover class="fsdocs-tip" id="fs26">Multiple items<br />val int: value: &#39;T -&gt; int (requires member op_Explicit)<br /><br />--------------------<br />type int = int32<br /><br />--------------------<br />type int&lt;&#39;Measure&gt; =
+  int</div>
+<div popover class="fsdocs-tip" id="fs27">val d: int</div>
+<div popover class="fsdocs-tip" id="fs28">DateTime.AddDays(value: float) : DateTime</div>
+<div popover class="fsdocs-tip" id="fs29">Random.NextDouble() : float</div>
+<div popover class="fsdocs-tip" id="fs30">val min: DateTime</div>
+<div popover class="fsdocs-tip" id="fs31">val max: DateTime</div>
+<div popover class="fsdocs-tip" id="fs32">val ls: Series&lt;DateTime,float&gt;</div>
+<div popover class="fsdocs-tip" id="fs33">type DelayedSeries =
+  static member FromIndexVectorLoader: scheme: IAddressingScheme * vectorBuilder: IVectorBuilder * indexBuilder: IIndexBuilder * min: &#39;K * max: &#39;K * loader: Func&lt;&#39;K,BoundaryBehavior,&#39;K,BoundaryBehavior,Task&lt;IIndex&lt;&#39;K&gt; * IVector&lt;&#39;V&gt;&gt;&gt; -&gt; Series&lt;&#39;K,&#39;V&gt; (requires equality) + 1 overload
+  static member FromValueLoader: min: &#39;K * max: &#39;K * loader: Func&lt;&#39;K,BoundaryBehavior,&#39;K,BoundaryBehavior,Task&lt;KeyValuePair&lt;&#39;K,&#39;V&gt; seq&gt;&gt; -&gt; Series&lt;&#39;K,&#39;V&gt; (requires comparison) + 1 overload<br /><em>&lt;summary&gt;
+ This type exposes a single static method `DelayedSeries.Create` that can be used for
+ constructing data series (of type &lt;c&gt;Series&amp;lt;K, V&amp;gt;&lt;/c&gt;) with lazily loaded data. You can
+ use this functionality to create series that represents e.g. an entire price history
+ in a database, but only loads data that are actually needed. For more information
+ see the [lazy data loading tutorial](../lazysource.html).
+ &lt;/summary&gt;<br />&lt;example&gt;
+ Assuming we have a function &lt;c&gt;generate lo hi&lt;/c&gt; that generates data in the specified
+ &lt;c&gt;DateTime&lt;/c&gt; range, we can create lazy series as follows:
+ &lt;code&gt;
+ let ls = DelayedSeries.Create(min, max, fun (lo, lob) (hi, hib) -&amp;gt;
+   async {
+     printfn &quot;Query: %A - %A&quot; (lo, lob) (hi, hib)
+     return generate lo hi })
+ &lt;/code&gt;
+ The arguments &lt;c&gt;min&lt;/c&gt; and &lt;c&gt;max&lt;/c&gt; specify the complete range of the series. The
+ function passed to &lt;c&gt;Create&lt;/c&gt; is called with minimal and maximal required key
+ (&lt;c&gt;lo&lt;/c&gt; and &lt;c&gt;hi&lt;/c&gt;) and with two values that specify boundary behaviour.
+ &lt;/example&gt;<br />&lt;category&gt;Specialized frame and series types&lt;/category&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs34">static member DelayedSeries.FromValueLoader: min: &#39;K * max: &#39;K * loader: (&#39;K * BoundaryBehavior -&gt; &#39;K * BoundaryBehavior -&gt; Async&lt;KeyValuePair&lt;&#39;K,&#39;V&gt; seq&gt;) -&gt; Series&lt;&#39;K,&#39;V&gt; (requires comparison)<br />static member DelayedSeries.FromValueLoader: min: &#39;K * max: &#39;K * loader: Func&lt;&#39;K,BoundaryBehavior,&#39;K,BoundaryBehavior,Threading.Tasks.Task&lt;KeyValuePair&lt;&#39;K,&#39;V&gt; seq&gt;&gt; -&gt; Series&lt;&#39;K,&#39;V&gt; (requires comparison)</div>
+<div popover class="fsdocs-tip" id="fs35">val lo: DateTime</div>
+<div popover class="fsdocs-tip" id="fs36">val lob: BoundaryBehavior</div>
+<div popover class="fsdocs-tip" id="fs37">val hi: DateTime</div>
+<div popover class="fsdocs-tip" id="fs38">val hib: BoundaryBehavior</div>
+<div popover class="fsdocs-tip" id="fs39">val async: AsyncBuilder</div>
+<div popover class="fsdocs-tip" id="fs40">val printfn: format: Printf.TextWriterFormat&lt;&#39;T&gt; -&gt; &#39;T</div>
+<div popover class="fsdocs-tip" id="fs41">type BoundaryBehavior =
+  | Inclusive
+  | Exclusive<br /><em>&lt;summary&gt;
+ Specifies the boundary behavior for the `IIndexBuilder.GetRange` operation
+ (whether the boundary elements should be included or not)
+&lt;/summary&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs42">union case BoundaryBehavior.Inclusive: BoundaryBehavior</div>
+<div popover class="fsdocs-tip" id="fs43">val slice: Series&lt;DateTime,float&gt;</div>
+<div popover class="fsdocs-tip" id="fs44">val df: Frame&lt;DateTime,string&gt;</div>
+<div popover class="fsdocs-tip" id="fs45">val frame: columns: (&#39;a * #ISeries&lt;&#39;c&gt;) seq -&gt; Frame&lt;&#39;c,&#39;a&gt; (requires equality and equality)<br /><em>&lt;summary&gt;
+ A function for constructing data frame from a sequence of name - column pairs.
+ This provides a nicer syntactic sugar for `Frame.ofColumns`.
+ &lt;/summary&gt;<br />&lt;example&gt;
+ To create a simple frame with two columns, you can write:
+ &lt;code&gt;
+ frame [ &quot;A&quot; =&amp;gt; series [ 1 =&amp;gt; 30.0; 2 =&amp;gt; 35.0 ]
+         &quot;B&quot; =&amp;gt; series [ 1 =&amp;gt; 30.0; 3 =&amp;gt; 40.0 ] ]
+ &lt;/code&gt;&lt;/example&gt;<br />&lt;category&gt;Frame construction&lt;/category&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs46">val slicedDf: Frame&lt;DateTime,string&gt;</div>
+<div popover class="fsdocs-tip" id="fs47">property Frame.Rows: RowSeries&lt;DateTime,string&gt; with get<br /><em>&lt;category&gt;Accessors and slicing&lt;/category&gt;</em></div>
+
+    </div>
+</main>
+<aside id="fsdocs-page-menu">
+    <p id="on-this-page">On this page</p>
+    <ul>
+  <li class="level-1">
+    <a href="#Delay-loaded-series">
+      Delay-loaded series
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Creating-a-delayed-series">
+      Creating a delayed series
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Slicing-and-using-delayed-series">
+      Slicing and using delayed series
+    </a>
+  </li>
+</ul>
+</aside>
+<dialog>
+    <input type="search" placeholder="Search docs" />
+    <div class="results">
+        <ul></ul>
+        <p class="empty">Type something to start searching.</p>
+    </div>
+</dialog>
+<script type="module" src="/Deedle/content/fsdocs-tips.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-theme-toggle.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-details-toggle.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-theme.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-search.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-copy-button.js"></script>
+
+</body>
+</html>

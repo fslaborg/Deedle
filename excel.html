@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="en" data-root="/Deedle/">
+<head>
+    <meta charset="UTF-8">
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="Deedle.Arrow" name="author">
+    <!-- Opengraph properties (https://ogp.me/) -->
+    <meta property="og:site_name" content="Deedle">
+    <meta property="og:title" content="Excel integration — ExcelReader & ExcelWriter" />
+    <meta property="og:url" content="/Deedle/excel.html">
+    <meta property="og:type" content="website" />
+    <!-- Twitter cards (https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/summary-card-with-large-image) -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="/Deedle/">
+    <meta name="twitter:title" content="Excel integration — ExcelReader & ExcelWriter">
+    <meta name="description" content="Reading and writing Excel files with Deedle using Deedle.ExcelReader and Deedle.ExcelWriter">
+<meta name="twitter:site" content="Reading and writing Excel files with Deedle using Deedle.ExcelReader and Deedle.ExcelWriter">
+<meta name="og:description" content="Reading and writing Excel files with Deedle using Deedle.ExcelReader and Deedle.ExcelWriter">
+<meta name="keywords" content="excel, xls, xlsx, spreadsheet, worksheet, ExcelDataReader, MiniExcel">
+    <title>Excel integration — ExcelReader & ExcelWriter | Deedle</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code&display=swap" rel="stylesheet">
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <link href="/Deedle/img/favicon.ico" rel="icon" sizes="32x32" type="image/png"/>
+    <script type="application/javascript" src="/Deedle/content/fsdocs-theme-set-dark.js"></script>
+    <script type="application/javascript" src="/Deedle/content/fsdocs-details-set-expanded.js"></script>
+    <link href="/Deedle/content/fsdocs-default.css" rel="stylesheet" type="text/css"/>
+    <link href="/Deedle/content/fsdocs-theme.css" rel="stylesheet" type="text/css"/>
+    
+    
+</head>
+<body class="content">
+<header>
+    <div class="start">
+        <div id="menu-toggle">
+            <iconify-icon class="icon closed" height="22" icon="eva:menu-fill" width="22"></iconify-icon>
+            <iconify-icon class="icon open" height="22" icon="mi:close" width="22"></iconify-icon>
+            <input type="checkbox" name="mobile-menu" />
+            <ul class="menu">
+                <li class="nav-header">Links</li>
+                <li class="license-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fslaborg/Deedle/blob/master/LICENSE.md">License</a>
+                </li>
+                <li class="release-notes-menu-item builtin-menu-item nav-item"><a class="nav-link"
+                                        href="https://github.com/fslaborg/Deedle/blob/master/RELEASE_NOTES.md">Release
+                    Notes</a></li>
+                <li class="repository-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fslaborg/Deedle/">Source
+                    Repository</a></li>
+                <li class="nav-header ">
+  Guides
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/tutorial.html">
+    Deedle in 10 minutes
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/frame.html">
+    Data frame features
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/series.html">
+    Series and time series features
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/stats.html">
+    Calculating frame and series statistics
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/missing.html">
+    Handling missing values
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/joining.html">
+    Joining, merging and appending frames
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/lazysource.html">
+    Delay-loaded series
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/csharp.html">
+    Deedle in C#
+  </a>
+</li>             
+<li class="nav-header active">
+  Integrations
+</li>             
+<li class="nav-item active">
+  <a class="nav-link" href="/Deedle/excel.html">
+    Excel integration — ExcelReader &amp; ExcelWriter
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/arrow.html">
+    Deedle.Arrow — Apache Arrow and Feather integration
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/parquet.html">
+    Deedle.Parquet — Apache Parquet integration
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/math.html">
+    Deedle.MathNetNumerics — MathNet.Numerics integration
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/dotnetinteractive.html">
+    Deedle.DotNetInteractive — .NET Interactive notebook formatting
+  </a>
+</li>             
+<li class="nav-header ">
+  Design
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/design.html">
+    Design notes
+  </a>
+</li>
+                <li class="nav-header">
+  API Reference
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="/Deedle/reference/index.html">
+    All Namespaces
+  </a>
+</li>
+            </ul>
+        </div>
+        <a href="/Deedle/">
+            <img alt="Logo" src="/Deedle/img/logo.png">
+            <strong>Deedle</strong>
+        </a>
+    </div>
+    <div class="end">
+        <a href="https://github.com/fslaborg/Deedle/" target="_blank">
+            <iconify-icon icon="uil:github" width="26" height="26"></iconify-icon>
+        </a>
+        <iconify-icon id="search-btn" icon="carbon:search" class="search" width="24" height="24"></iconify-icon>
+        <fsdocs-theme-toggle></fsdocs-theme-toggle>
+    </div>
+</header>
+<aside id="fsdocs-main-menu">
+    <ul class="menu">
+        <li class="nav-header">Links</li>
+        <li class="license-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fslaborg/Deedle/blob/master/LICENSE.md">License</a>
+        </li>
+        <li class="release-notes-menu-item builtin-menu-item nav-item"><a class="nav-link"
+                                href="https://github.com/fslaborg/Deedle/blob/master/RELEASE_NOTES.md">Release
+            Notes</a></li>
+        <li class="repository-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fslaborg/Deedle/">Source
+            Repository</a></li>
+        <li class="nav-header ">
+  Guides
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/tutorial.html">
+    Deedle in 10 minutes
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/frame.html">
+    Data frame features
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/series.html">
+    Series and time series features
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/stats.html">
+    Calculating frame and series statistics
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/missing.html">
+    Handling missing values
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/joining.html">
+    Joining, merging and appending frames
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/lazysource.html">
+    Delay-loaded series
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/csharp.html">
+    Deedle in C#
+  </a>
+</li>             
+<li class="nav-header active">
+  Integrations
+</li>             
+<li class="nav-item active">
+  <a class="nav-link" href="/Deedle/excel.html">
+    Excel integration — ExcelReader &amp; ExcelWriter
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/arrow.html">
+    Deedle.Arrow — Apache Arrow and Feather integration
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/parquet.html">
+    Deedle.Parquet — Apache Parquet integration
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/math.html">
+    Deedle.MathNetNumerics — MathNet.Numerics integration
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/dotnetinteractive.html">
+    Deedle.DotNetInteractive — .NET Interactive notebook formatting
+  </a>
+</li>             
+<li class="nav-header ">
+  Design
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/design.html">
+    Design notes
+  </a>
+</li>
+        <li class="nav-header">
+  API Reference
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="/Deedle/reference/index.html">
+    All Namespaces
+  </a>
+</li>
+    </ul>
+</aside>
+<main>
+    <div id="content">
+        
+<h1><a name="Excel-integration-ExcelReader-amp-ExcelWriter" class="anchor" href="#Excel-integration-ExcelReader-amp-ExcelWriter">Excel integration — ExcelReader &amp; ExcelWriter</a></h1>
+<p>Deedle provides three separate packages for working with Microsoft Excel files:</p>
+<table>
+<thead>
+<tr class="header">
+<th><p>Package</p></th>
+<th><p>What it does</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><p>*<em><code>Deedle.ExcelReader</code>*</em></p></td>
+<td><p>Cross-platform reading of <code>.xlsx</code> and <code>.xls</code> files via <a href="https://github.com/ExcelDataReader/ExcelDataReader">ExcelDataReader</a></p></td>
+</tr>
+<tr class="even">
+<td><p>*<em><code>Deedle.ExcelWriter</code>*</em></p></td>
+<td><p>Cross-platform writing of <code>.xlsx</code> files via <a href="https://github.com/mini-software/MiniExcel">MiniExcel</a></p></td>
+</tr>
+<tr class="odd">
+<td><p>*<em><code>Deedle.Excel</code>*</em></p></td>
+<td><p>Live read/write to an open Excel workbook via <a href="https://netoffice.io/">NetOffice</a> (Windows + Excel required)</p></td>
+</tr>
+</tbody>
+</table>
+
+<p>This page covers the cross-platform <code>Deedle.ExcelReader</code> and <code>Deedle.ExcelWriter</code>.</p>
+<hr />
+<a name="setup"></a>
+<h2><a name="Package-setup" class="anchor" href="#Package-setup">Package setup</a></h2>
+<p>Install with:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="id">dotnet</span> <span class="id">add</span> <span class="id">package</span> <span class="id">Deedle</span><span class="pn">.</span><span class="id">ExcelReader</span>
+<span class="id">dotnet</span> <span class="id">add</span> <span class="id">package</span> <span class="id">Deedle</span><span class="pn">.</span><span class="id">ExcelWriter</span>
+</code></pre>
+<p>Then open the namespaces:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">open</span> <span class="id">Deedle</span>
+<span class="k">open</span> <span class="id">Deedle</span><span class="pn">.</span><span class="id">ExcelReader</span>  <span class="c">// for reading</span>
+<span class="k">open</span> <span class="id">Deedle</span><span class="pn">.</span><span class="id">ExcelWriter</span>  <span class="c">// for writing</span>
+</code></pre>
+<hr />
+<a name="reading"></a>
+<h2><a name="Reading-Excel-files" class="anchor" href="#Reading-Excel-files">Reading Excel files</a></h2>
+<h3><a name="Reading-the-first-worksheet" class="anchor" href="#Reading-the-first-worksheet">Reading the first worksheet</a></h3>
+<p>The simplest function reads the first worksheet of an Excel file and returns a
+<code>Frame&lt;int, string&gt;</code> whose row keys are zero-based integers:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// Create a sample workbook to demonstrate reading</span>
+<span class="k">let</span> <span data-fsdocs-tip="fs5" data-fsdocs-tip-unique="7" class="id">samplePath</span> <span class="o">=</span>
+    <span class="k">let</span> <span data-fsdocs-tip="fs6" data-fsdocs-tip-unique="8" class="fn">tmp</span> <span class="o">=</span> <span data-fsdocs-tip="fs7" data-fsdocs-tip-unique="9" class="rt">Path</span><span class="pn">.</span><span data-fsdocs-tip="fs8" data-fsdocs-tip-unique="10" class="id">GetTempFileName</span><span class="pn">(</span><span class="pn">)</span> <span class="o">+</span> <span class="s">&quot;.xlsx&quot;</span>
+    <span class="c">// Build a minimal in-memory frame and save via a small helper</span>
+    <span class="k">let</span> <span data-fsdocs-tip="fs9" data-fsdocs-tip-unique="11" class="fn">bytes</span> <span class="o">=</span>
+        <span class="c">// Minimal valid OOXML (xlsx) with one sheet containing a 4-column table</span>
+        <span class="c">// Generated from the docs/data/sales.xlsx sample file</span>
+        <span data-fsdocs-tip="fs10" data-fsdocs-tip-unique="12" class="rt">File</span><span class="pn">.</span><span data-fsdocs-tip="fs11" data-fsdocs-tip-unique="13" class="id">ReadAllBytes</span><span class="pn">(</span><span class="k">__SOURCE_DIRECTORY__</span> <span class="o">+</span> <span class="s">&quot;/data/sales.xlsx&quot;</span><span class="pn">)</span>
+    <span data-fsdocs-tip="fs10" data-fsdocs-tip-unique="14" class="rt">File</span><span class="pn">.</span><span data-fsdocs-tip="fs12" data-fsdocs-tip-unique="15" class="id">WriteAllBytes</span><span class="pn">(</span><span data-fsdocs-tip="fs6" data-fsdocs-tip-unique="16" class="fn">tmp</span><span class="pn">,</span> <span data-fsdocs-tip="fs9" data-fsdocs-tip-unique="17" class="fn">bytes</span><span class="pn">)</span>
+    <span data-fsdocs-tip="fs6" data-fsdocs-tip-unique="18" class="fn">tmp</span>
+
+<span class="k">let</span> <span data-fsdocs-tip="fs13" data-fsdocs-tip-unique="19" class="id">sales</span> <span class="pn">:</span> <span data-fsdocs-tip="fs14" data-fsdocs-tip-unique="20" class="rt">Frame</span><span class="pn">&lt;</span><span data-fsdocs-tip="fs15" data-fsdocs-tip-unique="21" class="vt">int</span><span class="pn">,</span> <span data-fsdocs-tip="fs16" data-fsdocs-tip-unique="22" class="rt">string</span><span class="pn">&gt;</span> <span class="o">=</span> <span data-fsdocs-tip="fs14" data-fsdocs-tip-unique="23" class="m">Frame</span><span class="pn">.</span><span data-fsdocs-tip="fs17" data-fsdocs-tip-unique="24" class="id">readExcel</span> <span data-fsdocs-tip="fs5" data-fsdocs-tip-unique="25" class="id">samplePath</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val samplePath: string = "/tmp/tmp7HD7gN.tmp.xlsx"
+val sales: Frame&lt;int,string&gt; =
+  
+     Date       Product  Quantity Price 
+0 -&gt; 2024-01-15 Widget A 100      9.99  
+1 -&gt; 2024-01-15 Widget B 50       19.99 
+2 -&gt; 2024-01-22 Widget A 150      9.99  
+3 -&gt; 2024-01-22 Widget C 75       14.99 
+4 -&gt; 2024-02-01 Widget B 200      19.99</code></pre></td></tr></table>
+<p>The first row of the worksheet is used as column headers. Subsequent rows become
+frame rows; the row keys are contiguous integers starting at 0.</p>
+<h3><a name="Reading-a-specific-sheet-by-name" class="anchor" href="#Reading-a-specific-sheet-by-name">Reading a specific sheet by name</a></h3>
+<p>When a workbook contains multiple worksheets, use <code>Frame.readExcelSheet</code> to target one
+by name (case-sensitive):</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span data-fsdocs-tip="fs18" data-fsdocs-tip-unique="26" class="id">multiPath</span> <span class="o">=</span>
+    <span data-fsdocs-tip="fs10" data-fsdocs-tip-unique="27" class="rt">File</span><span class="pn">.</span><span data-fsdocs-tip="fs11" data-fsdocs-tip-unique="28" class="id">ReadAllBytes</span><span class="pn">(</span><span class="k">__SOURCE_DIRECTORY__</span> <span class="o">+</span> <span class="s">&quot;/data/quarterly.xlsx&quot;</span><span class="pn">)</span>
+    <span class="o">|&gt;</span> <span class="k">fun</span> <span data-fsdocs-tip="fs19" data-fsdocs-tip-unique="29" class="fn">b</span> <span class="k">-&gt;</span> <span class="k">let</span> <span data-fsdocs-tip="fs20" data-fsdocs-tip-unique="30" class="fn">t</span> <span class="o">=</span> <span data-fsdocs-tip="fs7" data-fsdocs-tip-unique="31" class="rt">Path</span><span class="pn">.</span><span data-fsdocs-tip="fs8" data-fsdocs-tip-unique="32" class="id">GetTempFileName</span><span class="pn">(</span><span class="pn">)</span> <span class="o">+</span> <span class="s">&quot;.xlsx&quot;</span> <span class="k">in</span> <span data-fsdocs-tip="fs10" data-fsdocs-tip-unique="33" class="rt">File</span><span class="pn">.</span><span data-fsdocs-tip="fs12" data-fsdocs-tip-unique="34" class="id">WriteAllBytes</span><span class="pn">(</span><span data-fsdocs-tip="fs20" data-fsdocs-tip-unique="35" class="fn">t</span><span class="pn">,</span> <span data-fsdocs-tip="fs19" data-fsdocs-tip-unique="36" class="fn">b</span><span class="pn">)</span><span class="pn">;</span> <span data-fsdocs-tip="fs20" data-fsdocs-tip-unique="37" class="fn">t</span>
+
+<span class="k">let</span> <span data-fsdocs-tip="fs21" data-fsdocs-tip-unique="38" class="id">q1</span> <span class="pn">:</span> <span data-fsdocs-tip="fs14" data-fsdocs-tip-unique="39" class="rt">Frame</span><span class="pn">&lt;</span><span data-fsdocs-tip="fs15" data-fsdocs-tip-unique="40" class="vt">int</span><span class="pn">,</span> <span data-fsdocs-tip="fs16" data-fsdocs-tip-unique="41" class="rt">string</span><span class="pn">&gt;</span> <span class="o">=</span> <span data-fsdocs-tip="fs14" data-fsdocs-tip-unique="42" class="m">Frame</span><span class="pn">.</span><span data-fsdocs-tip="fs22" data-fsdocs-tip-unique="43" class="id">readExcelSheet</span> <span data-fsdocs-tip="fs18" data-fsdocs-tip-unique="44" class="id">multiPath</span> <span class="s">&quot;Q1 Sales&quot;</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val multiPath: string = "/tmp/tmpwCH3et.tmp.xlsx"
+val q1: Frame&lt;int,string&gt; =
+  
+     Month Revenue 
+0 -&gt; Jan   15000   
+1 -&gt; Feb   18000   
+2 -&gt; Mar   22000</code></pre></td></tr></table>
+<h3><a name="Reading-a-specific-sheet-by-index" class="anchor" href="#Reading-a-specific-sheet-by-index">Reading a specific sheet by index</a></h3>
+<p>Use <code>Frame.readExcelSheetByIndex</code> with a zero-based index when you know the position
+but not the name:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span data-fsdocs-tip="fs23" data-fsdocs-tip-unique="45" class="id">q2</span> <span class="pn">:</span> <span data-fsdocs-tip="fs14" data-fsdocs-tip-unique="46" class="rt">Frame</span><span class="pn">&lt;</span><span data-fsdocs-tip="fs15" data-fsdocs-tip-unique="47" class="vt">int</span><span class="pn">,</span> <span data-fsdocs-tip="fs16" data-fsdocs-tip-unique="48" class="rt">string</span><span class="pn">&gt;</span> <span class="o">=</span> <span data-fsdocs-tip="fs14" data-fsdocs-tip-unique="49" class="m">Frame</span><span class="pn">.</span><span data-fsdocs-tip="fs24" data-fsdocs-tip-unique="50" class="id">readExcelSheetByIndex</span> <span data-fsdocs-tip="fs18" data-fsdocs-tip-unique="51" class="id">multiPath</span> <span class="n">1</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val q2: Frame&lt;int,string&gt; =
+  
+     Month Revenue 
+0 -&gt; Apr   25000   
+1 -&gt; May   21000   
+2 -&gt; Jun   28000</code></pre></td></tr></table>
+<hr />
+<a name="sheet-names"></a>
+<h2><a name="Listing-worksheets" class="anchor" href="#Listing-worksheets">Listing worksheets</a></h2>
+<p><code>Frame.sheetNames</code> returns the names of all worksheets in a workbook in order:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span data-fsdocs-tip="fs25" data-fsdocs-tip-unique="52" class="id">sheets</span> <span class="pn">:</span> <span data-fsdocs-tip="fs16" data-fsdocs-tip-unique="53" class="rt">string</span> <span data-fsdocs-tip="fs26" data-fsdocs-tip-unique="54" class="rt">list</span> <span class="o">=</span> <span data-fsdocs-tip="fs14" data-fsdocs-tip-unique="55" class="m">Frame</span><span class="pn">.</span><span data-fsdocs-tip="fs27" data-fsdocs-tip-unique="56" class="id">sheetNames</span> <span data-fsdocs-tip="fs18" data-fsdocs-tip-unique="57" class="id">multiPath</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val sheets: string list = ["Q1 Sales"; "Q2 Sales"]</code></pre></td></tr></table>
+<hr />
+<a name="columns"></a>
+<h2><a name="Working-with-the-resulting-frame" class="anchor" href="#Working-with-the-resulting-frame">Working with the resulting frame</a></h2>
+<p>The frame returned by all <code>read*</code> functions has <code>string</code> column keys (taken from
+the header row) and <code>int</code> row keys. You can use all standard Deedle operations
+on it.</p>
+<h3><a name="Accessing-columns" class="anchor" href="#Accessing-columns">Accessing columns</a></h3>
+<p>Use <code>frame.GetColumn&lt;'T&gt;</code> to retrieve a typed series:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// Get the Revenue column as a float series</span>
+<span class="k">let</span> <span data-fsdocs-tip="fs28" data-fsdocs-tip-unique="58" class="id">revenue</span> <span class="pn">:</span> <span data-fsdocs-tip="fs29" data-fsdocs-tip-unique="59" class="rt">Series</span><span class="pn">&lt;</span><span data-fsdocs-tip="fs15" data-fsdocs-tip-unique="60" class="vt">int</span><span class="pn">,</span> <span data-fsdocs-tip="fs30" data-fsdocs-tip-unique="61" class="vt">float</span><span class="pn">&gt;</span> <span class="o">=</span> <span data-fsdocs-tip="fs21" data-fsdocs-tip-unique="62" class="id">q1</span><span class="pn">.</span><span data-fsdocs-tip="fs31" data-fsdocs-tip-unique="63" class="id">GetColumn</span><span class="pn">&lt;</span><span data-fsdocs-tip="fs30" data-fsdocs-tip-unique="64" class="vt">float</span><span class="pn">&gt;</span><span class="pn">(</span><span class="s">&quot;Revenue&quot;</span><span class="pn">)</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val revenue: Series&lt;int,float&gt; = 
+0 -&gt; 15000 
+1 -&gt; 18000 
+2 -&gt; 22000</code></pre></td></tr></table>
+<p>Column values are returned as <code>obj</code> by default; use <code>GetColumn&lt;'T&gt;</code> to coerce to
+a concrete type, or <code>Frame.mapCols</code>/<code>Frame.map</code> for bulk conversion.</p>
+<h3><a name="Selecting-and-renaming-columns" class="anchor" href="#Selecting-and-renaming-columns">Selecting and renaming columns</a></h3>
+<p>You can slice, rename or re-index the frame exactly as you would any other Deedle
+frame:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// Keep only the Revenue column and use Month as the row index</span>
+<span class="k">let</span> <span data-fsdocs-tip="fs32" data-fsdocs-tip-unique="65" class="id">q1Indexed</span> <span class="o">=</span>
+    <span data-fsdocs-tip="fs21" data-fsdocs-tip-unique="66" class="id">q1</span>
+    <span class="o">|&gt;</span> <span data-fsdocs-tip="fs14" data-fsdocs-tip-unique="67" class="m">Frame</span><span class="pn">.</span><span data-fsdocs-tip="fs33" data-fsdocs-tip-unique="68" class="id">indexRowsString</span> <span class="s">&quot;Month&quot;</span>
+    <span class="o">|&gt;</span> <span data-fsdocs-tip="fs14" data-fsdocs-tip-unique="69" class="m">Frame</span><span class="pn">.</span><span data-fsdocs-tip="fs34" data-fsdocs-tip-unique="70" class="id">sliceCols</span> <span class="pn">[</span><span class="s">&quot;Revenue&quot;</span><span class="pn">]</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val q1Indexed: Frame&lt;string,string&gt; =
+  
+       Revenue 
+Jan -&gt; 15000   
+Feb -&gt; 18000   
+Mar -&gt; 22000</code></pre></td></tr></table>
+<h3><a name="Combining-sheets" class="anchor" href="#Combining-sheets">Combining sheets</a></h3>
+<p>Reading multiple sheets into a single frame is straightforward with <code>Frame.merge</code>
+or <code>Frame.append</code>:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span data-fsdocs-tip="fs35" data-fsdocs-tip-unique="71" class="id">allRevenue</span> <span class="o">=</span>
+    <span class="pn">[</span><span data-fsdocs-tip="fs21" data-fsdocs-tip-unique="72" class="id">q1</span><span class="pn">;</span> <span data-fsdocs-tip="fs23" data-fsdocs-tip-unique="73" class="id">q2</span><span class="pn">]</span>
+    <span class="o">|&gt;</span> <span data-fsdocs-tip="fs36" data-fsdocs-tip-unique="74" class="m">List</span><span class="pn">.</span><span data-fsdocs-tip="fs37" data-fsdocs-tip-unique="75" class="id">map</span> <span class="pn">(</span><span class="k">fun</span> <span data-fsdocs-tip="fs38" data-fsdocs-tip-unique="76" class="fn">f</span> <span class="k">-&gt;</span> <span data-fsdocs-tip="fs38" data-fsdocs-tip-unique="77" class="fn">f</span> <span class="o">|&gt;</span> <span data-fsdocs-tip="fs14" data-fsdocs-tip-unique="78" class="m">Frame</span><span class="pn">.</span><span data-fsdocs-tip="fs33" data-fsdocs-tip-unique="79" class="id">indexRowsString</span> <span class="s">&quot;Month&quot;</span><span class="pn">)</span>
+    <span class="o">|&gt;</span> <span data-fsdocs-tip="fs36" data-fsdocs-tip-unique="80" class="m">List</span><span class="pn">.</span><span data-fsdocs-tip="fs39" data-fsdocs-tip-unique="81" class="id">reduce</span> <span data-fsdocs-tip="fs14" data-fsdocs-tip-unique="82" class="m">Frame</span><span class="pn">.</span><span data-fsdocs-tip="fs40" data-fsdocs-tip-unique="83" class="id">merge</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val allRevenue: Frame&lt;string,string&gt; =
+  
+       Revenue 
+Jan -&gt; 15000   
+Feb -&gt; 18000   
+Mar -&gt; 22000   
+Apr -&gt; 25000   
+May -&gt; 21000   
+Jun -&gt; 28000</code></pre></td></tr></table>
+<hr />
+<a name="type-coercion"></a>
+<h2><a name="Type-coercion-and-missing-values" class="anchor" href="#Type-coercion-and-missing-values">Type coercion and missing values</a></h2>
+<p>ExcelDataReader returns cell values as <code>obj</code>. Deedle stores them in <code>object</code>
+columns. When you call <code>GetColumn&lt;float&gt;</code>, Deedle uses <code>Convert.ToDouble</code>
+internally; when you call <code>GetColumn&lt;string&gt;</code>, it calls <code>.ToString()</code>.</p>
+<p>Empty cells become missing values in the resulting series:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// Columns with empty cells are read as missing values</span>
+<span class="k">let</span> <span data-fsdocs-tip="fs41" data-fsdocs-tip-unique="84" class="id">withGaps</span> <span class="pn">:</span> <span class="id">Series</span><span class="pn">&lt;</span><span data-fsdocs-tip="fs15" data-fsdocs-tip-unique="85" class="id">int</span><span class="pn">,</span> <span data-fsdocs-tip="fs42" data-fsdocs-tip-unique="86" class="id">float</span><span class="pn">&gt;</span> <span class="o">=</span> <span class="id">frame</span><span class="pn">.</span><span class="id">GetColumn</span><span class="pn">&lt;</span><span data-fsdocs-tip="fs42" data-fsdocs-tip-unique="87" class="id">float</span><span class="pn">&gt;</span><span class="pn">(</span><span class="s">&quot;SomeColumn&quot;</span><span class="pn">)</span>
+<span data-fsdocs-tip="fs41" data-fsdocs-tip-unique="88" class="id">withGaps</span> <span class="o">|&gt;</span> <span class="id">Series</span><span class="pn">.</span><span class="id">dropMissing</span>
+</code></pre>
+<p>For fine-grained control over the conversion, use <code>Frame.mapValues</code>:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span data-fsdocs-tip="fs43" data-fsdocs-tip-unique="89" class="fn">asFloat</span> <span class="pn">(</span><span data-fsdocs-tip="fs44" data-fsdocs-tip-unique="90" class="fn">v</span><span class="pn">:</span> <span data-fsdocs-tip="fs45" data-fsdocs-tip-unique="91" class="rt">obj</span><span class="pn">)</span> <span class="o">=</span>
+    <span class="k">match</span> <span data-fsdocs-tip="fs44" data-fsdocs-tip-unique="92" class="fn">v</span> <span class="k">with</span>
+    <span class="pn">|</span> <span class="o">:?</span> <span data-fsdocs-tip="fs46" data-fsdocs-tip-unique="93" class="vt">double</span> <span class="k">as</span> <span data-fsdocs-tip="fs47" data-fsdocs-tip-unique="94" class="fn">d</span> <span class="k">-&gt;</span> <span data-fsdocs-tip="fs47" data-fsdocs-tip-unique="95" class="fn">d</span>
+    <span class="pn">|</span> <span class="o">:?</span> <span data-fsdocs-tip="fs15" data-fsdocs-tip-unique="96" class="vt">int</span>    <span class="k">as</span> <span data-fsdocs-tip="fs48" data-fsdocs-tip-unique="97" class="fn">i</span> <span class="k">-&gt;</span> <span data-fsdocs-tip="fs42" data-fsdocs-tip-unique="98" class="fn">float</span> <span data-fsdocs-tip="fs48" data-fsdocs-tip-unique="99" class="fn">i</span>
+    <span class="pn">|</span> <span class="id">_</span>              <span class="k">-&gt;</span> <span data-fsdocs-tip="fs49" data-fsdocs-tip-unique="100" class="id">nan</span>
+
+<span class="id">frame</span>
+<span class="o">|&gt;</span> <span class="id">Frame</span><span class="pn">.</span><span class="id">mapValues</span> <span data-fsdocs-tip="fs43" data-fsdocs-tip-unique="101" class="id">asFloat</span>
+</code></pre>
+<hr />
+<a name="error-handling"></a>
+<h2><a name="Error-handling" class="anchor" href="#Error-handling">Error handling</a></h2>
+<p><code>Frame.readExcelSheet</code> raises <code>System.Exception</code> if the named sheet does not exist,
+with a message that lists available sheet names. <code>Frame.readExcelSheetByIndex</code> raises
+if the index is out of range.</p>
+<p>Both are recoverable with a standard <code>try/with</code>:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span data-fsdocs-tip="fs50" data-fsdocs-tip-unique="102" class="fn">tryReadSheet</span> <span data-fsdocs-tip="fs51" data-fsdocs-tip-unique="103" class="fn">path</span> <span data-fsdocs-tip="fs52" data-fsdocs-tip-unique="104" class="fn">name</span> <span class="o">=</span>
+    <span class="k">try</span>
+        <span class="id">Frame</span><span class="pn">.</span><span class="id">readExcelSheet</span> <span data-fsdocs-tip="fs51" data-fsdocs-tip-unique="105" class="id">path</span> <span data-fsdocs-tip="fs52" data-fsdocs-tip-unique="106" class="id">name</span> <span class="o">|&gt;</span> <span data-fsdocs-tip="fs53" data-fsdocs-tip-unique="107" class="uc">Some</span>
+    <span class="k">with</span> <span class="id">_</span> <span class="k">-&gt;</span> <span data-fsdocs-tip="fs54" data-fsdocs-tip-unique="108" class="uc">None</span>
+</code></pre>
+<hr />
+<a name="writing"></a>
+<h2><a name="Writing-Excel-files" class="anchor" href="#Writing-Excel-files">Writing Excel files</a></h2>
+<p>The <code>Deedle.ExcelWriter</code> package provides cross-platform <code>.xlsx</code> writing using
+<a href="https://github.com/mini-software/MiniExcel">MiniExcel</a> — a high-performance,
+low-memory library with no dependency on COM or Windows.</p>
+<h3><a name="Writing-a-single-sheet" class="anchor" href="#Writing-a-single-sheet">Writing a single sheet</a></h3>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">open</span> <span class="id">Deedle</span>
+<span class="k">open</span> <span class="id">Deedle</span><span class="pn">.</span><span class="id">ExcelWriter</span>
+
+<span class="k">let</span> <span data-fsdocs-tip="fs55" data-fsdocs-tip-unique="109" class="id">df</span> <span class="o">=</span>
+    <span class="id">frame</span> <span class="pn">[</span> <span class="s">&quot;Name&quot;</span>  <span class="o">=&gt;</span> <span class="id">series</span> <span class="pn">[</span><span class="n">0</span> <span class="o">=&gt;</span> <span class="s">&quot;Alice&quot;</span><span class="pn">;</span> <span class="n">1</span> <span class="o">=&gt;</span> <span class="s">&quot;Bob&quot;</span><span class="pn">;</span> <span class="n">2</span> <span class="o">=&gt;</span> <span class="s">&quot;Charlie&quot;</span><span class="pn">]</span>
+            <span class="s">&quot;Score&quot;</span> <span class="o">=&gt;</span> <span class="id">series</span> <span class="pn">[</span><span class="n">0</span> <span class="o">=&gt;</span> <span class="n">95.0</span><span class="pn">;</span> <span class="n">1</span> <span class="o">=&gt;</span> <span class="n">87.0</span><span class="pn">;</span> <span class="n">2</span> <span class="o">=&gt;</span> <span class="n">91.0</span><span class="pn">]</span> <span class="pn">]</span>
+
+<span class="c">// Write to &quot;Sheet1&quot; (default sheet name)</span>
+<span class="id">Frame</span><span class="pn">.</span><span class="id">writeExcel</span> <span class="s">&quot;/tmp/results.xlsx&quot;</span> <span data-fsdocs-tip="fs55" data-fsdocs-tip-unique="110" class="id">df</span>
+
+<span class="c">// Write to a named sheet</span>
+<span class="id">Frame</span><span class="pn">.</span><span class="id">writeExcelSheet</span> <span class="s">&quot;/tmp/results.xlsx&quot;</span> <span class="s">&quot;Scores&quot;</span> <span data-fsdocs-tip="fs55" data-fsdocs-tip-unique="111" class="id">df</span>
+</code></pre>
+<p>Any existing file at the target path is overwritten.</p>
+<h3><a name="Writing-multiple-sheets" class="anchor" href="#Writing-multiple-sheets">Writing multiple sheets</a></h3>
+<p>Provide a sequence of <code>(sheetName, frame)</code> pairs:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span data-fsdocs-tip="fs56" data-fsdocs-tip-unique="112" class="id">q1</span> <span class="o">=</span> <span class="id">frame</span> <span class="pn">[</span> <span class="s">&quot;Month&quot;</span> <span class="o">=&gt;</span> <span class="id">series</span> <span class="pn">[</span><span class="n">0</span> <span class="o">=&gt;</span> <span class="s">&quot;Jan&quot;</span><span class="pn">;</span> <span class="n">1</span> <span class="o">=&gt;</span> <span class="s">&quot;Feb&quot;</span><span class="pn">]</span>
+                 <span class="s">&quot;Revenue&quot;</span> <span class="o">=&gt;</span> <span class="id">series</span> <span class="pn">[</span><span class="n">0</span> <span class="o">=&gt;</span> <span class="n">1000.0</span><span class="pn">;</span> <span class="n">1</span> <span class="o">=&gt;</span> <span class="n">1200.0</span><span class="pn">]</span> <span class="pn">]</span>
+<span class="k">let</span> <span data-fsdocs-tip="fs57" data-fsdocs-tip-unique="113" class="id">q2</span> <span class="o">=</span> <span class="id">frame</span> <span class="pn">[</span> <span class="s">&quot;Month&quot;</span> <span class="o">=&gt;</span> <span class="id">series</span> <span class="pn">[</span><span class="n">0</span> <span class="o">=&gt;</span> <span class="s">&quot;Apr&quot;</span><span class="pn">;</span> <span class="n">1</span> <span class="o">=&gt;</span> <span class="s">&quot;May&quot;</span><span class="pn">]</span>
+                 <span class="s">&quot;Revenue&quot;</span> <span class="o">=&gt;</span> <span class="id">series</span> <span class="pn">[</span><span class="n">0</span> <span class="o">=&gt;</span> <span class="n">1300.0</span><span class="pn">;</span> <span class="n">1</span> <span class="o">=&gt;</span> <span class="n">1100.0</span><span class="pn">]</span> <span class="pn">]</span>
+
+<span class="id">Frame</span><span class="pn">.</span><span class="id">writeExcelSheets</span> <span class="s">&quot;/tmp/quarterly.xlsx&quot;</span>
+    <span class="pn">(</span><span data-fsdocs-tip="fs58" data-fsdocs-tip-unique="114" class="id">seq</span> <span class="pn">{</span> <span class="k">yield</span> <span class="pn">(</span><span class="s">&quot;Q1&quot;</span><span class="pn">,</span> <span data-fsdocs-tip="fs56" data-fsdocs-tip-unique="115" class="id">q1</span><span class="pn">)</span><span class="pn">;</span> <span class="k">yield</span> <span class="pn">(</span><span class="s">&quot;Q2&quot;</span><span class="pn">,</span> <span data-fsdocs-tip="fs57" data-fsdocs-tip-unique="116" class="id">q2</span><span class="pn">)</span> <span class="pn">}</span><span class="pn">)</span>
+</code></pre>
+<h3><a name="Writing-to-a-stream" class="anchor" href="#Writing-to-a-stream">Writing to a stream</a></h3>
+<p>For in-memory scenarios or HTTP responses, write to any <code>System.IO.Stream</code>:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">use</span> <span data-fsdocs-tip="fs59" data-fsdocs-tip-unique="117" class="d">ms</span> <span class="o">=</span> <span class="k">new</span> <span data-fsdocs-tip="fs1" data-fsdocs-tip-unique="118" class="id">System</span><span class="pn">.</span><span data-fsdocs-tip="fs2" data-fsdocs-tip-unique="119" class="id">IO</span><span class="pn">.</span><span data-fsdocs-tip="fs60" data-fsdocs-tip-unique="120" class="id">MemoryStream</span><span class="pn">(</span><span class="pn">)</span>
+<span class="id">Frame</span><span class="pn">.</span><span class="id">writeExcelStream</span> <span data-fsdocs-tip="fs59" data-fsdocs-tip-unique="121" class="id">ms</span> <span data-fsdocs-tip="fs55" data-fsdocs-tip-unique="122" class="id">df</span>
+<span class="c">// ms now contains a valid .xlsx binary</span>
+</code></pre>
+<h3><a name="Round-trip-example" class="anchor" href="#Round-trip-example">Round-trip example</a></h3>
+<p><code>Deedle.ExcelReader</code> and <code>Deedle.ExcelWriter</code> compose naturally for ETL pipelines:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">open</span> <span class="id">Deedle</span>
+<span class="k">open</span> <span class="id">Deedle</span><span class="pn">.</span><span class="id">ExcelReader</span>
+<span class="k">open</span> <span class="id">Deedle</span><span class="pn">.</span><span class="id">ExcelWriter</span>
+
+<span class="k">let</span> <span data-fsdocs-tip="fs61" data-fsdocs-tip-unique="123" class="id">input</span>  <span class="o">=</span> <span class="id">Frame</span><span class="pn">.</span><span class="id">readExcel</span> <span class="s">&quot;input.xlsx&quot;</span>
+<span class="k">let</span> <span data-fsdocs-tip="fs62" data-fsdocs-tip-unique="124" class="id">output</span> <span class="o">=</span> <span data-fsdocs-tip="fs61" data-fsdocs-tip-unique="125" class="id">input</span> <span class="o">|&gt;</span> <span class="id">Frame</span><span class="pn">.</span><span class="id">filterRows</span> <span class="pn">(</span><span class="k">fun</span> <span class="id">_</span> <span class="id">row</span> <span class="k">-&gt;</span> <span class="id">row</span><span class="pn">.</span><span class="id">GetAs</span><span class="pn">&lt;</span><span data-fsdocs-tip="fs42" data-fsdocs-tip-unique="126" class="id">float</span><span class="pn">&gt;</span><span class="pn">(</span><span class="s">&quot;Score&quot;</span><span class="pn">)</span> <span class="pn">&gt;</span> <span class="n">90.0</span><span class="pn">)</span>
+<span class="id">Frame</span><span class="pn">.</span><span class="id">writeExcel</span> <span class="s">&quot;output.xlsx&quot;</span> <span data-fsdocs-tip="fs62" data-fsdocs-tip-unique="127" class="id">output</span>
+</code></pre>
+<hr />
+<a name="excel-writer"></a>
+<h2><a name="Live-Excel-integration-Windows-only" class="anchor" href="#Live-Excel-integration-Windows-only">Live Excel integration (Windows only)</a></h2>
+<p>The <code>Deedle.Excel</code> package exposes a live read/write API that works by
+communicating with a running Excel instance via <a href="https://netoffice.io/">NetOffice</a>.
+Because it requires an active COM connection it is <strong>Windows-only</strong> and suitable
+for interactive / scripting scenarios (e.g. F# Interactive with Excel open).</p>
+<p>Install with:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="id">dotnet</span> <span class="id">add</span> <span class="id">package</span> <span class="id">Deedle</span><span class="pn">.</span><span class="id">Excel</span>
+</code></pre>
+<p>Basic usage in F# Interactive:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">open</span> <span class="id">Deedle</span>
+<span class="k">open</span> <span class="id">Deedle</span><span class="pn">.</span><span class="id">Excel</span>
+
+<span class="c">// Push a frame to the active Excel workbook</span>
+<span class="pn">xl</span><span class="o">?</span><span class="id">A1</span> <span class="k">&lt;-</span> <span class="id">myFrame</span>
+
+<span class="c">// Keep Excel in sync as the frame changes</span>
+<span class="id">xl</span><span class="pn">.</span><span class="id">KeepInSync</span> <span class="k">&lt;-</span> <span class="k">true</span>
+<span class="pn">xl</span><span class="o">?</span><span class="id">A1</span> <span class="k">&lt;-</span> <span class="id">myFrame</span>
+</code></pre>
+
+        <div popover class="fsdocs-tip" id="fs1">namespace System</div>
+<div popover class="fsdocs-tip" id="fs2">namespace System.IO</div>
+<div popover class="fsdocs-tip" id="fs3">namespace Deedle</div>
+<div popover class="fsdocs-tip" id="fs4">namespace Deedle.ExcelReader</div>
+<div popover class="fsdocs-tip" id="fs5">val samplePath: string</div>
+<div popover class="fsdocs-tip" id="fs6">val tmp: string</div>
+<div popover class="fsdocs-tip" id="fs7">type Path =
+  static member ChangeExtension: path: string * extension: string -&gt; string
+  static member Combine: path1: string * path2: string -&gt; string + 4 overloads
+  static member EndsInDirectorySeparator: path: ReadOnlySpan&lt;char&gt; -&gt; bool + 1 overload
+  static member Exists: path: string -&gt; bool
+  static member GetDirectoryName: path: ReadOnlySpan&lt;char&gt; -&gt; ReadOnlySpan&lt;char&gt; + 1 overload
+  static member GetExtension: path: ReadOnlySpan&lt;char&gt; -&gt; ReadOnlySpan&lt;char&gt; + 1 overload
+  static member GetFileName: path: ReadOnlySpan&lt;char&gt; -&gt; ReadOnlySpan&lt;char&gt; + 1 overload
+  static member GetFileNameWithoutExtension: path: ReadOnlySpan&lt;char&gt; -&gt; ReadOnlySpan&lt;char&gt; + 1 overload
+  static member GetFullPath: path: string -&gt; string + 1 overload
+  static member GetInvalidFileNameChars: unit -&gt; char array
+  ...<br /><em>&lt;summary&gt;Performs operations on &lt;see cref=&quot;T:System.String&quot; /&gt; instances that contain file or directory path information. These operations are performed in a cross-platform manner.&lt;/summary&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs8">Path.GetTempFileName() : string</div>
+<div popover class="fsdocs-tip" id="fs9">val bytes: byte array</div>
+<div popover class="fsdocs-tip" id="fs10">type File =
+  static member AppendAllBytes: path: string * bytes: byte array -&gt; unit + 1 overload
+  static member AppendAllBytesAsync: path: string * bytes: byte array * ?cancellationToken: CancellationToken -&gt; Task + 1 overload
+  static member AppendAllLines: path: string * contents: string seq -&gt; unit + 1 overload
+  static member AppendAllLinesAsync: path: string * contents: string seq * encoding: Encoding * ?cancellationToken: CancellationToken -&gt; Task + 1 overload
+  static member AppendAllText: path: string * contents: ReadOnlySpan&lt;char&gt; -&gt; unit + 3 overloads
+  static member AppendAllTextAsync: path: string * contents: ReadOnlyMemory&lt;char&gt; * encoding: Encoding * ?cancellationToken: CancellationToken -&gt; Task + 3 overloads
+  static member AppendText: path: string -&gt; StreamWriter
+  static member Copy: sourceFileName: string * destFileName: string -&gt; unit + 1 overload
+  static member Create: path: string -&gt; FileStream + 2 overloads
+  static member CreateSymbolicLink: path: string * pathToTarget: string -&gt; FileSystemInfo
+  ...<br /><em>&lt;summary&gt;Provides static methods for the creation, copying, deletion, moving, and opening of a single file, and aids in the creation of &lt;see cref=&quot;T:System.IO.FileStream&quot; /&gt; objects.&lt;/summary&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs11">File.ReadAllBytes(path: string) : byte array</div>
+<div popover class="fsdocs-tip" id="fs12">File.WriteAllBytes(path: string, bytes: ReadOnlySpan&lt;byte&gt;) : unit<br />File.WriteAllBytes(path: string, bytes: byte array) : unit</div>
+<div popover class="fsdocs-tip" id="fs13">val sales: Frame&lt;int,string&gt;</div>
+<div popover class="fsdocs-tip" id="fs14">Multiple items<br />module Frame
+
+from Deedle.ExcelReader<br /><em>&lt;summary&gt;
+ F# module extensions for reading Excel files.
+ Open &lt;c&gt;Deedle.ExcelReader&lt;/c&gt; and then call these as &lt;c&gt;Frame.readExcel&lt;/c&gt;,
+ &lt;c&gt;Frame.readExcelSheet&lt;/c&gt;, etc.
+ &lt;/summary&gt;</em><br /><br />--------------------<br />module Frame
+
+from Deedle<br /><em>&lt;summary&gt;
+ The `Frame` module provides an F#-friendly API for working with data frames.
+ The module follows the usual desing for collection-processing in F#, so the
+ functions work well with the pipelining operator (`|&amp;gt;`). For example, given
+ a frame with two columns representing prices, we can use `Frame.pctChange` to
+ calculate daily returns like this:
+
+     let df = frame [ &quot;MSFT&quot; =&amp;gt; prices1; &quot;AAPL&quot; =&amp;gt; prices2 ]
+     let rets = df |&amp;gt; Frame.pctChange 1
+     rets |&amp;gt; Stats.mean
+
+ Note that the `Stats.mean` operation is overloaded and works both on series
+ (returning a number) and on frames (returning a series). You can also use
+ `Frame.diff` if you need absolute differences rather than relative changes.
+
+ The functions in this module are designed to be used from F#. For a C#-friendly
+ API, see the `FrameExtensions` type. For working with individual series, see the
+ `Series` module. The functions in the `Frame` module are grouped in a number of
+ categories and documented below.
+
+ Accessing frame data and lookup
+ -------------------------------
+
+ Functions in this category provide access to the values in the fame. You can
+ also add and remove columns from a frame (which both return a new value).
+
+ - `addCol`, `replaceCol` and `dropCol` can be used to create a new data frame
+   with a new column, by replacing an existing column with a new one, or by dropping
+   an existing column
+
+ - `cols` and `rows` return the columns or rows of a frame as a series containing
+   objects; `getCols` and `getRows` return a generic series and cast the values to
+   the type inferred from the context (columns or rows of incompatible types are skipped);
+   `getNumericCols` returns columns of a type convertible to `float` for convenience.
+
+ - You can get a specific row or column using `get[Col|Row]` or `lookup[Col|Row]` functions.
+   The `lookup` variant lets you specify lookup behavior for key matching (e.g. find the
+   nearest smaller key than the specified value). There are also `[try]get` and `[try]Lookup`
+   functions that return optional values and functions returning entire observations
+   (key together with the series).
+
+ - `sliceCols` and `sliceRows` return a sub-frame containing only the specified columns
+   or rows. Finally, `toArray2D` returns the frame data as a 2D array.
+
+ Grouping, windowing and chunking
+ --------------------------------
+
+ The basic grouping functions in this category can be used to group the rows of a
+ data frame by a specified projection or column to create a frame with hierarchical
+ index such as &lt;c&gt;Frame&amp;lt;&#39;K1 * &#39;K2, &#39;C&amp;gt;&lt;/c&gt;. The functions always aggregate rows, so if you
+ want to group columns, you need to use `Frame.transpose` first.
+
+ The function `groupRowsBy` groups rows by the value of a specified column. Use
+ `groupRowsBy[Int|Float|String...]` if you want to specify the type of the column in
+ an easier way than using type inference; `groupRowsUsing` groups rows using the
+ specified _projection function_ and `groupRowsByIndex` projects the grouping key just
+ from the row index.
+
+ More advanced functions include: `aggregateRowsBy` which groups the rows by a
+ specified sequence of columns and aggregates each group into a single value;
+ `pivotTable` implements the pivoting operation [as documented in the
+ tutorials](../frame.html#pivot).
+
+ The `melt` and `unmelt` functions turn the data frame into a single data frame
+ containing columns `Row`, `Column` and `Value` containing the data of the original
+ frame; `unmelt` can be used to turn this representation back into an original frame.
+
+ The `stack` and `unstack` functions implement pandas-style reshape operations.
+ `stack` converts `Frame&amp;lt;&#39;R,&#39;C&amp;gt;` to a long-format `Frame&amp;lt;&#39;R*&#39;C, string&amp;gt;` where each
+ cell becomes a row keyed by `(rowKey, colKey)` with a single `&quot;Value&quot;` column.
+ `unstack` promotes the inner row-key level to column keys, producing
+ `Frame&amp;lt;&#39;R1, &#39;C*&#39;R2&amp;gt;` from `Frame&amp;lt;&#39;R1*&#39;R2,&#39;C&amp;gt;`.
+
+ A simple windowing functions that are exposed for an entire frame operations are
+ `window` and `windowInto`. For more complex windowing operations, you currently have
+ to use `mapRows` or `mapCols` and apply windowing on individual series.
+
+ Sorting and index manipulation
+ ------------------------------
+
+ A frame is indexed by row keys and column keys. Both of these indices can be sorted
+ (by the keys). A frame that is sorted allows a number of additional operations (such
+ as lookup using the `Lookp.ExactOrSmaller` lookup behavior). The functions in this
+ category provide ways for manipulating the indices. It is expected that most operations
+ are done on rows and so more functions are available in a row-wise way. A frame can
+ alwyas be transposed using `Frame.transpose`.
+
+ Index operations:
+
+ The existing row/column keys can be replaced by a sequence of new keys using the
+ `indexColsWith` and `indexRowsWith` functions. Row keys can also be replaced by
+ ordinal numbers using `indexRowsOrdinally`.
+
+ The function `indexRows` uses the specified column of the original frame as the
+ index. It removes the column from the resulting frame (to avoid this, use overloaded
+ `IndexRows` method). This function infers the type of row keys from the context, so it
+ is usually more convenient to use `indexRows[Date|String|Int|...]` functions. Finally,
+ if you want to calculate the index value based on multiple columns of the row, you
+ can use `indexRowsUsing`.
+
+ Sorting frame rows:
+
+ Frame rows can be sorted according to the value of a specified column using the
+ `sortRows` function; `sortRowsBy` takes a projection function which lets you
+ transform the value of a column (e.g. to project a part of the value).
+
+ The functions `sortRowsByKey` and `sortColsByKey` sort the rows or columns
+ using the default ordering on the key values. The result is a frame with ordered
+ index.
+
+ Expanding columns:
+
+ When the frame contains a series with complex .NET objects such as F# records or
+ C# classes, it can be useful to &quot;expand&quot; the column. This operation looks at the
+ type of the objects, gets all properties of the objects (recursively) and
+ generates multiple series representing the properties as columns.
+
+ The function `expandCols` expands the specified columns while `expandAllCols`
+ applies the expansion to all columns of the data frame.
+
+ Frame transformations
+ ---------------------
+
+ Functions in this category perform standard transformations on data frames including
+ projections, filtering, taking some sub-frame of the frame, aggregating values
+ using scanning and so on.
+
+ Projection and filtering functions such as `[map|filter][Cols|Rows]` call the
+ specified function with the column or row key and an &lt;c&gt;ObjectSeries&amp;lt;&#39;K&amp;gt;&lt;/c&gt; representing
+ the column or row. You can use functions ending with `Values` (such as `mapRowValues`)
+ when you do not require the row key, but only the row series; `mapRowKeys` and
+ `mapColKeys` can be used to transform the keys.
+
+ You can use `reduceValues` to apply a custom reduction to values of columns. Other
+ aggregations are available in the `Stats` module. You can also get a row with the
+ greaterst or smallest value of a given column using `[min|max]RowBy`.
+
+ The functions `take[Last]` and `skip[Last]` can be used to take a sub-frame of the
+ original source frame by skipping a specified number of rows. Note that this
+ does not require an ordered frame and it ignores the index - for index-based lookup
+ use slicing, such as `df.Rows.[lo .. hi]`, instead.
+
+ Finally the `shift` function can be used to obtain a frame with values shifted by
+ the specified offset. This can be used e.g. to get previous value for each key using
+ `Frame.shift 1 df`. The `diff` function calculates difference from previous value using
+ `df - (Frame.shift offs df)`.
+
+ Processing frames with exceptions
+ ---------------------------------
+
+ The functions in this group can be used to write computations over frames that may fail.
+ They use the type &lt;c&gt;tryval&amp;lt;&#39;T&amp;gt;&lt;/c&gt; which is defined as a discriminated union
+ with two cases: Success containing a value, or Error containing an exception.
+
+ Using &lt;c&gt;tryval&amp;lt;&#39;T&amp;gt;&lt;/c&gt; as a value in a data frame is not generally recommended, because
+ the type of values cannot be tracked in the type. For this reason, it is better to use
+ &lt;c&gt;tryval&amp;lt;&#39;T&amp;gt;&lt;/c&gt; with individual series. However, `tryValues` and `fillErrorsWith` functions
+ can be used to get values, or fill failed values inside an entire data frame.
+
+ The `tryMapRows` function is more useful. It can be used to write a transformation
+ that applies a computation (which may fail) to each row of a data frame. The resulting
+ series is of type &lt;c&gt;Series&amp;lt;&#39;R, tryval&amp;lt;&#39;T&amp;gt;&amp;gt;&lt;/c&gt; and can be processed using the &lt;c&gt;Series&lt;/c&gt; module
+ functions.
+
+ Missing values
+ --------------
+
+ This group of functions provides a way of working with missing values in a data frame.
+ The category provides the following functions that can be used to fill missing values:
+
+  * `fillMissingWith` fills missing values with a specified constant
+  * `fillMissingUsing` calls a specified function for every missing value
+  * `fillMissing` and variants propagates values from previous/later keys
+
+ We use the terms _sparse_ and _dense_ to denote series that contain some missing values
+ or do not contain any missing values, respectively. The functions `denseCols` and
+ `denseRows` return a series that contains only dense columns or rows and all sparse
+ rows or columns are replaced with a missing value. The `dropSparseCols` and `dropSparseRows`
+ functions drop these missing values and return a frame with no missing values.
+
+ Joining, merging and zipping
+ ----------------------------
+
+ The simplest way to join two frames is to use the `join` operation which can be used to
+ perform left, right, outer or inner join of two frames. When the row keys of the frames do
+ not match exactly, you can use `joinAlign` which takes an additional parameter that specifies
+ how to find matching key in left/right join (e.g. by taking the nearest smaller available key).
+
+ Frames that do not contian overlapping values can be combined using `merge` (when combining
+ just two frames) or using `mergeAll` (for larger number of frames). Tha latter is optimized
+ to work well for a large number of data frames.
+
+ Finally, frames with overlapping values can be combined using `zip`. It takes a function
+ that is used to combine the overlapping values. A `zipAlign` function provides a variant
+ with more flexible row key matching (as in `joinAlign`)
+
+ Hierarchical index operations
+ -----------------------------
+
+ A data frame has a hierarchical row index if the row index is formed by a tuple, such as
+ &lt;c&gt;Frame&amp;lt;&#39;R1 * &#39;R2, &#39;C&amp;gt;&lt;/c&gt;. Frames of this kind are returned, for example, by the grouping
+ functions such as &lt;c&gt;Frame.groupRowsBy&lt;/c&gt;. The functions in this category provide ways for
+ working with data frames that have hierarchical row keys.
+
+ The functions &lt;c&gt;applyLevel&lt;/c&gt; and &lt;c&gt;reduceLevel&lt;/c&gt; can be used to reduce values according to
+ one of the levels. The &lt;c&gt;applyLevel&lt;/c&gt; function takes a reduction of type &lt;c&gt;Series&amp;lt;&#39;K, &#39;T&amp;gt; -&amp;gt; &#39;T&lt;/c&gt;
+ while &lt;c&gt;reduceLevel&lt;/c&gt; reduces individual values using a function of type &lt;c&gt;&#39;T -&amp;gt; &#39;T -&amp;gt; &#39;T&lt;/c&gt;.
+
+ The functions &lt;c&gt;nest&lt;/c&gt; and &lt;c&gt;unnest&lt;/c&gt; can be used to convert between frames with
+ hierarchical indices (&lt;c&gt;Frame&amp;lt;&#39;K1 * &#39;K2, &#39;C&amp;gt;&lt;/c&gt;) and series of frames that represent
+ individual groups (&lt;c&gt;Series&amp;lt;&#39;K1, Frame&amp;lt;&#39;K2, &#39;C&amp;gt;&amp;gt;&lt;/c&gt;). The &lt;c&gt;nestBy&lt;/c&gt; function can be
+ used to perform group by operation and return the result as a series of frems.
+ &lt;/summary&gt;<br />&lt;category&gt;Frame and series operations&lt;/category&gt;</em><br /><br />--------------------<br />type Frame =
+  static member ReadCsv: location: string * hasHeaders: Nullable&lt;bool&gt; * inferTypes: Nullable&lt;bool&gt; * inferRows: Nullable&lt;int&gt; * schema: string * separators: string * culture: string * maxRows: Nullable&lt;int&gt; * missingValues: string array * preferOptions: bool * encoding: Encoding -&gt; Frame&lt;int,string&gt; + 1 overload
+  static member ReadReader: reader: IDataReader -&gt; Frame&lt;int,string&gt;
+  static member CustomExpanders: Dictionary&lt;Type,Func&lt;obj,(string * Type * obj) seq&gt;&gt;
+  static member NonExpandableInterfaces: ResizeArray&lt;Type&gt;
+  static member NonExpandableTypes: HashSet&lt;Type&gt;<br /><em>&lt;summary&gt;
+ Provides static methods for creating frames, reading frame data
+ from CSV files and database (via IDataReader). The type also provides
+ global configuration for reflection-based expansion.
+ &lt;/summary&gt;<br />&lt;category&gt;Frame and series operations&lt;/category&gt;</em><br /><br />--------------------<br />type Frame&lt;&#39;TRowKey,&#39;TColumnKey (requires equality and equality)&gt; =
+  interface IDynamicMetaObjectProvider
+  interface INotifyCollectionChanged
+  interface IFrameFormattable
+  interface IFsiFormattable
+  interface IFrame
+  new: rowIndex: IIndex&lt;&#39;TRowKey&gt; * columnIndex: IIndex&lt;&#39;TColumnKey&gt; * data: IVector&lt;IVector&gt; * indexBuilder: IIndexBuilder * vectorBuilder: IVectorBuilder -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; + 1 overload
+  member AddColumn: column: &#39;TColumnKey * series: &#39;V seq -&gt; unit + 3 overloads
+  member AggregateRowsBy: groupBy: &#39;TColumnKey seq * aggBy: &#39;TColumnKey seq * aggFunc: Func&lt;Series&lt;&#39;TRowKey,&#39;a&gt;,&#39;b&gt; -&gt; Frame&lt;int,&#39;TColumnKey&gt;
+  member Clone: unit -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;
+  member ColumnApply: f: Func&lt;Series&lt;&#39;TRowKey,&#39;T&gt;,ISeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; + 1 overload
+  ...<br /><em>&lt;summary&gt;
+ A frame is the key Deedle data structure (together with series). It represents a
+ data table (think spreadsheet or CSV file) with multiple rows and columns. The frame
+ consists of row index, column index and data. The indices are used for efficient
+ lookup when accessing data by the row key `&#39;TRowKey` or by the column key
+ `&#39;TColumnKey`. Deedle frames are optimized for the scenario when all values in a given
+ column are of the same type (but types of different columns can differ).
+ &lt;/summary&gt;<br />&lt;remarks&gt;&lt;para&gt;Joining, zipping and appending:&lt;/para&gt;&lt;para&gt;
+ More info
+ &lt;/para&gt;&lt;/remarks&gt;<br />&lt;category&gt;Core frame and series types&lt;/category&gt;</em><br /><br />--------------------<br />new: names: &#39;TColumnKey seq * columns: ISeries&lt;&#39;TRowKey&gt; seq -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />new: rowIndex: Indices.IIndex&lt;&#39;TRowKey&gt; * columnIndex: Indices.IIndex&lt;&#39;TColumnKey&gt; * data: IVector&lt;IVector&gt; * indexBuilder: Indices.IIndexBuilder * vectorBuilder: Vectors.IVectorBuilder -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;</div>
+<div popover class="fsdocs-tip" id="fs15">Multiple items<br />val int: value: &#39;T -&gt; int (requires member op_Explicit)<br /><br />--------------------<br />type int = int32<br /><br />--------------------<br />type int&lt;&#39;Measure&gt; =
+  int</div>
+<div popover class="fsdocs-tip" id="fs16">Multiple items<br />val string: value: &#39;T -&gt; string<br /><br />--------------------<br />type string = String</div>
+<div popover class="fsdocs-tip" id="fs17">val readExcel: path: string -&gt; Frame&lt;int,string&gt;<br /><em>&lt;summary&gt;
+ Read the first worksheet of an Excel file as a &lt;c&gt;Frame&amp;lt;int, string&amp;gt;&lt;/c&gt;.
+ &lt;/summary&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs18">val multiPath: string</div>
+<div popover class="fsdocs-tip" id="fs19">val b: byte array</div>
+<div popover class="fsdocs-tip" id="fs20">val t: string</div>
+<div popover class="fsdocs-tip" id="fs21">val q1: Frame&lt;int,string&gt;</div>
+<div popover class="fsdocs-tip" id="fs22">val readExcelSheet: path: string -&gt; sheetName: string -&gt; Frame&lt;int,string&gt;<br /><em>&lt;summary&gt;
+ Read a specific worksheet by name from an Excel file.
+ &lt;/summary&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs23">val q2: Frame&lt;int,string&gt;</div>
+<div popover class="fsdocs-tip" id="fs24">val readExcelSheetByIndex: path: string -&gt; sheetIndex: int -&gt; Frame&lt;int,string&gt;<br /><em>&lt;summary&gt;
+ Read a specific worksheet by zero-based index from an Excel file.
+ &lt;/summary&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs25">val sheets: string list</div>
+<div popover class="fsdocs-tip" id="fs26">type &#39;T list = List&lt;&#39;T&gt;</div>
+<div popover class="fsdocs-tip" id="fs27">val sheetNames: path: string -&gt; string list<br /><em>&lt;summary&gt;
+ Return the names of all worksheets in an Excel file.
+ &lt;/summary&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs28">val revenue: Series&lt;int,float&gt;</div>
+<div popover class="fsdocs-tip" id="fs29">Multiple items<br />module Series
+
+from Deedle<br /><em>&lt;summary&gt;
+ The `Series` module provides an F#-friendly API for working with data and time series.
+ The API follows the usual design for collection-processing in F#, so the functions work
+ well with the pipelining (&lt;c&gt;|&amp;gt;&lt;/c&gt;) operator. For example, given a series with ages,
+ we can use `Series.filterValues` to filter outliers and then `Stats.mean` to calculate
+ the mean:
+
+     ages
+     |&amp;gt; Series.filterValues (fun v -&amp;gt; v &amp;gt; 0.0 &amp;amp;&amp;amp; v &amp;lt; 120.0)
+     |&amp;gt; Stats.mean
+
+ The module provides comprehensive set of functions for working with series. The same
+ API is also exposed using C#-friendly extension methods. In C#, the above snippet could
+ be written as:
+
+     [lang=csharp]
+     ages
+       .Where(kvp =&amp;gt; kvp.Value &amp;gt; 0.0 &amp;amp;&amp;amp; kvp.Value &amp;lt; 120.0)
+       .Mean()
+
+ For more information about similar frame-manipulation functions, see the `Frame` module.
+ For more information about C#-friendly extensions, see `SeriesExtensions`. The functions
+ in the `Series` module are grouped in a number of categories and documented below.
+
+ Accessing series data and lookup
+ --------------------------------
+
+ Functions in this category provide access to the values in the series.
+
+  - The term _observation_ is used for a key value pair in the series.
+  - When working with a sorted series, it is possible to perform lookup using
+    keys that are not present in the series - you can specify to search for the
+    previous or next available value using _lookup behavior_.
+  - Functions such as `get` and `getAll` have their counterparts `lookup` and
+    `lookupAll` that let you specify lookup behavior.
+  - For most of the functions that may fail, there is a `try[Foo]` variant that
+    returns `None` instead of failing.
+  - Functions with a name ending with `At` perform lookup based on the absolute
+    integer offset (and ignore the keys of the series)
+
+ Series transformations
+ ----------------------
+
+ Functions in this category perform standard transformations on series including
+ projections, filtering, taking some sub-series of the series, aggregating values
+ using scanning and so on.
+
+ Projection and filtering functions generally skip over missing values, but there
+ are variants `filterAll` and `mapAll` that let you handle missing values explicitly.
+ Keys can be transformed using `mapKeys`. When you do not need to consider the keys,
+ and only care about values, use `filterValues` and `mapValues` (which is also aliased
+ as the `$` operator).
+
+ Series supports standard set of folding functions including `reduce` and `fold` (to
+ reduce series values into a single value) as well as the `scan[All]` function, which
+ can be used to fold values of a series into a series of intermeidate folding results.
+
+ The functions `take[Last]` and `skip[Last]` can be used to take a sub-series of the
+ original source series by skipping a specified number of elements. Note that this
+ does not require an ordered series and it ignores the index - for index-based lookup
+ use slicing, such as `series.[lo .. hi]`, instead.
+
+ Finally the `shift` function can be used to obtain a series with values shifted by
+ the specified offset. This can be used e.g. to get previous value for each key using
+ `Series.shift 1 ts`. The `diff` function calculates difference from previous value using
+ `ts - (Series.shift offs ts)`.
+
+ Processing series with exceptions
+ ---------------------------------
+
+ The functions in this group can be used to write computations over series that may fail.
+ They use the type &lt;c&gt;tryval&amp;lt;&#39;T&amp;gt;&lt;/c&gt; which is defined as a discriminated union
+ with two cases: Success containing a value, or Error containing an exception.
+
+ The function `tryMap` lets you create &lt;c&gt;Series&amp;lt;&#39;K, tryval&amp;lt;&#39;T&amp;gt;&amp;gt;&lt;/c&gt; by mapping over values
+ of an original series. You can then extract values using `tryValues`, which throws
+ `AggregateException` if there were any errors. Functions `tryErrors` and `trySuccesses`
+ give series containing only errors and successes. You can fill failed values with
+ a constant using `fillErrorsWith`.
+
+ Hierarchical index operations
+ -----------------------------
+
+ When the key of a series is tuple, the elements of the tuple can be treated
+ as multiple levels of a index. For example &lt;c&gt;Series&amp;lt;&#39;K1 * &#39;K2, &#39;V&amp;gt;&lt;/c&gt; has two
+ levels with keys of types &lt;c&gt;&#39;K1&lt;/c&gt; and &lt;c&gt;&#39;K2&lt;/c&gt; respectively.
+
+ The functions in this cateogry provide a way for aggregating values in the
+ series at one of the levels. For example, given a series `input` indexed by
+ two-element tuple, you can calculate mean for different first-level values as
+ follows:
+
+     input |&amp;gt; applyLevel fst Stats.mean
+
+ Note that the `Stats` module provides helpers for typical statistical operations,
+ so the above could be written just as `input |&amp;gt; Stats.levelMean fst`.
+
+ Grouping, windowing and chunking
+ --------------------------------
+
+ This category includes functions that group data from a series in some way. Two key
+ concepts here are _window_ and _chunk_. Window refers to (overlapping) sliding windows
+ over the input series while chunk refers to non-overlapping blocks of the series.
+
+ The boundary behavior can be specified using the `Boundary` flags. The value
+ `Skip` means that boundaries (incomplete windows or chunks) should be skipped. The value
+ `AtBeginning` and `AtEnding` can be used to define at which side should the boundary be
+ returned (or skipped). For chunking, `AtBeginning ||| Skip` makes sense and it means that
+ the incomplete chunk at the beginning should be skipped (aligning the last chunk with the end).
+
+ The behavior may be specified in a number of ways (which is reflected in the name):
+  - `dist` - using an absolute distance between the keys
+  - `while` - using a condition on the first and last key
+  - `size` - by specifying the absolute size of the window/chunk
+
+ The functions ending with `Into` take a function to be applied to the window/chunk.
+ The functions `window`, `windowInto` and `chunk`, `chunkInto` are simplified versions
+ that take a size. There is also `pairwise` function for sliding window of size two.
+
+ Missing values
+ --------------
+
+ This group of functions provides a way of working with missing values in a series.
+ The `dropMissing` function drops all keys for which there are no values in the series.
+ The `withMissingFrom` function lets you copy missing values from another series.
+ The remaining functions provide different mechanism for filling the missing values.
+
+  * `fillMissingWith` fills missing values with a specified constant
+  * `fillMissingUsing` calls a specified function for every missing value
+  * `fillMissing` and variants propagates values from previous/later keys
+
+ Sorting and index manipulation
+ ------------------------------
+
+ A series that is sorted by keys allows a number of additional operations (such as lookup
+ using the `Lookp.ExactOrSmaller` lookup behavior). However, it is also possible to sort
+ series based on the values - although the functions for manipulation with series do not
+ guarantee that the order will be preserved.
+
+ To sort series by keys, use `sortByKey`. Other sorting functions let you sort the series
+ using a specified comparer function (`sortWith`), using a projection function (`sortBy`)
+ and using the default comparison (`sort`).
+
+ In addition, you can also replace the keys of a series with other keys using `indexWith`
+ or with integers using `indexOrdinally`. To pick and reorder series values using to match
+ a list of keys use `realign`.
+
+ Sampling, resampling and advanced lookup
+ ----------------------------------------
+
+ Given a (typically) time series sampling or resampling makes it possible to
+ get time series with representative values at lower or uniform frequency.
+ We use the following terminology:
+
+  - `lookup` and `sample` functions find values at specified key; if a key is not
+    available, they can look for value associated with the nearest smaller or
+    the nearest greater key.
+
+  - `resample` function aggregate values values into chunks based
+    on a specified collection of keys (e.g. explicitly provided times), or
+    based on some relation between keys (e.g. date times having the same date).
+
+  - `resampleUniform` is similar to resampling, but we specify keys by
+    providing functions that generate a uniform sequence of keys (e.g. days),
+    the operation also fills value for days that have no corresponding
+    observations in the input sequence.
+
+ Joining, merging and zipping
+ ----------------------------
+
+ Given two series, there are two ways to combine the values. If the keys in the series
+ are not overlapping (or you want to throw away values from one or the other series),
+ then you can use `merge` or `mergeUsing`. To merge more than 2 series efficiently, use
+ the `mergeAll` function, which has been optimized for large number of series.
+
+ If you want to align two series, you can use the _zipping_ operation. This aligns
+ two series based on their keys and gives you tuples of values. The default behavior
+ (`zip`) uses outer join and exact matching. For ordered series, you can specify
+ other forms of key lookups (e.g. find the greatest smaller key) using `zipAlign`.
+ functions ending with `Into` are generally easier to use as they call a specified
+ function to turn the tuple (of possibly missing values) into a new value.
+
+ For more complicated behaviors, it is often convenient to use joins on frames instead
+ of working with series. Create two frames with single columns and then use the join
+ operation. The result will be a frame with two columns (which is easier to use than
+ series of tuples).
+ &lt;/summary&gt;<br />&lt;category&gt;Frame and series operations&lt;/category&gt;</em><br /><br />--------------------<br />type Series =
+  static member ofNullables: values: Nullable&lt;&#39;a&gt; seq -&gt; Series&lt;int,&#39;a&gt; (requires default constructor and value type and &#39;a :&gt; ValueType)
+  static member ofObservations: observations: (&#39;a * &#39;b) seq -&gt; Series&lt;&#39;a,&#39;b&gt; (requires equality)
+  static member ofOptionalObservations: observations: (&#39;K * &#39;a option) seq -&gt; Series&lt;&#39;K,&#39;a&gt; (requires equality)
+  static member ofValues: values: &#39;a seq -&gt; Series&lt;int,&#39;a&gt;<br /><br />--------------------<br />type Series&lt;&#39;K,&#39;V (requires equality)&gt; =
+  interface ISeriesFormattable
+  interface IFsiFormattable
+  interface ISeries&lt;&#39;K&gt;
+  new: index: IIndex&lt;&#39;K&gt; * vector: IVector&lt;&#39;V&gt; * vectorBuilder: IVectorBuilder * indexBuilder: IIndexBuilder -&gt; Series&lt;&#39;K,&#39;V&gt; + 3 overloads
+  member After: lowerExclusive: &#39;K -&gt; Series&lt;&#39;K,&#39;V&gt;
+  member Aggregate: aggregation: Aggregation&lt;&#39;K&gt; * keySelector: Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,&#39;TNewKey&gt; * valueSelector: Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,OptionalValue&lt;&#39;R&gt;&gt; -&gt; Series&lt;&#39;TNewKey,&#39;R&gt; (requires equality) + 1 overload
+  member AsyncMaterialize: unit -&gt; Async&lt;Series&lt;&#39;K,&#39;V&gt;&gt;
+  member Before: upperExclusive: &#39;K -&gt; Series&lt;&#39;K,&#39;V&gt;
+  member Between: lowerInclusive: &#39;K * upperInclusive: &#39;K -&gt; Series&lt;&#39;K,&#39;V&gt;
+  member Compare: another: Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,Diff&lt;&#39;V&gt;&gt;
+  ...<br /><em>&lt;summary&gt;
+ The type &lt;c&gt;Series&amp;lt;K, V&amp;gt;&lt;/c&gt; represents a data series consisting of values `V` indexed by
+ keys `K`. The keys of a series may or may not be ordered
+ &lt;/summary&gt;<br />&lt;category&gt;Core frame and series types&lt;/category&gt;</em><br /><br />--------------------<br />new: pairs: Collections.Generic.KeyValuePair&lt;&#39;K,&#39;V&gt; seq -&gt; Series&lt;&#39;K,&#39;V&gt;<br />new: keys: &#39;K seq * values: &#39;V seq -&gt; Series&lt;&#39;K,&#39;V&gt;<br />new: keys: &#39;K array * values: &#39;V array -&gt; Series&lt;&#39;K,&#39;V&gt;<br />new: index: Indices.IIndex&lt;&#39;K&gt; * vector: IVector&lt;&#39;V&gt; * vectorBuilder: Vectors.IVectorBuilder * indexBuilder: Indices.IIndexBuilder -&gt; Series&lt;&#39;K,&#39;V&gt;</div>
+<div popover class="fsdocs-tip" id="fs30">Multiple items<br />val float: value: &#39;T -&gt; float (requires member op_Explicit)<br /><br />--------------------<br />type float = Double<br /><br />--------------------<br />type float&lt;&#39;Measure&gt; =
+  float</div>
+<div popover class="fsdocs-tip" id="fs31">member Frame.GetColumn&lt;&#39;R&gt; : column: &#39;TColumnKey -&gt; Series&lt;&#39;TRowKey,&#39;R&gt;<br />member Frame.GetColumn&lt;&#39;R&gt; : column: &#39;TColumnKey * lookup: Lookup -&gt; Series&lt;&#39;TRowKey,&#39;R&gt;</div>
+<div popover class="fsdocs-tip" id="fs32">val q1Indexed: Frame&lt;string,string&gt;</div>
+<div popover class="fsdocs-tip" id="fs33">val indexRowsString: column: &#39;C -&gt; frame: Frame&lt;&#39;R1,&#39;C&gt; -&gt; Frame&lt;string,&#39;C&gt; (requires equality and equality)<br /><em>&lt;summary&gt;
+ Returns a data frame whose rows are indexed based on the specified column of the original
+ data frame. This function casts (or converts) the column key to values of type `string`
+ (a generic variant that may require some type annotation is `Frame.indexRows`)
+ The specified column is removed from the resulting frame.
+ &lt;/summary&gt;<br />&lt;param name=&quot;frame&quot;&gt;Source data frame whose row index is to be replaced.&lt;/param&gt;<br />&lt;param name=&quot;column&quot;&gt;The name of a column in the original data frame that will be used for the new index. Note that the values in the column need to be unique.&lt;/param&gt;<br />&lt;category&gt;Sorting and index manipulation&lt;/category&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs34">val sliceCols: columns: &#39;C seq -&gt; frame: Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt; (requires equality and equality)<br /><em>&lt;summary&gt;
+ Returns a frame consisting of the specified columns from the original
+ data frame. The function uses exact key matching semantics.
+
+ &amp;lt;category&amp;gt;Accessing frame data and lookup&amp;lt;/category&amp;gt;
+&lt;/summary&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs35">val allRevenue: Frame&lt;string,string&gt;</div>
+<div popover class="fsdocs-tip" id="fs36">Multiple items<br />module List
+
+from Microsoft.FSharp.Collections<br /><br />--------------------<br />type List&lt;&#39;T&gt; =
+  | op_Nil
+  | op_ColonColon of Head: &#39;T * Tail: &#39;T list
+  interface IReadOnlyList&lt;&#39;T&gt;
+  interface IReadOnlyCollection&lt;&#39;T&gt;
+  interface IEnumerable
+  interface IEnumerable&lt;&#39;T&gt;
+  member GetReverseIndex: rank: int * offset: int -&gt; int
+  member GetSlice: startIndex: int option * endIndex: int option -&gt; &#39;T list
+  static member Cons: head: &#39;T * tail: &#39;T list -&gt; &#39;T list
+  member Head: &#39;T
+  member IsEmpty: bool
+  member Item: index: int -&gt; &#39;T with get
+  ...</div>
+<div popover class="fsdocs-tip" id="fs37">val map: mapping: (&#39;T -&gt; &#39;U) -&gt; list: &#39;T list -&gt; &#39;U list</div>
+<div popover class="fsdocs-tip" id="fs38">val f: Frame&lt;int,string&gt;</div>
+<div popover class="fsdocs-tip" id="fs39">val reduce: reduction: (&#39;T -&gt; &#39;T -&gt; &#39;T) -&gt; list: &#39;T list -&gt; &#39;T</div>
+<div popover class="fsdocs-tip" id="fs40">val merge: frame1: Frame&lt;&#39;R,&#39;C&gt; -&gt; frame2: Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt; (requires equality and equality)<br /><em>&lt;summary&gt;
+ Append two data frames with non-overlapping values. The operation takes the union of columns
+ and rows of the source data frames and then unions the values. An exception is thrown when
+ both data frames define value for a column/row location, but the operation succeeds if one
+ frame has a missing value at the location.
+
+ Note that the rows are *not* automatically reindexed to avoid overlaps. This means that when
+ a frame has rows indexed with ordinal numbers, you may need to explicitly reindex the row
+ keys before calling append.
+ &lt;/summary&gt;<br />&lt;param name=&quot;frame1&quot;&gt;First of the two frames to be merged (combined)&lt;/param&gt;<br />&lt;param name=&quot;frame2&quot;&gt;The other frame to be merged (combined) with the first instance&lt;/param&gt;<br />&lt;category&gt;Joining, merging and zipping&lt;/category&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs41">val withGaps: obj</div>
+<div popover class="fsdocs-tip" id="fs42">Multiple items<br />val float: value: &#39;T -&gt; float (requires member op_Explicit)<br /><br />--------------------<br />type float = System.Double<br /><br />--------------------<br />type float&lt;&#39;Measure&gt; =
+  float</div>
+<div popover class="fsdocs-tip" id="fs43">val asFloat: v: obj -&gt; double</div>
+<div popover class="fsdocs-tip" id="fs44">val v: obj</div>
+<div popover class="fsdocs-tip" id="fs45">type obj = System.Object</div>
+<div popover class="fsdocs-tip" id="fs46">Multiple items<br />val double: value: &#39;T -&gt; double (requires member op_Explicit)<br /><br />--------------------<br />type double = System.Double<br /><br />--------------------<br />type double&lt;&#39;Measure&gt; = float&lt;&#39;Measure&gt;</div>
+<div popover class="fsdocs-tip" id="fs47">val d: double</div>
+<div popover class="fsdocs-tip" id="fs48">val i: int</div>
+<div popover class="fsdocs-tip" id="fs49">val nan: float</div>
+<div popover class="fsdocs-tip" id="fs50">val tryReadSheet: path: &#39;a -&gt; name: &#39;b -&gt; &#39;c option</div>
+<div popover class="fsdocs-tip" id="fs51">val path: &#39;a</div>
+<div popover class="fsdocs-tip" id="fs52">val name: &#39;a</div>
+<div popover class="fsdocs-tip" id="fs53">union case Option.Some: Value: &#39;T -&gt; Option&lt;&#39;T&gt;</div>
+<div popover class="fsdocs-tip" id="fs54">union case Option.None: Option&lt;&#39;T&gt;</div>
+<div popover class="fsdocs-tip" id="fs55">val df: obj</div>
+<div popover class="fsdocs-tip" id="fs56">val q1: obj</div>
+<div popover class="fsdocs-tip" id="fs57">val q2: obj</div>
+<div popover class="fsdocs-tip" id="fs58">Multiple items<br />val seq: sequence: &#39;T seq -&gt; &#39;T seq<br /><br />--------------------<br />type &#39;T seq = System.Collections.Generic.IEnumerable&lt;&#39;T&gt;</div>
+<div popover class="fsdocs-tip" id="fs59">val ms: System.IO.MemoryStream</div>
+<div popover class="fsdocs-tip" id="fs60">Multiple items<br />type MemoryStream =
+  inherit Stream
+  new: unit -&gt; unit + 6 overloads
+  member BeginRead: buffer: byte array * offset: int * count: int * callback: AsyncCallback * state: obj -&gt; IAsyncResult
+  member BeginWrite: buffer: byte array * offset: int * count: int * callback: AsyncCallback * state: obj -&gt; IAsyncResult
+  member CopyTo: destination: Stream * bufferSize: int -&gt; unit
+  member CopyToAsync: destination: Stream * bufferSize: int * cancellationToken: CancellationToken -&gt; Task
+  member EndRead: asyncResult: IAsyncResult -&gt; int
+  member EndWrite: asyncResult: IAsyncResult -&gt; unit
+  member Flush: unit -&gt; unit
+  member FlushAsync: cancellationToken: CancellationToken -&gt; Task
+  ...<br /><em>&lt;summary&gt;Creates a stream whose backing store is memory.&lt;/summary&gt;</em><br /><br />--------------------<br />System.IO.MemoryStream() : System.IO.MemoryStream<br />System.IO.MemoryStream(buffer: byte array) : System.IO.MemoryStream<br />System.IO.MemoryStream(capacity: int) : System.IO.MemoryStream<br />System.IO.MemoryStream(buffer: byte array, writable: bool) : System.IO.MemoryStream<br />System.IO.MemoryStream(buffer: byte array, index: int, count: int) : System.IO.MemoryStream<br />System.IO.MemoryStream(buffer: byte array, index: int, count: int, writable: bool) : System.IO.MemoryStream<br />System.IO.MemoryStream(buffer: byte array, index: int, count: int, writable: bool, publiclyVisible: bool) : System.IO.MemoryStream</div>
+<div popover class="fsdocs-tip" id="fs61">val input: obj</div>
+<div popover class="fsdocs-tip" id="fs62">val output: obj</div>
+
+    </div>
+</main>
+<aside id="fsdocs-page-menu">
+    <p id="on-this-page">On this page</p>
+    <ul>
+  <li class="level-1">
+    <a href="#Excel-integration-ExcelReader-amp-ExcelWriter">
+      Excel integration — ExcelReader &amp; ExcelWriter
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Package-setup">
+      Package setup
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Reading-Excel-files">
+      Reading Excel files
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Reading-the-first-worksheet">
+      Reading the first worksheet
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Reading-a-specific-sheet-by-name">
+      Reading a specific sheet by name
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Reading-a-specific-sheet-by-index">
+      Reading a specific sheet by index
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Listing-worksheets">
+      Listing worksheets
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Working-with-the-resulting-frame">
+      Working with the resulting frame
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Accessing-columns">
+      Accessing columns
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Selecting-and-renaming-columns">
+      Selecting and renaming columns
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Combining-sheets">
+      Combining sheets
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Type-coercion-and-missing-values">
+      Type coercion and missing values
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Error-handling">
+      Error handling
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Writing-Excel-files">
+      Writing Excel files
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Writing-a-single-sheet">
+      Writing a single sheet
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Writing-multiple-sheets">
+      Writing multiple sheets
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Writing-to-a-stream">
+      Writing to a stream
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Round-trip-example">
+      Round-trip example
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Live-Excel-integration-Windows-only">
+      Live Excel integration (Windows only)
+    </a>
+  </li>
+</ul>
+</aside>
+<dialog>
+    <input type="search" placeholder="Search docs" />
+    <div class="results">
+        <ul></ul>
+        <p class="empty">Type something to start searching.</p>
+    </div>
+</dialog>
+<script type="module" src="/Deedle/content/fsdocs-tips.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-theme-toggle.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-details-toggle.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-theme.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-search.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-copy-button.js"></script>
+
+</body>
+</html>

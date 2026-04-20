@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="en" data-root="/Deedle/">
+<head>
+    <meta charset="UTF-8">
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="Deedle.Arrow" name="author">
+    <!-- Opengraph properties (https://ogp.me/) -->
+    <meta property="og:site_name" content="Deedle">
+    <meta property="og:title" content="Deedle in C#" />
+    <meta property="og:url" content="/Deedle/csharp.html">
+    <meta property="og:type" content="website" />
+    <!-- Twitter cards (https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/summary-card-with-large-image) -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="/Deedle/">
+    <meta name="twitter:title" content="Deedle in C#">
+    <meta name="description" content="Using Deedle data frames and series from C# with extension methods, LINQ, and static API">
+<meta name="twitter:site" content="Using Deedle data frames and series from C# with extension methods, LINQ, and static API">
+<meta name="og:description" content="Using Deedle data frames and series from C# with extension methods, LINQ, and static API">
+<meta name="keywords" content="C#, cookbook, extension methods, LINQ, interop">
+    <title>Deedle in C# | Deedle</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code&display=swap" rel="stylesheet">
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <link href="/Deedle/img/favicon.ico" rel="icon" sizes="32x32" type="image/png"/>
+    <script type="application/javascript" src="/Deedle/content/fsdocs-theme-set-dark.js"></script>
+    <script type="application/javascript" src="/Deedle/content/fsdocs-details-set-expanded.js"></script>
+    <link href="/Deedle/content/fsdocs-default.css" rel="stylesheet" type="text/css"/>
+    <link href="/Deedle/content/fsdocs-theme.css" rel="stylesheet" type="text/css"/>
+    
+    
+</head>
+<body class="content">
+<header>
+    <div class="start">
+        <div id="menu-toggle">
+            <iconify-icon class="icon closed" height="22" icon="eva:menu-fill" width="22"></iconify-icon>
+            <iconify-icon class="icon open" height="22" icon="mi:close" width="22"></iconify-icon>
+            <input type="checkbox" name="mobile-menu" />
+            <ul class="menu">
+                <li class="nav-header">Links</li>
+                <li class="license-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fslaborg/Deedle/blob/master/LICENSE.md">License</a>
+                </li>
+                <li class="release-notes-menu-item builtin-menu-item nav-item"><a class="nav-link"
+                                        href="https://github.com/fslaborg/Deedle/blob/master/RELEASE_NOTES.md">Release
+                    Notes</a></li>
+                <li class="repository-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fslaborg/Deedle/">Source
+                    Repository</a></li>
+                <li class="nav-header active">
+  Guides
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/tutorial.html">
+    Deedle in 10 minutes
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/frame.html">
+    Data frame features
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/series.html">
+    Series and time series features
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/stats.html">
+    Calculating frame and series statistics
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/missing.html">
+    Handling missing values
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/joining.html">
+    Joining, merging and appending frames
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/lazysource.html">
+    Delay-loaded series
+  </a>
+</li>             
+<li class="nav-item active">
+  <a class="nav-link" href="/Deedle/csharp.html">
+    Deedle in C#
+  </a>
+</li>             
+<li class="nav-header ">
+  Integrations
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/excel.html">
+    Excel integration — ExcelReader &amp; ExcelWriter
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/arrow.html">
+    Deedle.Arrow — Apache Arrow and Feather integration
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/parquet.html">
+    Deedle.Parquet — Apache Parquet integration
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/math.html">
+    Deedle.MathNetNumerics — MathNet.Numerics integration
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/dotnetinteractive.html">
+    Deedle.DotNetInteractive — .NET Interactive notebook formatting
+  </a>
+</li>             
+<li class="nav-header ">
+  Design
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/design.html">
+    Design notes
+  </a>
+</li>
+                <li class="nav-header">
+  API Reference
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="/Deedle/reference/index.html">
+    All Namespaces
+  </a>
+</li>
+            </ul>
+        </div>
+        <a href="/Deedle/">
+            <img alt="Logo" src="/Deedle/img/logo.png">
+            <strong>Deedle</strong>
+        </a>
+    </div>
+    <div class="end">
+        <a href="https://github.com/fslaborg/Deedle/" target="_blank">
+            <iconify-icon icon="uil:github" width="26" height="26"></iconify-icon>
+        </a>
+        <iconify-icon id="search-btn" icon="carbon:search" class="search" width="24" height="24"></iconify-icon>
+        <fsdocs-theme-toggle></fsdocs-theme-toggle>
+    </div>
+</header>
+<aside id="fsdocs-main-menu">
+    <ul class="menu">
+        <li class="nav-header">Links</li>
+        <li class="license-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fslaborg/Deedle/blob/master/LICENSE.md">License</a>
+        </li>
+        <li class="release-notes-menu-item builtin-menu-item nav-item"><a class="nav-link"
+                                href="https://github.com/fslaborg/Deedle/blob/master/RELEASE_NOTES.md">Release
+            Notes</a></li>
+        <li class="repository-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fslaborg/Deedle/">Source
+            Repository</a></li>
+        <li class="nav-header active">
+  Guides
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/tutorial.html">
+    Deedle in 10 minutes
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/frame.html">
+    Data frame features
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/series.html">
+    Series and time series features
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/stats.html">
+    Calculating frame and series statistics
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/missing.html">
+    Handling missing values
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/joining.html">
+    Joining, merging and appending frames
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/lazysource.html">
+    Delay-loaded series
+  </a>
+</li>             
+<li class="nav-item active">
+  <a class="nav-link" href="/Deedle/csharp.html">
+    Deedle in C#
+  </a>
+</li>             
+<li class="nav-header ">
+  Integrations
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/excel.html">
+    Excel integration — ExcelReader &amp; ExcelWriter
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/arrow.html">
+    Deedle.Arrow — Apache Arrow and Feather integration
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/parquet.html">
+    Deedle.Parquet — Apache Parquet integration
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/math.html">
+    Deedle.MathNetNumerics — MathNet.Numerics integration
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/dotnetinteractive.html">
+    Deedle.DotNetInteractive — .NET Interactive notebook formatting
+  </a>
+</li>             
+<li class="nav-header ">
+  Design
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/design.html">
+    Design notes
+  </a>
+</li>
+        <li class="nav-header">
+  API Reference
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="/Deedle/reference/index.html">
+    All Namespaces
+  </a>
+</li>
+    </ul>
+</aside>
+<main>
+    <div id="content">
+        
+<h1><a name="Deedle-in-C" class="anchor" href="#Deedle-in-C">Deedle in C#</a></h1>
+<p>Deedle is an F# library, but it exposes a fully usable C# API through .NET standard
+interfaces and extension methods. This page is a practical reference for C# developers.</p>
+<p><strong>Installation</strong> — add the NuGet package:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="id">dotnet</span> <span class="id">add</span> <span class="id">package</span> <span class="id">Deedle</span>
+</code></pre>
+<p>Then add the using directive:</p>
+<table class="pre"><tr><td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="k">using</span> Deedle;
+</code></pre></td></tr></table>
+<hr />
+<h2><a name="Creating-a-Series" class="anchor" href="#Creating-a-Series">Creating a Series</a></h2>
+<p><code>Series&lt;TKey, TValue&gt;</code> is an ordered mapping from keys to values (with optional missing values).</p>
+<h3><a name="SeriesBuilder-collection-initialiser-syntax" class="anchor" href="#SeriesBuilder-collection-initialiser-syntax">SeriesBuilder — collection-initialiser syntax</a></h3>
+<table class="pre"><tr><td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="c">// Integer keys, double values</span>
+<span class="k">var</span> prices <span class="o">=</span> <span class="k">new</span> SeriesBuilder&lt;<span class="k">int</span>, <span class="k">double</span>&gt;
+{
+    { <span class="n">0</span>, <span class="n">100.0</span> },
+    { <span class="n">1</span>, <span class="n">102.5</span> },
+    { <span class="n">2</span>, <span class="n">101.8</span> }
+}.Series;
+
+<span class="c">// DateTime keys</span>
+<span class="k">var</span> ts <span class="o">=</span> <span class="k">new</span> SeriesBuilder&lt;DateTime, <span class="k">double</span>&gt;
+{
+    { <span class="k">new</span> DateTime(<span class="n">2024</span>, <span class="n">1</span>, <span class="n">1</span>), <span class="n">10.0</span> },
+    { <span class="k">new</span> DateTime(<span class="n">2024</span>, <span class="n">1</span>, <span class="n">2</span>), <span class="n">11.5</span> },
+    { <span class="k">new</span> DateTime(<span class="n">2024</span>, <span class="n">1</span>, <span class="n">3</span>), <span class="n">9.8</span> }
+}.Series;
+</code></pre></td></tr></table>
+<h3><a name="From-IEnumerable" class="anchor" href="#From-IEnumerable">From IEnumerable</a></h3>
+<table class="pre"><tr><td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="k">using</span> System.Linq;
+
+<span class="c">// KeyValuePair sequence → series</span>
+<span class="k">var</span> series <span class="o">=</span> Enumerable.Range(<span class="n">0</span>, <span class="n">5</span>)
+    .Select(i <span class="o">=</span><span class="o">&gt;</span> KeyValue.Create(i, i <span class="o">*</span> i))
+    .ToSeries();
+
+<span class="c">// Plain value sequence → ordinal (0-based) series</span>
+<span class="k">var</span> ordinal <span class="o">=</span> <span class="k">new</span>[] { <span class="n">1.0</span>, <span class="n">2.0</span>, <span class="n">3.0</span> }.ToOrdinalSeries();
+</code></pre></td></tr></table>
+<hr />
+<h2><a name="Creating-a-Frame" class="anchor" href="#Creating-a-Frame">Creating a Frame</a></h2>
+<p><code>Frame&lt;TRowKey, TColumnKey&gt;</code> is a table of series that all share the same row index.</p>
+<h3><a name="From-CSV" class="anchor" href="#From-CSV">From CSV</a></h3>
+<table class="pre"><tr><td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="c">// Load from file (types are inferred)</span>
+<span class="k">var</span> frame <span class="o">=</span> Frame.ReadCsv(<span class="s">"data.csv"</span>);
+
+<span class="c">// Limit type inference to first 100 rows (faster for large files)</span>
+<span class="k">var</span> frame<span class="n">2</span> <span class="o">=</span> Frame.ReadCsv(<span class="s">"data.csv"</span>, inferRows: <span class="n">100</span>);
+
+<span class="c">// Load from an open stream (e.g., from HttpClient)</span>
+<span class="k">using</span> <span class="k">var</span> stream <span class="o">=</span> File.OpenRead(<span class="s">"data.csv"</span>);
+<span class="k">var</span> frame<span class="n">3</span> <span class="o">=</span> Frame.ReadCsv(stream);
+</code></pre></td></tr></table>
+<h3><a name="From-anonymous-objects-records" class="anchor" href="#From-anonymous-objects-records">From anonymous objects / records</a></h3>
+<table class="pre"><tr><td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="k">var</span> df <span class="o">=</span> Frame.FromRecords(<span class="k">new</span>[]
+{
+    <span class="k">new</span> { Date <span class="o">=</span> <span class="k">new</span> DateTime(<span class="n">2024</span>, <span class="n">1</span>, <span class="n">1</span>), Open <span class="o">=</span> <span class="n">100.0</span>, Close <span class="o">=</span> <span class="n">102.0</span> },
+    <span class="k">new</span> { Date <span class="o">=</span> <span class="k">new</span> DateTime(<span class="n">2024</span>, <span class="n">1</span>, <span class="n">2</span>), Open <span class="o">=</span> <span class="n">102.0</span>, Close <span class="o">=</span> <span class="n">101.5</span> },
+});
+<span class="c">// Column keys are taken from property names: "Date", "Open", "Close"</span>
+</code></pre></td></tr></table>
+<h3><a name="From-a-dictionary-of-series" class="anchor" href="#From-a-dictionary-of-series">From a dictionary of series</a></h3>
+<table class="pre"><tr><td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="k">var</span> df <span class="o">=</span> Frame.FromColumns(<span class="k">new</span> Dictionary&lt;<span class="k">string</span>, Series&lt;<span class="k">int</span>, <span class="k">double</span>&gt;<span class="o">&gt;</span>
+{
+    { <span class="s">"Open"</span>,  <span class="k">new</span> SeriesBuilder&lt;<span class="k">int</span>, <span class="k">double</span>&gt; { { <span class="n">0</span>, <span class="n">100.0</span> }, { <span class="n">1</span>, <span class="n">102.0</span> } }.Series },
+    { <span class="s">"Close"</span>, <span class="k">new</span> SeriesBuilder&lt;<span class="k">int</span>, <span class="k">double</span>&gt; { { <span class="n">0</span>, <span class="n">102.0</span> }, { <span class="n">1</span>, <span class="n">101.5</span> } }.Series },
+});
+</code></pre></td></tr></table>
+<h3><a name="Using-FrameBuilder-preserves-column-order" class="anchor" href="#Using-FrameBuilder-preserves-column-order">Using FrameBuilder (preserves column order)</a></h3>
+<p><code>FrameBuilder.Columns</code> preserves insertion order of columns, unlike some dictionary-based
+approaches.</p>
+<table class="pre"><tr><td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="k">var</span> builder <span class="o">=</span> <span class="k">new</span> FrameBuilder.Columns&lt;<span class="k">int</span>, <span class="k">string</span>&gt;();
+builder.Add(<span class="s">"Open"</span>,   <span class="k">new</span>[] { <span class="n">100.0</span>, <span class="n">102.0</span>, <span class="n">101.5</span> }.ToOrdinalSeries());
+builder.Add(<span class="s">"High"</span>,   <span class="k">new</span>[] { <span class="n">103.0</span>, <span class="n">104.5</span>, <span class="n">102.0</span> }.ToOrdinalSeries());
+builder.Add(<span class="s">"Close"</span>,  <span class="k">new</span>[] { <span class="n">102.0</span>, <span class="n">101.5</span>, <span class="n">100.8</span> }.ToOrdinalSeries());
+<span class="k">var</span> ohlc <span class="o">=</span> builder.Frame;
+</code></pre></td></tr></table>
+<hr />
+<h2><a name="Accessing-Columns" class="anchor" href="#Accessing-Columns">Accessing Columns</a></h2>
+<h3><a name="Typed-column-access" class="anchor" href="#Typed-column-access">Typed column access — <code>GetColumn&lt;T&gt;</code></a></h3>
+<table class="pre"><tr><td class="snippet"><pre class="fssnip highlighted"><code lang="csharp">Series&lt;<span class="k">int</span>, <span class="k">double</span>&gt; opens <span class="o">=</span> df.GetColumn&lt;<span class="k">double</span>&gt;(<span class="s">"Open"</span>);
+<span class="k">double</span> firstOpen <span class="o">=</span> opens[<span class="n">0</span>];
+</code></pre></td></tr></table>
+<h3><a name="Slice-multiple-columns" class="anchor" href="#Slice-multiple-columns">Slice multiple columns — <code>frame.Columns[...]</code></a></h3>
+<p><code>frame.Columns</code> is a series of columns. Use the indexer to select one or more columns
+by key. This returns a new frame containing only those columns.</p>
+<table class="pre"><tr><td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="c">// Single column → returns a Frame with one column</span>
+<span class="k">var</span> oneCol <span class="o">=</span> df.Columns[<span class="k">new</span>[] { <span class="s">"Open"</span> }];
+
+<span class="c">// Multiple columns → new frame with a subset of columns</span>
+<span class="k">var</span> subset <span class="o">=</span> df.Columns[<span class="k">new</span>[] { <span class="s">"Open"</span>, <span class="s">"Close"</span> }];
+</code></pre></td></tr></table>
+<blockquote>
+<p><strong>Tip</strong>: <code>frame.Columns[listOfKeys]</code> is the idiomatic way to dice a frame by columns,
+analogous to <code>frame.Rows[listOfKeys]</code> for rows. The operation lives on <code>Columns</code> (a
+property of the frame), not directly on the frame itself — that's the key mental model.</p>
+</blockquote>
+<h3><a name="Dynamic-column-access" class="anchor" href="#Dynamic-column-access">Dynamic column access</a></h3>
+<p>Cast the frame to <code>dynamic</code> to access columns by name as properties:</p>
+<table class="pre"><tr><td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="k">dynamic</span> dfd <span class="o">=</span> df;
+Series&lt;<span class="k">int</span>, <span class="k">double</span>&gt; closeSeries <span class="o">=</span> dfd.Close;
+<span class="k">double</span> price <span class="o">=</span> dfd.Close[<span class="n">1</span>];   <span class="c">// get value at row key 1</span>
+
+<span class="c">// Add a new column dynamically</span>
+dfd.Spread <span class="o">=</span> dfd.High <span class="o">-</span> dfd.Low;
+</code></pre></td></tr></table>
+<hr />
+<h2><a name="Accessing-Rows" class="anchor" href="#Accessing-Rows">Accessing Rows</a></h2>
+<p><code>frame.Rows</code> is a series of rows. Each row is itself an <code>ObjectSeries&lt;TColumnKey&gt;</code>.</p>
+<h3><a name="Single-row-by-key" class="anchor" href="#Single-row-by-key">Single row by key</a></h3>
+<table class="pre"><tr><td class="snippet"><pre class="fssnip highlighted"><code lang="csharp">ObjectSeries&lt;<span class="k">string</span>&gt; row<span class="n">0</span> <span class="o">=</span> df.Rows[<span class="n">0</span>];
+
+<span class="c">// Get a typed value from the row</span>
+<span class="k">double</span> openValue <span class="o">=</span> row<span class="n">0</span>.GetAs&lt;<span class="k">double</span>&gt;(<span class="s">"Open"</span>);
+</code></pre></td></tr></table>
+<h3><a name="Multiple-rows-by-key-list" class="anchor" href="#Multiple-rows-by-key-list">Multiple rows by key list</a></h3>
+<table class="pre"><tr><td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="c">// Returns a new Frame containing only the requested rows</span>
+<span class="k">var</span> subset <span class="o">=</span> df.Rows[<span class="k">new</span> <span class="k">int</span>[] { <span class="n">0</span>, <span class="n">1</span>, <span class="n">2</span> }];
+Console.WriteLine(subset.RowCount); <span class="c">// 3</span>
+</code></pre></td></tr></table>
+<h3><a name="Slicing-rows-by-range-ordered-index-required" class="anchor" href="#Slicing-rows-by-range-ordered-index-required">Slicing rows by range (ordered index required)</a></h3>
+<p>When the row index is ordered, you can slice with a range using <code>Between</code>:</p>
+<table class="pre"><tr><td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="c">// On a DateTime-indexed frame, get rows in January 2024</span>
+<span class="k">var</span> jan <span class="o">=</span> df.Rows.Between(<span class="k">new</span> DateTime(<span class="n">2024</span>, <span class="n">1</span>, <span class="n">1</span>), <span class="k">new</span> DateTime(<span class="n">2024</span>, <span class="n">1</span>, <span class="n">31</span>));
+</code></pre></td></tr></table>
+<hr />
+<h2><a name="Adding-and-Modifying-Columns" class="anchor" href="#Adding-and-Modifying-Columns">Adding and Modifying Columns</a></h2>
+<p><code>Frame</code> is mostly immutable; <code>AddColumn</code> returns a new frame. The only mutating
+operation is adding a column via <code>dynamic</code> assignment or <code>AddColumn</code>.</p>
+<table class="pre"><tr><td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="c">// AddColumn returns void — it mutates the frame in-place</span>
+df.AddColumn(<span class="s">"Spread"</span>, df.GetColumn&lt;<span class="k">double</span>&gt;(<span class="s">"High"</span>) <span class="o">-</span> df.GetColumn&lt;<span class="k">double</span>&gt;(<span class="s">"Low"</span>));
+
+<span class="c">// Equivalent using dynamic</span>
+<span class="k">dynamic</span> dfd <span class="o">=</span> df;
+dfd.Spread <span class="o">=</span> dfd.High <span class="o">-</span> dfd.Low;
+</code></pre></td></tr></table>
+<hr />
+<h2><a name="Missing-Values" class="anchor" href="#Missing-Values">Missing Values</a></h2>
+<p>Deedle uses <code>OptionalValue&lt;T&gt;</code> (a discriminated union) to represent missing values
+rather than <code>null</code> or <code>NaN</code>. When a <code>double.NaN</code> is encountered in CSV or during
+arithmetic, it is stored as a missing value.</p>
+<table class="pre"><tr><td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="c">// OptionalValue.Missing represents a missing entry</span>
+<span class="k">var</span> withMissing <span class="o">=</span> <span class="k">new</span> SeriesBuilder&lt;<span class="k">int</span>, <span class="k">double</span>&gt;
+{
+    { <span class="n">0</span>, <span class="n">1.0</span> },
+    { <span class="n">2</span>, <span class="n">3.0</span> }   <span class="c">// key 1 is absent → missing when aligned with another series</span>
+}.Series;
+
+<span class="c">// Check for missing values</span>
+<span class="k">foreach</span> (<span class="k">var</span> obs <span class="k">in</span> withMissing.Observations)
+    Console.WriteLine($<span class="s">"{obs.Key} → {obs.Value}"</span>);
+
+<span class="c">// Fill missing values</span>
+<span class="k">var</span> filled <span class="o">=</span> withMissing.FillMissing(<span class="n">0.0</span>);   <span class="c">// constant fill</span>
+<span class="k">var</span> filled<span class="n">2</span> <span class="o">=</span> withMissing.FillMissing(Direction.Forward);  <span class="c">// forward-fill</span>
+
+<span class="c">// Drop rows where ALL column values are missing</span>
+<span class="k">var</span> clean <span class="o">=</span> FrameModule.DropSparseRows(df);
+</code></pre></td></tr></table>
+<hr />
+<h2><a name="Statistics" class="anchor" href="#Statistics">Statistics</a></h2>
+<p><code>Series</code> exposes convenient extension methods, and <code>Stats</code> provides richer analysis.</p>
+<table class="pre"><tr><td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="k">var</span> s <span class="o">=</span> <span class="k">new</span>[] { <span class="n">1.0</span>, <span class="n">2.0</span>, <span class="n">3.0</span>, <span class="n">4.0</span>, <span class="n">5.0</span> }.ToOrdinalSeries();
+
+<span class="k">double</span> total  <span class="o">=</span> s.Sum();          <span class="c">// 15.0</span>
+<span class="k">double</span> mean   <span class="o">=</span> s.Mean();         <span class="c">// 3.0</span>
+<span class="k">double</span> min    <span class="o">=</span> s.Min();          <span class="c">// 1.0</span>
+<span class="k">double</span> max    <span class="o">=</span> s.Max();          <span class="c">// 5.0</span>
+
+<span class="c">// Moving window statistics</span>
+Series&lt;<span class="k">int</span>, <span class="k">double</span>&gt; movMax<span class="n">3</span> <span class="o">=</span> Stats.movingMax(<span class="n">3</span>, s);
+Series&lt;<span class="k">int</span>, <span class="k">double</span>&gt; movMin<span class="n">3</span> <span class="o">=</span> Stats.movingMin(<span class="n">3</span>, s);
+
+<span class="c">// Expanding (cumulative) statistics</span>
+Series&lt;<span class="k">int</span>, <span class="k">double</span>&gt; expMax <span class="o">=</span> Stats.expandingMax(s);
+Series&lt;<span class="k">int</span>, <span class="k">double</span>&gt; expMin <span class="o">=</span> Stats.expandingMin(s);
+</code></pre></td></tr></table>
+<h3><a name="Column-level-statistics-on-a-frame" class="anchor" href="#Column-level-statistics-on-a-frame">Column-level statistics on a frame</a></h3>
+<table class="pre"><tr><td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="c">// Sum of each column — returns Series&lt;TColumnKey, double&gt;</span>
+<span class="k">var</span> colSums <span class="o">=</span> df.Sum();
+
+<span class="c">// Mean of each column</span>
+<span class="k">var</span> colMeans <span class="o">=</span> df.Mean();
+</code></pre></td></tr></table>
+<hr />
+<h2><a name="Row-wise-Aggregation" class="anchor" href="#Row-wise-Aggregation">Row-wise Aggregation</a></h2>
+<p>Use <code>MapRows</code> to transform each row into a scalar value:</p>
+<table class="pre"><tr><td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="c">// Compute the mid-price for each row</span>
+<span class="k">var</span> midPrices <span class="o">=</span> df.MapRows((key, row) <span class="o">=</span><span class="o">&gt;</span>
+    (row.GetAs&lt;<span class="k">double</span>&gt;(<span class="s">"Open"</span>) <span class="o">+</span> row.GetAs&lt;<span class="k">double</span>&gt;(<span class="s">"Close"</span>)) <span class="o">/</span> <span class="n">2.0</span>);
+<span class="c">// midPrices is Series&lt;TRowKey, double&gt;</span>
+</code></pre></td></tr></table>
+<p>Use <code>MapCols</code> to transform each column (returns a new frame with the same structure):</p>
+<table class="pre"><tr><td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="c">// Normalise each column to [0,1]</span>
+<span class="k">var</span> normalised <span class="o">=</span> df.MapCols((colKey, col) <span class="o">=</span><span class="o">&gt;</span>
+{
+    <span class="k">var</span> doubles <span class="o">=</span> col.As&lt;<span class="k">double</span>&gt;();
+    <span class="k">var</span> mn <span class="o">=</span> doubles.Min();
+    <span class="k">var</span> mx <span class="o">=</span> doubles.Max();
+    <span class="k">return</span> (ObjectSeries&lt;<span class="k">int</span>&gt;)(<span class="k">object</span>)(doubles <span class="o">-</span> mn) <span class="o">/</span> (mx <span class="o">-</span> mn);
+});
+</code></pre></td></tr></table>
+<h3><a name="Row-wise-mean-with-missing-values" class="anchor" href="#Row-wise-mean-with-missing-values">Row-wise mean with missing values</a></h3>
+<p>Missing values are automatically skipped during aggregation:</p>
+<table class="pre"><tr><td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="c">// Average across columns for each row, ignoring missing values</span>
+<span class="k">var</span> rowMeans <span class="o">=</span> df.Rows.Select(kvp <span class="o">=</span><span class="o">&gt;</span> kvp.Value.As&lt;<span class="k">double</span>&gt;().Mean());
+</code></pre></td></tr></table>
+<hr />
+<h2><a name="Joining-and-Merging-Frames" class="anchor" href="#Joining-and-Merging-Frames">Joining and Merging Frames</a></h2>
+<table class="pre"><tr><td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="c">// Inner join (keeps only rows present in both frames)</span>
+<span class="k">var</span> inner <span class="o">=</span> left.Join(right, JoinKind.Inner);
+
+<span class="c">// Outer join (keeps all rows, fills missing where absent)</span>
+<span class="k">var</span> outer <span class="o">=</span> left.Join(right, JoinKind.Outer);
+
+<span class="c">// Left join</span>
+<span class="k">var</span> leftJoin <span class="o">=</span> left.Join(right, JoinKind.Left);
+</code></pre></td></tr></table>
+<p>When both frames have columns with the same name, rename them first to avoid key conflicts:</p>
+<table class="pre"><tr><td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="c">// Rename columns before joining</span>
+<span class="k">var</span> leftRen  <span class="o">=</span> FrameModule.IndexColsWith(left,  <span class="k">new</span>[] { <span class="s">"L_Open"</span>, <span class="s">"L_Close"</span> });
+<span class="k">var</span> rightRen <span class="o">=</span> FrameModule.IndexColsWith(right, <span class="k">new</span>[] { <span class="s">"R_Open"</span>, <span class="s">"R_Close"</span> });
+<span class="k">var</span> joined   <span class="o">=</span> leftRen.Join(rightRen, JoinKind.Inner);
+</code></pre></td></tr></table>
+<hr />
+<h2><a name="Time-Series-Windowing-and-Chunking" class="anchor" href="#Time-Series-Windowing-and-Chunking">Time Series — Windowing and Chunking</a></h2>
+<h3><a name="WindowWhile-sliding-windows-defined-by-a-key-predicate" class="anchor" href="#WindowWhile-sliding-windows-defined-by-a-key-predicate">WindowWhile — sliding windows defined by a key predicate</a></h3>
+<table class="pre"><tr><td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="c">// Build a time-stamped series</span>
+<span class="k">var</span> ts <span class="o">=</span> <span class="k">new</span> SeriesBuilder&lt;DateTime, <span class="k">double</span>&gt;
+{
+    { <span class="k">new</span> DateTime(<span class="n">2024</span>, <span class="n">1</span>,  <span class="n">1</span>), <span class="n">100.0</span> },
+    { <span class="k">new</span> DateTime(<span class="n">2024</span>, <span class="n">1</span>,  <span class="n">2</span>), <span class="n">101.0</span> },
+    { <span class="k">new</span> DateTime(<span class="n">2024</span>, <span class="n">1</span>, <span class="n">10</span>), <span class="n">102.0</span> },
+    { <span class="k">new</span> DateTime(<span class="n">2024</span>, <span class="n">1</span>, <span class="n">11</span>), <span class="n">103.0</span> },
+}.Series;
+
+<span class="c">// A window spans keys within 3 days of the start key</span>
+<span class="k">var</span> windows <span class="o">=</span> ts.WindowWhile((k<span class="n">1</span>, k<span class="n">2</span>) <span class="o">=</span><span class="o">&gt;</span> (k<span class="n">2</span> <span class="o">-</span> k<span class="n">1</span>).TotalDays <span class="o">&lt;</span> <span class="n">3</span>);
+<span class="c">// windows[new DateTime(2024,1,1)] → series with Jan-1 and Jan-2</span>
+
+<span class="c">// WindowWhileInto — aggregate each window immediately</span>
+<span class="k">var</span> rollingMean <span class="o">=</span> ts.WindowWhileInto(
+    (k<span class="n">1</span>, k<span class="n">2</span>) <span class="o">=</span><span class="o">&gt;</span> (k<span class="n">2</span> <span class="o">-</span> k<span class="n">1</span>).TotalDays <span class="o">&lt;</span> <span class="n">3</span>,
+    window <span class="o">=</span><span class="o">&gt;</span> window.Mean());
+</code></pre></td></tr></table>
+<h3><a name="ChunkWhile-non-overlapping-partitions" class="anchor" href="#ChunkWhile-non-overlapping-partitions">ChunkWhile — non-overlapping partitions</a></h3>
+<table class="pre"><tr><td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="c">// Partition the series into contiguous chunks where each step &lt; 5 days</span>
+<span class="k">var</span> chunks <span class="o">=</span> ts.ChunkWhile((k<span class="n">1</span>, k<span class="n">2</span>) <span class="o">=</span><span class="o">&gt;</span> (k<span class="n">2</span> <span class="o">-</span> k<span class="n">1</span>).TotalDays <span class="o">&lt;</span> <span class="n">5</span>);
+<span class="c">// chunks[new DateTime(2024,1,1)] → series with Jan-1, Jan-2</span>
+<span class="c">// chunks[new DateTime(2024,1,10)] → series with Jan-10, Jan-11</span>
+
+<span class="c">// ChunkWhileInto — aggregate each chunk immediately</span>
+<span class="k">var</span> chunkSums <span class="o">=</span> ts.ChunkWhileInto(
+    (k<span class="n">1</span>, k<span class="n">2</span>) <span class="o">=</span><span class="o">&gt;</span> (k<span class="n">2</span> <span class="o">-</span> k<span class="n">1</span>).TotalDays <span class="o">&lt;</span> <span class="n">5</span>,
+    chunk <span class="o">=</span><span class="o">&gt;</span> chunk.Sum());
+</code></pre></td></tr></table>
+<h3><a name="PairwiseWith-combine-consecutive-pairs" class="anchor" href="#PairwiseWith-combine-consecutive-pairs">PairwiseWith — combine consecutive pairs</a></h3>
+<table class="pre"><tr><td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="c">// Day-over-day changes</span>
+<span class="k">var</span> changes <span class="o">=</span> ts.PairwiseWith((key, prev, curr) <span class="o">=</span><span class="o">&gt;</span> curr <span class="o">-</span> prev);
+</code></pre></td></tr></table>
+<hr />
+<h2><a name="Projections-and-Filtering" class="anchor" href="#Projections-and-Filtering">Projections and Filtering</a></h2>
+<table class="pre"><tr><td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="c">// Filter to rows where Open &gt; 101</span>
+<span class="k">var</span> highOpen <span class="o">=</span> df.Where(kvp <span class="o">=</span><span class="o">&gt;</span> kvp.Value.GetAs&lt;<span class="k">double</span>&gt;(<span class="s">"Open"</span>) <span class="o">&gt;</span> <span class="n">101.0</span>);
+
+<span class="c">// Select/transform values in a typed series</span>
+<span class="k">var</span> opens <span class="o">=</span> df.GetColumn&lt;<span class="k">double</span>&gt;(<span class="s">"Open"</span>);
+<span class="k">var</span> scaled <span class="o">=</span> opens.Select(kvp <span class="o">=</span><span class="o">&gt;</span> kvp.Value <span class="o">*</span> <span class="n">100.0</span>);
+</code></pre></td></tr></table>
+<hr />
+<h2><a name="Mapping-Frame-Rows-to-Typed-Objects" class="anchor" href="#Mapping-Frame-Rows-to-Typed-Objects">Mapping Frame Rows to Typed Objects — <code>GetRowsAs&lt;T&gt;</code></a></h2>
+<p>When you want to work with strongly-typed row objects, define a C# interface whose
+property names match the frame's column names:</p>
+<table class="pre"><tr><td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="k">public</span> <span class="k">interface</span> IPrice
+{
+    <span class="k">double</span> Open  { get; }
+    <span class="k">double</span> High  { get; }
+    <span class="k">double</span> Low   { get; }
+    <span class="k">double</span> Close { get; }
+}
+
+<span class="k">var</span> rows <span class="o">=</span> ohlcFrame.GetRowsAs&lt;IPrice&gt;();
+<span class="k">double</span> firstOpen <span class="o">=</span> rows[<span class="n">0</span>].Open;
+</code></pre></td></tr></table>
+<p><code>GetRowsAs&lt;T&gt;</code> creates a proxy that reads from the underlying frame row. Only
+<code>get</code>-only properties are bound; properties with setters are ignored on the read path.</p>
+<hr />
+<h2><a name="Converting-to-Arrays-and-Collections" class="anchor" href="#Converting-to-Arrays-and-Collections">Converting to Arrays and Collections</a></h2>
+<table class="pre"><tr><td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="c">// All present (non-missing) values</span>
+IEnumerable&lt;<span class="k">double</span>&gt; vals <span class="o">=</span> df.GetColumn&lt;<span class="k">double</span>&gt;(<span class="s">"Open"</span>).GetAllValues()
+                              .Select(opt <span class="o">=</span><span class="o">&gt;</span> opt.Value);
+
+<span class="c">// Round-trip to/from a 2-D array (missing values fill with the default)</span>
+<span class="k">double</span>[,] arr <span class="o">=</span> df.ToArray<span class="n">2</span>D&lt;<span class="k">double</span>&gt;();
+<span class="k">var</span> df<span class="n">2</span> <span class="o">=</span> Frame.FromArray<span class="n">2</span>D(arr);
+
+<span class="c">// Convert to a list of KeyValuePair observations</span>
+<span class="k">var</span> obs <span class="o">=</span> df.GetColumn&lt;<span class="k">double</span>&gt;(<span class="s">"Open"</span>).Observations.ToList();
+</code></pre></td></tr></table>
+<hr />
+<h2><a name="Practical-Example-Titanic-Survival-Rate" class="anchor" href="#Practical-Example-Titanic-Survival-Rate">Practical Example — Titanic Survival Rate</a></h2>
+<table class="pre"><tr><td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="k">var</span> titanic <span class="o">=</span> Frame.ReadCsv(<span class="s">"titanic.csv"</span>);
+
+<span class="c">// How many passengers in each ticket class survived?</span>
+<span class="k">var</span> survived <span class="o">=</span> titanic.GetColumn&lt;<span class="k">bool</span>&gt;(<span class="s">"Survived"</span>);
+<span class="k">var</span> pclass   <span class="o">=</span> titanic.GetColumn&lt;<span class="k">int</span>&gt;(<span class="s">"Pclass"</span>);
+
+<span class="c">// Group survived flags by ticket class</span>
+<span class="k">var</span> byClass <span class="o">=</span> survived.Zip&lt;<span class="k">bool</span>, <span class="k">int</span>, <span class="k">string</span>&gt;(pclass,
+    (s, c) <span class="o">=</span><span class="o">&gt;</span> $<span class="s">"Class {c}: {(s ? "</span>survived<span class="s">" : "</span>died<span class="s">")}"</span>);
+
+<span class="c">// Print distinct outcomes and their counts</span>
+<span class="k">foreach</span> (<span class="k">var</span> g <span class="k">in</span> byClass.GetAllValues().GroupBy(v <span class="o">=</span><span class="o">&gt;</span> v.Value))
+    Console.WriteLine($<span class="s">"{g.Key}: {g.Count()}"</span>);
+</code></pre></td></tr></table>
+<hr />
+<h2><a name="Tips" class="anchor" href="#Tips">Tips</a></h2>
+<ul>
+<li>
+<p><strong>Frame is mostly immutable</strong> — operations like <code>Join</code>, <code>Where</code>, and <code>Select</code> return
+new frames. <code>AddColumn</code> (and dynamic column assignment) are the only in-place mutations.</p>
+</li>
+<li>
+<p>*<em><code>frame.Rows[...]</code> and <code>frame.Columns[...]</code>*</em> accept a single key, a <code>IList&lt;TKey&gt;</code>,
+or (for ordered indices) a range from <code>.Between(lo, hi)</code>. The operation lives on the
+<code>Rows</code> / <code>Columns</code> property, not directly on the frame — which can be surprising at first.</p>
+</li>
+<li>
+<p><strong>Type inference for CSV</strong> — <code>Frame.ReadCsv</code> infers column types from the data. Pass
+<code>inferRows:</code> to limit how many rows are scanned. For very large files, specifying
+<code>schema:</code> explicitly is faster and avoids ambiguity.</p>
+</li>
+<li>
+<p><strong>Missing values and <code>double.NaN</code></strong> — when reading CSVs, empty cells and <code>NaN</code> literals
+become missing values. Use <code>FillMissing</code> to replace them before arithmetic to avoid
+<code>NaN</code> propagation.</p>
+</li>
+<li>
+<p><strong>Dynamic frame access</strong> — casting a frame to <code>dynamic</code> lets you use <code>dfd.ColumnName</code>
+syntax. This is convenient for interactive code; prefer <code>GetColumn&lt;T&gt;</code> in production
+code for type safety.</p>
+</li>
+</ul>
+<hr />
+<h2><a name="Reading-Excel-files" class="anchor" href="#Reading-Excel-files">Reading Excel files</a></h2>
+<p>Add the <code>Deedle.ExcelReader</code> package:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="id">dotnet</span> <span class="id">add</span> <span class="id">package</span> <span class="id">Deedle</span><span class="pn">.</span><span class="id">ExcelReader</span>
+</code></pre>
+<table class="pre"><tr><td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="k">using</span> Deedle;
+<span class="k">using</span> Deedle.ExcelReader;
+</code></pre></td></tr></table>
+<h3><a name="Read-the-first-worksheet" class="anchor" href="#Read-the-first-worksheet">Read the first worksheet</a></h3>
+<table class="pre"><tr><td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="k">var</span> df <span class="o">=</span> ExcelFrame.ReadExcel(<span class="s">"data.xlsx"</span>);
+<span class="c">// Row keys are 0-based ints, column keys are header strings</span>
+Console.WriteLine($<span class="s">"Rows: {df.RowCount}, Cols: {df.ColumnCount}"</span>);
+</code></pre></td></tr></table>
+<h3><a name="Read-a-specific-sheet-by-name-or-index" class="anchor" href="#Read-a-specific-sheet-by-name-or-index">Read a specific sheet by name or index</a></h3>
+<table class="pre"><tr><td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="k">var</span> q<span class="n">1</span> <span class="o">=</span> ExcelFrame.ReadExcelSheet(<span class="s">"sales.xlsx"</span>, <span class="s">"Q1 Sales"</span>);
+<span class="k">var</span> q<span class="n">2</span> <span class="o">=</span> ExcelFrame.ReadExcelSheetByIndex(<span class="s">"sales.xlsx"</span>, <span class="n">1</span>);
+</code></pre></td></tr></table>
+<h3><a name="List-all-worksheet-names" class="anchor" href="#List-all-worksheet-names">List all worksheet names</a></h3>
+<table class="pre"><tr><td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="k">var</span> names <span class="o">=</span> ExcelFrame.SheetNames(<span class="s">"sales.xlsx"</span>);
+<span class="k">foreach</span> (<span class="k">var</span> name <span class="k">in</span> names)
+    Console.WriteLine(name);
+</code></pre></td></tr></table>
+<hr />
+<h2><a name="Apache-Arrow-and-Feather-I-O" class="anchor" href="#Apache-Arrow-and-Feather-I-O">Apache Arrow and Feather I/O</a></h2>
+<p>Add the <code>Deedle.Arrow</code> package:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="id">dotnet</span> <span class="id">add</span> <span class="id">package</span> <span class="id">Deedle</span><span class="pn">.</span><span class="id">Arrow</span>
+</code></pre>
+<table class="pre"><tr><td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="k">using</span> Deedle;
+<span class="k">using</span> Deedle.Arrow;
+</code></pre></td></tr></table>
+<h3><a name="Read-and-write-Arrow-Feather-files" class="anchor" href="#Read-and-write-Arrow-Feather-files">Read and write Arrow / Feather files</a></h3>
+<table class="pre"><tr><td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="c">// Write</span>
+df.WriteArrow(<span class="s">"data.arrow"</span>);
+df.WriteFeather(<span class="s">"data.feather"</span>);   <span class="c">// Feather v2 = Arrow IPC format</span>
+
+<span class="c">// Read</span>
+<span class="k">var</span> df<span class="n">1</span> <span class="o">=</span> ArrowFrame.ReadArrow(<span class="s">"data.arrow"</span>);
+<span class="k">var</span> df<span class="n">2</span> <span class="o">=</span> ArrowFrame.ReadFeather(<span class="s">"data.feather"</span>);
+</code></pre></td></tr></table>
+<h3><a name="Preserve-row-keys-across-round-trips" class="anchor" href="#Preserve-row-keys-across-round-trips">Preserve row keys across round-trips</a></h3>
+<table class="pre"><tr><td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="c">// Write with row index stored in __index__ column</span>
+df.WriteArrowWithIndex(<span class="s">"indexed.arrow"</span>);
+
+<span class="c">// Read back with original row keys</span>
+Frame&lt;<span class="k">string</span>, <span class="k">string</span>&gt; df<span class="n">3</span> <span class="o">=</span> ArrowFrame.ReadArrowWithIndex(<span class="s">"indexed.arrow"</span>);
+</code></pre></td></tr></table>
+<h3><a name="Stream-I-O" class="anchor" href="#Stream-I-O">Stream I/O</a></h3>
+<table class="pre"><tr><td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="k">using</span> <span class="k">var</span> ms <span class="o">=</span> <span class="k">new</span> MemoryStream();
+df.WriteArrowStream(ms);
+ms.Position <span class="o">=</span> <span class="n">0</span>;
+<span class="k">var</span> df<span class="n">4</span> <span class="o">=</span> ArrowFrame.ReadArrowStream(ms);
+</code></pre></td></tr></table>
+<h3><a name="Convert-to-from-Apache-Arrow-RecordBatch" class="anchor" href="#Convert-to-from-Apache-Arrow-RecordBatch">Convert to/from Apache Arrow RecordBatch</a></h3>
+<table class="pre"><tr><td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="k">using</span> Apache.Arrow;
+
+RecordBatch batch <span class="o">=</span> df.ToRecordBatch();
+Console.WriteLine($<span class="s">"Columns: {batch.ColumnCount}, Rows: {batch.Length}"</span>);
+</code></pre></td></tr></table>
+<hr />
+<h2><a name="Apache-Parquet-I-O" class="anchor" href="#Apache-Parquet-I-O">Apache Parquet I/O</a></h2>
+<p>Add the <code>Deedle.Parquet</code> package:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="id">dotnet</span> <span class="id">add</span> <span class="id">package</span> <span class="id">Deedle</span><span class="pn">.</span><span class="id">Parquet</span>
+</code></pre>
+<table class="pre"><tr><td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="k">using</span> Deedle;
+<span class="k">using</span> Deedle.Parquet;
+</code></pre></td></tr></table>
+<h3><a name="Read-and-write-Parquet-files" class="anchor" href="#Read-and-write-Parquet-files">Read and write Parquet files</a></h3>
+<table class="pre"><tr><td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="c">// Write</span>
+df.WriteParquet(<span class="s">"data.parquet"</span>);
+
+<span class="c">// Read</span>
+<span class="k">var</span> df<span class="n">1</span> <span class="o">=</span> ParquetFrame.ReadParquet(<span class="s">"data.parquet"</span>);
+</code></pre></td></tr></table>
+<h3><a name="Preserve-row-keys-across-round-trips-1" class="anchor" href="#Preserve-row-keys-across-round-trips-1">Preserve row keys across round-trips</a></h3>
+<table class="pre"><tr><td class="snippet"><pre class="fssnip highlighted"><code lang="csharp">df.WriteParquetWithIndex(<span class="s">"indexed.parquet"</span>);
+Frame&lt;<span class="k">string</span>, <span class="k">string</span>&gt; df<span class="n">2</span> <span class="o">=</span> ParquetFrame.ReadParquetWithIndex(<span class="s">"indexed.parquet"</span>);
+</code></pre></td></tr></table>
+<h3><a name="Stream-I-O-1" class="anchor" href="#Stream-I-O-1">Stream I/O</a></h3>
+<table class="pre"><tr><td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="k">using</span> <span class="k">var</span> ms <span class="o">=</span> <span class="k">new</span> MemoryStream();
+df.WriteParquetStream(ms);
+ms.Position <span class="o">=</span> <span class="n">0</span>;
+<span class="k">var</span> df<span class="n">3</span> <span class="o">=</span> ParquetFrame.ReadParquetStream(ms);
+</code></pre></td></tr></table>
+<hr />
+<h2><a name="Further-Reading" class="anchor" href="#Further-Reading">Further Reading</a></h2>
+<ul>
+<li>
+<a href="frame.html">Data frame features (F#)</a> — the full API reference with F# examples,
+most of which translate directly to C#.
+</li>
+<li><a href="series.html">Series features (F#)</a> — windowing, chunking, resampling.</li>
+<li><a href="stats.html">Statistics</a> — summary statistics, moving and expanding windows.</li>
+<li><a href="missing.html">Handling missing values</a> — all fill strategies and propagation rules.</li>
+<li><a href="joining.html">Joining and merging frames</a> — inner, outer, left, and right joins.</li>
+<li><a href="excel.html">Excel integration (F#)</a> — reading <code>.xls</code> and <code>.xlsx</code> files.</li>
+<li><a href="arrow.html">Arrow and Feather integration (F#)</a> — Arrow IPC file and stream I/O, RecordBatch conversions.</li>
+<li><a href="parquet.html">Parquet integration (F#)</a> — Parquet file and stream I/O.</li>
+<li>
+<a href="https://github.com/fslaborg/Deedle/tree/master/tests/Deedle.CSharp.Tests">C# test suite</a> —
+executable examples covering every major C# API surface.
+</li>
+</ul>
+
+        
+    </div>
+</main>
+<aside id="fsdocs-page-menu">
+    <p id="on-this-page">On this page</p>
+    <ul>
+  <li class="level-1">
+    <a href="#Deedle-in-C">
+      Deedle in C#
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Creating-a-Series">
+      Creating a Series
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#SeriesBuilder-collection-initialiser-syntax">
+      SeriesBuilder — collection-initialiser syntax
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#From-IEnumerable">
+      From IEnumerable
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Creating-a-Frame">
+      Creating a Frame
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#From-CSV">
+      From CSV
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#From-anonymous-objects-records">
+      From anonymous objects / records
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#From-a-dictionary-of-series">
+      From a dictionary of series
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Using-FrameBuilder-preserves-column-order">
+      Using FrameBuilder (preserves column order)
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Accessing-Columns">
+      Accessing Columns
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Dynamic-column-access">
+      Dynamic column access
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Accessing-Rows">
+      Accessing Rows
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Single-row-by-key">
+      Single row by key
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Multiple-rows-by-key-list">
+      Multiple rows by key list
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Slicing-rows-by-range-ordered-index-required">
+      Slicing rows by range (ordered index required)
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Adding-and-Modifying-Columns">
+      Adding and Modifying Columns
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Missing-Values">
+      Missing Values
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Statistics">
+      Statistics
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Column-level-statistics-on-a-frame">
+      Column-level statistics on a frame
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Row-wise-Aggregation">
+      Row-wise Aggregation
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Row-wise-mean-with-missing-values">
+      Row-wise mean with missing values
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Joining-and-Merging-Frames">
+      Joining and Merging Frames
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Time-Series-Windowing-and-Chunking">
+      Time Series — Windowing and Chunking
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#WindowWhile-sliding-windows-defined-by-a-key-predicate">
+      WindowWhile — sliding windows defined by a key predicate
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#ChunkWhile-non-overlapping-partitions">
+      ChunkWhile — non-overlapping partitions
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#PairwiseWith-combine-consecutive-pairs">
+      PairwiseWith — combine consecutive pairs
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Projections-and-Filtering">
+      Projections and Filtering
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Converting-to-Arrays-and-Collections">
+      Converting to Arrays and Collections
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Practical-Example-Titanic-Survival-Rate">
+      Practical Example — Titanic Survival Rate
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Tips">
+      Tips
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Reading-Excel-files">
+      Reading Excel files
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Read-the-first-worksheet">
+      Read the first worksheet
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Read-a-specific-sheet-by-name-or-index">
+      Read a specific sheet by name or index
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#List-all-worksheet-names">
+      List all worksheet names
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Apache-Arrow-and-Feather-I-O">
+      Apache Arrow and Feather I/O
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Read-and-write-Arrow-Feather-files">
+      Read and write Arrow / Feather files
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Preserve-row-keys-across-round-trips">
+      Preserve row keys across round-trips
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Stream-I-O">
+      Stream I/O
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Convert-to-from-Apache-Arrow-RecordBatch">
+      Convert to/from Apache Arrow RecordBatch
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Apache-Parquet-I-O">
+      Apache Parquet I/O
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Read-and-write-Parquet-files">
+      Read and write Parquet files
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Preserve-row-keys-across-round-trips-1">
+      Preserve row keys across round-trips
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Stream-I-O-1">
+      Stream I/O
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Further-Reading">
+      Further Reading
+    </a>
+  </li>
+</ul>
+</aside>
+<dialog>
+    <input type="search" placeholder="Search docs" />
+    <div class="results">
+        <ul></ul>
+        <p class="empty">Type something to start searching.</p>
+    </div>
+</dialog>
+<script type="module" src="/Deedle/content/fsdocs-tips.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-theme-toggle.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-details-toggle.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-theme.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-search.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-copy-button.js"></script>
+
+</body>
+</html>
