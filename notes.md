@@ -1,20 +1,18 @@
-## 2026-04-20 run
+## 2026-04-20 run (command mode: fix issue 712)
 
-**Command mode**: dsyme requested implementing issue #714 (ExcelWriter package).
+### Status: Branch committed, NOT pushed (safeoutputs MCP unavailable)
+Branch: `repo-assist/fix-issue-712-parquet-rowgroup-dispose`
+Local commit: 2e2dbd0
 
-**Work done**: Created `Deedle.ExcelWriter` package (branch `repo-assist/feature-excel-writer-714`).
-- `src/Deedle.ExcelWriter/ExcelWriter.fs` — MiniExcel-based Frame.saveExcel/saveExcelSheet/saveExcelSheets/saveExcelToStream
-- `tests/Deedle.ExcelWriter.Tests/Tests.fs` — 9 passing tests
-- Updated paket.dependencies/lock (MiniExcel 1.43.1), Deedle.sln, RELEASE_NOTES.md
-- All 9 new tests pass; existing tests unaffected
+**Action needed**: Push the branch and create PR using safeoutputs tools when available.
 
-**safeoutputs MCP tools unavailable**: Branch committed locally but not pushed. No PR created, no comment on #714. Next run should push and create PR.
-
-**Local branch**: `repo-assist/feature-excel-writer-714` on fslaborg/Deedle workspace.
+### Fix applied
+- Bug: `Frame.writeParquet` and `Frame.writeParquetStream` bound `IRowGroupWriter` with `let` instead of `use`, so `Dispose()` was never called. Parquet.Net requires disposal to commit `num_rows` to the file footer. External readers (DuckDB, pandas, viewers) saw 0 rows. Deedle's own reader was unaffected (reads raw data pages).
+- Fix: `let rg = writer.CreateRowGroup()` → `use rg = writer.CreateRowGroup()` in both functions.
+- 15 new regression tests added using `Parquet.ParquetReader.OpenRowGroupReader` to verify footer metadata.
+- 50/50 Parquet tests pass, 54/54 C# tests pass.
 
 ## 2026-04-15 run
-
-Tasks 9+10 completed. All changes committed to local branch `repo-assist/improve-frame-moving-stats-20260415`.
 
 **Important design constraint**: Cannot add frame overloads to the `Stats` type with the same names as series functions (e.g., `Stats.movingMean`) because F# FS0816 forbids mixing curried (series) and tupled (frame) overloads of the same method name on a type. Frame stats must be implemented as extension methods in `FrameStatsExtensions.fs`.
 
@@ -23,5 +21,5 @@ Tasks 9+10 completed. All changes committed to local branch `repo-assist/improve
 - Task 10: Added `MovingCount/Sum/Mean/Variance/StdDev/Min/Max` and `ExpandingCount/Sum/Mean/Variance/StdDev/Min/Max` extension methods on `Frame<'R,'C>`
 - 734/734 tests pass
 
-### PR not created
-safeoutputs MCP tools were unavailable in this run. Local branch exists but was not pushed to GitHub.
+### PR not created (both runs)
+safeoutputs MCP tools were unavailable in both runs. Local branches exist but not pushed.
