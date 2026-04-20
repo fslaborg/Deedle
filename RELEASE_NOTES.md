@@ -1,14 +1,18 @@
 # Release Notes
 
-## 6.0.2 - unreleased
+## 7.0.0 - 2026-04-20
+
+### Breaking changes
+
+- Rename NuGet package `Deedle.Excel.Reader` → `Deedle.ExcelReader` to match the existing `Deedle.ExcelReader` namespace (closes [#713](https://github.com/fslaborg/Deedle/issues/713))
 
 ### New packages
 
 - **Deedle.ExcelWriter**: cross-platform `.xlsx` writing via [MiniExcel](https://github.com/mini-software/MiniExcel) — `Frame.writeExcel`, `Frame.writeExcelSheet`, `Frame.writeExcelSheets`, stream overloads, C# `ExcelFrameWriter` static API (closes [#714](https://github.com/fslaborg/Deedle/issues/714))
 
-### Infrastructure
+### Bug fixes
 
-- Rename NuGet package `Deedle.Excel.Reader` → `Deedle.ExcelReader` to match the existing `Deedle.ExcelReader` namespace (closes [#713](https://github.com/fslaborg/Deedle/issues/713))
+- **Deedle.Parquet**: Fix `Frame.writeParquet` and `Frame.writeParquetStream` writing empty files (only column schema, no row data). Root cause: the `IParquetRowGroupWriter` returned by `writer.CreateRowGroup()` was not disposed, so the row group was never committed to the stream. Fixed by using `use rg = writer.CreateRowGroup()`.
 
 ## 6.0.1 - 2026-04-13
 
