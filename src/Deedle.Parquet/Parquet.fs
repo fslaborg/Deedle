@@ -369,7 +369,7 @@ module private Implementation =
             use writer   = ParquetWriter.CreateAsync(schema, stream).GetAwaiter().GetResult()
             if frame.RowCount > 0 then
                 let dataColumns = cols |> Array.mapi (fun i (typ, vec) -> columnToDataColumn dataFields.[i] typ vec)
-                let rg = writer.CreateRowGroup()
+                use rg = writer.CreateRowGroup()
                 for col in dataColumns do
                     rg.WriteColumnAsync(col).GetAwaiter().GetResult()
 
@@ -426,7 +426,7 @@ module private Implementation =
             use writer   = ParquetWriter.CreateAsync(schema, stream).GetAwaiter().GetResult()
             if frame.RowCount > 0 then
                 let dataColumns = cols |> Array.mapi (fun i (typ, vec) -> columnToDataColumn dataFields.[i] typ vec)
-                let rg = writer.CreateRowGroup()
+                use rg = writer.CreateRowGroup()
                 for col in dataColumns do
                     rg.WriteColumnAsync(col).GetAwaiter().GetResult()
 
