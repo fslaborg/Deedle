@@ -1,3 +1,17 @@
+## 2026-04-20 run
+
+**Command mode**: dsyme requested implementing issue #714 (ExcelWriter package).
+
+**Work done**: Created `Deedle.ExcelWriter` package (branch `repo-assist/feature-excel-writer-714`).
+- `src/Deedle.ExcelWriter/ExcelWriter.fs` — MiniExcel-based Frame.saveExcel/saveExcelSheet/saveExcelSheets/saveExcelToStream
+- `tests/Deedle.ExcelWriter.Tests/Tests.fs` — 9 passing tests
+- Updated paket.dependencies/lock (MiniExcel 1.43.1), Deedle.sln, RELEASE_NOTES.md
+- All 9 new tests pass; existing tests unaffected
+
+**safeoutputs MCP tools unavailable**: Branch committed locally but not pushed. No PR created, no comment on #714. Next run should push and create PR.
+
+**Local branch**: `repo-assist/feature-excel-writer-714` on fslaborg/Deedle workspace.
+
 ## 2026-04-15 run
 
 Tasks 9+10 completed. All changes committed to local branch `repo-assist/improve-frame-moving-stats-20260415`.
