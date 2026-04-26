@@ -28,6 +28,17 @@ module StatsInternal =
       |> series.VectorBuilder.Create
     Series(series.Index, newData, series.VectorBuilder, series.IndexBuilder)
 
+  /// Like `applySeriesProj`, but accepts a series of any value type and converts lazily
+  /// to `float opt` before passing to `proj`, avoiding an intermediate `Series<'K, float>`.
+  /// Must be non-inline so the internal `Series(...)` constructor is called from the library.
+  let applySeriesProjLazy (proj: float opt seq -> float[]) (series:Series<'K, 'V>) : Series<'K, float> =
+    let newData =
+      series.Vector.DataSequence
+      |> Seq.map (fun v -> if v.HasValue then OptionalValue(toFloat v.Value) else OptionalValue.Missing)
+      |> proj
+      |> series.VectorBuilder.Create
+    Series(series.Index, newData, series.VectorBuilder, series.IndexBuilder)
+
   /// Helper for moving window calculations (adopted from `Seq.windowed` in F# code base)
   /// When calling `finit`, we do not copy the array - this is fine, because the function
   /// is internal (and the only use in `applyMovingSumsTransform` is correct)
@@ -75,9 +86,9 @@ module StatsInternal =
   let initSumsDense moment (init: float []) =
     let count = init |> Array.length |> float
     let sum   = if moment < 1 then 0.0 else init |> Array.sum
-    let sump2 = if moment < 2 then 0.0 else init |> Array.sumBy (fun x -> pown x 2)
-    let sump3 = if moment < 3 then 0.0 else init |> Array.sumBy (fun x -> pown x 3)
-    let sump4 = if moment < 4 then 0.0 else init |> Array.sumBy (fun x -> pown x 4)
+    let sump2 = if moment < 2 then 0.0 else init |> Array.sumBy (fun x -> x * x)
+    let sump3 = if moment < 3 then 0.0 else init |> Array.sumBy (fun x -> x * x * x)
+    let sump4 = if moment < 4 then 0.0 else init |> Array.sumBy (fun x -> x * x * x * x)
     { nobs = count; sum = sum; sump2 = sump2; sump3 = sump3; sump4 = sump4 }
 
   /// Given an existing `state` of type `Sums`, new incoming element and
@@ -85,9 +96,9 @@ module StatsInternal =
   /// (only required elements of `Sums` are calculated based on `moment`)
   let updateSumsDense moment state curr outg =
     let sum   = if moment < 1 then 0.0 else state.sum + curr - outg
-    let sump2 = if moment < 2 then 0.0 else state.sump2 + (pown curr 2) - (pown outg 2)
-    let sump3 = if moment < 3 then 0.0 else state.sump3 + (pown curr 3) - (pown outg 3)
-    let sump4 = if moment < 4 then 0.0 else state.sump4 + (pown curr 4) - (pown outg 4)
+    let sump2 = if moment < 2 then 0.0 else state.sump2 + curr * curr - outg * outg
+    let sump3 = if moment < 3 then 0.0 else state.sump3 + curr * curr * curr - outg * outg * outg
+    let sump4 = if moment < 4 then 0.0 else state.sump4 + curr * curr * curr * curr - outg * outg * outg * outg
     { state with sum = sum; sump2 = sump2; sump3 = sump3; sump4 = sump4 }
 
   /// Pick only available values from the input array and call `initSumsDense`
@@ -129,7 +140,8 @@ module StatsInternal =
   let inline applyMovingSumsTransform moment winSize (proj: Sums -> float) (series:Series<'K,'V>) =
     if winSize <= 0 then invalidArg "windowSize" "Window must be positive"
     let calcSparse = movingWindowFn winSize (initSumsSparse moment) (updateSumsSparse moment) proj
-    applySeriesProj calcSparse (series |> Series.mapValues toFloat)
+    // Use applySeriesProjLazy to stream values without materialising an intermediate Series<'K,float>.
+    applySeriesProjLazy calcSparse series
 
   /// Calculate variance from `Sums`; requires `moment=2`
   let varianceSums s =
@@ -278,7 +290,8 @@ module StatsInternal =
   let inline applyExpandingMomentsTransform (proj: Moments -> float) (series:Series<'K,'V>) =
     let initMoments = {nobs = 0.0; sum = 0.0; M1 = 0.0; M2 = 0.0; M3 = 0.0; M4 = 0.0 }
     let calcSparse = expandingWindowFn initMoments updateMomentsSparse proj
-    applySeriesProj calcSparse (series |> Series.mapValues toFloat)
+    // Use applySeriesProjLazy to stream values without materialising an intermediate Series<'K,float>.
+    applySeriesProjLazy calcSparse series
 
 
   // ------------------------------------------------------------------------------------
