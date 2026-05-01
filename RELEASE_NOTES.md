@@ -1,5 +1,16 @@
 # Release Notes
 
+## 7.0.1 - 2026-04-26
+
+### Performance
+
+- **Stats moving/expanding windows**: eliminate O(N) intermediate `Series<'K, float>` allocation in `applyMovingSumsTransform` and `applyExpandingMomentsTransform`. Values are now streamed lazily from the original series, reducing peak memory usage for large series.
+- **Stats `updateSumsDense` / `initSumsDense`**: replace `pown x 2/3/4` with explicit multiplications (`x * x`, `x * x * x`, `x * x * x * x`) in the per-step update function, eliminating the square-and-multiply loop overhead on each window step.
+
+### Infrastructure
+
+- CI cache keys now include `.config/dotnet-tools.json` so tool version changes correctly invalidate the cached NuGet packages.
+
 ## 7.0.0 - 2026-04-20
 
 ### Breaking changes
