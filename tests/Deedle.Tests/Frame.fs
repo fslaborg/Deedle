@@ -2887,3 +2887,50 @@ let ``Frame.interleave outer-joins rows from different frames`` () =
 let ``Frame.interleave raises on empty list`` () =
   shouldThrow<System.ArgumentException> (fun () ->
     Frame.interleave ([] : Frame<int,string> list) |> ignore)
+
+// ------------------------------------------------------------------------------------------------
+// Frame.chunk and Frame.chunkInto
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Frame.chunk produces non-overlapping chunks of the right size`` () =
+  let df = frame [ "A" => series [ 1 => 10; 2 => 20; 3 => 30; 4 => 40; 5 => 50; 6 => 60 ] ]
+  let chunks = df |> Frame.chunk 2
+  // 6 rows / 2 = 3 complete chunks
+  chunks.KeyCount |> shouldEqual 3
+  // Each chunk has 2 rows
+  chunks |> Series.mapValues (fun f -> f.RowCount) |> Series.values |> Seq.toList |> shouldEqual [2; 2; 2]
+
+[<Test>]
+let ``Frame.chunk keys are the first row key of each chunk`` () =
+  let df = frame [ "A" => series [ 10 => 1; 20 => 2; 30 => 3; 40 => 4 ] ]
+  let chunks = df |> Frame.chunk 2
+  chunks.Keys |> List.ofSeq |> shouldEqual [10; 30]
+
+[<Test>]
+let ``Frame.chunk skips incomplete trailing chunk`` () =
+  // 5 rows with chunk size 2 → 2 complete chunks, 1 row remainder dropped
+  let df = frame [ "A" => series [ 1 => 10; 2 => 20; 3 => 30; 4 => 40; 5 => 50 ] ]
+  let chunks = df |> Frame.chunk 2
+  chunks.KeyCount |> shouldEqual 2
+
+[<Test>]
+let ``Frame.chunk preserves column structure`` () =
+  let df = frame [ "X" => series [ 1 => 1.0; 2 => 2.0; 3 => 3.0; 4 => 4.0 ]
+                   "Y" => series [ 1 => 10.0; 2 => 20.0; 3 => 30.0; 4 => 40.0 ] ]
+  let chunks = df |> Frame.chunk 2
+  chunks.[1].ColumnKeys |> List.ofSeq |> shouldEqual ["X"; "Y"]
+
+[<Test>]
+let ``Frame.chunkInto applies aggregation over each chunk`` () =
+  let df = frame [ "V" => series [ 1 => 10.0; 2 => 30.0; 3 => 20.0; 4 => 40.0 ] ]
+  let means = df |> Frame.chunkInto 2 Stats.mean
+  // chunk 1: mean of [10, 30] = 20; chunk 2: mean of [20, 40] = 30
+  means.[1].["V"] |> shouldEqual 20.0
+  means.[3].["V"] |> shouldEqual 30.0
+
+[<Test>]
+let ``Frame.chunkInto result has one entry per complete chunk`` () =
+  let df = frame [ "V" => series [ 1 => 1.0; 2 => 2.0; 3 => 3.0; 4 => 4.0; 5 => 5.0; 6 => 6.0 ] ]
+  let sums = df |> Frame.chunkInto 3 Stats.sum
+  sums.KeyCount |> shouldEqual 2

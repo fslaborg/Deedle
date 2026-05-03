@@ -1,5 +1,11 @@
 # Release Notes
 
+## 7.0.2 - 2026-05-03
+
+### New operations
+
+- **`Frame.chunk` / `Frame.chunkInto`**: new functions that split a data frame into adjacent non-overlapping chunks of a given size. Symmetric counterpart to `Frame.window` / `Frame.windowInto`, and consistent with the existing `Series.chunkSize` / `Series.chunkSizeInto` API.
+
 ## 7.0.1 - 2026-04-26
 
 ### Performance

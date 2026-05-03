@@ -705,6 +705,46 @@ module Frame =
     let fromRows rs = rs |> FrameUtils.fromRowsAndColumnKeys frame.IndexBuilder frame.VectorBuilder frame.ColumnIndex.Keys
     frame.Rows |> Series.windowInto size (fromRows >> f)
 
+  /// <summary>
+  /// Creates adjacent non-overlapping chunks of the specified size from the rows of the frame.
+  /// The result is a series containing data frames that represent the individual chunks.
+  /// The key of each chunk in the result series is the key of the first row in that chunk.
+  /// This function skips incomplete chunks at the end of the frame. For more control over
+  /// boundary behaviour, use <c>Series.chunkSizeInto</c> on <c>frame.Rows</c> directly.
+  /// </summary>
+  /// <param name="size">The number of rows in each chunk.</param>
+  /// <param name="frame">The input data frame to be chunked.</param>
+  /// <example>
+  ///   let df = Frame.ofRows [ 1 => s1; 2 => s2; 3 => s3; 4 => s4 ]
+  ///   let chunks = df |> Frame.chunk 2
+  ///   // chunks.[1] contains rows 1 and 2; chunks.[3] contains rows 3 and 4
+  /// </example>
+  /// <category>Grouping, windowing and chunking</category>
+  [<CompiledName("Chunk")>]
+  let chunk size (frame:Frame<'R, 'C>) =
+    let fromRows rs = rs |> FrameUtils.fromRowsAndColumnKeys frame.IndexBuilder frame.VectorBuilder frame.ColumnIndex.Keys
+    frame.Rows |> Series.chunkSizeInto (size, Boundary.Skip) (DataSegment.data >> fromRows)
+
+  /// <summary>
+  /// Creates adjacent non-overlapping chunks of the specified size from the rows of the frame
+  /// and applies the provided function <c>f</c> on each chunk to produce the result, which is
+  /// returned as a new series. The key of each result in the output series is the key of
+  /// the first row of the corresponding chunk. This function skips incomplete chunks at the
+  /// end of the frame.
+  /// </summary>
+  /// <param name="size">The number of rows in each chunk.</param>
+  /// <param name="f">A function that is called on each chunk (as a <c>Frame</c>) to produce the result.</param>
+  /// <param name="frame">The input data frame to be aggregated.</param>
+  /// <example>
+  ///   let df = Frame.ofRows [ 1 => s1; 2 => s2; 3 => s3; 4 => s4 ]
+  ///   let means = df |> Frame.chunkInto 2 (fun chunk -> chunk |> Stats.mean)
+  ///   // means.[1] is the column-wise mean of rows 1–2; means.[3] is the mean of rows 3–4
+  /// </example>
+  /// <category>Grouping, windowing and chunking</category>
+  [<CompiledName("ChunkInto")>]
+  let chunkInto size f (frame:Frame<'R, 'C>) =
+    let fromRows rs = rs |> FrameUtils.fromRowsAndColumnKeys frame.IndexBuilder frame.VectorBuilder frame.ColumnIndex.Keys
+    frame.Rows |> Series.chunkSizeInto (size, Boundary.Skip) (DataSegment.data >> fromRows >> f)
 
   /// Returns a data frame with three columns named `Row`, `Column`
   /// and `Value` that contains the data of the original data frame
