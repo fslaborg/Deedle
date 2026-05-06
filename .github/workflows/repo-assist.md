@@ -176,7 +176,7 @@ steps:
           json.dump(result, f, indent=2)
       EOF
 
-source: githubnext/agentics/workflows/repo-assist.md@96b9d4c39aa22359c0b38265927eadb31dcf4e2a
+source: githubnext/agentics/workflows/repo-assist.md@fc4ab36dedc44e2a1cdc195cecce262f06c81230
 ---
 
 # Repo Assist
@@ -220,7 +220,20 @@ Read memory at the **start** of every run; update it at the **end**.
 
 Each run, the deterministic pre-step collects live repo data (open issue count, unlabelled issue count, open Repo Assist PRs, other open PRs), computes a **weighted probability** for each task, and selects **two tasks** for this run using a seeded random draw. The weights and selected tasks are printed in the workflow logs. You will find the selection in `/tmp/gh-aw/task_selection.json`.
 
-**Read the task selection**: at the start of your run, read `/tmp/gh-aw/task_selection.json` and confirm the two selected tasks in your opening reasoning. Execute **those two tasks** (plus the mandatory Task 11). If there's really nothing to do for a selected task, do not force yourself to do it - try any other different task instead that looks most useful.
+**Read the task selection**: at the start of your run, read `/tmp/gh-aw/task_selection.json` and confirm the two selected tasks in your opening reasoning. Execute **those two tasks** (plus the mandatory Task 11). If a selected task is not applicable to the current repo state, substitute its fallback task rather than doing nothing. Record the substitution in the Task 11 run history entry.
+
+| Selected task | Not applicable when… | Fallback |
+|---|---|---|
+| Task 1 (Issue Labelling) | All open issues already labelled | Task 2 |
+| Task 2 (Issue Comment) | All open issues already have a recent Repo Assist comment and no new human activity | Task 1 |
+| Task 3 (Issue Fix) | No issues labelled `bug`, `help wanted`, or `good first issue` that are fixable | Task 2 |
+| Task 4 (Engineering Investments) | No actionable dependency updates, CI gaps, or build improvements identifiable | Task 5 |
+| Task 5 (Coding Improvements) | No clearly beneficial, low-risk improvements identifiable after reviewing the codebase | Task 9 |
+| Task 6 (Maintain Repo Assist PRs) | No open Repo Assist PRs exist | Task 2 |
+| Task 7 (Stale PR Nudges) | No non-Repo-Assist PRs stale 14+ days, or all already nudged | Task 2 |
+| Task 8 (Performance Improvements) | No measurable performance opportunities identifiable | Task 9 |
+| Task 9 (Testing Improvements) | Test coverage is already comprehensive and no gaps identified | Task 5 |
+| Task 10 (Take Repo Forward) | In-progress work from memory is blocked or complete; no valuable next step | Task 2 |
 
 The weighting scheme naturally adapts to repo state:
 
