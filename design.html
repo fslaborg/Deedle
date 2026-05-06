@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en" data-root="/Deedle/">
+<head>
+    <meta charset="UTF-8">
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="Deedle.Arrow" name="author">
+    <!-- Opengraph properties (https://ogp.me/) -->
+    <meta property="og:site_name" content="Deedle">
+    <meta property="og:title" content="Design notes" />
+    <meta property="og:url" content="/Deedle/design.html">
+    <meta property="og:type" content="website" />
+    <!-- Twitter cards (https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/summary-card-with-large-image) -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="/Deedle/">
+    <meta name="twitter:title" content="Design notes">
+    <meta name="description" content="Internal design principles and architecture of the Deedle library">
+<meta name="twitter:site" content="Internal design principles and architecture of the Deedle library">
+<meta name="og:description" content="Internal design principles and architecture of the Deedle library">
+<meta name="keywords" content="design, architecture, internals, data frame, implementation">
+    <title>Design notes | Deedle</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code&display=swap" rel="stylesheet">
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <link href="/Deedle/img/favicon.ico" rel="icon" sizes="32x32" type="image/png"/>
+    <script type="application/javascript" src="/Deedle/content/fsdocs-theme-set-dark.js"></script>
+    <script type="application/javascript" src="/Deedle/content/fsdocs-details-set-expanded.js"></script>
+    <link href="/Deedle/content/fsdocs-default.css" rel="stylesheet" type="text/css"/>
+    <link href="/Deedle/content/fsdocs-theme.css" rel="stylesheet" type="text/css"/>
+    
+    
+</head>
+<body class="content">
+<header>
+    <div class="start">
+        <div id="menu-toggle">
+            <iconify-icon class="icon closed" height="22" icon="eva:menu-fill" width="22"></iconify-icon>
+            <iconify-icon class="icon open" height="22" icon="mi:close" width="22"></iconify-icon>
+            <input type="checkbox" name="mobile-menu" />
+            <ul class="menu">
+                <li class="nav-header">Links</li>
+                <li class="license-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fslaborg/Deedle/blob/master/LICENSE.md">License</a>
+                </li>
+                <li class="release-notes-menu-item builtin-menu-item nav-item"><a class="nav-link"
+                                        href="https://github.com/fslaborg/Deedle/blob/master/RELEASE_NOTES.md">Release
+                    Notes</a></li>
+                <li class="repository-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fslaborg/Deedle/">Source
+                    Repository</a></li>
+                <li class="nav-header ">
+  Guides
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/tutorial.html">
+    Deedle in 10 minutes
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/frame.html">
+    Data frame features
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/series.html">
+    Series and time series features
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/stats.html">
+    Calculating frame and series statistics
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/missing.html">
+    Handling missing values
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/joining.html">
+    Joining, merging and appending frames
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/lazysource.html">
+    Delay-loaded series
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/csharp.html">
+    Deedle in C#
+  </a>
+</li>             
+<li class="nav-header ">
+  Integrations
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/excel.html">
+    Excel integration — ExcelReader &amp; ExcelWriter
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/arrow.html">
+    Deedle.Arrow — Apache Arrow and Feather integration
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/parquet.html">
+    Deedle.Parquet — Apache Parquet integration
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/math.html">
+    Deedle.MathNetNumerics — MathNet.Numerics integration
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/dotnetinteractive.html">
+    Deedle.DotNetInteractive — .NET Interactive notebook formatting
+  </a>
+</li>             
+<li class="nav-header active">
+  Design
+</li>             
+<li class="nav-item active">
+  <a class="nav-link" href="/Deedle/design.html">
+    Design notes
+  </a>
+</li>
+                <li class="nav-header">
+  API Reference
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="/Deedle/reference/index.html">
+    All Namespaces
+  </a>
+</li>
+            </ul>
+        </div>
+        <a href="/Deedle/">
+            <img alt="Logo" src="/Deedle/img/logo.png">
+            <strong>Deedle</strong>
+        </a>
+    </div>
+    <div class="end">
+        <a href="https://github.com/fslaborg/Deedle/" target="_blank">
+            <iconify-icon icon="uil:github" width="26" height="26"></iconify-icon>
+        </a>
+        <iconify-icon id="search-btn" icon="carbon:search" class="search" width="24" height="24"></iconify-icon>
+        <fsdocs-theme-toggle></fsdocs-theme-toggle>
+    </div>
+</header>
+<aside id="fsdocs-main-menu">
+    <ul class="menu">
+        <li class="nav-header">Links</li>
+        <li class="license-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fslaborg/Deedle/blob/master/LICENSE.md">License</a>
+        </li>
+        <li class="release-notes-menu-item builtin-menu-item nav-item"><a class="nav-link"
+                                href="https://github.com/fslaborg/Deedle/blob/master/RELEASE_NOTES.md">Release
+            Notes</a></li>
+        <li class="repository-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fslaborg/Deedle/">Source
+            Repository</a></li>
+        <li class="nav-header ">
+  Guides
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/tutorial.html">
+    Deedle in 10 minutes
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/frame.html">
+    Data frame features
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/series.html">
+    Series and time series features
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/stats.html">
+    Calculating frame and series statistics
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/missing.html">
+    Handling missing values
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/joining.html">
+    Joining, merging and appending frames
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/lazysource.html">
+    Delay-loaded series
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/csharp.html">
+    Deedle in C#
+  </a>
+</li>             
+<li class="nav-header ">
+  Integrations
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/excel.html">
+    Excel integration — ExcelReader &amp; ExcelWriter
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/arrow.html">
+    Deedle.Arrow — Apache Arrow and Feather integration
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/parquet.html">
+    Deedle.Parquet — Apache Parquet integration
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/math.html">
+    Deedle.MathNetNumerics — MathNet.Numerics integration
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/dotnetinteractive.html">
+    Deedle.DotNetInteractive — .NET Interactive notebook formatting
+  </a>
+</li>             
+<li class="nav-header active">
+  Design
+</li>             
+<li class="nav-item active">
+  <a class="nav-link" href="/Deedle/design.html">
+    Design notes
+  </a>
+</li>
+        <li class="nav-header">
+  API Reference
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="/Deedle/reference/index.html">
+    All Namespaces
+  </a>
+</li>
+    </ul>
+</aside>
+<main>
+    <div id="content">
+        
+<h2><a name="Deeedle-s-Design-Principles" class="anchor" href="#Deeedle-s-Design-Principles">Deeedle's Design Principles</a></h2>
+<p>The Deedle library is a data manipulation library for F# and C# .NET users. There are
+a number of different design choices, some of which are discussed in this article. The
+key points are:</p>
+<ul>
+<li>
+<p><strong>Missing values</strong> - the library supports working with missing values and distinguishes
+between <code>NaN</code> (not-a-number) and "missing" (absence of a value). Operations propagate
+missing values by default.</p>
+</li>
+</ul>
+<ul>
+<li>
+<p><strong>Column and row index types</strong> - data frames and series can be indexed by any orderable
+type (integers, strings, dates, etc.), and frame columns and rows are equally first-class.</p>
+</li>
+</ul>
+<ul>
+<li>
+<p><strong>Immutability</strong> - Deedle objects are (mostly) immutable. Most operations return a new
+series or frame rather than modifying in place.</p>
+</li>
+</ul>
+<ul>
+<li>
+<strong>Structural typing</strong> - Accessing a frame column with <code>frame?Name</code> returns a series of
+type <code>Series&lt;'R, float&gt;</code> (weakly typed), while <code>frame.GetColumn&lt;'T&gt;("Name")</code> returns a
+strongly typed series.
+</li>
+</ul>
+<h2><a name="Library-internals" class="anchor" href="#Library-internals">Library internals</a></h2>
+<h3><a name="Vectors" class="anchor" href="#Vectors">Vectors</a></h3>
+<p>In Deedle, a <em>vector</em> stores the actual data. It is a one-dimensional collection of values
+that can be accessed by an integer index. The <code>IVector&lt;'T&gt;</code> interface is defined in the
+<code>Deedle</code> namespace and has the following key operations:</p>
+<ul>
+<li><code>vector.GetValue(index)</code> - returns the value at the specified integer location</li>
+<li>
+<code>vector.Data</code> - returns the vector data as a <code>VectorData&lt;'T&gt;</code> discriminated union
+that can be either <code>DenseList</code> (an immutable array) or <code>SparseList</code> (a list of
+<code>OptionalValue&lt;'T&gt;</code> items)
+</li>
+</ul>
+<p>The key design principle is that the actual storage mechanism is abstracted and multiple
+storage strategies can be plugged in. The default implementation uses a simple array.</p>
+<h3><a name="Indices" class="anchor" href="#Indices">Indices</a></h3>
+<p>An <em>index</em> maps from keys (of type <code>'K</code>) to integer locations (offsets into a vector). The
+<code>IIndex&lt;'K&gt;</code> interface represents an index and provides operations like:</p>
+<ul>
+<li><code>index.Lookup(key, ...)</code> - find the integer location of a key</li>
+<li><code>index.Mappings</code> - returns all key-location mappings</li>
+<li><code>index.Keys</code> - returns the sequence of keys in order</li>
+</ul>
+<p>The default index uses a sorted array with binary search for ordered access and a
+dictionary for O(1) lookup by key.</p>
+<h3><a name="Series-and-frames" class="anchor" href="#Series-and-frames">Series and frames</a></h3>
+<p>A <strong>series</strong> (<code>Series&lt;'K, 'V&gt;</code>) consists of:
+- An index of type <code>IIndex&lt;'K&gt;</code>
+- A vector of type <code>IVector&lt;'V&gt;</code></p>
+<p>A <strong>data frame</strong> (<code>Frame&lt;'R, 'C&gt;</code>) consists of:
+- A row index of type <code>IIndex&lt;'R&gt;</code>
+- A column index of type <code>IIndex&lt;'C&gt;</code>
+- A vector of vectors, where each inner vector stores one column's data</p>
+<p>When a column is accessed, Deedle looks up the column key in the column index to get
+an integer offset, then uses that to retrieve the inner vector for that column.</p>
+<h2><a name="Vector-and-index-builders" class="anchor" href="#Vector-and-index-builders">Vector and index builders</a></h2>
+<p>Most transformations on frames and series are implemented using <em>builder</em> interfaces.
+The <code>IVectorBuilder</code> and <code>IIndexBuilder</code> interfaces provide factory methods used
+throughout Deedle.</p>
+<p>The builder pattern allows Deedle to support pluggable storage backends (e.g. a
+BigDeedle backend could store data in a database rather than in-memory arrays).</p>
+<h3><a name="Vector-builder-operations" class="anchor" href="#Vector-builder-operations">Vector builder operations</a></h3>
+<p>The <code>IVectorBuilder</code> interface includes operations like:
+- <code>Create</code> - creates a vector from a sequence of values
+- <code>AsyncMaterialize</code> - asynchronously materializes a lazy vector
+- <code>MergeWith</code> - merges multiple vectors
+- <code>Combine</code> - combines two vectors element-wise using a function
+- <code>Build</code> - executes a <code>VectorConstruction</code> command tree (used for alignment)</p>
+<p>The <code>VectorConstruction</code> type is a discriminated union that represents a tree of
+operations to perform on vectors. This deferred execution model enables efficient
+execution of complex operations that involve joins and alignment.</p>
+<h3><a name="Index-builder-operations" class="anchor" href="#Index-builder-operations">Index builder operations</a></h3>
+<p>The <code>IIndexBuilder</code> interface includes operations like:
+- <code>Create</code> - creates an index from keys
+- <code>Aggregate</code> - groups the index into chunks or windows
+- <code>GroupBy</code> - groups the index by a key projection
+- <code>OrderIndex</code> - sorts the index keys
+- <code>Union</code>, <code>Intersect</code>, <code>Append</code> - set operations on indices
+- <code>Reindex</code> - creates a new index from another, building a <code>VectorConstruction</code>
+that can be used to reorder a corresponding vector</p>
+<p>The <code>Reindex</code> operation is particularly important for frame joins and alignment —
+it returns both a new index and a <code>VectorConstruction</code> recipe that can be applied
+to any vector with the old index to produce a vector aligned with the new index.</p>
+<h2><a name="BigDeedle" class="anchor" href="#BigDeedle">BigDeedle</a></h2>
+<p>The pluggable vector/index architecture makes it possible to implement "BigDeedle" —
+a backend where large time-series data is stored in an external store (database,
+distributed file system, etc.) and only loaded on demand.</p>
+<p>BigDeedle is implemented by providing alternative implementations of <code>IVectorBuilder</code>
+and <code>IIndexBuilder</code> that create lazy vectors and indices. When a user performs a
+slice operation or accesses a specific range, the lazy implementation triggers the
+appropriate data load.</p>
+<p>The <code>DelayedSeries</code> module in Deedle provides a simpler version of this concept
+that can be used without a full custom backend — see the <a href="lazysource.html">Creating lazily loaded series</a> page.</p>
+
+        
+    </div>
+</main>
+<aside id="fsdocs-page-menu">
+    <p id="on-this-page">On this page</p>
+    <ul>
+  <li class="level-2">
+    <a href="#Deeedle-s-Design-Principles">
+      Deeedle's Design Principles
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Library-internals">
+      Library internals
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Vectors">
+      Vectors
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Indices">
+      Indices
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Series-and-frames">
+      Series and frames
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Vector-and-index-builders">
+      Vector and index builders
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Vector-builder-operations">
+      Vector builder operations
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Index-builder-operations">
+      Index builder operations
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#BigDeedle">
+      BigDeedle
+    </a>
+  </li>
+</ul>
+</aside>
+<dialog>
+    <input type="search" placeholder="Search docs" />
+    <div class="results">
+        <ul></ul>
+        <p class="empty">Type something to start searching.</p>
+    </div>
+</dialog>
+<script type="module" src="/Deedle/content/fsdocs-tips.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-theme-toggle.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-details-toggle.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-theme.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-search.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-copy-button.js"></script>
+
+</body>
+</html>

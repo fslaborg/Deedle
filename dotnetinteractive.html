@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en" data-root="/Deedle/">
+<head>
+    <meta charset="UTF-8">
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="Deedle.Arrow" name="author">
+    <!-- Opengraph properties (https://ogp.me/) -->
+    <meta property="og:site_name" content="Deedle">
+    <meta property="og:title" content="Deedle.DotNetInteractive — .NET Interactive notebook formatting" />
+    <meta property="og:url" content="/Deedle/dotnetinteractive.html">
+    <meta property="og:type" content="website" />
+    <!-- Twitter cards (https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/summary-card-with-large-image) -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="/Deedle/">
+    <meta name="twitter:title" content="Deedle.DotNetInteractive — .NET Interactive notebook formatting">
+    <meta name="description" content="Rich HTML formatting for Deedle frames and series in .NET Interactive notebooks (Jupyter, Polyglot Notebooks)">
+<meta name="twitter:site" content="Rich HTML formatting for Deedle frames and series in .NET Interactive notebooks (Jupyter, Polyglot Notebooks)">
+<meta name="og:description" content="Rich HTML formatting for Deedle frames and series in .NET Interactive notebooks (Jupyter, Polyglot Notebooks)">
+<meta name="keywords" content="notebook, interactive, Jupyter, Polyglot, formatting, HTML, table">
+    <title>Deedle.DotNetInteractive — .NET Interactive notebook formatting | Deedle</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code&display=swap" rel="stylesheet">
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <link href="/Deedle/img/favicon.ico" rel="icon" sizes="32x32" type="image/png"/>
+    <script type="application/javascript" src="/Deedle/content/fsdocs-theme-set-dark.js"></script>
+    <script type="application/javascript" src="/Deedle/content/fsdocs-details-set-expanded.js"></script>
+    <link href="/Deedle/content/fsdocs-default.css" rel="stylesheet" type="text/css"/>
+    <link href="/Deedle/content/fsdocs-theme.css" rel="stylesheet" type="text/css"/>
+    
+    
+</head>
+<body class="content">
+<header>
+    <div class="start">
+        <div id="menu-toggle">
+            <iconify-icon class="icon closed" height="22" icon="eva:menu-fill" width="22"></iconify-icon>
+            <iconify-icon class="icon open" height="22" icon="mi:close" width="22"></iconify-icon>
+            <input type="checkbox" name="mobile-menu" />
+            <ul class="menu">
+                <li class="nav-header">Links</li>
+                <li class="license-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fslaborg/Deedle/blob/master/LICENSE.md">License</a>
+                </li>
+                <li class="release-notes-menu-item builtin-menu-item nav-item"><a class="nav-link"
+                                        href="https://github.com/fslaborg/Deedle/blob/master/RELEASE_NOTES.md">Release
+                    Notes</a></li>
+                <li class="repository-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fslaborg/Deedle/">Source
+                    Repository</a></li>
+                <li class="nav-header ">
+  Guides
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/tutorial.html">
+    Deedle in 10 minutes
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/frame.html">
+    Data frame features
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/series.html">
+    Series and time series features
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/stats.html">
+    Calculating frame and series statistics
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/missing.html">
+    Handling missing values
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/joining.html">
+    Joining, merging and appending frames
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/lazysource.html">
+    Delay-loaded series
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/csharp.html">
+    Deedle in C#
+  </a>
+</li>             
+<li class="nav-header active">
+  Integrations
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/excel.html">
+    Excel integration — ExcelReader &amp; ExcelWriter
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/arrow.html">
+    Deedle.Arrow — Apache Arrow and Feather integration
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/parquet.html">
+    Deedle.Parquet — Apache Parquet integration
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/math.html">
+    Deedle.MathNetNumerics — MathNet.Numerics integration
+  </a>
+</li>             
+<li class="nav-item active">
+  <a class="nav-link" href="/Deedle/dotnetinteractive.html">
+    Deedle.DotNetInteractive — .NET Interactive notebook formatting
+  </a>
+</li>             
+<li class="nav-header ">
+  Design
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/design.html">
+    Design notes
+  </a>
+</li>
+                <li class="nav-header">
+  API Reference
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="/Deedle/reference/index.html">
+    All Namespaces
+  </a>
+</li>
+            </ul>
+        </div>
+        <a href="/Deedle/">
+            <img alt="Logo" src="/Deedle/img/logo.png">
+            <strong>Deedle</strong>
+        </a>
+    </div>
+    <div class="end">
+        <a href="https://github.com/fslaborg/Deedle/" target="_blank">
+            <iconify-icon icon="uil:github" width="26" height="26"></iconify-icon>
+        </a>
+        <iconify-icon id="search-btn" icon="carbon:search" class="search" width="24" height="24"></iconify-icon>
+        <fsdocs-theme-toggle></fsdocs-theme-toggle>
+    </div>
+</header>
+<aside id="fsdocs-main-menu">
+    <ul class="menu">
+        <li class="nav-header">Links</li>
+        <li class="license-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fslaborg/Deedle/blob/master/LICENSE.md">License</a>
+        </li>
+        <li class="release-notes-menu-item builtin-menu-item nav-item"><a class="nav-link"
+                                href="https://github.com/fslaborg/Deedle/blob/master/RELEASE_NOTES.md">Release
+            Notes</a></li>
+        <li class="repository-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fslaborg/Deedle/">Source
+            Repository</a></li>
+        <li class="nav-header ">
+  Guides
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/tutorial.html">
+    Deedle in 10 minutes
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/frame.html">
+    Data frame features
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/series.html">
+    Series and time series features
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/stats.html">
+    Calculating frame and series statistics
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/missing.html">
+    Handling missing values
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/joining.html">
+    Joining, merging and appending frames
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/lazysource.html">
+    Delay-loaded series
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/csharp.html">
+    Deedle in C#
+  </a>
+</li>             
+<li class="nav-header active">
+  Integrations
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/excel.html">
+    Excel integration — ExcelReader &amp; ExcelWriter
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/arrow.html">
+    Deedle.Arrow — Apache Arrow and Feather integration
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/parquet.html">
+    Deedle.Parquet — Apache Parquet integration
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/math.html">
+    Deedle.MathNetNumerics — MathNet.Numerics integration
+  </a>
+</li>             
+<li class="nav-item active">
+  <a class="nav-link" href="/Deedle/dotnetinteractive.html">
+    Deedle.DotNetInteractive — .NET Interactive notebook formatting
+  </a>
+</li>             
+<li class="nav-header ">
+  Design
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/design.html">
+    Design notes
+  </a>
+</li>
+        <li class="nav-header">
+  API Reference
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="/Deedle/reference/index.html">
+    All Namespaces
+  </a>
+</li>
+    </ul>
+</aside>
+<main>
+    <div id="content">
+        
+<h1><a name="Deedle-DotNetInteractive-NET-Interactive-Notebook-Formatting" class="anchor" href="#Deedle-DotNetInteractive-NET-Interactive-Notebook-Formatting">Deedle.DotNetInteractive — .NET Interactive Notebook Formatting</a></h1>
+<p>The <code>Deedle.DotNetInteractive</code> package registers HTML formatters for Deedle frames and
+series in <a href="https://github.com/dotnet/interactive">.NET Interactive</a> notebooks —
+including <strong>Polyglot Notebooks</strong> (VS Code) and <strong>Jupyter</strong> via the .NET kernel.</p>
+<p>Install it alongside Deedle in a notebook cell:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="pp">#r</span> <span class="s">&quot;nuget: Deedle&quot;</span>
+<span class="pp">#r</span> <span class="s">&quot;nuget: Deedle.DotNetInteractive&quot;</span>
+</code></pre>
+<p>Once loaded, any <code>Frame&lt;_,_&gt;</code> or <code>Series&lt;_,_&gt;</code> displayed in a notebook cell is
+automatically rendered as a styled HTML table instead of plain text.</p>
+<a name="example"></a>
+<h2><a name="Example-output" class="anchor" href="#Example-output">Example output</a></h2>
+<p>Below is a frame as it would appear in a notebook. When using <code>Deedle.DotNetInteractive</code>,
+display output includes column types, dimensions, and missing-value counts.</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span data-fsdocs-tip="fs2" data-fsdocs-tip-unique="2" class="id">prices</span> <span class="o">=</span>
+    <span data-fsdocs-tip="fs3" data-fsdocs-tip-unique="3" class="fn">frame</span> <span class="pn">[</span> <span class="s">&quot;Open&quot;</span>  <span class="o">=&gt;</span> <span data-fsdocs-tip="fs4" data-fsdocs-tip-unique="4" class="rt">Series</span><span class="pn">.</span><span data-fsdocs-tip="fs5" data-fsdocs-tip-unique="5" class="id">ofValues</span> <span class="pn">[</span> <span class="n">100.0</span><span class="pn">;</span> <span class="n">102.5</span><span class="pn">;</span> <span class="n">101.0</span><span class="pn">;</span> <span class="n">103.0</span> <span class="pn">]</span>
+            <span class="s">&quot;Close&quot;</span> <span class="o">=&gt;</span> <span data-fsdocs-tip="fs4" data-fsdocs-tip-unique="6" class="rt">Series</span><span class="pn">.</span><span data-fsdocs-tip="fs5" data-fsdocs-tip-unique="7" class="id">ofValues</span> <span class="pn">[</span> <span class="n">101.5</span><span class="pn">;</span> <span class="n">101.0</span><span class="pn">;</span> <span class="n">103.5</span><span class="pn">;</span> <span class="n">104.0</span> <span class="pn">]</span>
+            <span class="s">&quot;Vol&quot;</span>   <span class="o">=&gt;</span> <span data-fsdocs-tip="fs4" data-fsdocs-tip-unique="8" class="rt">Series</span><span class="pn">.</span><span data-fsdocs-tip="fs5" data-fsdocs-tip-unique="9" class="id">ofValues</span> <span class="pn">[</span> <span class="n">12000</span><span class="pn">;</span> <span class="n">15000</span><span class="pn">;</span> <span class="n">11000</span><span class="pn">;</span> <span class="n">14000</span> <span class="pn">]</span> <span class="pn">]</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val prices: Frame&lt;int,string&gt; =
+  
+     Open  Close Vol   
+0 -&gt; 100   101.5 12000 
+1 -&gt; 102.5 101   15000 
+2 -&gt; 101   103.5 11000 
+3 -&gt; 103   104   14000</code></pre></td></tr></table>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span data-fsdocs-tip="fs6" data-fsdocs-tip-unique="10" class="id">vols</span> <span class="o">=</span> <span data-fsdocs-tip="fs4" data-fsdocs-tip-unique="11" class="rt">Series</span><span class="pn">.</span><span data-fsdocs-tip="fs5" data-fsdocs-tip-unique="12" class="id">ofValues</span> <span class="pn">[</span> <span class="n">12000</span><span class="pn">;</span> <span class="n">15000</span><span class="pn">;</span> <span class="n">11000</span><span class="pn">;</span> <span class="n">14000</span> <span class="pn">]</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val vols: Series&lt;int,int&gt; = 
+0 -&gt; 12000 
+1 -&gt; 15000 
+2 -&gt; 11000 
+3 -&gt; 14000</code></pre></td></tr></table>
+<a name="config"></a>
+<h2><a name="Configuring-display-options" class="anchor" href="#Configuring-display-options">Configuring display options</a></h2>
+<p>The <code>InteractiveConfig</code> module lets you control how frames and series are rendered.
+All settings are mutable and take effect immediately for subsequent cell evaluations.</p>
+<h3><a name="Frame-display-settings" class="anchor" href="#Frame-display-settings">Frame display settings</a></h3>
+<table>
+<thead>
+<tr class="header">
+<th><p>Setting</p></th>
+<th><p>Default</p></th>
+<th><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><p><code>InteractiveConfig.Frame.MaxRows</code></p></td>
+<td><p>10</p></td>
+<td><p>Maximum rows to display before truncating</p></td>
+</tr>
+<tr class="even">
+<td><p><code>InteractiveConfig.Frame.MaxCols</code></p></td>
+<td><p>20</p></td>
+<td><p>Maximum columns to display before truncating</p></td>
+</tr>
+<tr class="odd">
+<td><p><code>InteractiveConfig.Frame.ShowColTypes</code></p></td>
+<td><p>true</p></td>
+<td><p>Show column type names in the header</p></td>
+</tr>
+<tr class="even">
+<td><p><code>InteractiveConfig.Frame.ShowInfo</code></p></td>
+<td><p>true</p></td>
+<td><p>Show the info footer (dimensions and/or missing counts)</p></td>
+</tr>
+<tr class="odd">
+<td><p><code>InteractiveConfig.Frame.ShowDimensions</code></p></td>
+<td><p>true</p></td>
+<td><p>Show "N rows x M columns" in the footer</p></td>
+</tr>
+<tr class="even">
+<td><p><code>InteractiveConfig.Frame.ShowMissingValueCount</code></p></td>
+<td><p>true</p></td>
+<td><p>Show the count of missing values in the footer</p></td>
+</tr>
+</tbody>
+</table>
+
+<h3><a name="Series-display-settings" class="anchor" href="#Series-display-settings">Series display settings</a></h3>
+<table>
+<thead>
+<tr class="header">
+<th><p>Setting</p></th>
+<th><p>Default</p></th>
+<th><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><p><code>InteractiveConfig.Series.MaxItems</code></p></td>
+<td><p>10</p></td>
+<td><p>Maximum items to display before truncating</p></td>
+</tr>
+<tr class="even">
+<td><p><code>InteractiveConfig.Series.ShowInfo</code></p></td>
+<td><p>true</p></td>
+<td><p>Show the info footer</p></td>
+</tr>
+<tr class="odd">
+<td><p><code>InteractiveConfig.Series.ShowItemCount</code></p></td>
+<td><p>true</p></td>
+<td><p>Show total item count in the footer</p></td>
+</tr>
+<tr class="even">
+<td><p><code>InteractiveConfig.Series.ShowMissingValueCount</code></p></td>
+<td><p>true</p></td>
+<td><p>Show the count of missing values in the footer</p></td>
+</tr>
+</tbody>
+</table>
+
+<h3><a name="Example-compact-display" class="anchor" href="#Example-compact-display">Example: compact display</a></h3>
+<p>In a notebook cell you might write:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">open</span> <span data-fsdocs-tip="fs1" data-fsdocs-tip-unique="13" class="id">Deedle</span><span class="pn">.</span><span data-fsdocs-tip="fs7" data-fsdocs-tip-unique="14" class="id">DotNetInteractive</span>
+
+<span data-fsdocs-tip="fs8" data-fsdocs-tip-unique="15" class="m">InteractiveConfig</span><span class="pn">.</span><span data-fsdocs-tip="fs9" data-fsdocs-tip-unique="16" class="m">Frame</span><span class="pn">.</span><span data-fsdocs-tip="fs10" data-fsdocs-tip-unique="17" class="id">MaxRows</span> <span class="k">&lt;-</span> <span class="n">5</span>
+<span data-fsdocs-tip="fs8" data-fsdocs-tip-unique="18" class="m">InteractiveConfig</span><span class="pn">.</span><span data-fsdocs-tip="fs9" data-fsdocs-tip-unique="19" class="m">Frame</span><span class="pn">.</span><span data-fsdocs-tip="fs11" data-fsdocs-tip-unique="20" class="id">MaxCols</span> <span class="k">&lt;-</span> <span class="n">4</span>
+<span data-fsdocs-tip="fs8" data-fsdocs-tip-unique="21" class="m">InteractiveConfig</span><span class="pn">.</span><span data-fsdocs-tip="fs9" data-fsdocs-tip-unique="22" class="m">Frame</span><span class="pn">.</span><span data-fsdocs-tip="fs12" data-fsdocs-tip-unique="23" class="id">ShowColTypes</span> <span class="k">&lt;-</span> <span class="k">false</span>
+<span data-fsdocs-tip="fs8" data-fsdocs-tip-unique="24" class="m">InteractiveConfig</span><span class="pn">.</span><span data-fsdocs-tip="fs9" data-fsdocs-tip-unique="25" class="m">Frame</span><span class="pn">.</span><span data-fsdocs-tip="fs13" data-fsdocs-tip-unique="26" class="id">ShowMissingValueCount</span> <span class="k">&lt;-</span> <span class="k">false</span>
+</code></pre>
+<h3><a name="Resetting-to-defaults" class="anchor" href="#Resetting-to-defaults">Resetting to defaults</a></h3>
+<p>Call <code>InteractiveConfig.Reset()</code> to restore all settings to their defaults:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span data-fsdocs-tip="fs8" data-fsdocs-tip-unique="27" class="m">InteractiveConfig</span><span class="pn">.</span><span data-fsdocs-tip="fs14" data-fsdocs-tip-unique="28" class="id">Reset</span><span class="pn">(</span><span class="pn">)</span>
+</code></pre>
+<a name="how-it-works"></a>
+<h2><a name="How-it-works" class="anchor" href="#How-it-works">How it works</a></h2>
+<p><code>Deedle.DotNetInteractive</code> ships an <code>extension.dib</code> file that is loaded automatically
+by the .NET Interactive kernel. It registers two <code>Formatter</code> instances:</p>
+<ul>
+<li>One for any type implementing <code>IFrameFormattable</code> (all <code>Frame&lt;_,_&gt;</code> types)</li>
+<li>One for any type implementing <code>ISeriesFormattable</code> (all <code>Series&lt;_,_&gt;</code> types)</li>
+</ul>
+<p>Both produce <code>text/html</code> output. The formatters call the <code>InteractiveFormat</code> method
+on the frame or series, which returns a string grid that is then wrapped in an HTML
+<code>&lt;table&gt;</code> with basic CSS styling.</p>
+<p>Because registration happens via the standard .NET Interactive extension mechanism,
+no manual setup code is needed — just reference the NuGet package.</p>
+<a name="nuget"></a>
+<h2><a name="NuGet-package-information" class="anchor" href="#NuGet-package-information">NuGet package information</a></h2>
+<table>
+<thead>
+<tr class="header">
+<th><p>Package</p></th>
+<th><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><p><code>Deedle</code></p></td>
+<td><p>Core library</p></td>
+</tr>
+<tr class="even">
+<td><p><code>Deedle.DotNetInteractive</code></p></td>
+<td><p>.NET Interactive HTML formatters for frames and series</p></td>
+</tr>
+</tbody>
+</table>
+
+
+        <div popover class="fsdocs-tip" id="fs1">namespace Deedle</div>
+<div popover class="fsdocs-tip" id="fs2">val prices: Frame&lt;int,string&gt;</div>
+<div popover class="fsdocs-tip" id="fs3">val frame: columns: (&#39;a * #ISeries&lt;&#39;c&gt;) seq -&gt; Frame&lt;&#39;c,&#39;a&gt; (requires equality and equality)<br /><em>&lt;summary&gt;
+ A function for constructing data frame from a sequence of name - column pairs.
+ This provides a nicer syntactic sugar for `Frame.ofColumns`.
+ &lt;/summary&gt;<br />&lt;example&gt;
+ To create a simple frame with two columns, you can write:
+ &lt;code&gt;
+ frame [ &quot;A&quot; =&amp;gt; series [ 1 =&amp;gt; 30.0; 2 =&amp;gt; 35.0 ]
+         &quot;B&quot; =&amp;gt; series [ 1 =&amp;gt; 30.0; 3 =&amp;gt; 40.0 ] ]
+ &lt;/code&gt;&lt;/example&gt;<br />&lt;category&gt;Frame construction&lt;/category&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs4">Multiple items<br />module Series
+
+from Deedle<br /><em>&lt;summary&gt;
+ The `Series` module provides an F#-friendly API for working with data and time series.
+ The API follows the usual design for collection-processing in F#, so the functions work
+ well with the pipelining (&lt;c&gt;|&amp;gt;&lt;/c&gt;) operator. For example, given a series with ages,
+ we can use `Series.filterValues` to filter outliers and then `Stats.mean` to calculate
+ the mean:
+
+     ages
+     |&amp;gt; Series.filterValues (fun v -&amp;gt; v &amp;gt; 0.0 &amp;amp;&amp;amp; v &amp;lt; 120.0)
+     |&amp;gt; Stats.mean
+
+ The module provides comprehensive set of functions for working with series. The same
+ API is also exposed using C#-friendly extension methods. In C#, the above snippet could
+ be written as:
+
+     [lang=csharp]
+     ages
+       .Where(kvp =&amp;gt; kvp.Value &amp;gt; 0.0 &amp;amp;&amp;amp; kvp.Value &amp;lt; 120.0)
+       .Mean()
+
+ For more information about similar frame-manipulation functions, see the `Frame` module.
+ For more information about C#-friendly extensions, see `SeriesExtensions`. The functions
+ in the `Series` module are grouped in a number of categories and documented below.
+
+ Accessing series data and lookup
+ --------------------------------
+
+ Functions in this category provide access to the values in the series.
+
+  - The term _observation_ is used for a key value pair in the series.
+  - When working with a sorted series, it is possible to perform lookup using
+    keys that are not present in the series - you can specify to search for the
+    previous or next available value using _lookup behavior_.
+  - Functions such as `get` and `getAll` have their counterparts `lookup` and
+    `lookupAll` that let you specify lookup behavior.
+  - For most of the functions that may fail, there is a `try[Foo]` variant that
+    returns `None` instead of failing.
+  - Functions with a name ending with `At` perform lookup based on the absolute
+    integer offset (and ignore the keys of the series)
+
+ Series transformations
+ ----------------------
+
+ Functions in this category perform standard transformations on series including
+ projections, filtering, taking some sub-series of the series, aggregating values
+ using scanning and so on.
+
+ Projection and filtering functions generally skip over missing values, but there
+ are variants `filterAll` and `mapAll` that let you handle missing values explicitly.
+ Keys can be transformed using `mapKeys`. When you do not need to consider the keys,
+ and only care about values, use `filterValues` and `mapValues` (which is also aliased
+ as the `$` operator).
+
+ Series supports standard set of folding functions including `reduce` and `fold` (to
+ reduce series values into a single value) as well as the `scan[All]` function, which
+ can be used to fold values of a series into a series of intermeidate folding results.
+
+ The functions `take[Last]` and `skip[Last]` can be used to take a sub-series of the
+ original source series by skipping a specified number of elements. Note that this
+ does not require an ordered series and it ignores the index - for index-based lookup
+ use slicing, such as `series.[lo .. hi]`, instead.
+
+ Finally the `shift` function can be used to obtain a series with values shifted by
+ the specified offset. This can be used e.g. to get previous value for each key using
+ `Series.shift 1 ts`. The `diff` function calculates difference from previous value using
+ `ts - (Series.shift offs ts)`.
+
+ Processing series with exceptions
+ ---------------------------------
+
+ The functions in this group can be used to write computations over series that may fail.
+ They use the type &lt;c&gt;tryval&amp;lt;&#39;T&amp;gt;&lt;/c&gt; which is defined as a discriminated union
+ with two cases: Success containing a value, or Error containing an exception.
+
+ The function `tryMap` lets you create &lt;c&gt;Series&amp;lt;&#39;K, tryval&amp;lt;&#39;T&amp;gt;&amp;gt;&lt;/c&gt; by mapping over values
+ of an original series. You can then extract values using `tryValues`, which throws
+ `AggregateException` if there were any errors. Functions `tryErrors` and `trySuccesses`
+ give series containing only errors and successes. You can fill failed values with
+ a constant using `fillErrorsWith`.
+
+ Hierarchical index operations
+ -----------------------------
+
+ When the key of a series is tuple, the elements of the tuple can be treated
+ as multiple levels of a index. For example &lt;c&gt;Series&amp;lt;&#39;K1 * &#39;K2, &#39;V&amp;gt;&lt;/c&gt; has two
+ levels with keys of types &lt;c&gt;&#39;K1&lt;/c&gt; and &lt;c&gt;&#39;K2&lt;/c&gt; respectively.
+
+ The functions in this cateogry provide a way for aggregating values in the
+ series at one of the levels. For example, given a series `input` indexed by
+ two-element tuple, you can calculate mean for different first-level values as
+ follows:
+
+     input |&amp;gt; applyLevel fst Stats.mean
+
+ Note that the `Stats` module provides helpers for typical statistical operations,
+ so the above could be written just as `input |&amp;gt; Stats.levelMean fst`.
+
+ Grouping, windowing and chunking
+ --------------------------------
+
+ This category includes functions that group data from a series in some way. Two key
+ concepts here are _window_ and _chunk_. Window refers to (overlapping) sliding windows
+ over the input series while chunk refers to non-overlapping blocks of the series.
+
+ The boundary behavior can be specified using the `Boundary` flags. The value
+ `Skip` means that boundaries (incomplete windows or chunks) should be skipped. The value
+ `AtBeginning` and `AtEnding` can be used to define at which side should the boundary be
+ returned (or skipped). For chunking, `AtBeginning ||| Skip` makes sense and it means that
+ the incomplete chunk at the beginning should be skipped (aligning the last chunk with the end).
+
+ The behavior may be specified in a number of ways (which is reflected in the name):
+  - `dist` - using an absolute distance between the keys
+  - `while` - using a condition on the first and last key
+  - `size` - by specifying the absolute size of the window/chunk
+
+ The functions ending with `Into` take a function to be applied to the window/chunk.
+ The functions `window`, `windowInto` and `chunk`, `chunkInto` are simplified versions
+ that take a size. There is also `pairwise` function for sliding window of size two.
+
+ Missing values
+ --------------
+
+ This group of functions provides a way of working with missing values in a series.
+ The `dropMissing` function drops all keys for which there are no values in the series.
+ The `withMissingFrom` function lets you copy missing values from another series.
+ The remaining functions provide different mechanism for filling the missing values.
+
+  * `fillMissingWith` fills missing values with a specified constant
+  * `fillMissingUsing` calls a specified function for every missing value
+  * `fillMissing` and variants propagates values from previous/later keys
+
+ Sorting and index manipulation
+ ------------------------------
+
+ A series that is sorted by keys allows a number of additional operations (such as lookup
+ using the `Lookp.ExactOrSmaller` lookup behavior). However, it is also possible to sort
+ series based on the values - although the functions for manipulation with series do not
+ guarantee that the order will be preserved.
+
+ To sort series by keys, use `sortByKey`. Other sorting functions let you sort the series
+ using a specified comparer function (`sortWith`), using a projection function (`sortBy`)
+ and using the default comparison (`sort`).
+
+ In addition, you can also replace the keys of a series with other keys using `indexWith`
+ or with integers using `indexOrdinally`. To pick and reorder series values using to match
+ a list of keys use `realign`.
+
+ Sampling, resampling and advanced lookup
+ ----------------------------------------
+
+ Given a (typically) time series sampling or resampling makes it possible to
+ get time series with representative values at lower or uniform frequency.
+ We use the following terminology:
+
+  - `lookup` and `sample` functions find values at specified key; if a key is not
+    available, they can look for value associated with the nearest smaller or
+    the nearest greater key.
+
+  - `resample` function aggregate values values into chunks based
+    on a specified collection of keys (e.g. explicitly provided times), or
+    based on some relation between keys (e.g. date times having the same date).
+
+  - `resampleUniform` is similar to resampling, but we specify keys by
+    providing functions that generate a uniform sequence of keys (e.g. days),
+    the operation also fills value for days that have no corresponding
+    observations in the input sequence.
+
+ Joining, merging and zipping
+ ----------------------------
+
+ Given two series, there are two ways to combine the values. If the keys in the series
+ are not overlapping (or you want to throw away values from one or the other series),
+ then you can use `merge` or `mergeUsing`. To merge more than 2 series efficiently, use
+ the `mergeAll` function, which has been optimized for large number of series.
+
+ If you want to align two series, you can use the _zipping_ operation. This aligns
+ two series based on their keys and gives you tuples of values. The default behavior
+ (`zip`) uses outer join and exact matching. For ordered series, you can specify
+ other forms of key lookups (e.g. find the greatest smaller key) using `zipAlign`.
+ functions ending with `Into` are generally easier to use as they call a specified
+ function to turn the tuple (of possibly missing values) into a new value.
+
+ For more complicated behaviors, it is often convenient to use joins on frames instead
+ of working with series. Create two frames with single columns and then use the join
+ operation. The result will be a frame with two columns (which is easier to use than
+ series of tuples).
+ &lt;/summary&gt;<br />&lt;category&gt;Frame and series operations&lt;/category&gt;</em><br /><br />--------------------<br />type Series =
+  static member ofNullables: values: Nullable&lt;&#39;a&gt; seq -&gt; Series&lt;int,&#39;a&gt; (requires default constructor and value type and &#39;a :&gt; ValueType)
+  static member ofObservations: observations: (&#39;a * &#39;b) seq -&gt; Series&lt;&#39;a,&#39;b&gt; (requires equality)
+  static member ofOptionalObservations: observations: (&#39;K * &#39;a option) seq -&gt; Series&lt;&#39;K,&#39;a&gt; (requires equality)
+  static member ofValues: values: &#39;a seq -&gt; Series&lt;int,&#39;a&gt;<br /><br />--------------------<br />type Series&lt;&#39;K,&#39;V (requires equality)&gt; =
+  interface ISeriesFormattable
+  interface IFsiFormattable
+  interface ISeries&lt;&#39;K&gt;
+  new: index: IIndex&lt;&#39;K&gt; * vector: IVector&lt;&#39;V&gt; * vectorBuilder: IVectorBuilder * indexBuilder: IIndexBuilder -&gt; Series&lt;&#39;K,&#39;V&gt; + 3 overloads
+  member After: lowerExclusive: &#39;K -&gt; Series&lt;&#39;K,&#39;V&gt;
+  member Aggregate: aggregation: Aggregation&lt;&#39;K&gt; * keySelector: Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,&#39;TNewKey&gt; * valueSelector: Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,OptionalValue&lt;&#39;R&gt;&gt; -&gt; Series&lt;&#39;TNewKey,&#39;R&gt; (requires equality) + 1 overload
+  member AsyncMaterialize: unit -&gt; Async&lt;Series&lt;&#39;K,&#39;V&gt;&gt;
+  member Before: upperExclusive: &#39;K -&gt; Series&lt;&#39;K,&#39;V&gt;
+  member Between: lowerInclusive: &#39;K * upperInclusive: &#39;K -&gt; Series&lt;&#39;K,&#39;V&gt;
+  member Compare: another: Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,Diff&lt;&#39;V&gt;&gt;
+  ...<br /><em>&lt;summary&gt;
+ The type &lt;c&gt;Series&amp;lt;K, V&amp;gt;&lt;/c&gt; represents a data series consisting of values `V` indexed by
+ keys `K`. The keys of a series may or may not be ordered
+ &lt;/summary&gt;<br />&lt;category&gt;Core frame and series types&lt;/category&gt;</em><br /><br />--------------------<br />new: pairs: System.Collections.Generic.KeyValuePair&lt;&#39;K,&#39;V&gt; seq -&gt; Series&lt;&#39;K,&#39;V&gt;<br />new: keys: &#39;K seq * values: &#39;V seq -&gt; Series&lt;&#39;K,&#39;V&gt;<br />new: keys: &#39;K array * values: &#39;V array -&gt; Series&lt;&#39;K,&#39;V&gt;<br />new: index: Indices.IIndex&lt;&#39;K&gt; * vector: IVector&lt;&#39;V&gt; * vectorBuilder: Vectors.IVectorBuilder * indexBuilder: Indices.IIndexBuilder -&gt; Series&lt;&#39;K,&#39;V&gt;</div>
+<div popover class="fsdocs-tip" id="fs5">static member Series.ofValues: values: &#39;a seq -&gt; Series&lt;int,&#39;a&gt;</div>
+<div popover class="fsdocs-tip" id="fs6">val vols: Series&lt;int,int&gt;</div>
+<div popover class="fsdocs-tip" id="fs7">namespace Deedle.DotNetInteractive</div>
+<div popover class="fsdocs-tip" id="fs8">module InteractiveConfig
+
+from Deedle.DotNetInteractive</div>
+<div popover class="fsdocs-tip" id="fs9">module Frame
+
+from Deedle.DotNetInteractive.InteractiveConfig</div>
+<div popover class="fsdocs-tip" id="fs10">val mutable MaxRows: int</div>
+<div popover class="fsdocs-tip" id="fs11">val mutable MaxCols: int</div>
+<div popover class="fsdocs-tip" id="fs12">val mutable ShowColTypes: bool</div>
+<div popover class="fsdocs-tip" id="fs13">val mutable ShowMissingValueCount: bool</div>
+<div popover class="fsdocs-tip" id="fs14">val Reset: unit -&gt; unit</div>
+
+    </div>
+</main>
+<aside id="fsdocs-page-menu">
+    <p id="on-this-page">On this page</p>
+    <ul>
+  <li class="level-1">
+    <a href="#Deedle-DotNetInteractive-NET-Interactive-Notebook-Formatting">
+      Deedle.DotNetInteractive — .NET Interactive Notebook Formatting
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Example-output">
+      Example output
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Configuring-display-options">
+      Configuring display options
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Frame-display-settings">
+      Frame display settings
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Series-display-settings">
+      Series display settings
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Example-compact-display">
+      Example: compact display
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Resetting-to-defaults">
+      Resetting to defaults
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#How-it-works">
+      How it works
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#NuGet-package-information">
+      NuGet package information
+    </a>
+  </li>
+</ul>
+</aside>
+<dialog>
+    <input type="search" placeholder="Search docs" />
+    <div class="results">
+        <ul></ul>
+        <p class="empty">Type something to start searching.</p>
+    </div>
+</dialog>
+<script type="module" src="/Deedle/content/fsdocs-tips.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-theme-toggle.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-details-toggle.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-theme.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-search.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-copy-button.js"></script>
+
+</body>
+</html>

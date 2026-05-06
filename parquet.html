@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="en" data-root="/Deedle/">
+<head>
+    <meta charset="UTF-8">
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="Deedle.Arrow" name="author">
+    <!-- Opengraph properties (https://ogp.me/) -->
+    <meta property="og:site_name" content="Deedle">
+    <meta property="og:title" content="Deedle.Parquet — Apache Parquet integration" />
+    <meta property="og:url" content="/Deedle/parquet.html">
+    <meta property="og:type" content="website" />
+    <!-- Twitter cards (https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/summary-card-with-large-image) -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="/Deedle/">
+    <meta name="twitter:title" content="Deedle.Parquet — Apache Parquet integration">
+    <meta name="description" content="Reading and writing Apache Parquet files for efficient columnar storage and cross-platform data exchange">
+<meta name="twitter:site" content="Reading and writing Apache Parquet files for efficient columnar storage and cross-platform data exchange">
+<meta name="og:description" content="Reading and writing Apache Parquet files for efficient columnar storage and cross-platform data exchange">
+<meta name="keywords" content="parquet, columnar storage, compression, interop, pandas, spark">
+    <title>Deedle.Parquet — Apache Parquet integration | Deedle</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code&display=swap" rel="stylesheet">
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <link href="/Deedle/img/favicon.ico" rel="icon" sizes="32x32" type="image/png"/>
+    <script type="application/javascript" src="/Deedle/content/fsdocs-theme-set-dark.js"></script>
+    <script type="application/javascript" src="/Deedle/content/fsdocs-details-set-expanded.js"></script>
+    <link href="/Deedle/content/fsdocs-default.css" rel="stylesheet" type="text/css"/>
+    <link href="/Deedle/content/fsdocs-theme.css" rel="stylesheet" type="text/css"/>
+    
+    
+</head>
+<body class="content">
+<header>
+    <div class="start">
+        <div id="menu-toggle">
+            <iconify-icon class="icon closed" height="22" icon="eva:menu-fill" width="22"></iconify-icon>
+            <iconify-icon class="icon open" height="22" icon="mi:close" width="22"></iconify-icon>
+            <input type="checkbox" name="mobile-menu" />
+            <ul class="menu">
+                <li class="nav-header">Links</li>
+                <li class="license-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fslaborg/Deedle/blob/master/LICENSE.md">License</a>
+                </li>
+                <li class="release-notes-menu-item builtin-menu-item nav-item"><a class="nav-link"
+                                        href="https://github.com/fslaborg/Deedle/blob/master/RELEASE_NOTES.md">Release
+                    Notes</a></li>
+                <li class="repository-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fslaborg/Deedle/">Source
+                    Repository</a></li>
+                <li class="nav-header ">
+  Guides
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/tutorial.html">
+    Deedle in 10 minutes
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/frame.html">
+    Data frame features
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/series.html">
+    Series and time series features
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/stats.html">
+    Calculating frame and series statistics
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/missing.html">
+    Handling missing values
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/joining.html">
+    Joining, merging and appending frames
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/lazysource.html">
+    Delay-loaded series
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/csharp.html">
+    Deedle in C#
+  </a>
+</li>             
+<li class="nav-header active">
+  Integrations
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/excel.html">
+    Excel integration — ExcelReader &amp; ExcelWriter
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/arrow.html">
+    Deedle.Arrow — Apache Arrow and Feather integration
+  </a>
+</li>             
+<li class="nav-item active">
+  <a class="nav-link" href="/Deedle/parquet.html">
+    Deedle.Parquet — Apache Parquet integration
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/math.html">
+    Deedle.MathNetNumerics — MathNet.Numerics integration
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/dotnetinteractive.html">
+    Deedle.DotNetInteractive — .NET Interactive notebook formatting
+  </a>
+</li>             
+<li class="nav-header ">
+  Design
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/design.html">
+    Design notes
+  </a>
+</li>
+                <li class="nav-header">
+  API Reference
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="/Deedle/reference/index.html">
+    All Namespaces
+  </a>
+</li>
+            </ul>
+        </div>
+        <a href="/Deedle/">
+            <img alt="Logo" src="/Deedle/img/logo.png">
+            <strong>Deedle</strong>
+        </a>
+    </div>
+    <div class="end">
+        <a href="https://github.com/fslaborg/Deedle/" target="_blank">
+            <iconify-icon icon="uil:github" width="26" height="26"></iconify-icon>
+        </a>
+        <iconify-icon id="search-btn" icon="carbon:search" class="search" width="24" height="24"></iconify-icon>
+        <fsdocs-theme-toggle></fsdocs-theme-toggle>
+    </div>
+</header>
+<aside id="fsdocs-main-menu">
+    <ul class="menu">
+        <li class="nav-header">Links</li>
+        <li class="license-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fslaborg/Deedle/blob/master/LICENSE.md">License</a>
+        </li>
+        <li class="release-notes-menu-item builtin-menu-item nav-item"><a class="nav-link"
+                                href="https://github.com/fslaborg/Deedle/blob/master/RELEASE_NOTES.md">Release
+            Notes</a></li>
+        <li class="repository-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fslaborg/Deedle/">Source
+            Repository</a></li>
+        <li class="nav-header ">
+  Guides
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/tutorial.html">
+    Deedle in 10 minutes
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/frame.html">
+    Data frame features
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/series.html">
+    Series and time series features
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/stats.html">
+    Calculating frame and series statistics
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/missing.html">
+    Handling missing values
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/joining.html">
+    Joining, merging and appending frames
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/lazysource.html">
+    Delay-loaded series
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/csharp.html">
+    Deedle in C#
+  </a>
+</li>             
+<li class="nav-header active">
+  Integrations
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/excel.html">
+    Excel integration — ExcelReader &amp; ExcelWriter
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/arrow.html">
+    Deedle.Arrow — Apache Arrow and Feather integration
+  </a>
+</li>             
+<li class="nav-item active">
+  <a class="nav-link" href="/Deedle/parquet.html">
+    Deedle.Parquet — Apache Parquet integration
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/math.html">
+    Deedle.MathNetNumerics — MathNet.Numerics integration
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/dotnetinteractive.html">
+    Deedle.DotNetInteractive — .NET Interactive notebook formatting
+  </a>
+</li>             
+<li class="nav-header ">
+  Design
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/design.html">
+    Design notes
+  </a>
+</li>
+        <li class="nav-header">
+  API Reference
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="/Deedle/reference/index.html">
+    All Namespaces
+  </a>
+</li>
+    </ul>
+</aside>
+<main>
+    <div id="content">
+        
+<h1><a name="Deedle-Parquet-Apache-Parquet-Integration" class="anchor" href="#Deedle-Parquet-Apache-Parquet-Integration">Deedle.Parquet — Apache Parquet Integration</a></h1>
+<p>The <code>Deedle.Parquet</code> package adds support for <a href="https://parquet.apache.org/">Apache Parquet</a> —
+a columnar storage format optimised for analytics workloads. Parquet files are widely used by
+Spark, Pandas, DuckDB, BigQuery, and many other data tools for efficient on-disk storage
+with built-in compression.</p>
+<p>Install it alongside Deedle:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="id">dotnet</span> <span class="id">add</span> <span class="id">package</span> <span class="id">Deedle</span><span class="pn">.</span><span class="id">Parquet</span>
+</code></pre>
+<p>Then open both namespaces:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">open</span> <span class="id">Deedle</span>
+<span class="k">open</span> <span class="id">Deedle</span><span class="pn">.</span><span class="id">Parquet</span>
+</code></pre>
+<p>After opening <code>Deedle.Parquet</code> you gain access to a <code>Frame</code> module that extends the usual
+Deedle API with Parquet-specific functions (e.g. <code>Frame.readParquet</code>, <code>Frame.writeParquet</code>).</p>
+<a name="file-io"></a>
+<h2><a name="Reading-and-writing-Parquet-files" class="anchor" href="#Reading-and-writing-Parquet-files">Reading and writing Parquet files</a></h2>
+<h3><a name="Writing-a-frame-to-disk" class="anchor" href="#Writing-a-frame-to-disk">Writing a frame to disk</a></h3>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// Build a small sample frame</span>
+<span class="k">let</span> <span data-fsdocs-tip="fs5" data-fsdocs-tip-unique="7" class="id">prices</span> <span class="o">=</span>
+    <span data-fsdocs-tip="fs6" data-fsdocs-tip-unique="8" class="fn">frame</span> <span class="pn">[</span> <span class="s">&quot;Open&quot;</span>  <span class="o">=&gt;</span> <span data-fsdocs-tip="fs7" data-fsdocs-tip-unique="9" class="rt">Series</span><span class="pn">.</span><span data-fsdocs-tip="fs8" data-fsdocs-tip-unique="10" class="id">ofValues</span> <span class="pn">[</span> <span class="n">100.0</span><span class="pn">;</span> <span class="n">102.5</span><span class="pn">;</span> <span class="n">101.0</span><span class="pn">;</span> <span class="n">103.0</span> <span class="pn">]</span>
+            <span class="s">&quot;Close&quot;</span> <span class="o">=&gt;</span> <span data-fsdocs-tip="fs7" data-fsdocs-tip-unique="11" class="rt">Series</span><span class="pn">.</span><span data-fsdocs-tip="fs8" data-fsdocs-tip-unique="12" class="id">ofValues</span> <span class="pn">[</span> <span class="n">101.5</span><span class="pn">;</span> <span class="n">101.0</span><span class="pn">;</span> <span class="n">103.5</span><span class="pn">;</span> <span class="n">104.0</span> <span class="pn">]</span>
+            <span class="s">&quot;Vol&quot;</span>   <span class="o">=&gt;</span> <span data-fsdocs-tip="fs7" data-fsdocs-tip-unique="13" class="rt">Series</span><span class="pn">.</span><span data-fsdocs-tip="fs8" data-fsdocs-tip-unique="14" class="id">ofValues</span> <span class="pn">[</span> <span class="n">12000</span><span class="pn">;</span> <span class="n">15000</span><span class="pn">;</span> <span class="n">11000</span><span class="pn">;</span> <span class="n">14000</span> <span class="pn">]</span> <span class="pn">]</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val prices: Frame&lt;int,string&gt; =
+  
+     Open  Close Vol   
+0 -&gt; 100   101.5 12000 
+1 -&gt; 102.5 101   15000 
+2 -&gt; 101   103.5 11000 
+3 -&gt; 103   104   14000</code></pre></td></tr></table>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// Write as Parquet file</span>
+<span data-fsdocs-tip="fs9" data-fsdocs-tip-unique="15" class="m">Frame</span><span class="pn">.</span><span data-fsdocs-tip="fs10" data-fsdocs-tip-unique="16" class="id">writeParquet</span> <span class="s">&quot;/tmp/prices.parquet&quot;</span> <span data-fsdocs-tip="fs5" data-fsdocs-tip-unique="17" class="id">prices</span>
+</code></pre>
+<h3><a name="Reading-a-frame-from-disk" class="anchor" href="#Reading-a-frame-from-disk">Reading a frame from disk</a></h3>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span data-fsdocs-tip="fs11" data-fsdocs-tip-unique="18" class="id">prices2</span> <span class="o">=</span> <span data-fsdocs-tip="fs9" data-fsdocs-tip-unique="19" class="m">Frame</span><span class="pn">.</span><span data-fsdocs-tip="fs12" data-fsdocs-tip-unique="20" class="id">readParquet</span> <span class="s">&quot;/tmp/prices.parquet&quot;</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code></code></pre></td></tr></table>
+<p>Row keys after reading are always 0-based integers. See the section on
+<a href="#index">row-key preservation</a> below if you need to round-trip named rows.</p>
+<a name="stream-io"></a>
+<h2><a name="Stream-based-I-O" class="anchor" href="#Stream-based-I-O">Stream-based I/O</a></h2>
+<p>Parquet files can also be read from and written to any seekable .NET <code>Stream</code>.
+This is useful when working with in-memory buffers or cloud storage SDKs that
+expose streams rather than file paths.</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span data-fsdocs-tip="fs13" data-fsdocs-tip-unique="21" class="fn">streamExample</span> <span class="pn">(</span><span class="pn">)</span> <span class="o">=</span>
+    <span class="c">// Write to an in-memory stream</span>
+    <span class="k">use</span> <span data-fsdocs-tip="fs14" data-fsdocs-tip-unique="22" class="d">ms</span> <span class="o">=</span> <span class="k">new</span> <span data-fsdocs-tip="fs15" data-fsdocs-tip-unique="23" class="d">MemoryStream</span><span class="pn">(</span><span class="pn">)</span>
+    <span data-fsdocs-tip="fs9" data-fsdocs-tip-unique="24" class="m">Frame</span><span class="pn">.</span><span data-fsdocs-tip="fs16" data-fsdocs-tip-unique="25" class="id">writeParquetStream</span> <span data-fsdocs-tip="fs14" data-fsdocs-tip-unique="26" class="d">ms</span> <span data-fsdocs-tip="fs5" data-fsdocs-tip-unique="27" class="id">prices</span>
+
+    <span class="c">// Rewind and read back</span>
+    <span data-fsdocs-tip="fs14" data-fsdocs-tip-unique="28" class="d">ms</span><span class="pn">.</span><span data-fsdocs-tip="fs17" data-fsdocs-tip-unique="29" class="id">Position</span> <span class="k">&lt;-</span> <span class="n">0L</span>
+    <span class="k">let</span> <span data-fsdocs-tip="fs18" data-fsdocs-tip-unique="30" class="fn">prices3</span> <span class="o">=</span> <span data-fsdocs-tip="fs9" data-fsdocs-tip-unique="31" class="m">Frame</span><span class="pn">.</span><span data-fsdocs-tip="fs19" data-fsdocs-tip-unique="32" class="id">readParquetStream</span> <span data-fsdocs-tip="fs14" data-fsdocs-tip-unique="33" class="d">ms</span>
+    <span data-fsdocs-tip="fs18" data-fsdocs-tip-unique="34" class="fn">prices3</span>
+
+<span class="k">let</span> <span data-fsdocs-tip="fs18" data-fsdocs-tip-unique="35" class="id">prices3</span> <span class="o">=</span> <span data-fsdocs-tip="fs13" data-fsdocs-tip-unique="36" class="fn">streamExample</span> <span class="pn">(</span><span class="pn">)</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code></code></pre></td></tr></table>
+<blockquote>
+<p><strong>Note:</strong> Parquet streams must be seekable (<code>stream.CanSeek = true</code>). Unlike
+Arrow IPC streams, network-only streams are not supported.</p>
+</blockquote>
+<a name="index"></a>
+<h2><a name="Preserving-row-keys-round-trip-with-named-rows" class="anchor" href="#Preserving-row-keys-round-trip-with-named-rows">Preserving row keys (round-trip with named rows)</a></h2>
+<p>By default, row keys are dropped when writing Parquet files. Use
+<code>Frame.writeParquetWithIndex</code> to serialise row keys into a special <code>__index__</code> column,
+then <code>Frame.readParquetWithIndex</code> to restore them.</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// Frame with string row keys</span>
+<span class="k">let</span> <span data-fsdocs-tip="fs20" data-fsdocs-tip-unique="37" class="id">monthly</span> <span class="o">=</span>
+    <span class="k">let</span> <span data-fsdocs-tip="fs21" data-fsdocs-tip-unique="38" class="fn">keys</span> <span class="o">=</span> <span class="pn">[|</span> <span class="s">&quot;Jan&quot;</span><span class="pn">;</span> <span class="s">&quot;Feb&quot;</span><span class="pn">;</span> <span class="s">&quot;Mar&quot;</span><span class="pn">;</span> <span class="s">&quot;Apr&quot;</span> <span class="pn">|]</span>
+    <span data-fsdocs-tip="fs9" data-fsdocs-tip-unique="39" class="rt">Frame</span><span class="pn">.</span><span data-fsdocs-tip="fs22" data-fsdocs-tip-unique="40" class="id">ofColumns</span> <span class="pn">[</span>
+        <span class="s">&quot;Revenue&quot;</span><span class="pn">,</span> <span data-fsdocs-tip="fs7" data-fsdocs-tip-unique="41" class="fn">Series</span><span class="pn">(</span><span data-fsdocs-tip="fs21" data-fsdocs-tip-unique="42" class="fn">keys</span><span class="pn">,</span> <span class="pn">[|</span> <span class="n">1200.0</span><span class="pn">;</span> <span class="n">1350.0</span><span class="pn">;</span> <span class="n">1100.0</span><span class="pn">;</span> <span class="n">1500.0</span> <span class="pn">|]</span><span class="pn">)</span>
+        <span class="s">&quot;Cost&quot;</span><span class="pn">,</span>    <span data-fsdocs-tip="fs7" data-fsdocs-tip-unique="43" class="fn">Series</span><span class="pn">(</span><span data-fsdocs-tip="fs21" data-fsdocs-tip-unique="44" class="fn">keys</span><span class="pn">,</span> <span class="pn">[|</span> <span class="n">800.0</span><span class="pn">;</span>  <span class="n">900.0</span><span class="pn">;</span>  <span class="n">750.0</span><span class="pn">;</span>  <span class="n">1000.0</span> <span class="pn">|]</span><span class="pn">)</span>
+    <span class="pn">]</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val monthly: Frame&lt;string,string&gt; =
+  
+       Revenue Cost 
+Jan -&gt; 1200    800  
+Feb -&gt; 1350    900  
+Mar -&gt; 1100    750  
+Apr -&gt; 1500    1000</code></pre></td></tr></table>
+<pre class="fssnip highlighted"><code lang="fsharp"><span data-fsdocs-tip="fs9" data-fsdocs-tip-unique="45" class="m">Frame</span><span class="pn">.</span><span data-fsdocs-tip="fs23" data-fsdocs-tip-unique="46" class="id">writeParquetWithIndex</span> <span class="s">&quot;/tmp/monthly.parquet&quot;</span> <span data-fsdocs-tip="fs20" data-fsdocs-tip-unique="47" class="id">monthly</span>
+
+<span class="c">// Read back, restoring original string row keys</span>
+<span class="k">let</span> <span data-fsdocs-tip="fs24" data-fsdocs-tip-unique="48" class="id">monthly2</span> <span class="pn">:</span> <span data-fsdocs-tip="fs9" data-fsdocs-tip-unique="49" class="rt">Frame</span><span class="pn">&lt;</span><span data-fsdocs-tip="fs25" data-fsdocs-tip-unique="50" class="rt">string</span><span class="pn">,</span> <span data-fsdocs-tip="fs25" data-fsdocs-tip-unique="51" class="rt">string</span><span class="pn">&gt;</span> <span class="o">=</span> <span data-fsdocs-tip="fs9" data-fsdocs-tip-unique="52" class="m">Frame</span><span class="pn">.</span><span data-fsdocs-tip="fs26" data-fsdocs-tip-unique="53" class="id">readParquetWithIndex</span> <span class="s">&quot;/tmp/monthly.parquet&quot;</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code></code></pre></td></tr></table>
+<a name="missing"></a>
+<h2><a name="Missing-values" class="anchor" href="#Missing-values">Missing values</a></h2>
+<p>Deedle missing values are encoded as Parquet nulls via nullable column types.
+Value-type columns (e.g. <code>float</code>, <code>int</code>) are stored as <code>Nullable&lt;T&gt;</code> in Parquet;
+string columns use native Parquet null support. Missing values survive
+round-trips with zero data loss:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span data-fsdocs-tip="fs27" data-fsdocs-tip-unique="54" class="id">withGaps</span> <span class="o">=</span>
+    <span data-fsdocs-tip="fs6" data-fsdocs-tip-unique="55" class="fn">frame</span> <span class="pn">[</span> <span class="s">&quot;Score&quot;</span> <span class="o">=&gt;</span> <span data-fsdocs-tip="fs7" data-fsdocs-tip-unique="56" class="rt">Series</span><span class="pn">.</span><span data-fsdocs-tip="fs8" data-fsdocs-tip-unique="57" class="id">ofValues</span> <span class="pn">[</span> <span class="n">1.0</span><span class="pn">;</span> <span data-fsdocs-tip="fs28" data-fsdocs-tip-unique="58" class="id">nan</span><span class="pn">;</span> <span class="n">3.0</span><span class="pn">;</span> <span data-fsdocs-tip="fs28" data-fsdocs-tip-unique="59" class="id">nan</span><span class="pn">;</span> <span class="n">5.0</span> <span class="pn">]</span> <span class="pn">]</span>
+
+<span data-fsdocs-tip="fs9" data-fsdocs-tip-unique="60" class="m">Frame</span><span class="pn">.</span><span data-fsdocs-tip="fs10" data-fsdocs-tip-unique="61" class="id">writeParquet</span> <span class="s">&quot;/tmp/gaps.parquet&quot;</span> <span data-fsdocs-tip="fs27" data-fsdocs-tip-unique="62" class="id">withGaps</span>
+
+<span class="k">let</span> <span data-fsdocs-tip="fs29" data-fsdocs-tip-unique="63" class="id">restored</span> <span class="o">=</span> <span data-fsdocs-tip="fs9" data-fsdocs-tip-unique="64" class="m">Frame</span><span class="pn">.</span><span data-fsdocs-tip="fs12" data-fsdocs-tip-unique="65" class="id">readParquet</span> <span class="s">&quot;/tmp/gaps.parquet&quot;</span>
+<span class="c">// The column has 5 rows but only 3 non-missing values</span>
+<span data-fsdocs-tip="fs30" data-fsdocs-tip-unique="66" class="fn">printfn</span> <span class="s">&quot;Rows: </span><span class="pf">%d</span><span class="s">, Values: </span><span class="pf">%d</span><span class="s">&quot;</span> <span data-fsdocs-tip="fs29" data-fsdocs-tip-unique="67" class="id">restored</span><span class="pn">.</span><span data-fsdocs-tip="fs31" data-fsdocs-tip-unique="68" class="id">RowCount</span> <span class="pn">(</span><span data-fsdocs-tip="fs29" data-fsdocs-tip-unique="69" class="id">restored</span><span class="pn">.</span><span class="pn">[</span><span class="s">&quot;Score&quot;</span><span class="pn">]</span><span class="pn">.</span><span class="id">ValueCount</span><span class="pn">)</span>
+</code></pre>
+<a name="types"></a>
+<h2><a name="Type-mapping" class="anchor" href="#Type-mapping">Type mapping</a></h2>
+<p>The following .NET/Deedle types are mapped natively to Parquet types:</p>
+<table>
+<thead>
+<tr class="header">
+<th><p>.NET type</p></th>
+<th><p>Parquet type</p></th>
+<th><p>Notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><p><code>float</code> / <code>double</code></p></td>
+<td><p><code>DOUBLE</code></p></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><p><code>float32</code></p></td>
+<td><p><code>FLOAT</code></p></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><p><code>int</code> / <code>int32</code></p></td>
+<td><p><code>INT32</code></p></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><p><code>int64</code></p></td>
+<td><p><code>INT64</code></p></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><p><code>int16</code></p></td>
+<td><p><code>INT16</code></p></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><p><code>uint8</code> / <code>byte</code></p></td>
+<td><p><code>BYTE</code></p></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><p><code>uint16</code></p></td>
+<td><p><code>UINT16</code></p></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><p><code>uint32</code></p></td>
+<td><p><code>UINT32</code></p></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><p><code>uint64</code></p></td>
+<td><p><code>UINT64</code></p></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><p><code>bool</code></p></td>
+<td><p><code>BOOLEAN</code></p></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><p><code>string</code></p></td>
+<td><p><code>STRING</code></p></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><p><code>DateTime</code></p></td>
+<td><p><code>DATETIMEOFFSET</code></p></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><p>Other</p></td>
+<td><p><code>STRING</code></p></td>
+<td><p>Via <code>ToString()</code></p></td>
+</tr>
+</tbody>
+</table>
+
+<p>All value types are stored as nullable (<code>Nullable&lt;T&gt;</code>) to support Deedle missing
+values on round-trip.</p>
+<a name="csharp"></a>
+<h2><a name="C-API" class="anchor" href="#C-API">C# API</a></h2>
+<p>The package also provides a C# friendly API:</p>
+<table class="pre"><tr><td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="k">using</span> Deedle;
+<span class="k">using</span> Deedle.Parquet;
+
+<span class="c">// Static factory</span>
+<span class="k">var</span> df <span class="o">=</span> ParquetFrame.ReadParquet(<span class="s">"prices.parquet"</span>);
+ParquetFrame.WriteParquet(<span class="s">"prices.parquet"</span>, df);
+
+<span class="c">// Extension methods</span>
+df.WriteParquet(<span class="s">"output.parquet"</span>);
+df.WriteParquetWithIndex(<span class="s">"output.parquet"</span>);
+<span class="k">var</span> df<span class="n">2</span> <span class="o">=</span> ParquetFrame.ReadParquetWithIndex&lt;<span class="k">string</span>&gt;(<span class="s">"indexed.parquet"</span>);
+</code></pre></td></tr></table>
+<a name="python"></a>
+<h2><a name="Interoperability-with-Python-pandas" class="anchor" href="#Interoperability-with-Python-pandas">Interoperability with Python / pandas</a></h2>
+<p>Deedle.Parquet files are fully compatible with Python's <code>pyarrow</code> and <code>pandas</code>
+libraries.</p>
+<p><strong>Write from Deedle, read in Python:</strong></p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// F# side</span>
+<span class="k">let</span> <span data-fsdocs-tip="fs32" data-fsdocs-tip-unique="70" class="id">df</span> <span class="o">=</span> <span class="id">Frame</span><span class="pn">.</span><span class="id">ReadCsv</span><span class="pn">(</span><span class="s">&quot;data.csv&quot;</span><span class="pn">)</span>
+<span class="id">Frame</span><span class="pn">.</span><span class="id">writeParquet</span> <span class="s">&quot;/tmp/data.parquet&quot;</span> <span data-fsdocs-tip="fs32" data-fsdocs-tip-unique="71" class="id">df</span>
+</code></pre>
+<table class="pre"><tr><td class="snippet"><pre class="fssnip"><code lang="python"># Python side
+import pandas as pd
+df = pd.read_parquet("/tmp/data.parquet")
+print(df.head())
+</code></pre></td></tr></table>
+<p><strong>Write from Python, read in Deedle:</strong></p>
+<table class="pre"><tr><td class="snippet"><pre class="fssnip"><code lang="python"># Python side
+import pandas as pd
+df = pd.DataFrame({"A": [1.0, 2.0, 3.0], "B": ["x", "y", "z"]})
+df.to_parquet("/tmp/from_python.parquet")
+</code></pre></td></tr></table>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// F# side</span>
+<span class="k">let</span> <span data-fsdocs-tip="fs32" data-fsdocs-tip-unique="72" class="id">df</span> <span class="o">=</span> <span class="id">Frame</span><span class="pn">.</span><span class="id">readParquet</span> <span class="s">&quot;/tmp/from_python.parquet&quot;</span>
+<span data-fsdocs-tip="fs30" data-fsdocs-tip-unique="73" class="id">printfn</span> <span class="s">&quot;%A&quot;</span> <span data-fsdocs-tip="fs32" data-fsdocs-tip-unique="74" class="id">df</span>
+</code></pre>
+<a name="vs-arrow"></a>
+<h2><a name="Parquet-vs-Arrow" class="anchor" href="#Parquet-vs-Arrow">Parquet vs Arrow</a></h2>
+<p>Both Apache Parquet and Apache Arrow are columnar data formats, but they serve
+different purposes:</p>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th><p><strong>Parquet</strong></p></th>
+<th><p><strong>Arrow</strong></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><p><strong>Primary use</strong></p></td>
+<td><p>On-disk storage &amp; interchange</p></td>
+<td><p>In-memory processing &amp; IPC</p></td>
+</tr>
+<tr class="even">
+<td><p><strong>Compression</strong></p></td>
+<td><p>Built-in (Snappy, LZ4, Zstd, Gzip)</p></td>
+<td><p>None (raw bytes)</p></td>
+</tr>
+<tr class="odd">
+<td><p><strong>File size</strong></p></td>
+<td><p>Compact</p></td>
+<td><p>Larger</p></td>
+</tr>
+<tr class="even">
+<td><p><strong>Read speed</strong></p></td>
+<td><p>Requires decompression</p></td>
+<td><p>Zero-copy / memory-mapped</p></td>
+</tr>
+<tr class="odd">
+<td><p><strong>Ecosystem</strong></p></td>
+<td><p>Spark, BigQuery, Pandas, DuckDB</p></td>
+<td><p>Pandas, DuckDB, DataFusion</p></td>
+</tr>
+<tr class="even">
+<td><p><strong>Deedle package</strong></p></td>
+<td><p><code>Deedle.Parquet</code></p></td>
+<td><p><code>Deedle.Arrow</code></p></td>
+</tr>
+</tbody>
+</table>
+
+<p>Use <strong>Parquet</strong> when you want compact, portable files for storage or exchange
+with other tools. Use <strong>Arrow</strong> when you need fast in-memory interop or IPC
+between processes.</p>
+<a name="nuget"></a>
+<h2><a name="NuGet-package-information" class="anchor" href="#NuGet-package-information">NuGet package information</a></h2>
+<table>
+<thead>
+<tr class="header">
+<th><p>Package</p></th>
+<th><p>NuGet</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><p><code>Deedle</code></p></td>
+<td><p>Core library</p></td>
+</tr>
+<tr class="even">
+<td><p><code>Deedle.Parquet</code></p></td>
+<td><p>Apache Parquet integration</p></td>
+</tr>
+</tbody>
+</table>
+
+<p><code>Deedle.Parquet</code> depends on <a href="https://github.com/aloneguid/parquet-dotnet">Parquet.Net</a>
+(MIT licence), a pure .NET implementation of the Apache Parquet format with no native
+dependencies.</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// Clean up temp files</span>
+<span class="pn">[</span> <span class="s">&quot;/tmp/prices.parquet&quot;</span><span class="pn">;</span> <span class="s">&quot;/tmp/monthly.parquet&quot;</span><span class="pn">;</span> <span class="s">&quot;/tmp/gaps.parquet&quot;</span> <span class="pn">]</span>
+<span class="o">|&gt;</span> <span data-fsdocs-tip="fs33" data-fsdocs-tip-unique="75" class="m">List</span><span class="pn">.</span><span data-fsdocs-tip="fs34" data-fsdocs-tip-unique="76" class="id">iter</span> <span class="pn">(</span><span class="k">fun</span> <span data-fsdocs-tip="fs35" data-fsdocs-tip-unique="77" class="fn">p</span> <span class="k">-&gt;</span> <span class="k">if</span> <span data-fsdocs-tip="fs36" data-fsdocs-tip-unique="78" class="rt">File</span><span class="pn">.</span><span data-fsdocs-tip="fs37" data-fsdocs-tip-unique="79" class="id">Exists</span><span class="pn">(</span><span data-fsdocs-tip="fs35" data-fsdocs-tip-unique="80" class="fn">p</span><span class="pn">)</span> <span class="k">then</span> <span data-fsdocs-tip="fs36" data-fsdocs-tip-unique="81" class="rt">File</span><span class="pn">.</span><span data-fsdocs-tip="fs38" data-fsdocs-tip-unique="82" class="id">Delete</span><span class="pn">(</span><span data-fsdocs-tip="fs35" data-fsdocs-tip-unique="83" class="fn">p</span><span class="pn">)</span><span class="pn">)</span>
+</code></pre>
+
+        <div popover class="fsdocs-tip" id="fs1">namespace System</div>
+<div popover class="fsdocs-tip" id="fs2">namespace System.IO</div>
+<div popover class="fsdocs-tip" id="fs3">namespace Deedle</div>
+<div popover class="fsdocs-tip" id="fs4">namespace Deedle.Parquet</div>
+<div popover class="fsdocs-tip" id="fs5">val prices: Frame&lt;int,string&gt;</div>
+<div popover class="fsdocs-tip" id="fs6">val frame: columns: (&#39;a * #ISeries&lt;&#39;c&gt;) seq -&gt; Frame&lt;&#39;c,&#39;a&gt; (requires equality and equality)<br /><em>&lt;summary&gt;
+ A function for constructing data frame from a sequence of name - column pairs.
+ This provides a nicer syntactic sugar for `Frame.ofColumns`.
+ &lt;/summary&gt;<br />&lt;example&gt;
+ To create a simple frame with two columns, you can write:
+ &lt;code&gt;
+ frame [ &quot;A&quot; =&amp;gt; series [ 1 =&amp;gt; 30.0; 2 =&amp;gt; 35.0 ]
+         &quot;B&quot; =&amp;gt; series [ 1 =&amp;gt; 30.0; 3 =&amp;gt; 40.0 ] ]
+ &lt;/code&gt;&lt;/example&gt;<br />&lt;category&gt;Frame construction&lt;/category&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs7">Multiple items<br />module Series
+
+from Deedle<br /><em>&lt;summary&gt;
+ The `Series` module provides an F#-friendly API for working with data and time series.
+ The API follows the usual design for collection-processing in F#, so the functions work
+ well with the pipelining (&lt;c&gt;|&amp;gt;&lt;/c&gt;) operator. For example, given a series with ages,
+ we can use `Series.filterValues` to filter outliers and then `Stats.mean` to calculate
+ the mean:
+
+     ages
+     |&amp;gt; Series.filterValues (fun v -&amp;gt; v &amp;gt; 0.0 &amp;amp;&amp;amp; v &amp;lt; 120.0)
+     |&amp;gt; Stats.mean
+
+ The module provides comprehensive set of functions for working with series. The same
+ API is also exposed using C#-friendly extension methods. In C#, the above snippet could
+ be written as:
+
+     [lang=csharp]
+     ages
+       .Where(kvp =&amp;gt; kvp.Value &amp;gt; 0.0 &amp;amp;&amp;amp; kvp.Value &amp;lt; 120.0)
+       .Mean()
+
+ For more information about similar frame-manipulation functions, see the `Frame` module.
+ For more information about C#-friendly extensions, see `SeriesExtensions`. The functions
+ in the `Series` module are grouped in a number of categories and documented below.
+
+ Accessing series data and lookup
+ --------------------------------
+
+ Functions in this category provide access to the values in the series.
+
+  - The term _observation_ is used for a key value pair in the series.
+  - When working with a sorted series, it is possible to perform lookup using
+    keys that are not present in the series - you can specify to search for the
+    previous or next available value using _lookup behavior_.
+  - Functions such as `get` and `getAll` have their counterparts `lookup` and
+    `lookupAll` that let you specify lookup behavior.
+  - For most of the functions that may fail, there is a `try[Foo]` variant that
+    returns `None` instead of failing.
+  - Functions with a name ending with `At` perform lookup based on the absolute
+    integer offset (and ignore the keys of the series)
+
+ Series transformations
+ ----------------------
+
+ Functions in this category perform standard transformations on series including
+ projections, filtering, taking some sub-series of the series, aggregating values
+ using scanning and so on.
+
+ Projection and filtering functions generally skip over missing values, but there
+ are variants `filterAll` and `mapAll` that let you handle missing values explicitly.
+ Keys can be transformed using `mapKeys`. When you do not need to consider the keys,
+ and only care about values, use `filterValues` and `mapValues` (which is also aliased
+ as the `$` operator).
+
+ Series supports standard set of folding functions including `reduce` and `fold` (to
+ reduce series values into a single value) as well as the `scan[All]` function, which
+ can be used to fold values of a series into a series of intermeidate folding results.
+
+ The functions `take[Last]` and `skip[Last]` can be used to take a sub-series of the
+ original source series by skipping a specified number of elements. Note that this
+ does not require an ordered series and it ignores the index - for index-based lookup
+ use slicing, such as `series.[lo .. hi]`, instead.
+
+ Finally the `shift` function can be used to obtain a series with values shifted by
+ the specified offset. This can be used e.g. to get previous value for each key using
+ `Series.shift 1 ts`. The `diff` function calculates difference from previous value using
+ `ts - (Series.shift offs ts)`.
+
+ Processing series with exceptions
+ ---------------------------------
+
+ The functions in this group can be used to write computations over series that may fail.
+ They use the type &lt;c&gt;tryval&amp;lt;&#39;T&amp;gt;&lt;/c&gt; which is defined as a discriminated union
+ with two cases: Success containing a value, or Error containing an exception.
+
+ The function `tryMap` lets you create &lt;c&gt;Series&amp;lt;&#39;K, tryval&amp;lt;&#39;T&amp;gt;&amp;gt;&lt;/c&gt; by mapping over values
+ of an original series. You can then extract values using `tryValues`, which throws
+ `AggregateException` if there were any errors. Functions `tryErrors` and `trySuccesses`
+ give series containing only errors and successes. You can fill failed values with
+ a constant using `fillErrorsWith`.
+
+ Hierarchical index operations
+ -----------------------------
+
+ When the key of a series is tuple, the elements of the tuple can be treated
+ as multiple levels of a index. For example &lt;c&gt;Series&amp;lt;&#39;K1 * &#39;K2, &#39;V&amp;gt;&lt;/c&gt; has two
+ levels with keys of types &lt;c&gt;&#39;K1&lt;/c&gt; and &lt;c&gt;&#39;K2&lt;/c&gt; respectively.
+
+ The functions in this cateogry provide a way for aggregating values in the
+ series at one of the levels. For example, given a series `input` indexed by
+ two-element tuple, you can calculate mean for different first-level values as
+ follows:
+
+     input |&amp;gt; applyLevel fst Stats.mean
+
+ Note that the `Stats` module provides helpers for typical statistical operations,
+ so the above could be written just as `input |&amp;gt; Stats.levelMean fst`.
+
+ Grouping, windowing and chunking
+ --------------------------------
+
+ This category includes functions that group data from a series in some way. Two key
+ concepts here are _window_ and _chunk_. Window refers to (overlapping) sliding windows
+ over the input series while chunk refers to non-overlapping blocks of the series.
+
+ The boundary behavior can be specified using the `Boundary` flags. The value
+ `Skip` means that boundaries (incomplete windows or chunks) should be skipped. The value
+ `AtBeginning` and `AtEnding` can be used to define at which side should the boundary be
+ returned (or skipped). For chunking, `AtBeginning ||| Skip` makes sense and it means that
+ the incomplete chunk at the beginning should be skipped (aligning the last chunk with the end).
+
+ The behavior may be specified in a number of ways (which is reflected in the name):
+  - `dist` - using an absolute distance between the keys
+  - `while` - using a condition on the first and last key
+  - `size` - by specifying the absolute size of the window/chunk
+
+ The functions ending with `Into` take a function to be applied to the window/chunk.
+ The functions `window`, `windowInto` and `chunk`, `chunkInto` are simplified versions
+ that take a size. There is also `pairwise` function for sliding window of size two.
+
+ Missing values
+ --------------
+
+ This group of functions provides a way of working with missing values in a series.
+ The `dropMissing` function drops all keys for which there are no values in the series.
+ The `withMissingFrom` function lets you copy missing values from another series.
+ The remaining functions provide different mechanism for filling the missing values.
+
+  * `fillMissingWith` fills missing values with a specified constant
+  * `fillMissingUsing` calls a specified function for every missing value
+  * `fillMissing` and variants propagates values from previous/later keys
+
+ Sorting and index manipulation
+ ------------------------------
+
+ A series that is sorted by keys allows a number of additional operations (such as lookup
+ using the `Lookp.ExactOrSmaller` lookup behavior). However, it is also possible to sort
+ series based on the values - although the functions for manipulation with series do not
+ guarantee that the order will be preserved.
+
+ To sort series by keys, use `sortByKey`. Other sorting functions let you sort the series
+ using a specified comparer function (`sortWith`), using a projection function (`sortBy`)
+ and using the default comparison (`sort`).
+
+ In addition, you can also replace the keys of a series with other keys using `indexWith`
+ or with integers using `indexOrdinally`. To pick and reorder series values using to match
+ a list of keys use `realign`.
+
+ Sampling, resampling and advanced lookup
+ ----------------------------------------
+
+ Given a (typically) time series sampling or resampling makes it possible to
+ get time series with representative values at lower or uniform frequency.
+ We use the following terminology:
+
+  - `lookup` and `sample` functions find values at specified key; if a key is not
+    available, they can look for value associated with the nearest smaller or
+    the nearest greater key.
+
+  - `resample` function aggregate values values into chunks based
+    on a specified collection of keys (e.g. explicitly provided times), or
+    based on some relation between keys (e.g. date times having the same date).
+
+  - `resampleUniform` is similar to resampling, but we specify keys by
+    providing functions that generate a uniform sequence of keys (e.g. days),
+    the operation also fills value for days that have no corresponding
+    observations in the input sequence.
+
+ Joining, merging and zipping
+ ----------------------------
+
+ Given two series, there are two ways to combine the values. If the keys in the series
+ are not overlapping (or you want to throw away values from one or the other series),
+ then you can use `merge` or `mergeUsing`. To merge more than 2 series efficiently, use
+ the `mergeAll` function, which has been optimized for large number of series.
+
+ If you want to align two series, you can use the _zipping_ operation. This aligns
+ two series based on their keys and gives you tuples of values. The default behavior
+ (`zip`) uses outer join and exact matching. For ordered series, you can specify
+ other forms of key lookups (e.g. find the greatest smaller key) using `zipAlign`.
+ functions ending with `Into` are generally easier to use as they call a specified
+ function to turn the tuple (of possibly missing values) into a new value.
+
+ For more complicated behaviors, it is often convenient to use joins on frames instead
+ of working with series. Create two frames with single columns and then use the join
+ operation. The result will be a frame with two columns (which is easier to use than
+ series of tuples).
+ &lt;/summary&gt;<br />&lt;category&gt;Frame and series operations&lt;/category&gt;</em><br /><br />--------------------<br />type Series =
+  static member ofNullables: values: Nullable&lt;&#39;a&gt; seq -&gt; Series&lt;int,&#39;a&gt; (requires default constructor and value type and &#39;a :&gt; ValueType)
+  static member ofObservations: observations: (&#39;a * &#39;b) seq -&gt; Series&lt;&#39;a,&#39;b&gt; (requires equality)
+  static member ofOptionalObservations: observations: (&#39;K * &#39;a option) seq -&gt; Series&lt;&#39;K,&#39;a&gt; (requires equality)
+  static member ofValues: values: &#39;a seq -&gt; Series&lt;int,&#39;a&gt;<br /><br />--------------------<br />type Series&lt;&#39;K,&#39;V (requires equality)&gt; =
+  interface ISeriesFormattable
+  interface IFsiFormattable
+  interface ISeries&lt;&#39;K&gt;
+  new: index: IIndex&lt;&#39;K&gt; * vector: IVector&lt;&#39;V&gt; * vectorBuilder: IVectorBuilder * indexBuilder: IIndexBuilder -&gt; Series&lt;&#39;K,&#39;V&gt; + 3 overloads
+  member After: lowerExclusive: &#39;K -&gt; Series&lt;&#39;K,&#39;V&gt;
+  member Aggregate: aggregation: Aggregation&lt;&#39;K&gt; * keySelector: Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,&#39;TNewKey&gt; * valueSelector: Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,OptionalValue&lt;&#39;R&gt;&gt; -&gt; Series&lt;&#39;TNewKey,&#39;R&gt; (requires equality) + 1 overload
+  member AsyncMaterialize: unit -&gt; Async&lt;Series&lt;&#39;K,&#39;V&gt;&gt;
+  member Before: upperExclusive: &#39;K -&gt; Series&lt;&#39;K,&#39;V&gt;
+  member Between: lowerInclusive: &#39;K * upperInclusive: &#39;K -&gt; Series&lt;&#39;K,&#39;V&gt;
+  member Compare: another: Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,Diff&lt;&#39;V&gt;&gt;
+  ...<br /><em>&lt;summary&gt;
+ The type &lt;c&gt;Series&amp;lt;K, V&amp;gt;&lt;/c&gt; represents a data series consisting of values `V` indexed by
+ keys `K`. The keys of a series may or may not be ordered
+ &lt;/summary&gt;<br />&lt;category&gt;Core frame and series types&lt;/category&gt;</em><br /><br />--------------------<br />new: pairs: Collections.Generic.KeyValuePair&lt;&#39;K,&#39;V&gt; seq -&gt; Series&lt;&#39;K,&#39;V&gt;<br />new: keys: &#39;K seq * values: &#39;V seq -&gt; Series&lt;&#39;K,&#39;V&gt;<br />new: keys: &#39;K array * values: &#39;V array -&gt; Series&lt;&#39;K,&#39;V&gt;<br />new: index: Indices.IIndex&lt;&#39;K&gt; * vector: IVector&lt;&#39;V&gt; * vectorBuilder: Vectors.IVectorBuilder * indexBuilder: Indices.IIndexBuilder -&gt; Series&lt;&#39;K,&#39;V&gt;</div>
+<div popover class="fsdocs-tip" id="fs8">static member Series.ofValues: values: &#39;a seq -&gt; Series&lt;int,&#39;a&gt;</div>
+<div popover class="fsdocs-tip" id="fs9">Multiple items<br />module Frame
+
+from Deedle.Parquet<br /><em>&lt;summary&gt;
+ Parquet-specific functions on Deedle &lt;c&gt;Frame&lt;/c&gt; values.
+ Open &lt;c&gt;Deedle.Parquet&lt;/c&gt; and then call these as &lt;c&gt;Frame.readParquet&lt;/c&gt;,
+ &lt;c&gt;Frame.writeParquet&lt;/c&gt;, etc.
+ &lt;/summary&gt;</em><br /><br />--------------------<br />module Frame
+
+from Deedle<br /><em>&lt;summary&gt;
+ The `Frame` module provides an F#-friendly API for working with data frames.
+ The module follows the usual desing for collection-processing in F#, so the
+ functions work well with the pipelining operator (`|&amp;gt;`). For example, given
+ a frame with two columns representing prices, we can use `Frame.pctChange` to
+ calculate daily returns like this:
+
+     let df = frame [ &quot;MSFT&quot; =&amp;gt; prices1; &quot;AAPL&quot; =&amp;gt; prices2 ]
+     let rets = df |&amp;gt; Frame.pctChange 1
+     rets |&amp;gt; Stats.mean
+
+ Note that the `Stats.mean` operation is overloaded and works both on series
+ (returning a number) and on frames (returning a series). You can also use
+ `Frame.diff` if you need absolute differences rather than relative changes.
+
+ The functions in this module are designed to be used from F#. For a C#-friendly
+ API, see the `FrameExtensions` type. For working with individual series, see the
+ `Series` module. The functions in the `Frame` module are grouped in a number of
+ categories and documented below.
+
+ Accessing frame data and lookup
+ -------------------------------
+
+ Functions in this category provide access to the values in the fame. You can
+ also add and remove columns from a frame (which both return a new value).
+
+ - `addCol`, `replaceCol` and `dropCol` can be used to create a new data frame
+   with a new column, by replacing an existing column with a new one, or by dropping
+   an existing column
+
+ - `cols` and `rows` return the columns or rows of a frame as a series containing
+   objects; `getCols` and `getRows` return a generic series and cast the values to
+   the type inferred from the context (columns or rows of incompatible types are skipped);
+   `getNumericCols` returns columns of a type convertible to `float` for convenience.
+
+ - You can get a specific row or column using `get[Col|Row]` or `lookup[Col|Row]` functions.
+   The `lookup` variant lets you specify lookup behavior for key matching (e.g. find the
+   nearest smaller key than the specified value). There are also `[try]get` and `[try]Lookup`
+   functions that return optional values and functions returning entire observations
+   (key together with the series).
+
+ - `sliceCols` and `sliceRows` return a sub-frame containing only the specified columns
+   or rows. Finally, `toArray2D` returns the frame data as a 2D array.
+
+ Grouping, windowing and chunking
+ --------------------------------
+
+ The basic grouping functions in this category can be used to group the rows of a
+ data frame by a specified projection or column to create a frame with hierarchical
+ index such as &lt;c&gt;Frame&amp;lt;&#39;K1 * &#39;K2, &#39;C&amp;gt;&lt;/c&gt;. The functions always aggregate rows, so if you
+ want to group columns, you need to use `Frame.transpose` first.
+
+ The function `groupRowsBy` groups rows by the value of a specified column. Use
+ `groupRowsBy[Int|Float|String...]` if you want to specify the type of the column in
+ an easier way than using type inference; `groupRowsUsing` groups rows using the
+ specified _projection function_ and `groupRowsByIndex` projects the grouping key just
+ from the row index.
+
+ More advanced functions include: `aggregateRowsBy` which groups the rows by a
+ specified sequence of columns and aggregates each group into a single value;
+ `pivotTable` implements the pivoting operation [as documented in the
+ tutorials](../frame.html#pivot).
+
+ The `melt` and `unmelt` functions turn the data frame into a single data frame
+ containing columns `Row`, `Column` and `Value` containing the data of the original
+ frame; `unmelt` can be used to turn this representation back into an original frame.
+
+ The `stack` and `unstack` functions implement pandas-style reshape operations.
+ `stack` converts `Frame&amp;lt;&#39;R,&#39;C&amp;gt;` to a long-format `Frame&amp;lt;&#39;R*&#39;C, string&amp;gt;` where each
+ cell becomes a row keyed by `(rowKey, colKey)` with a single `&quot;Value&quot;` column.
+ `unstack` promotes the inner row-key level to column keys, producing
+ `Frame&amp;lt;&#39;R1, &#39;C*&#39;R2&amp;gt;` from `Frame&amp;lt;&#39;R1*&#39;R2,&#39;C&amp;gt;`.
+
+ A simple windowing functions that are exposed for an entire frame operations are
+ `window` and `windowInto`. For more complex windowing operations, you currently have
+ to use `mapRows` or `mapCols` and apply windowing on individual series.
+
+ Sorting and index manipulation
+ ------------------------------
+
+ A frame is indexed by row keys and column keys. Both of these indices can be sorted
+ (by the keys). A frame that is sorted allows a number of additional operations (such
+ as lookup using the `Lookp.ExactOrSmaller` lookup behavior). The functions in this
+ category provide ways for manipulating the indices. It is expected that most operations
+ are done on rows and so more functions are available in a row-wise way. A frame can
+ alwyas be transposed using `Frame.transpose`.
+
+ Index operations:
+
+ The existing row/column keys can be replaced by a sequence of new keys using the
+ `indexColsWith` and `indexRowsWith` functions. Row keys can also be replaced by
+ ordinal numbers using `indexRowsOrdinally`.
+
+ The function `indexRows` uses the specified column of the original frame as the
+ index. It removes the column from the resulting frame (to avoid this, use overloaded
+ `IndexRows` method). This function infers the type of row keys from the context, so it
+ is usually more convenient to use `indexRows[Date|String|Int|...]` functions. Finally,
+ if you want to calculate the index value based on multiple columns of the row, you
+ can use `indexRowsUsing`.
+
+ Sorting frame rows:
+
+ Frame rows can be sorted according to the value of a specified column using the
+ `sortRows` function; `sortRowsBy` takes a projection function which lets you
+ transform the value of a column (e.g. to project a part of the value).
+
+ The functions `sortRowsByKey` and `sortColsByKey` sort the rows or columns
+ using the default ordering on the key values. The result is a frame with ordered
+ index.
+
+ Expanding columns:
+
+ When the frame contains a series with complex .NET objects such as F# records or
+ C# classes, it can be useful to &quot;expand&quot; the column. This operation looks at the
+ type of the objects, gets all properties of the objects (recursively) and
+ generates multiple series representing the properties as columns.
+
+ The function `expandCols` expands the specified columns while `expandAllCols`
+ applies the expansion to all columns of the data frame.
+
+ Frame transformations
+ ---------------------
+
+ Functions in this category perform standard transformations on data frames including
+ projections, filtering, taking some sub-frame of the frame, aggregating values
+ using scanning and so on.
+
+ Projection and filtering functions such as `[map|filter][Cols|Rows]` call the
+ specified function with the column or row key and an &lt;c&gt;ObjectSeries&amp;lt;&#39;K&amp;gt;&lt;/c&gt; representing
+ the column or row. You can use functions ending with `Values` (such as `mapRowValues`)
+ when you do not require the row key, but only the row series; `mapRowKeys` and
+ `mapColKeys` can be used to transform the keys.
+
+ You can use `reduceValues` to apply a custom reduction to values of columns. Other
+ aggregations are available in the `Stats` module. You can also get a row with the
+ greaterst or smallest value of a given column using `[min|max]RowBy`.
+
+ The functions `take[Last]` and `skip[Last]` can be used to take a sub-frame of the
+ original source frame by skipping a specified number of rows. Note that this
+ does not require an ordered frame and it ignores the index - for index-based lookup
+ use slicing, such as `df.Rows.[lo .. hi]`, instead.
+
+ Finally the `shift` function can be used to obtain a frame with values shifted by
+ the specified offset. This can be used e.g. to get previous value for each key using
+ `Frame.shift 1 df`. The `diff` function calculates difference from previous value using
+ `df - (Frame.shift offs df)`.
+
+ Processing frames with exceptions
+ ---------------------------------
+
+ The functions in this group can be used to write computations over frames that may fail.
+ They use the type &lt;c&gt;tryval&amp;lt;&#39;T&amp;gt;&lt;/c&gt; which is defined as a discriminated union
+ with two cases: Success containing a value, or Error containing an exception.
+
+ Using &lt;c&gt;tryval&amp;lt;&#39;T&amp;gt;&lt;/c&gt; as a value in a data frame is not generally recommended, because
+ the type of values cannot be tracked in the type. For this reason, it is better to use
+ &lt;c&gt;tryval&amp;lt;&#39;T&amp;gt;&lt;/c&gt; with individual series. However, `tryValues` and `fillErrorsWith` functions
+ can be used to get values, or fill failed values inside an entire data frame.
+
+ The `tryMapRows` function is more useful. It can be used to write a transformation
+ that applies a computation (which may fail) to each row of a data frame. The resulting
+ series is of type &lt;c&gt;Series&amp;lt;&#39;R, tryval&amp;lt;&#39;T&amp;gt;&amp;gt;&lt;/c&gt; and can be processed using the &lt;c&gt;Series&lt;/c&gt; module
+ functions.
+
+ Missing values
+ --------------
+
+ This group of functions provides a way of working with missing values in a data frame.
+ The category provides the following functions that can be used to fill missing values:
+
+  * `fillMissingWith` fills missing values with a specified constant
+  * `fillMissingUsing` calls a specified function for every missing value
+  * `fillMissing` and variants propagates values from previous/later keys
+
+ We use the terms _sparse_ and _dense_ to denote series that contain some missing values
+ or do not contain any missing values, respectively. The functions `denseCols` and
+ `denseRows` return a series that contains only dense columns or rows and all sparse
+ rows or columns are replaced with a missing value. The `dropSparseCols` and `dropSparseRows`
+ functions drop these missing values and return a frame with no missing values.
+
+ Joining, merging and zipping
+ ----------------------------
+
+ The simplest way to join two frames is to use the `join` operation which can be used to
+ perform left, right, outer or inner join of two frames. When the row keys of the frames do
+ not match exactly, you can use `joinAlign` which takes an additional parameter that specifies
+ how to find matching key in left/right join (e.g. by taking the nearest smaller available key).
+
+ Frames that do not contian overlapping values can be combined using `merge` (when combining
+ just two frames) or using `mergeAll` (for larger number of frames). Tha latter is optimized
+ to work well for a large number of data frames.
+
+ Finally, frames with overlapping values can be combined using `zip`. It takes a function
+ that is used to combine the overlapping values. A `zipAlign` function provides a variant
+ with more flexible row key matching (as in `joinAlign`)
+
+ Hierarchical index operations
+ -----------------------------
+
+ A data frame has a hierarchical row index if the row index is formed by a tuple, such as
+ &lt;c&gt;Frame&amp;lt;&#39;R1 * &#39;R2, &#39;C&amp;gt;&lt;/c&gt;. Frames of this kind are returned, for example, by the grouping
+ functions such as &lt;c&gt;Frame.groupRowsBy&lt;/c&gt;. The functions in this category provide ways for
+ working with data frames that have hierarchical row keys.
+
+ The functions &lt;c&gt;applyLevel&lt;/c&gt; and &lt;c&gt;reduceLevel&lt;/c&gt; can be used to reduce values according to
+ one of the levels. The &lt;c&gt;applyLevel&lt;/c&gt; function takes a reduction of type &lt;c&gt;Series&amp;lt;&#39;K, &#39;T&amp;gt; -&amp;gt; &#39;T&lt;/c&gt;
+ while &lt;c&gt;reduceLevel&lt;/c&gt; reduces individual values using a function of type &lt;c&gt;&#39;T -&amp;gt; &#39;T -&amp;gt; &#39;T&lt;/c&gt;.
+
+ The functions &lt;c&gt;nest&lt;/c&gt; and &lt;c&gt;unnest&lt;/c&gt; can be used to convert between frames with
+ hierarchical indices (&lt;c&gt;Frame&amp;lt;&#39;K1 * &#39;K2, &#39;C&amp;gt;&lt;/c&gt;) and series of frames that represent
+ individual groups (&lt;c&gt;Series&amp;lt;&#39;K1, Frame&amp;lt;&#39;K2, &#39;C&amp;gt;&amp;gt;&lt;/c&gt;). The &lt;c&gt;nestBy&lt;/c&gt; function can be
+ used to perform group by operation and return the result as a series of frems.
+ &lt;/summary&gt;<br />&lt;category&gt;Frame and series operations&lt;/category&gt;</em><br /><br />--------------------<br />type Frame =
+  static member ReadCsv: location: string * hasHeaders: Nullable&lt;bool&gt; * inferTypes: Nullable&lt;bool&gt; * inferRows: Nullable&lt;int&gt; * schema: string * separators: string * culture: string * maxRows: Nullable&lt;int&gt; * missingValues: string array * preferOptions: bool * encoding: Encoding -&gt; Frame&lt;int,string&gt; + 1 overload
+  static member ReadReader: reader: IDataReader -&gt; Frame&lt;int,string&gt;
+  static member CustomExpanders: Dictionary&lt;Type,Func&lt;obj,(string * Type * obj) seq&gt;&gt;
+  static member NonExpandableInterfaces: ResizeArray&lt;Type&gt;
+  static member NonExpandableTypes: HashSet&lt;Type&gt;<br /><em>&lt;summary&gt;
+ Provides static methods for creating frames, reading frame data
+ from CSV files and database (via IDataReader). The type also provides
+ global configuration for reflection-based expansion.
+ &lt;/summary&gt;<br />&lt;category&gt;Frame and series operations&lt;/category&gt;</em><br /><br />--------------------<br />type Frame&lt;&#39;TRowKey,&#39;TColumnKey (requires equality and equality)&gt; =
+  interface IDynamicMetaObjectProvider
+  interface INotifyCollectionChanged
+  interface IFrameFormattable
+  interface IFsiFormattable
+  interface IFrame
+  new: rowIndex: IIndex&lt;&#39;TRowKey&gt; * columnIndex: IIndex&lt;&#39;TColumnKey&gt; * data: IVector&lt;IVector&gt; * indexBuilder: IIndexBuilder * vectorBuilder: IVectorBuilder -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; + 1 overload
+  member AddColumn: column: &#39;TColumnKey * series: &#39;V seq -&gt; unit + 3 overloads
+  member AggregateRowsBy: groupBy: &#39;TColumnKey seq * aggBy: &#39;TColumnKey seq * aggFunc: Func&lt;Series&lt;&#39;TRowKey,&#39;a&gt;,&#39;b&gt; -&gt; Frame&lt;int,&#39;TColumnKey&gt;
+  member Clone: unit -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;
+  member ColumnApply: f: Func&lt;Series&lt;&#39;TRowKey,&#39;T&gt;,ISeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; + 1 overload
+  ...<br /><em>&lt;summary&gt;
+ A frame is the key Deedle data structure (together with series). It represents a
+ data table (think spreadsheet or CSV file) with multiple rows and columns. The frame
+ consists of row index, column index and data. The indices are used for efficient
+ lookup when accessing data by the row key `&#39;TRowKey` or by the column key
+ `&#39;TColumnKey`. Deedle frames are optimized for the scenario when all values in a given
+ column are of the same type (but types of different columns can differ).
+ &lt;/summary&gt;<br />&lt;remarks&gt;&lt;para&gt;Joining, zipping and appending:&lt;/para&gt;&lt;para&gt;
+ More info
+ &lt;/para&gt;&lt;/remarks&gt;<br />&lt;category&gt;Core frame and series types&lt;/category&gt;</em><br /><br />--------------------<br />new: names: &#39;TColumnKey seq * columns: ISeries&lt;&#39;TRowKey&gt; seq -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />new: rowIndex: Indices.IIndex&lt;&#39;TRowKey&gt; * columnIndex: Indices.IIndex&lt;&#39;TColumnKey&gt; * data: IVector&lt;IVector&gt; * indexBuilder: Indices.IIndexBuilder * vectorBuilder: Vectors.IVectorBuilder -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;</div>
+<div popover class="fsdocs-tip" id="fs10">val writeParquet: path: string -&gt; frame: Frame&lt;&#39;R,string&gt; -&gt; unit (requires equality)<br /><em>&lt;summary&gt;
+ Write a Deedle &lt;c&gt;Frame&lt;/c&gt; to a Parquet file.
+ &lt;/summary&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs11">val prices2: Frame&lt;int,string&gt;</div>
+<div popover class="fsdocs-tip" id="fs12">val readParquet: path: string -&gt; Frame&lt;int,string&gt;<br /><em>&lt;summary&gt;
+ Read a Parquet file into a Deedle &lt;c&gt;Frame&amp;lt;int,string&amp;gt;&lt;/c&gt;.
+ Row keys are 0-based integers. Parquet null values become Deedle missing values.
+ Files with multiple row groups are concatenated into a single frame.
+ &lt;/summary&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs13">val streamExample: unit -&gt; Frame&lt;int,string&gt;</div>
+<div popover class="fsdocs-tip" id="fs14">val ms: MemoryStream</div>
+<div popover class="fsdocs-tip" id="fs15">Multiple items<br />type MemoryStream =
+  inherit Stream
+  new: unit -&gt; unit + 6 overloads
+  member BeginRead: buffer: byte array * offset: int * count: int * callback: AsyncCallback * state: obj -&gt; IAsyncResult
+  member BeginWrite: buffer: byte array * offset: int * count: int * callback: AsyncCallback * state: obj -&gt; IAsyncResult
+  member CopyTo: destination: Stream * bufferSize: int -&gt; unit
+  member CopyToAsync: destination: Stream * bufferSize: int * cancellationToken: CancellationToken -&gt; Task
+  member EndRead: asyncResult: IAsyncResult -&gt; int
+  member EndWrite: asyncResult: IAsyncResult -&gt; unit
+  member Flush: unit -&gt; unit
+  member FlushAsync: cancellationToken: CancellationToken -&gt; Task
+  ...<br /><em>&lt;summary&gt;Creates a stream whose backing store is memory.&lt;/summary&gt;</em><br /><br />--------------------<br />MemoryStream() : MemoryStream<br />MemoryStream(buffer: byte array) : MemoryStream<br />MemoryStream(capacity: int) : MemoryStream<br />MemoryStream(buffer: byte array, writable: bool) : MemoryStream<br />MemoryStream(buffer: byte array, index: int, count: int) : MemoryStream<br />MemoryStream(buffer: byte array, index: int, count: int, writable: bool) : MemoryStream<br />MemoryStream(buffer: byte array, index: int, count: int, writable: bool, publiclyVisible: bool) : MemoryStream</div>
+<div popover class="fsdocs-tip" id="fs16">val writeParquetStream: stream: Stream -&gt; frame: Frame&lt;&#39;R,string&gt; -&gt; unit (requires equality)<br /><em>&lt;summary&gt;
+ Write a Deedle &lt;c&gt;Frame&lt;/c&gt; to a Parquet stream.
+ The stream must be seekable. The stream is left open after writing.
+ &lt;/summary&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs17">property MemoryStream.Position: int64 with get, set<br /><em>&lt;summary&gt;Gets or sets the current position within the stream.&lt;/summary&gt;<br />&lt;exception cref=&quot;T:System.ArgumentOutOfRangeException&quot;&gt;The position is set to a negative value or a value greater than &lt;see cref=&quot;F:System.Int32.MaxValue&quot;&gt;Int32.MaxValue&lt;/see&gt;.&lt;/exception&gt;<br />&lt;exception cref=&quot;T:System.ObjectDisposedException&quot;&gt;The stream is closed.&lt;/exception&gt;<br />&lt;returns&gt;The current position within the stream.&lt;/returns&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs18">val prices3: Frame&lt;int,string&gt;</div>
+<div popover class="fsdocs-tip" id="fs19">val readParquetStream: stream: Stream -&gt; Frame&lt;int,string&gt;<br /><em>&lt;summary&gt;
+ Read a Parquet stream into a Deedle &lt;c&gt;Frame&amp;lt;int,string&amp;gt;&lt;/c&gt;.
+ The stream must be seekable. All row groups are concatenated into a single frame.
+ &lt;/summary&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs20">val monthly: Frame&lt;string,string&gt;</div>
+<div popover class="fsdocs-tip" id="fs21">val keys: string array</div>
+<div popover class="fsdocs-tip" id="fs22">static member Frame.ofColumns: cols: Series&lt;&#39;C,#ISeries&lt;&#39;R&gt;&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt; (requires equality and equality)<br />static member Frame.ofColumns: cols: (&#39;C * #ISeries&lt;&#39;R&gt;) seq -&gt; Frame&lt;&#39;R,&#39;C&gt; (requires equality and equality)</div>
+<div popover class="fsdocs-tip" id="fs23">val writeParquetWithIndex: path: string -&gt; frame: Frame&lt;&#39;R,string&gt; -&gt; unit (requires equality)<br /><em>&lt;summary&gt;
+ Write a Deedle &lt;c&gt;Frame&lt;/c&gt; to a Parquet file, storing row keys in a special
+ &lt;c&gt;__index__&lt;/c&gt; column so they can be restored on read.
+ Row keys are serialised via &lt;c&gt;ToString()&lt;/c&gt;.
+ &lt;/summary&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs24">val monthly2: Frame&lt;string,string&gt;</div>
+<div popover class="fsdocs-tip" id="fs25">Multiple items<br />val string: value: &#39;T -&gt; string<br /><br />--------------------<br />type string = String</div>
+<div popover class="fsdocs-tip" id="fs26">val readParquetWithIndex: path: string -&gt; Frame&lt;string,string&gt;<br /><em>&lt;summary&gt;
+ Read a Parquet file that was written with &lt;c&gt;Frame.writeParquetWithIndex&lt;/c&gt;,
+ restoring the original string row keys.
+ If no &lt;c&gt;__index__&lt;/c&gt; column is present, returns a frame with 0-based integer
+ row keys converted to strings.
+ &lt;/summary&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs27">val withGaps: Frame&lt;int,string&gt;</div>
+<div popover class="fsdocs-tip" id="fs28">val nan: float</div>
+<div popover class="fsdocs-tip" id="fs29">val restored: Frame&lt;int,string&gt;</div>
+<div popover class="fsdocs-tip" id="fs30">val printfn: format: Printf.TextWriterFormat&lt;&#39;T&gt; -&gt; &#39;T</div>
+<div popover class="fsdocs-tip" id="fs31">property Frame.RowCount: int with get</div>
+<div popover class="fsdocs-tip" id="fs32">val df: obj</div>
+<div popover class="fsdocs-tip" id="fs33">Multiple items<br />module List
+
+from Microsoft.FSharp.Collections<br /><br />--------------------<br />type List&lt;&#39;T&gt; =
+  | op_Nil
+  | op_ColonColon of Head: &#39;T * Tail: &#39;T list
+  interface IReadOnlyList&lt;&#39;T&gt;
+  interface IReadOnlyCollection&lt;&#39;T&gt;
+  interface IEnumerable
+  interface IEnumerable&lt;&#39;T&gt;
+  member GetReverseIndex: rank: int * offset: int -&gt; int
+  member GetSlice: startIndex: int option * endIndex: int option -&gt; &#39;T list
+  static member Cons: head: &#39;T * tail: &#39;T list -&gt; &#39;T list
+  member Head: &#39;T
+  member IsEmpty: bool
+  member Item: index: int -&gt; &#39;T with get
+  ...</div>
+<div popover class="fsdocs-tip" id="fs34">val iter: action: (&#39;T -&gt; unit) -&gt; list: &#39;T list -&gt; unit</div>
+<div popover class="fsdocs-tip" id="fs35">val p: string</div>
+<div popover class="fsdocs-tip" id="fs36">type File =
+  static member AppendAllBytes: path: string * bytes: byte array -&gt; unit + 1 overload
+  static member AppendAllBytesAsync: path: string * bytes: byte array * ?cancellationToken: CancellationToken -&gt; Task + 1 overload
+  static member AppendAllLines: path: string * contents: string seq -&gt; unit + 1 overload
+  static member AppendAllLinesAsync: path: string * contents: string seq * encoding: Encoding * ?cancellationToken: CancellationToken -&gt; Task + 1 overload
+  static member AppendAllText: path: string * contents: ReadOnlySpan&lt;char&gt; -&gt; unit + 3 overloads
+  static member AppendAllTextAsync: path: string * contents: ReadOnlyMemory&lt;char&gt; * encoding: Encoding * ?cancellationToken: CancellationToken -&gt; Task + 3 overloads
+  static member AppendText: path: string -&gt; StreamWriter
+  static member Copy: sourceFileName: string * destFileName: string -&gt; unit + 1 overload
+  static member Create: path: string -&gt; FileStream + 2 overloads
+  static member CreateSymbolicLink: path: string * pathToTarget: string -&gt; FileSystemInfo
+  ...<br /><em>&lt;summary&gt;Provides static methods for the creation, copying, deletion, moving, and opening of a single file, and aids in the creation of &lt;see cref=&quot;T:System.IO.FileStream&quot; /&gt; objects.&lt;/summary&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs37">File.Exists( path: string) : bool</div>
+<div popover class="fsdocs-tip" id="fs38">File.Delete(path: string) : unit</div>
+
+    </div>
+</main>
+<aside id="fsdocs-page-menu">
+    <p id="on-this-page">On this page</p>
+    <ul>
+  <li class="level-1">
+    <a href="#Deedle-Parquet-Apache-Parquet-Integration">
+      Deedle.Parquet — Apache Parquet Integration
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Reading-and-writing-Parquet-files">
+      Reading and writing Parquet files
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Writing-a-frame-to-disk">
+      Writing a frame to disk
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Reading-a-frame-from-disk">
+      Reading a frame from disk
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Stream-based-I-O">
+      Stream-based I/O
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Preserving-row-keys-round-trip-with-named-rows">
+      Preserving row keys (round-trip with named rows)
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Missing-values">
+      Missing values
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Type-mapping">
+      Type mapping
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#C-API">
+      C# API
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Interoperability-with-Python-pandas">
+      Interoperability with Python / pandas
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Parquet-vs-Arrow">
+      Parquet vs Arrow
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#NuGet-package-information">
+      NuGet package information
+    </a>
+  </li>
+</ul>
+</aside>
+<dialog>
+    <input type="search" placeholder="Search docs" />
+    <div class="results">
+        <ul></ul>
+        <p class="empty">Type something to start searching.</p>
+    </div>
+</dialog>
+<script type="module" src="/Deedle/content/fsdocs-tips.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-theme-toggle.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-details-toggle.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-theme.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-search.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-copy-button.js"></script>
+
+</body>
+</html>
