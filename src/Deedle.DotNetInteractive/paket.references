@@ -1,4 +1,0 @@
-group interactive
-    Microsoft.DotNet.Interactive
-    Microsoft.DotNet.Interactive.Formatting
-    FSharp.Core

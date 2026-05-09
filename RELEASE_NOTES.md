@@ -1,5 +1,11 @@
 # Release Notes
 
+## 8.0.0 - 2026-05-09
+
+### Breaking changes
+
+- **Removed `Deedle.DotNetInteractive` package**: .NET Interactive is being deprecated; the `Deedle.DotNetInteractive` NuGet package and all associated source have been removed (closes [#723](https://github.com/fslaborg/Deedle/issues/723)).
+
 ## 7.0.2 - 2026-05-03
 
 ### New operations

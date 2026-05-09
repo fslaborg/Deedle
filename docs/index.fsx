@@ -121,8 +121,6 @@ These optional packages integrate Deedle with other interactive tools:
 
  * [Deedle.Excel](excel.html) — live read/write via `Deedle.Excel` (Windows-only)
 
- * [Deedle.DotNetInteractive](dotnetinteractive.html) — Deedle support for .NET Interactive notebooks (Jupyter, VS Code, Azure Data Studio)
-
 ## Contributing and copyright
 
 The project is hosted on [GitHub][gh].

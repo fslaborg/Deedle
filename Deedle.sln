@@ -13,8 +13,6 @@ Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Deedle.Tests", "tests\Deedl
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Deedle.MathNetNumerics.Tests", "tests\Deedle.MathNetNumerics.Tests\Deedle.MathNetNumerics.Tests.fsproj", "{AD811C67-091A-4B03-A483-9FA3B1A8CE55}"
 EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Deedle.DotNetInteractive", "src\Deedle.DotNetInteractive\Deedle.DotNetInteractive.fsproj", "{D71C0930-C2A3-4EDF-82A9-9EE6B431EC0D}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Deedle.CSharp.Tests", "tests\Deedle.CSharp.Tests\Deedle.CSharp.Tests.csproj", "{B0584275-6E9D-4DB8-A35D-4F37B623F97E}"
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Deedle.Arrow", "src\Deedle.Arrow\Deedle.Arrow.fsproj", "{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}"
@@ -113,18 +111,6 @@ Global
 		{AD811C67-091A-4B03-A483-9FA3B1A8CE55}.Release|x64.Build.0 = Release|Any CPU
 		{AD811C67-091A-4B03-A483-9FA3B1A8CE55}.Release|x86.ActiveCfg = Release|Any CPU
 		{AD811C67-091A-4B03-A483-9FA3B1A8CE55}.Release|x86.Build.0 = Release|Any CPU
-		{D71C0930-C2A3-4EDF-82A9-9EE6B431EC0D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D71C0930-C2A3-4EDF-82A9-9EE6B431EC0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D71C0930-C2A3-4EDF-82A9-9EE6B431EC0D}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{D71C0930-C2A3-4EDF-82A9-9EE6B431EC0D}.Debug|x64.Build.0 = Debug|Any CPU
-		{D71C0930-C2A3-4EDF-82A9-9EE6B431EC0D}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{D71C0930-C2A3-4EDF-82A9-9EE6B431EC0D}.Debug|x86.Build.0 = Debug|Any CPU
-		{D71C0930-C2A3-4EDF-82A9-9EE6B431EC0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D71C0930-C2A3-4EDF-82A9-9EE6B431EC0D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D71C0930-C2A3-4EDF-82A9-9EE6B431EC0D}.Release|x64.ActiveCfg = Release|Any CPU
-		{D71C0930-C2A3-4EDF-82A9-9EE6B431EC0D}.Release|x64.Build.0 = Release|Any CPU
-		{D71C0930-C2A3-4EDF-82A9-9EE6B431EC0D}.Release|x86.ActiveCfg = Release|Any CPU
-		{D71C0930-C2A3-4EDF-82A9-9EE6B431EC0D}.Release|x86.Build.0 = Release|Any CPU
 		{B0584275-6E9D-4DB8-A35D-4F37B623F97E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B0584275-6E9D-4DB8-A35D-4F37B623F97E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B0584275-6E9D-4DB8-A35D-4F37B623F97E}.Debug|x64.ActiveCfg = Debug|Any CPU

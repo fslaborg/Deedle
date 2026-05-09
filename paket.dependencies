@@ -25,10 +25,3 @@ nuget ExcelDataReader.DataSet
 nuget MiniExcel
 nuget Parquet.Net
 
-group interactive
-    source https://api.nuget.org/v3/index.json
-    framework: net10.0
-    nuget FSharp.Core >= 10.0 < 11.0
-    nuget Microsoft.DotNet.Interactive
-    nuget Microsoft.DotNet.Interactive.Formatting
-
