@@ -1262,7 +1262,7 @@ let ``replaceValue with no matching values returns original series`` () =
   s |> Series.replaceValue 5.0 99.0 |> shouldEqual s
 
 // ------------------------------------------------------------------------------------------------
-// take, takeLast, skip, skipLast
+// take, takeLast, skip, skipLast, head, tail
 // ------------------------------------------------------------------------------------------------
 
 [<Test>]
@@ -1276,6 +1276,18 @@ let ``Can take N elements from front and back`` () =
   Series.takeLast 2 s |> shouldEqual <| series [99 => 99.0; 100 => 100.0]
   Series.takeLast 100 s |> shouldEqual <| s
   Series.takeLast 0 s |> shouldEqual <| series []
+
+[<Test>]
+let ``Series.head and Series.tail are aliases for take and takeLast`` () =
+  let s = series [ for i in 1 .. 10 -> i => float i ]
+
+  Series.head 3 s |> shouldEqual <| Series.take 3 s
+  Series.head 10 s |> shouldEqual <| s
+  Series.head 0 s |> shouldEqual <| series []
+
+  Series.tail 3 s |> shouldEqual <| Series.takeLast 3 s
+  Series.tail 10 s |> shouldEqual <| s
+  Series.tail 0 s |> shouldEqual <| series []
 
 [<Test>]
 let ``Can skip N elements from front and back`` () =

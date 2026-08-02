@@ -1,5 +1,17 @@
 # Release Notes
 
+## 8.1.0 - unreleased
+
+### New operations
+
+- **`Frame.head` / `Frame.tail`**: convenience aliases for `Frame.take` / `Frame.takeLast`, returning the first or last *n* rows of a frame.
+- **`Series.head` / `Series.tail`**: convenience aliases for `Series.take` / `Series.takeLast`, returning the first or last *n* elements of a series.
+
+### Tests
+
+- Added tests for `Frame.renameCol` and `Frame.renameColsUsing`.
+- Added tests for `Frame.head` / `Frame.tail` and `Series.head` / `Series.tail`.
+
 ## 8.0.0 - 2026-05-09
 
 ### Breaking changes

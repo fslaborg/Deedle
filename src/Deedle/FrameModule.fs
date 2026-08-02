@@ -1322,6 +1322,24 @@ module Frame =
       invalidArg "count" "Must be greater than zero and less than the number of rows."
     getRange (frame.RowIndex.AddressAt(frame.RowCount-count |> int64))  (frame.RowIndex.AddressAt(frame.RowCount-1 |> int64)) frame
 
+  /// Returns a frame that contains the first `count` rows from the original frame.
+  /// Equivalent to `Frame.take count`. `count` must be non-negative and not exceed
+  /// the number of rows.
+  ///
+  /// <category>Frame transformations</category>
+  [<CompiledName("Head")>]
+  let head count (frame:Frame<'R, 'C>) =
+    take count frame
+
+  /// Returns a frame that contains the last `count` rows from the original frame.
+  /// Equivalent to `Frame.takeLast count`. `count` must be non-negative and not
+  /// exceed the number of rows.
+  ///
+  /// <category>Frame transformations</category>
+  [<CompiledName("Tail")>]
+  let tail count (frame:Frame<'R, 'C>) =
+    takeLast count frame
+
   /// Returns a frame that contains the data from the original frame,
   /// except for the first `count` rows; `count` must be smaller or equal
   /// to the original number of rows.

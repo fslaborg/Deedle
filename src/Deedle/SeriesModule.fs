@@ -719,6 +719,28 @@ module Series =
     series.GetAddressRange(RangeRestriction.End(int64 count))
 
   /// <summary>
+  /// Returns a series that contains the first `count` keys from the original series.
+  /// Equivalent to `Series.take count`.
+  /// </summary>
+  /// <param name="count">Number of keys to take; must be smaller or equal to the original number of keys</param>
+  /// <param name="series">Input series from which the keys are taken</param>
+  /// <category>Series transformations</category>
+  [<CompiledName("Head")>]
+  let head count (series:Series<'K, 'T>) =
+    take count series
+
+  /// <summary>
+  /// Returns a series that contains the last `count` keys from the original series.
+  /// Equivalent to `Series.takeLast count`.
+  /// </summary>
+  /// <param name="count">Number of keys to take; must be smaller or equal to the original number of keys</param>
+  /// <param name="series">Input series from which the keys are taken</param>
+  /// <category>Series transformations</category>
+  [<CompiledName("Tail")>]
+  let tail count (series:Series<'K, 'T>) =
+    takeLast count series
+
+  /// <summary>
   /// Returns a series that contains the data from the original series,
   /// except for the first `count` keys.
   /// </summary>
