@@ -661,7 +661,7 @@ module Series =
   /// <param name="f">The function to apply to each key and optional value.</param>
   /// <param name="series">The input series.</param>
   /// <category>Series transformations</category>
-  [<CompiledName("IterateAll")>]
+  [<CompiledName("IterateAllValues")>]
   let iterAllValues (f: _ -> unit) (series: Series<'K, 'T>) =
     series
     |> observationsAll

@@ -1677,8 +1677,9 @@ module Frame =
   /// <param name="frame">The input data frame.</param>
   /// <category>Frame transformations</category>
   [<CompiledName("IterateValues")>]
-  let iterValues f (frame:Frame<'R, 'C>) =
-    frame.SelectValues(Func<_, _>(f)) |> ignore
+  let iterValues (f: 'T -> unit) (frame: Frame<'R, 'C>) =
+    frame.GetColumns<'T>()
+    |> Series.iterValues (fun col -> col |> Series.iterValues f)
 
   /// <summary>
   /// Builds a new data frame whose values are the results of applying the specified
@@ -1697,7 +1698,9 @@ module Frame =
   /// <param name="f">The function to apply to each row key, column key, and value.</param>
   /// <param name="frame">The input data frame.</param>
   /// <category>Frame transformations</category>
-  let iter f (frame:Frame<'R, 'C>) = frame.Select(Func<_,_,_,_>(f)) |> ignore
+  let iter (f: 'R -> 'C -> 'T -> unit) (frame:Frame<'R, 'C>) =
+    frame.GetColumns<'T>()
+    |> Series.iter (fun c col -> col |> Series.iter (fun r v -> f r c v))
 
   /// <summary>
   /// Returns a series that contains the results of aggregating each column
