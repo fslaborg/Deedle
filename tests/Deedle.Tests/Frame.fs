@@ -955,6 +955,25 @@ let ``Frame.mapColKeys renames columns`` () =
   result.RowCount |> shouldEqual 3
 
 [<Test>]
+let ``Frame.renameCol renames a single column by key`` () =
+  let df = frame [ "A" => series [1 => 1.0; 2 => 2.0]; "B" => series [1 => 10.0; 2 => 20.0] ]
+  let result = df |> Frame.renameCol "A" "X"
+  result.ColumnKeys |> Seq.toList |> shouldEqual ["X"; "B"]
+  result.["X"] |> shouldEqual (series [1 => 1.0; 2 => 2.0])
+
+[<Test>]
+let ``Frame.renameCol leaves frame unchanged when key not found`` () =
+  let df = frame [ "A" => series [1 => 1.0]; "B" => series [1 => 2.0] ]
+  let result = df |> Frame.renameCol "Z" "W"
+  result.ColumnKeys |> Seq.toList |> shouldEqual ["A"; "B"]
+
+[<Test>]
+let ``Frame.renameColsUsing renames all columns with a mapping function`` () =
+  let df = frame [ "a" => series [1 => 1.0]; "b" => series [1 => 2.0] ]
+  let result = df |> Frame.renameColsUsing (fun k -> k.ToUpper())
+  result.ColumnKeys |> Seq.toList |> shouldEqual ["A"; "B"]
+
+[<Test>]
 let ``Frame.mapRowKeys remaps row keys`` () =
   let df = mapSample()
   let result = df |> Frame.mapRowKeys (fun k -> k * 10)
@@ -1061,7 +1080,7 @@ let ``Accessing row observation via missing row key returns missing`` () =
   actual.HasValue |> shouldEqual false
 
 // ------------------------------------------------------------------------------------------------
-// take, takeLast, skip, skipLast
+// take, takeLast, skip, skipLast, head, tail
 // ------------------------------------------------------------------------------------------------
 
 [<Test>]
@@ -1078,6 +1097,21 @@ let ``Can take N elements from front and back`` () =
   Frame.takeLast 2 df |> shouldEqual <| frame ["S1" =?> series [99 => 99.0; 100 => 100.0]; "S2" =?> series [99 => "N99"; 100 => "N100"] ]
   Frame.takeLast 100 df |> shouldEqual <| df
   Frame.takeLast 0 df |> shouldEqual <| empty
+
+[<Test>]
+let ``Frame.head and Frame.tail are aliases for take and takeLast`` () =
+  let s1 = series [ for i in 1 .. 10 -> i => float i ]
+  let s2 = series [ for i in 1 .. 10 -> i => "N" + (string i) ]
+  let df = frame [ "S1" =?> s1; "S2" =?> s2 ]
+  let empty = frame ["S1" =?> Series<int, float>([], []); "S2" =?> Series<int, string>([], [])]
+
+  Frame.head 3 df |> shouldEqual <| Frame.take 3 df
+  Frame.head 10 df |> shouldEqual <| df
+  Frame.head 0 df |> shouldEqual <| empty
+
+  Frame.tail 3 df |> shouldEqual <| Frame.takeLast 3 df
+  Frame.tail 10 df |> shouldEqual <| df
+  Frame.tail 0 df |> shouldEqual <| empty
 
 [<Test>]
 let ``Can skip N elements from front and back`` () =
