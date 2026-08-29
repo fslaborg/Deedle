@@ -1484,6 +1484,17 @@ module Frame =
     frame.Rows |> Series.map f
 
   /// <summary>
+  /// Applies the specified function to each row of the data frame. 
+  /// The function is called with the row key and an object series that represents the row data.
+  /// </summary>
+  /// <param name="f">The function to apply to each row key and row data.</param>
+  /// <param name="frame">The input data frame.</param>
+  /// <category>Frame transformations</category>
+  [<CompiledName("IterateRows")>]
+  let inline iterRows (f:_ -> _ -> unit) (frame:Frame<'R, 'C>) =
+    frame.Rows |> Series.iter f
+
+  /// <summary>
   /// Builds a new data frame whose rows are the results of applying the specified
   /// function on the rows of the input data frame. The function is called
   /// with an object series that represents the row data (use `mapRows`
@@ -1497,6 +1508,18 @@ module Frame =
     frame.Rows |> Series.mapValues f
 
   /// <summary>
+  /// Applies the specified function to each row of the data frame. 
+  /// The function is called with an object series that represents the row data 
+  /// (use `iterRows` if you need to access the row key).
+  /// </summary>
+  /// <param name="f">The function to apply to each row data.</param>
+  /// <param name="frame">The input data frame.</param>
+  /// <category>Frame transformations</category>
+  [<CompiledName("IterateRowValues")>]
+  let inline iterRowValues (f:_ -> unit) (frame:Frame<'R, 'C>) =
+    frame.Rows |> Series.iterValues f
+
+  /// <summary>
   /// Builds a new data frame whose row keys are the results of applying the
   /// specified function on the row keys of the original data frame.
   /// </summary>
@@ -1508,6 +1531,17 @@ module Frame =
     let newRowIndex = frame.IndexBuilder.Create(frame.RowIndex.Keys |> Seq.map f, None)
     let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder newRowIndex.AddressingScheme (Vectors.Return 0))
     Frame(newRowIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
+
+  /// <summary>
+  /// Applies the specified function to each row key of the data frame.
+  /// </summary>
+  /// <param name="f">The function to apply to each row key.</param>
+  /// <param name="frame">The input data frame.</param>
+  /// <category>Frame transformations</category>
+  [<CompiledName("IterateRowKeys")>]
+  let iterRowKeys (f: _ -> unit) (frame: Frame<'R, 'C>) =
+    frame.RowIndex.Keys |> Seq.iter f
+    
 
   /// <summary>
   /// Returns a data frame whose rows are indexed based on the specified column of the original
@@ -1568,6 +1602,17 @@ module Frame =
     frame.Columns |> Series.map f |> FrameUtils.fromColumns frame.IndexBuilder frame.VectorBuilder
 
   /// <summary>
+  /// Applies the specified function to each column of the data frame. 
+  /// The function is called with the column key and an object series that represents the column data.
+  /// </summary>
+  /// <param name="f">The function to apply to each column key and column data.</param>
+  /// <param name="frame">The input data frame.</param>
+  /// <category>Frame transformations</category>
+  [<CompiledName("IterateColumns")>]
+  let iterCols (f: 'C -> ObjectSeries<'R> -> unit) (frame: Frame<'R, 'C>) =
+    frame.Columns |> Series.iter f
+
+  /// <summary>
   /// Builds a new data frame whose columns are the results of applying the specified
   /// function on the columns of the input data frame. The function is called
   /// with an object series that represents the column data (use `mapCols`
@@ -1579,6 +1624,18 @@ module Frame =
   [<CompiledName("SelectColumnValues")>]
   let mapColValues f (frame:Frame<'R, 'C>) =
     frame.Columns |> Series.mapValues f |> FrameUtils.fromColumns frame.IndexBuilder frame.VectorBuilder
+
+  /// <summary>
+  /// Applies the specified function to each column of the data frame. 
+  /// The function is called with an object series that represents the column data.
+  /// (use `mapCols`if you need to access the column key).
+  /// </summary>
+  /// <param name="f">The function to apply to each column key and column data.</param>
+  /// <param name="frame">The input data frame.</param>
+  /// <category>Frame transformations</category>
+  [<CompiledName("IterateColumnValues")>]
+  let iterColValues (f: ObjectSeries<'R> -> unit) (frame: Frame<'R, 'C>) =
+    frame.Columns |> Series.iterValues f
 
   /// <summary>
   /// Builds a new data frame whose columns are the results of applying the specified
@@ -1608,6 +1665,16 @@ module Frame =
     Frame(frame.RowIndex, newColIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
   /// <summary>
+  /// Applies the specified function to each column key of the data frame. 
+  /// </summary>
+  /// <param name="f">The function to apply to each column key.</param>
+  /// <param name="frame">The input data frame.</param>
+  /// <category>Frame transformations</category>
+  [<CompiledName("IterateColumnKeys")>]
+  let iterColKeys (f: 'C -> unit) (frame:Frame<'R, 'C>) =
+    frame.ColumnIndex.Keys |> Seq.iter f
+
+  /// <summary>
   /// Builds a new data frame whose values are the results of applying the specified
   /// function on these values, but only for those columns which can be converted
   /// to the appropriate type for input to the mapping function (use `map` if you need
@@ -1620,6 +1687,19 @@ module Frame =
   let mapValues f (frame:Frame<'R, 'C>) = frame.SelectValues(Func<_,_>(f))
 
   /// <summary>
+  /// Applies the specified function to each value of the data frame.
+  /// The function is only applied to columns which can be converted to the 
+  /// appropriate type for input to the function.
+  /// </summary>
+  /// <param name="f">The function to apply to each value.</param>
+  /// <param name="frame">The input data frame.</param>
+  /// <category>Frame transformations</category>
+  [<CompiledName("IterateValues")>]
+  let iterValues (f: 'T -> unit) (frame: Frame<'R, 'C>) =
+    frame.GetColumns<'T>()
+    |> Series.iterValues (fun col -> col |> Series.iterValues f)
+
+  /// <summary>
   /// Builds a new data frame whose values are the results of applying the specified
   /// function on these values, but only for those columns which can be converted
   /// to the appropriate type for input to the mapping function.
@@ -1628,6 +1708,17 @@ module Frame =
   /// <param name="f">Function that defines the mapping</param>
   /// <category>Frame transformations</category>
   let map f (frame:Frame<'R, 'C>) = frame.Select(Func<_,_,_,_>(f))
+
+  /// <summary>
+  /// Applies the specified function to the values of the data frame, but only for those columns 
+  /// which can be converted to the appropriate type for input to the function.
+  /// </summary>
+  /// <param name="f">The function to apply to each row key, column key, and value.</param>
+  /// <param name="frame">The input data frame.</param>
+  /// <category>Frame transformations</category>
+  let iter (f: 'R -> 'C -> 'T -> unit) (frame:Frame<'R, 'C>) =
+    frame.GetColumns<'T>()
+    |> Series.iter (fun c col -> col |> Series.iter (fun r v -> f r c v))
 
   /// <summary>
   /// Returns a series that contains the results of aggregating each column

@@ -1,4 +1,4 @@
-﻿#nowarn "77" // Static constraint in Series.sample requires special + operator
+#nowarn "77" // Static constraint in Series.sample requires special + operator
 #nowarn "10002" // Custom CompilerMessage used to hide internals that are inlined
 
 namespace Deedle
@@ -591,6 +591,20 @@ module Series =
     series.Select(fun (KeyValue(k,v)) -> f k v)
 
   /// <summary>
+  /// Applies the given function to each key and value of the series.
+  /// This function skips over missing values and call the
+  /// function with both keys and values.
+  /// </summary>
+  /// <param name="f">The function to apply to each key and value.</param>
+  /// <param name="series">The input series.</param>
+  /// <category>Series transformations</category>
+  [<CompiledName("Iterate")>]
+  let iter (f: 'K -> 'T -> unit) (series: Series<'K, 'T>) =
+    series
+    |> observations
+    |> Seq.iter (fun (k, v) -> f k v)
+
+  /// <summary>
   /// Returns a new series whose values are the results of applying the given function to
   /// values of the original series. This function skips over missing values and call the
   /// function with just values. It is also aliased using the `$` operator so you can write
@@ -600,6 +614,20 @@ module Series =
   [<CompiledName("MapValues")>]
   let mapValues (f:'T -> 'R) (series:Series<'K, 'T>) =
     series.Select(fun (KeyValue(k,v)) -> f v)
+
+  /// <summary>
+  /// Applies the given function to each value of the series.
+  /// This function skips over missing values and calls the
+  /// function with just values.
+  /// </summary>
+  /// <param name="f">The function to apply to each value.</param>
+  /// <param name="series">The input series.</param>
+  /// <category>Series transformations</category>
+  [<CompiledName("IterateValues")>]
+  let iterValues (f: 'T -> unit) (series: Series<'K, 'T>) =
+    series
+    |> values
+    |> Seq.iter f
 
   /// <summary>
   /// Returns a new series whose values are the results of applying the given function to
@@ -612,6 +640,32 @@ module Series =
   let mapAll (f:_ -> _ -> option<'R>) (series:Series<'K, 'T>) =
     series.SelectOptional(fun kvp ->
       f kvp.Key (OptionalValue.asOption kvp.Value) |> OptionalValue.ofOption)
+
+  /// <summary>
+  /// Applies the given function to each key and value of the series.
+  /// This specified function is called even when the value is missing.
+  /// </summary>
+  /// <param name="f">The function to apply to each key and optional value.</param>
+  /// <param name="series">The input series.</param>
+  /// <category>Series transformations</category>
+  [<CompiledName("IterateAll")>]
+  let iterAll (f: _ -> _ -> unit) (series: Series<'K, 'T>) =
+    series
+    |> observationsAll
+    |> Seq.iter (fun (k, v) -> f k v)
+
+  /// <summary>
+  /// Applies the given function to each value of the series.
+  /// This specified function is called even when the value is missing.
+  /// </summary>
+  /// <param name="f">The function to apply to each key and optional value.</param>
+  /// <param name="series">The input series.</param>
+  /// <category>Series transformations</category>
+  [<CompiledName("IterateAllValues")>]
+  let iterAllValues (f: _ -> unit) (series: Series<'K, 'T>) =
+    series
+    |> observationsAll
+    |> Seq.iter (fun (_, v) -> f v)
 
   /// <summary>
   /// Returns a new series with values replaced by missing where the predicate returns `true`.
@@ -664,6 +718,17 @@ module Series =
   [<CompiledName("MapKeys")>]
   let mapKeys (f:'K -> 'R) (series:Series<'K, 'T>) =
     series.SelectKeys(fun kvp -> f kvp.Key)
+
+  /// <summary>
+  /// Applies the given function to each key of the series.
+  /// Note that this iterates over the entire index, including keys where the corresponding value is missing.
+  /// </summary>
+  /// <param name="f">The function to apply to each key.</param>
+  /// <param name="series">The input series.</param>
+  /// <category>Series transformations</category>
+  [<CompiledName("IterateKeys")>]
+  let iterKeys (f:'K -> unit) (series:Series<'K, 'T>) =
+    series.Keys |> Seq.iter f
 
   /// <summary>
   /// Retruns a new series whose values are converted using the specified conversion function.

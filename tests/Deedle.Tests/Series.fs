@@ -481,6 +481,41 @@ let ``Grouping series with missing values works on sample input``() =
   actual |> shouldEqual expected
 
 // ------------------------------------------------------------------------------------------------
+// Iter Functions
+// ------------------------------------------------------------------------------------------------
+[<Test>]
+let ``Series.iter and iterValues skip missing values`` () =
+  let s = series [1 => 10.0; 2 => nan; 3 => 30.0]
+
+  let iterAcc = ResizeArray()
+  s |> Series.iter (fun k v -> iterAcc.Add(k ,v))
+  List.ofSeq iterAcc |> shouldEqual [(1,10.0); (3,30.0)]
+
+  let iterValsAcc = ResizeArray()
+  s |> Series.iterValues (fun v -> iterValsAcc.Add(v))
+  List.ofSeq iterValsAcc |> shouldEqual [10.0; 30.0]
+
+[<Test>]
+let ``Series.iterKeys iterates over all keys regardless of missing values`` () =
+  let s = series[1 => 10.0; 2 => nan; 3 => 30.0]
+
+  let acc = ResizeArray()
+  s |> Series.iterKeys(fun k -> acc.Add(k))
+  List.ofSeq acc |> shouldEqual [1; 2; 3]
+
+[<Test>]
+let ``Series.iterAll and iterAllValues pass options and include missing values`` () =
+  let s = series[1 => 10.0; 2 => nan; 3 => 30.0]
+
+  let iterAllAcc = ResizeArray()
+  s |> Series.iterAll(fun k v -> iterAllAcc.Add(k ,v))
+  List.ofSeq iterAllAcc |> shouldEqual [(1, Some 10.0); (2, None); (3, Some 30.0)]
+
+  let iterAllValsAcc = ResizeArray()
+  s |> Series.iterAllValues (fun v -> iterAllValsAcc.Add(v))
+  List.ofSeq iterAllValsAcc |> shouldEqual [Some 10.0; None; Some 30.0]
+
+// ------------------------------------------------------------------------------------------------
 // Fill missing values
 // ------------------------------------------------------------------------------------------------
 

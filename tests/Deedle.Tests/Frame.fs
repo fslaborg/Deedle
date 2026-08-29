@@ -866,6 +866,59 @@ let ``distinctRowsBy with all duplicate rows returns one row`` () =
   result.RowCount |> shouldEqual 1
 
 // ------------------------------------------------------------------------------------------------
+// Iter Functions
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Frame row iteration functions work correctly`` () =
+  let df = frame ["X" => series[1 => 10.0; 2 => nan; 3 => 30.0]
+                  "Y" => series[1 => 100.0; 2 => 200.0; 3 => 300.0]]
+
+  let rowsAcc = ResizeArray()
+  df |> Frame.iterRows (fun r row -> rowsAcc.Add(r, row.GetAs<float>("Y")))
+  List.ofSeq rowsAcc |> shouldEqual [(1, 100.0); (2, 200.0); (3, 300.0)]
+
+  let rowValsAcc = ResizeArray()
+  df |> Frame.iterRowValues (fun row -> rowValsAcc.Add(row.KeyCount))
+  List.ofSeq rowValsAcc |> shouldEqual [2; 2; 2]
+
+  let rowKeysAcc = ResizeArray()
+  df |> Frame.iterRowKeys (fun r -> rowKeysAcc.Add(r))
+  List.ofSeq rowKeysAcc |> shouldEqual [1; 2; 3]
+
+[<Test>]
+let ``Frame column iteration functions work correctly`` () =
+  let df = frame ["X" => series[1 => 10.0; 2 => nan; 3 => 30.0]
+                  "Y" => series[1 => 100.0; 2 => 200.0; 3 => 300.0]]
+
+  let colsAcc = ResizeArray()
+  df |> Frame.iterCols(fun c col -> colsAcc.Add(c, col.GetAs<float>(1)))
+  List.ofSeq colsAcc |> shouldEqual [("X", 10.0); ("Y", 100.0)]
+
+  let colValsAcc = ResizeArray()
+
+  df |> Frame.iterColValues (fun col -> colValsAcc.Add(col.ValueCount))
+  List.ofSeq colValsAcc |> shouldEqual [2; 3]
+
+  let colKeysAcc = ResizeArray()
+  df |> Frame.iterColKeys (fun c -> colKeysAcc.Add(c))
+  List.ofSeq colKeysAcc |> shouldEqual ["X"; "Y"]
+
+
+[<Test>]
+let ``Frame.iter and iterValues skip missing values and filter by type`` () =
+  let df = frame [ "A" => (series [ 1 => 10.0; 2 => nan; 3 => 30.0 ] :> ISeries<_>)
+                   "B" => (series [ 1 => "str1"; 2 => "str2"; 3 => "str3" ] :> ISeries<_>)]
+
+  let iterAcc = ResizeArray()
+  df |> Frame.iter(fun r c (v: float) -> iterAcc.Add(r, c, v))
+  List.ofSeq iterAcc |> shouldEqual [(1, "A", 10.0); (3, "A", 30.0)]
+
+  let iterValsAcc = ResizeArray()
+  df |> Frame.iterValues (fun (v: string) -> iterValsAcc.Add(v))
+  List.ofSeq iterValsAcc |> shouldEqual ["str1"; "str2"; "str3"]
+
+// ------------------------------------------------------------------------------------------------
 // Frame.mapCols / mapColValues / mapRows / mapRowValues / mapColKeys / mapRowKeys
 // ------------------------------------------------------------------------------------------------
 
