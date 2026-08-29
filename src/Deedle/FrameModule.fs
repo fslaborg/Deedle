@@ -219,8 +219,11 @@ module Frame =
   open System
   open Deedle.Internal
   open Deedle.Indices
+  open Deedle.Indices.Virtual
   open Deedle.VectorHelpers
   open Deedle.Vectors
+  open Deedle.Vectors.Virtual
+  open Deedle.Virtual
 
   // ----------------------------------------------------------------------------------------------
   // Creating frames
@@ -1417,6 +1420,27 @@ module Frame =
     Frame<_, _>(newRowIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
   /// <summary>
+  /// Filter rows by two column/value predicates in one virtual Search.
+  /// The two <c>LookupRange</c> results are intersected and applied once, so column
+  /// <c>GetSubVector</c> runs a single time (unlike chaining <c>filterRowsBy</c>).
+  /// Non-virtual frames fall back to two sequential <c>filterRowsBy</c> calls.
+  /// </summary>
+  /// <category>Frame transformations</category>
+  [<CompiledName("WhereRowsBy2")>]
+  let filterRowsBy2 column1 (value1:'V1) column2 (value2:'V2) (frame:Frame<'R, 'C>) =
+    let col1 = frame.GetColumn<'V1>(column1)
+    let col2 = frame.GetColumn<'V2>(column2)
+    match frame.RowIndex, col1.Vector, col2.Vector with
+    | (:? VirtualOrderedIndex<'R> as idx), (:? VirtualVector<'V1> as v1), (:? VirtualVector<'V2> as v2) ->
+        let mapping = LookupRangeExecutor.intersect (v1.Source.LookupRange(value1)) (v2.Source.LookupRange(value2))
+        let newRowIndex = VirtualOrderedIndex(idx.Source.GetSubVector(mapping)) :> IIndex<'R>
+        let cmd = Vectors.GetRange(Vectors.Return 0, mapping)
+        let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder newRowIndex.AddressingScheme cmd)
+        Frame<_, _>(newRowIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
+    | _ ->
+        frame |> filterRowsBy column1 value1 |> filterRowsBy column2 value2
+
+  /// <summary>
   /// Returns a new data frame containing only the rows of the input frame whose
   /// corresponding value in the boolean mask series is <c>true</c>. Rows whose key
   /// is missing from the mask are excluded. This enables pandas-style boolean indexing.
@@ -1778,7 +1802,7 @@ module Frame =
   [<CompiledName("Shift")>]
   let shift offset (frame:Frame<'R, 'C>) =
     let newRowIndex, cmd = frame.RowIndex.Builder.Shift((frame.RowIndex, Vectors.Return 0), offset)
-    let vectorBuilder = VectorBuilder.Instance
+    let vectorBuilder = frame.VectorBuilder
     let newData = frame.Data.Select(VectorHelpers.transformColumn vectorBuilder newRowIndex.AddressingScheme cmd)
     Frame(newRowIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
@@ -1797,12 +1821,12 @@ module Frame =
   /// <category>Frame transformations</category>
   [<CompiledName("Diff")>]
   let diff offset (frame:Frame<'R, 'C>) =
-    let vectorBuilder = VectorBuilder.Instance
+    let vectorBuilder = frame.VectorBuilder
     let newRowIndex, vectorR = frame.RowIndex.Builder.Shift((frame.RowIndex, Vectors.Return 0), offset)
     let _, vectorL = frame.RowIndex.Builder.Shift((frame.RowIndex, Vectors.Return 0), -offset)
     let cmd = Vectors.Combine(lazy newRowIndex.KeyCount, [vectorL; vectorR], BinaryTransform.Create<float>(OptionalValue.map2 (-)))
     let newData = frame.Data.Select(function
-        | AsFloatVector vf -> VectorBuilder.Instance.Build(newRowIndex.AddressingScheme, cmd, [| vf |]) :> IVector
+        | AsFloatVector vf -> vectorBuilder.Build(newRowIndex.AddressingScheme, cmd, [| vf |]) :> IVector
         | vector -> vector)
     Frame(newRowIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
@@ -1821,12 +1845,12 @@ module Frame =
   /// <category>Frame transformations</category>
   [<CompiledName("PctChange")>]
   let pctChange offset (frame:Frame<'R, 'C>) =
-    let vectorBuilder = VectorBuilder.Instance
+    let vectorBuilder = frame.VectorBuilder
     let newRowIndex, vectorR = frame.RowIndex.Builder.Shift((frame.RowIndex, Vectors.Return 0), offset)
     let _, vectorL = frame.RowIndex.Builder.Shift((frame.RowIndex, Vectors.Return 0), -offset)
     let cmd = Vectors.Combine(lazy newRowIndex.KeyCount, [vectorL; vectorR], BinaryTransform.Create<float>(OptionalValue.map2 (fun l r -> (l - r) / r)))
     let newData = frame.Data.Select(function
-        | AsFloatVector vf -> VectorBuilder.Instance.Build(newRowIndex.AddressingScheme, cmd, [| vf |]) :> IVector
+        | AsFloatVector vf -> vectorBuilder.Build(newRowIndex.AddressingScheme, cmd, [| vf |]) :> IVector
         | vector -> vector)
     Frame(newRowIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 

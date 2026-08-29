@@ -14,7 +14,7 @@ open Parquet.Schema
 open Parquet.Data
 
 [<AutoOpen>]
-module private Implementation =
+module internal Implementation =
 
     // ------------------------------------------------------------------------------------------------
     // Internal helpers

@@ -673,6 +673,8 @@ type Stats =
   /// and `NaN` values. When there are no available values, the result is NaN.
   /// Throws a `FormatException` or an `InvalidCastException` if the value type of the series
   /// is not convertible to floating point number.
+  /// Full-series Stats always pull every value (O(N) on a virtual series).
+  /// Slice first if you only need a window: `Stats.sum series.[lo .. hi]` is O(slice).
   ///
   /// <category>Series statistics</category>
   static member inline sum (series:Series<'K, 'V>) =

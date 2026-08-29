@@ -206,6 +206,24 @@ module Ranges =
         if isStart then Ranges(loop 0 (int desiredCount) |> Array.ofSeq, ranges.Operations)
         else Ranges(loop (ranges.Ranges.Length-1) (int desiredCount) |> Array.ofSeq |> Array.rev, ranges.Operations)
 
+    | RangeRestriction.Custom keys ->
+        // Coalesce a custom sequence of keys into contiguous (lo, hi) blocks so
+        // partitioned / Ranges-based sources can apply LookupRange scan results.
+        let ops = ranges.Operations
+        let isSuccessor hi k = ops.Compare(ops.IncrementBy(hi, 1L), k) = 0
+        let completed, current =
+          (([], None), keys)
+          ||> Seq.fold (fun (acc, block) k ->
+              match block with
+              | None -> acc, Some(k, k)
+              | Some(lo, hi) when isSuccessor hi k -> acc, Some(lo, k)
+              | Some closed -> closed::acc, Some(k, k))
+        let coalesced =
+          match current with
+          | None -> List.rev completed
+          | Some block -> List.rev (block::completed)
+        Ranges(coalesced, ops)
+
     | _ -> failwith "restrictRanges: Custom ranges are not supported"
 
   /// Returns the smallest & greatest overall key
