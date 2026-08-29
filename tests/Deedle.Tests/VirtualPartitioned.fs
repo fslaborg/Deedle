@@ -201,7 +201,7 @@ type TrackingSource<'T>
     member x.Invoke(op) = op.Invoke(x)
 
   // Implement generic source interface - mostly boilerplate or
-  // delegation to `Ranges` (except for LookupRange which we don't do)
+  // delegation to `Ranges` (`LookupRange` scans partitions via addressing)
 
   interface IVirtualVectorSource<'T> with
     member x.MergeWith(sources) =
@@ -210,7 +210,7 @@ type TrackingSource<'T>
         | _ -> failwith "MergeWith: other is not partitioned source!"))) :> _
 
     member x.LookupRange(v) =
-      failwith "LookupRange: not supported"
+      VirtualVectorSource.scanLookupRangeOf x v
 
     member x.LookupValue(value, lookup, check) =
       // This is good enough for testing, but it is not perfect
@@ -343,7 +343,7 @@ let ``Lookup can search within a single partition`` () =
   accessedDataParts valSrc |> shouldEqual [10]
 
 [<Test>]
-let ``Lookup can search accross partition boundaries`` () =
+let ``Can lookup across partition boundaries`` () =
   let idxSrc, valSrc, ts = createTimeSeries 1000 (fun n -> 10)
   ts.Get((date 0 9).AddDays(1.0), Lookup.ExactOrSmaller) |> shouldEqual 9.0
   ts.Get((date 0 9).AddDays(1.0), Lookup.ExactOrGreater) |> shouldEqual 1000000.0
@@ -398,9 +398,14 @@ let ``Merging series sub-ranges works as expected`` () =
   let merged = y15a.Merge(y17b, y15b, y17a)
 
   // Merging correctly joins adjacent ranges (the above is just 2 blocks)
-  let ranges =
-    ((merged.Index :?> Deedle.Indices.Virtual.VirtualOrderedIndex<DateTimeOffset>).Source
-      :?> TrackingSource<DateTimeOffset>).Ranges
+  let indexSource = (merged.Index :?> Deedle.Indices.Virtual.VirtualOrderedIndex<DateTimeOffset>).Source
+  let trackingSource =
+    match indexSource with
+    | :? Deedle.Vectors.Virtual.VirtualVectorSource.ILinearAddressedSource<DateTimeOffset> as wrapped ->
+        wrapped.Source :?> TrackingSource<DateTimeOffset>
+    | :? TrackingSource<DateTimeOffset> as src -> src
+    | _ -> failwith "expected TrackingSource (possibly behind linear addressing)"
+  let ranges = trackingSource.Ranges
   ranges.Ranges.Length |> shouldEqual 2
 
   // Check number of keys in the merged series
@@ -433,7 +438,7 @@ let ``Slicing with out of range keys or reversed order produces empty series`` (
 // ------------------------------------------------------------------------------------------------
 
 [<Test>]
-let ``Cen perform slicing on an ordinally indexed series`` () =
+let ``Can perform slicing on an ordinally indexed series`` () =
   let valSrc, ts = createOrdinalSeries 1000 (fun n -> 10)
   let ss = ts.[1005L .. 1014L]
 
@@ -443,7 +448,7 @@ let ``Cen perform slicing on an ordinally indexed series`` () =
     ss.[k] |> shouldEqual ts.[k]
 
 [<Test>]
-let ``Cen perform slicing and merging on an ordinally indexed series`` () =
+let ``Can perform slicing and merging on an ordinally indexed series`` () =
   let valSrc, ts = createOrdinalSeries 1000 (fun n -> 10)
   let ss = Series.mergeAll [ ts.[1005L .. 1014L]; ts.[2005L .. 2014L] ]
   for k in ss.Keys do
@@ -513,7 +518,7 @@ let ``Equality returns false and works on very large series`` () =
   ts2 = ts1 |> shouldEqual false
 
 [<Test>]
-let ``Equality test returns true on small virutal series`` () =
+let ``Equality test returns true on small virtual series`` () =
   let _, _, ts1 = createTimeSeries 1000 (fun n -> 5000)
   let ts1sm = ts1 |> Series.take 10
   let ts2sm = series [ for i in 0 .. 9 -> date 0 i => float i ]
@@ -534,7 +539,7 @@ let ``Can sample large time series using explicitly specified list of dates`` ()
   |> List.ofSeq |> shouldEqual [ 0.0 .. 1000000.0 .. 999000000.0 ]
 
 [<Test>]
-let ``Can sample large time series by time without evauating it`` () =
+let ``Can sample large time series by time without evaluating it`` () =
   let _, valSrc, s = createTimeSeries 1000 (fun n -> 5000)
   let sampled = s |> Series.sampleTimeInto (TimeSpan.FromDays 10000.0) Direction.Forward id
   valSrc.AccessedData |> shouldEqual []
@@ -629,7 +634,7 @@ let ``Can perform grouping on a small virtual series`` () =
   |> shouldEqual <| series [1 => 2000011.5; 2 => 2000035.5; 3 => 2000059.5; 4 => 2000083.5; 5 => 2000098. ]
 
 // ------------------------------------------------------------------------------------------------
-// Creating frames with vitual series
+// Creating frames with virtual series
 // ------------------------------------------------------------------------------------------------
 
 let createSmallFrame partNum partSize =
@@ -691,3 +696,11 @@ let ``Can use ColumnApply and 'abs' on a created frame`` () =
 
   f4.Rows.[date 510 0 .. date 511 4999] |> Stats.sum
   |> shouldEqual <| series ["Value" => 0.0; "Sin" => 0.0]
+
+[<Test>]
+let ``Partitioned LookupRange scan filters a matching partition row`` () =
+  let df = createSmallFrame 3 (fun _ -> 24)
+  let filtered = df |> Frame.filterRowsBy "A" 2000005.0
+  filtered.RowIndex.AddressingScheme :? VirtualAddressingScheme |> shouldEqual true
+  filtered.RowCount |> shouldEqual 1
+  filtered.GetColumn<float>("A").GetAt(0) |> shouldEqual 2000005.0

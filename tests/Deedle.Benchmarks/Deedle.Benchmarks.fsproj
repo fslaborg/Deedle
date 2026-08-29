@@ -6,12 +6,27 @@
     <AssemblyName>Deedle.Benchmarks</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="../Common/FsUnit.fs">
+      <Link>FsUnit.fs</Link>
+    </Compile>
+    <Compile Include="../Common/CsvTestData.fs">
+      <Link>CsvTestData.fs</Link>
+    </Compile>
+    <Compile Include="../Common/ParquetTestData.fs">
+      <Link>ParquetTestData.fs</Link>
+    </Compile>
+    <Compile Include="../Deedle.Tests/VirtualInstrumentation.fs">
+      <Link>VirtualInstrumentation.fs</Link>
+    </Compile>
     <Compile Include="Benchmarks.fs" />
+    <Compile Include="VirtualBenchmarks.fs" />
+    <Compile Include="RealSourceBenchmarks.fs" />
     <Compile Include="Program.fs" />
     <None Include="paket.references" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Deedle\Deedle.fsproj" />
+    <ProjectReference Include="..\..\src\Deedle.Parquet\Deedle.Parquet.fsproj" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="../Performance/data/titanic.csv">

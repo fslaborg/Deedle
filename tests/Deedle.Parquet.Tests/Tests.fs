@@ -250,17 +250,28 @@ let ``Single-column single-row frame round-trips through Parquet file`` () =
 [<Test>]
 let ``Mixed-type frame round-trips through Parquet file`` () =
     withTmpFile (fun path ->
+        let t1 = DateTime(2024, 1, 15, 12, 0, 0, DateTimeKind.Utc)
+        let t2 = DateTime(2024, 6, 30, 0, 0, 0, DateTimeKind.Utc)
         let df =
             Frame.ofColumns [
-                "Name"  => (Series.ofValues [ "Alice"; "Bob" ] :> ISeries<_>)
-                "Count" => (Series.ofValues [ 10; 20 ]         :> ISeries<_>)
-                "Score" => (Series.ofValues [ 1.5; 2.5 ]       :> ISeries<_>) ]
+                "Id"   => (Series.ofValues [ 1L; 2L ] :> ISeries<_>)
+                "Name" => (Series.ofValues [ "Alice"; "Bob" ] :> ISeries<_>)
+                "Flag" => (Series.ofValues [ true; false ] :> ISeries<_>)
+                "Amt"  => (Series.ofOptionalObservations [ (0, Some 1.5); (1, None) ] :> ISeries<_>)
+                "When" => (Series.ofValues [ t1; t2 ] :> ISeries<_>) ]
         Frame.writeParquet path df
         let df2 = Frame.readParquet path
-        df2.ColumnCount |> should equal 3
-        df2.GetColumn<string>("Name") |> Series.values |> Array.ofSeq |> should equal [| "Alice"; "Bob" |]
-        df2.GetColumn<int>("Count")   |> Series.values |> Array.ofSeq |> should equal [| 10; 20 |]
-        df2.["Score"]                 |> Series.values |> Array.ofSeq |> should equal [| 1.5; 2.5 |])
+        df2.ColumnCount |> should equal 5
+        df2.RowCount |> should equal 2
+        df2.GetColumn<int64>("Id").Values |> Seq.toList |> should equal [ 1L; 2L ]
+        df2.GetColumn<string>("Name").Values |> Seq.toList |> should equal [ "Alice"; "Bob" ]
+        df2.GetColumn<bool>("Flag").Values |> Seq.toList |> should equal [ true; false ]
+        let amt = df2.GetColumn<float>("Amt")
+        amt.TryGetAt(0).Value |> should (equalWithin 1e-10) 1.5
+        amt.TryGetAt(1).HasValue |> should equal false
+        let whenCol : DateTime[] = df2.GetColumn<DateTime>("When") |> Series.values |> Array.ofSeq
+        abs((whenCol.[0] - t1).TotalSeconds) |> should (equalWithin 1.0) 0.0
+        abs((whenCol.[1] - t2).TotalSeconds) |> should (equalWithin 1.0) 0.0)
 
 [<Test>]
 let ``Float32 column round-trips through Parquet file`` () =

@@ -272,6 +272,8 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   /// When the index of both frames is ordered, it is possible to specify `lookup`
   /// in order to align indices from other frame to the indices of the main frame
   /// (typically, to find the nearest key with available value for a key).
+  /// Identical ordinal virtual row indices (same key ranges) stay virtual. Outer/inner
+  /// join of mismatched keys, <c>joinOn</c>, and nearest-key lookup materialize.
   /// </summary>
   /// <param name="otherFrame">Other frame (right) to be joined with the current instance (left)</param>
   /// <param name="kind">Specifies the joining behavior on row indices. Use `JoinKind.Outer` and `JoinKind.Inner` to get the union and intersection of the row keys, respectively. Use `JoinKind.Left` and `JoinKind.Right` to use the current key of the left/right data frame.</param>

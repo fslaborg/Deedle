@@ -6,11 +6,36 @@
 
 - **`Frame.head` / `Frame.tail`**: convenience aliases for `Frame.take` / `Frame.takeLast`, returning the first or last *n* rows of a frame.
 - **`Series.head` / `Series.tail`**: convenience aliases for `Series.take` / `Series.takeLast`, returning the first or last *n* elements of a series.
+- **`Virtual.ReadCsv`**: file-backed virtual `Frame`; ordinal `0..N-1` or `indexColumn` when strictly increasing and unique (else ordinal + trace). Missing cells, quoted fields, `hasHeaders=false`. Byte-offset row index by default (`byteOffsetIndex=false` caches lines in RAM).
+- **`Virtual.ReadCsvDirectory`**: concatenate same-schema CSVs into one ordinal virtual frame.
+- **`Virtual.ReadParquet`** (`Deedle.Parquet`): file-backed virtual frame; columns read on demand; CLR types match `Frame.readParquet`.
+- **`searchColumns`**: `VirtualSearchColumn.infer` / `.withString` / `.withInt64` / `.withFloat` at load; ≤64 distinct values infer `IndexList` or `Step`.
+- **`VirtualLookupRange`**: `forRepeatingCycle`, `forCategorical`, `forCategoricalScan`, `scan` (unknown cycle → empty range).
+- **`Frame.filterRowsBy`**: uses column `LookupRange` on virtual ordered/ordinal frames; O(N) scan when unconfigured; `LookupRange` remapped after Step/IndexList slices.
+- **`Frame.filterRowsBy2`**: intersect two predicates in one `LookupRange` / `GetSubVector` pass.
+- **`Virtual.MaterializeFloatBatches`**: lazy `float64` `FeaturesFlat` from `float`/`int64` columns; `labelsColumn`, `layout`, `includeMissingMask`, `maxRows`, `FloatBatchOrder` (`Sequential` / `Shuffled` / `ShuffledWithSeed`), `FloatMissingPolicy`.
+- **Virtual series/frame ops** (stay virtual until read): `shift`, `diff`, `pctChange`; `windowSize`/`chunkSize` nested slices (aggregate still materializes); ordinal join/zip on identical keys; `dropMissing`; `fillMissing`/`fillMissingWith` on virtual sources.
+- **`Virtual` diagnostics**: `GetRowIndexKind`, `IsVirtualRowIndex`, `IsVirtualColumn`, `Describe`, `TryGetRowIndexSchemeId`, `TryGetLookupRange` (`Scan` / `Step` / `IndexList` / `ExactFixed` / `FullFixed`).
+
+
+### Performance
+
+- **CSV**: per-row parsed-field cache; decode scoped to requested `LookupRange`.
+- **Parquet**: per-column cache on virtual frames; file handle kept for frame lifetime.
+- **`filterRowsBy`**: `LookupRange` path on `VirtualOrdinalIndex` and ordered virtual indices (not full-file scan when configured).
+
+### Documentation
+
+- **`docs/bigdeedle.fsx`**: virtual load, filter, prep, ML export, custom `IVirtualVectorSource`; sample data in `docs/data/bigdeedle-prices.csv`.
+- **`docs/design.fsx`**, **`docs/index.fsx`**: virtual stack overview and navigation.
 
 ### Tests
 
 - Added tests for `Frame.renameCol` and `Frame.renameColsUsing`.
 - Added tests for `Frame.head` / `Frame.tail` and `Series.head` / `Series.tail`.
+- Added tests for Virtual CSV/Parquet, lookup range, frame diagnostics, series/vector/index.
+- Added Benchmarks for Virtual operations.
+- Added **`Deedle.VirtualPreservation`**: per-op virtual vs materialize checks (counting ValueAt ops).
 
 ## 8.0.0 - 2026-05-09
 
