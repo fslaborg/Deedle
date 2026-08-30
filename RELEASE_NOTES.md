@@ -11,6 +11,7 @@
 
 - Added tests for `Frame.renameCol` and `Frame.renameColsUsing`.
 - Added tests for `Frame.head` / `Frame.tail` and `Series.head` / `Series.tail`.
+- Added tests for `Series.windowDist` / `Series.windowDistInto`, `Series.chunkDist` / `Series.chunkDistInto`, and `Series.pairwiseWith`, which previously had no test coverage.
 
 ## 8.0.0 - 2026-05-09
 
