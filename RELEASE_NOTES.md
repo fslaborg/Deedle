@@ -6,11 +6,13 @@
 
 - **`Frame.head` / `Frame.tail`**: convenience aliases for `Frame.take` / `Frame.takeLast`, returning the first or last *n* rows of a frame.
 - **`Series.head` / `Series.tail`**: convenience aliases for `Series.take` / `Series.takeLast`, returning the first or last *n* elements of a series.
+- **`Frame.Between` / `Frame.After` / `Frame.Before` / `Frame.StartAt` / `Frame.EndAt`**: row-range slicing members and matching `Frame` module functions, mirroring the existing `Series.Between` / `Series.After` / `Series.Before` / `Series.StartAt` / `Series.EndAt` members. Lets you slice a frame's rows by key range directly, e.g. `df.Between(startDate, endDate)`, without going through `df.Rows |> Series.between ... |> Frame.ofRows`.
 
 ### Tests
 
 - Added tests for `Frame.renameCol` and `Frame.renameColsUsing`.
 - Added tests for `Frame.head` / `Frame.tail` and `Series.head` / `Series.tail`.
+- Added tests for `Frame.Between` / `Frame.After` / `Frame.Before` / `Frame.StartAt` / `Frame.EndAt` and their module function equivalents.
 
 ## 8.0.0 - 2026-05-09
 
