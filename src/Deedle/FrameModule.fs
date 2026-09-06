@@ -1322,6 +1322,59 @@ module Frame =
       invalidArg "count" "Must be greater than zero and less than the number of rows."
     getRange (frame.RowIndex.AddressAt(frame.RowCount-count |> int64))  (frame.RowIndex.AddressAt(frame.RowCount-1 |> int64)) frame
 
+  /// <summary>
+  /// Returns a new frame containing all rows with keys strictly greater than
+  /// <c>lowerExclusive</c>. This is the functional equivalent of <c>frame.After(k)</c>.
+  /// </summary>
+  /// <param name="lowerExclusive">The exclusive lower bound key.</param>
+  /// <param name="frame">The input frame.</param>
+  /// <category>Frame transformations</category>
+  [<CompiledName("After")>]
+  let after lowerExclusive (frame:Frame<'R, 'C>) = frame.After(lowerExclusive)
+
+  /// <summary>
+  /// Returns a new frame containing all rows with keys strictly less than
+  /// <c>upperExclusive</c>. This is the functional equivalent of <c>frame.Before(k)</c>.
+  /// </summary>
+  /// <param name="upperExclusive">The exclusive upper bound key.</param>
+  /// <param name="frame">The input frame.</param>
+  /// <category>Frame transformations</category>
+  [<CompiledName("Before")>]
+  let before upperExclusive (frame:Frame<'R, 'C>) = frame.Before(upperExclusive)
+
+  /// <summary>
+  /// Returns a new frame containing all rows with keys greater than or equal to
+  /// <c>lowerInclusive</c>. This is the functional equivalent of <c>frame.StartAt(k)</c>.
+  /// </summary>
+  /// <param name="lowerInclusive">The inclusive lower bound key.</param>
+  /// <param name="frame">The input frame.</param>
+  /// <category>Frame transformations</category>
+  [<CompiledName("StartAt")>]
+  let startAt lowerInclusive (frame:Frame<'R, 'C>) = frame.StartAt(lowerInclusive)
+
+  /// <summary>
+  /// Returns a new frame containing all rows with keys less than or equal to
+  /// <c>upperInclusive</c>. This is the functional equivalent of <c>frame.EndAt(k)</c>.
+  /// </summary>
+  /// <param name="upperInclusive">The inclusive upper bound key.</param>
+  /// <param name="frame">The input frame.</param>
+  /// <category>Frame transformations</category>
+  [<CompiledName("EndAt")>]
+  let endAt upperInclusive (frame:Frame<'R, 'C>) = frame.EndAt(upperInclusive)
+
+  /// <summary>
+  /// Returns a new frame containing all rows with keys in the range
+  /// [<c>lowerInclusive</c>, <c>upperInclusive</c>] (both bounds inclusive).
+  /// This is the functional equivalent of <c>frame.Between(lo, hi)</c>.
+  /// </summary>
+  /// <param name="lowerInclusive">The inclusive lower bound key.</param>
+  /// <param name="upperInclusive">The inclusive upper bound key.</param>
+  /// <param name="frame">The input frame.</param>
+  /// <category>Frame transformations</category>
+  [<CompiledName("Between")>]
+  let between lowerInclusive upperInclusive (frame:Frame<'R, 'C>) =
+    frame.Between(lowerInclusive, upperInclusive)
+
   /// Returns a frame that contains the first `count` rows from the original frame.
   /// Equivalent to `Frame.take count`. `count` must be non-negative and not exceed
   /// the number of rows.

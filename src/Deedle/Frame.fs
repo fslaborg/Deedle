@@ -1257,6 +1257,28 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     let newData = data.Select(VectorHelpers.transformColumn vectorBuilder newRowIndex.AddressingScheme cmd)
     Frame<_, _>(newRowIndex, columnIndex, newData, indexBuilder, vectorBuilder)
 
+  /// <category>Accessors and slicing</category>
+  member frame.Between(lowerInclusive, upperInclusive) =
+    frame.GetSubrange
+      ( Some(lowerInclusive, BoundaryBehavior.Inclusive),
+        Some(upperInclusive, BoundaryBehavior.Inclusive) )
+
+  /// <category>Accessors and slicing</category>
+  member frame.After(lowerExclusive) =
+    frame.GetSubrange( Some(lowerExclusive, BoundaryBehavior.Exclusive), None )
+
+  /// <category>Accessors and slicing</category>
+  member frame.Before(upperExclusive) =
+    frame.GetSubrange( None, Some(upperExclusive, BoundaryBehavior.Exclusive) )
+
+  /// <category>Accessors and slicing</category>
+  member frame.StartAt(lowerInclusive) =
+    frame.GetSubrange( Some(lowerInclusive, BoundaryBehavior.Inclusive), None )
+
+  /// <category>Accessors and slicing</category>
+  member frame.EndAt(upperInclusive) =
+    frame.GetSubrange( None, Some(upperInclusive, BoundaryBehavior.Inclusive) )
+
   /// Internal helper used by `skip`, `take`, etc.
   member frame.GetAddressRange(range) =
     let newRowIndex, cmd = indexBuilder.GetAddressRange((frame.RowIndex, Vectors.Return 0), range)
