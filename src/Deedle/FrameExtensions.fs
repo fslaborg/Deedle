@@ -1445,6 +1445,10 @@ type FrameExtensions =
   static member FilterRowsBy(frame:Frame<'TRowKey, 'TColumnKey>, column, value) =
     Frame.filterRowsBy column value frame
 
+  [<Extension>]
+  static member FilterRowsBy2(frame:Frame<'TRowKey, 'TColumnKey>, column1, value1, column2, value2) =
+    Frame.filterRowsBy2 column1 value1 column2 value2 frame
+
   /// <summary>
   /// Returns a new data frame containing only the rows that have distinct values in the
   /// specified columns. When multiple rows have the same values in those columns, only

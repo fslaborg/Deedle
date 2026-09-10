@@ -107,18 +107,22 @@ The `Reindex` operation is particularly important for frame joins and alignment 
 it returns both a new index and a `VectorConstruction` recipe that can be applied
 to any vector with the old index to produce a vector aligned with the new index.
 
+
 ## BigDeedle
 
-The pluggable vector/index architecture makes it possible to implement "BigDeedle" —
-a backend where large time-series data is stored in an external store (database, 
-distributed file system, etc.) and only loaded on demand.
+Big Deedle is the out-of-core path: large frames backed by **`IVirtualVectorSource`**
+implementations (CSV, Parquet, or a custom file/API source). You plug in **sources** that
+know how to answer `ValueAt`, `GetSubVector`, and preferably `LookupRange` for filters;
+`Virtual.CreateFrame` / `Virtual.CreateOrdinalFrame` (and `Virtual.ReadCsv` /
+`Virtual.ReadParquet`) wrap those sources in virtual indices and vectors.
 
-BigDeedle is implemented by providing alternative implementations of `IVectorBuilder`
-and `IIndexBuilder` that create lazy vectors and indices. When a user performs a 
-slice operation or accesses a specific range, the lazy implementation triggers the
-appropriate data load.
+The pluggable `IVectorBuilder` / `IIndexBuilder` stack still matters — virtual frames use
+`VirtualVectorBuilder` and `VirtualIndexBuilder` so slices and filters stay on the virtual
+addressing scheme — but day-to-day extension is **source-first**, not a full custom builder
+rewrite. User-facing workflow, LookupRange cookbook, and what materializes vs stays lazy:
+[Big Deedle — virtual frames](bigdeedle.html).
 
-The `DelayedSeries` module in Deedle provides a simpler version of this concept
-that can be used without a full custom backend — see the [Creating lazily loaded series](lazysource.html) page.
+The `DelayedSeries` module is a simpler in-memory range loader (different mechanism) —
+see the [Creating lazily loaded series](lazysource.html) page.
 
 *)
