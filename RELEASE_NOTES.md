@@ -37,6 +37,11 @@
 - Added Benchmarks for Virtual operations.
 - Added **`Deedle.VirtualPreservation`**: per-op virtual vs materialize checks (counting ValueAt ops).
 
+### Infrastructure
+
+- **Security**: pinned transitive `Snappier` dependency (via `Parquet.Net`) to `>= 1.3.1`, fixing a high-severity infinite-loop advisory ([GHSA-pggp-6c3x-2xmx](https://github.com/advisories/GHSA-pggp-6c3x-2xmx)).
+- **Security**: pinned transitive `OpenTelemetry.Api` dependency to `>= 1.15.3`, fixing a moderate-severity excessive-memory-allocation advisory ([GHSA-g94r-2vxg-569j](https://github.com/advisories/GHSA-g94r-2vxg-569j)).
+
 ## 8.0.0 - 2026-05-09
 
 ### Breaking changes
