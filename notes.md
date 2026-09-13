@@ -38,3 +38,29 @@ F# FS1113: `inline` functions cannot call `internal`/`private` constructors like
 ## 2026-04-15 run
 - Task 9: Added tests for `Series.has/hasNot/hasAll/hasSome/hasNone/lookupAll/getAll/sample/tryLookupObservation`
 - Task 10: Added `MovingCount/Sum/Mean/Variance/StdDev/Min/Max` and `ExpandingCount/Sum/Mean/Variance/StdDev/Min/Max` extension methods on `Frame<'R,'C>`
+
+## 2026-09-13 run (Tasks 4, 2, 8, 11)
+
+### Task selection
+- Selected tasks: 4 (Engineering Investments), 2 (Issue Investigation and Comment), 8 (Performance Improvements). Task 2 substituted with more Task 4/8 work since #509 and #531 had no new activity (both already commented, verified via fresh comment fetch).
+
+### Work done
+- **Task 4 (Engineering)**: Fixed the two currently-open NuGet security advisories:
+  - Pinned `Snappier >= 1.3.1` in `paket.dependencies` (transitive via Parquet.Net) — fixes GHSA-pggp-6c3x-2xmx (high, CVE-2026-44302).
+  - Pinned `OpenTelemetry.Api >= 1.15.3` in `paket.dependencies` (transitive via BenchmarkDotNet/test SDK chain) — fixes GHSA-g94r-2vxg-569j (moderate, CVE-2026-40894); resolved to 1.18.
+  - Verified with a clean restore (cleared `obj/` caches) that both NU1902 warnings are gone.
+  - Build + 928 Deedle.Tests + 55 Parquet.Tests all pass. PR created on branch `repo-assist/eng-security-deps-20260913`.
+  - Noted in PR body: this supersedes the still-open PR #735 from 2026-09-06 which could not auto-push due to protected `.config/dotnet-tools.json` — flagged for maintainer to close #735 if this PR is merged.
+- **Task 2 (fallback investigation)**: Re-checked issues #509 and #531 via fresh `issue_read`/comments fetch — confirmed no new human activity since the last Repo Assist comment on either (March 2026). No comment posted (avoiding redundant noise), consistent with prior run's assessment.
+- **Task 8 (Performance)**: Found 3 spots using `Seq.length` over full row/column key sequences (O(N)/O(C)) where the O(1) `Frame.RowCount`/`Frame.ColumnCount` properties (wrapping `IIndex.KeyCount`) were already available but unused:
+  - `Frame.AddColumn` (seq overload) in `Frame.fs`
+  - `Frame.RenameColumns` in `Frame.fs`
+  - `Frame.indexColsWith` module function in `FrameModule.fs`
+  - Benchmarked with ad-hoc `dotnet fsi` script: `AddColumn` x5 on 2M-row frame ~995ms before → ~854ms after (~14% faster). 928/928 tests pass unchanged. PR created on branch `repo-assist/perf-avoid-seqlength-rowcount-20260913`.
+- **Task 11**: Updated issue #737 (current month, no rewrite needed) to the mandated checkbox (`* [ ]`) Suggested Actions format instead of plain bullets; added entries for the two new PRs from this run and PR #735's blocked/superseded status; prepended new Run History entry.
+
+### Known unresolved items (carry forward)
+- PR #735 (Snappier + fsdocs-tool bump) still open, blocked by protected-file push restriction — superseded by this run's `eng-security-deps-20260913` PR (source pin only, no protected files). Flag for maintainer to close #735 once new PR is reviewed.
+- PR #734 (repo-assist testing PR) — still no CI check runs recorded as of this run; check again in a future Task 6 pass.
+- PR #733 (large external contribution) — awaiting maintainer decision on splitting; no repo-assist action needed unless requested.
+- Issues #509 and #531 — no new human activity; do not re-comment unless new activity appears.
