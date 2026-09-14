@@ -23,6 +23,7 @@
 - **CSV**: per-row parsed-field cache; decode scoped to requested `LookupRange`.
 - **Parquet**: per-column cache on virtual frames; file handle kept for frame lifetime.
 - **`filterRowsBy`**: `LookupRange` path on `VirtualOrdinalIndex` and ordered virtual indices (not full-file scan when configured).
+- **`Frame.AddColumn` (sequence overload)**, **`Frame.RenameColumns`**, **`Frame.indexColsWith`**: use the O(1) `RowCount`/`ColumnCount` properties instead of `Seq.length` over the full key sequence, avoiding an O(N) row/column scan.
 
 ### Documentation
 
