@@ -1,0 +1,1552 @@
+<!DOCTYPE html>
+<html lang="en" data-root="/Deedle/">
+<head>
+    <meta charset="UTF-8">
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="Deedle" name="author">
+    <!-- Opengraph properties (https://ogp.me/) -->
+    <meta property="og:site_name" content="Deedle">
+    <meta property="og:title" content="VirtualLookupRange (Deedle)" />
+    <meta property="og:url" content="/Deedle/{{fsdocs-source-basename}}.html">
+    <meta property="og:type" content="website" />
+    <!-- Twitter cards (https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/summary-card-with-large-image) -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="/Deedle/">
+    <meta name="twitter:title" content="VirtualLookupRange (Deedle)">
+    
+    <title>VirtualLookupRange (Deedle) | Deedle</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code&display=swap" rel="stylesheet">
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <link href="/Deedle/img/favicon.ico" rel="icon" sizes="32x32" type="image/png"/>
+    <script type="application/javascript" src="/Deedle/content/fsdocs-theme-set-dark.js"></script>
+    <script type="application/javascript" src="/Deedle/content/fsdocs-details-set-expanded.js"></script>
+    <link href="/Deedle/content/fsdocs-default.css" rel="stylesheet" type="text/css"/>
+    <link href="/Deedle/content/fsdocs-theme.css" rel="stylesheet" type="text/css"/>
+    
+    
+</head>
+<body class="api-docs">
+<header>
+    <div class="start">
+        <div id="menu-toggle">
+            <iconify-icon class="icon closed" height="22" icon="eva:menu-fill" width="22"></iconify-icon>
+            <iconify-icon class="icon open" height="22" icon="mi:close" width="22"></iconify-icon>
+            <input type="checkbox" name="mobile-menu" />
+            <ul class="menu">
+                <li class="nav-header">Links</li>
+                <li class="license-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fslaborg/Deedle/blob/master/LICENSE.md">License</a>
+                </li>
+                <li class="release-notes-menu-item builtin-menu-item nav-item"><a class="nav-link"
+                                        href="https://github.com/fslaborg/Deedle/blob/master/RELEASE_NOTES.md">Release
+                    Notes</a></li>
+                <li class="repository-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fslaborg/Deedle/">Source
+                    Repository</a></li>
+                <li class="nav-header ">
+  Guides
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/tutorial.html">
+    Deedle in 10 minutes
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/frame.html">
+    Data frame features
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/series.html">
+    Series and time series features
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/stats.html">
+    Calculating frame and series statistics
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/missing.html">
+    Handling missing values
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/joining.html">
+    Joining, merging and appending frames
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/lazysource.html">
+    Delay-loaded series
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/csharp.html">
+    Deedle in C#
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/bigdeedle.html">
+    Big Deedle — virtual frames
+  </a>
+</li>             
+<li class="nav-header ">
+  Integrations
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/excel.html">
+    Excel integration — ExcelReader &amp; ExcelWriter
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/arrow.html">
+    Deedle.Arrow — Apache Arrow and Feather integration
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/parquet.html">
+    Deedle.Parquet — Apache Parquet integration
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/math.html">
+    Deedle.MathNetNumerics — MathNet.Numerics integration
+  </a>
+</li>             
+<li class="nav-header ">
+  Design
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/design.html">
+    Design notes
+  </a>
+</li>
+                <li class="nav-header">
+  API Reference
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="/Deedle/reference/index.html">
+    All Namespaces
+  </a>
+</li>
+            </ul>
+        </div>
+        <a href="/Deedle/">
+            <img alt="Logo" src="/Deedle/img/logo.png">
+            <strong>Deedle</strong>
+        </a>
+    </div>
+    <div class="end">
+        <a href="https://github.com/fslaborg/Deedle/" target="_blank">
+            <iconify-icon icon="uil:github" width="26" height="26"></iconify-icon>
+        </a>
+        <iconify-icon id="search-btn" icon="carbon:search" class="search" width="24" height="24"></iconify-icon>
+        <fsdocs-theme-toggle></fsdocs-theme-toggle>
+    </div>
+</header>
+<aside id="fsdocs-main-menu">
+    <ul class="menu">
+        <li class="nav-header">Links</li>
+        <li class="license-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fslaborg/Deedle/blob/master/LICENSE.md">License</a>
+        </li>
+        <li class="release-notes-menu-item builtin-menu-item nav-item"><a class="nav-link"
+                                href="https://github.com/fslaborg/Deedle/blob/master/RELEASE_NOTES.md">Release
+            Notes</a></li>
+        <li class="repository-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fslaborg/Deedle/">Source
+            Repository</a></li>
+        <li class="nav-header ">
+  Guides
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/tutorial.html">
+    Deedle in 10 minutes
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/frame.html">
+    Data frame features
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/series.html">
+    Series and time series features
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/stats.html">
+    Calculating frame and series statistics
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/missing.html">
+    Handling missing values
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/joining.html">
+    Joining, merging and appending frames
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/lazysource.html">
+    Delay-loaded series
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/csharp.html">
+    Deedle in C#
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/bigdeedle.html">
+    Big Deedle — virtual frames
+  </a>
+</li>             
+<li class="nav-header ">
+  Integrations
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/excel.html">
+    Excel integration — ExcelReader &amp; ExcelWriter
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/arrow.html">
+    Deedle.Arrow — Apache Arrow and Feather integration
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/parquet.html">
+    Deedle.Parquet — Apache Parquet integration
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/math.html">
+    Deedle.MathNetNumerics — MathNet.Numerics integration
+  </a>
+</li>             
+<li class="nav-header ">
+  Design
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/design.html">
+    Design notes
+  </a>
+</li>
+        <li class="nav-header">
+  API Reference
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="/Deedle/reference/index.html">
+    All Namespaces
+  </a>
+</li>
+    </ul>
+</aside>
+<main>
+    <div id="content">
+        <div>
+  <h2>
+    VirtualLookupRange Module
+  </h2>
+  <dl class="fsdocs-metadata">
+    <dt>
+      Namespace: 
+      <a href="/Deedle/reference/deedle-virtual.html">
+        Deedle.Virtual
+      </a>
+    </dt>
+    <dt>
+      Assembly: Deedle.dll
+    </dt>
+  </dl>
+  <div class="fsdocs-xmldoc">
+    <div>
+      <div class="fsdocs-summary-contents">
+        <p class="fsdocs-summary">
+           Helpers for configuring searchable columns on virtual sources.
+        </p>
+      </div>
+    </div>
+  </div>
+  <div>
+    <h3>
+      Functions and values
+    </h3>
+    <table class="table outer-list fsdocs-member-list">
+      <thead>
+        <tr>
+          <td class="fsdocs-member-list-header">
+            Function or value
+          </td>
+          <td class="fsdocs-member-list-header">
+            Description
+            <fsdocs-details-toggle></fsdocs-details-toggle>
+          </td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="541" data-fsdocs-tip-unique="541">
+                <p>
+                  <a id="MaxInferredSearchCardinality">
+                    <a href="#MaxInferredSearchCardinality">
+                      <code><span>VirtualLookupRange.MaxInferredSearchCardinality&#32;<span></span></span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="541">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>VirtualLookupRange.MaxInferredSearchCardinality&#32;<span></span></span></code>
+                  <br/>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code>int</code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                       Maximum distinct non-empty string values for automatic LookupRange inference.
+ Inference scans the full column at load time and may build an IndexList map; this cap
+ keeps that work bounded for enum-like columns and forces an explicit LookupRange mode
+ (e.g. scan) when cardinality is high. Not tied to an existing Deedle constant — chosen
+ as a conservative "small categorical" threshold (typical search columns ≪ 64; tests use
+ ~100+ distinct as the high-cardinality case).
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'P:Deedle.Virtual.VirtualLookupRange.MaxInferredSearchCardinality\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:P:Deedle.Virtual.VirtualLookupRange.MaxInferredSearchCardinality`')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code>int</code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="542" data-fsdocs-tip-unique="542">
+                <p>
+                  <a id="classifyLookupRange">
+                    <a href="#classifyLookupRange">
+                      <code><span>VirtualLookupRange.classifyLookupRange&#32;<span>mode</span></span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="542">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>VirtualLookupRange.classifyLookupRange&#32;<span>mode</span></span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        mode
+                      </b>
+                      :
+                      <code><span><a href="/Deedle/reference/deedle-virtual-lookuprangemode-1.html">LookupRangeMode</a>&lt;'T&gt;</span></code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><a href="/Deedle/reference/deedle-virtual-virtualcolumnlookuprange.html">VirtualColumnLookupRange</a></code>
+                  </span>
+                  <br/>
+                  Type parameters: 
+                  &#39;T
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                       Classify a configured [`LookupRangeMode`] for diagnostics (`Virtual.TryGetLookupRange`).
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:Deedle.Virtual.VirtualLookupRange.classifyLookupRange``1\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('```cref:M:Deedle.Virtual.VirtualLookupRange.classifyLookupRange``1```')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    mode
+                  </span>
+                  :
+                  <code><span><a href="/Deedle/reference/deedle-virtual-lookuprangemode-1.html">LookupRangeMode</a>&lt;'T&gt;</span></code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+              </dl>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code><a href="/Deedle/reference/deedle-virtual-virtualcolumnlookuprange.html">VirtualColumnLookupRange</a></code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="543" data-fsdocs-tip-unique="543">
+                <p>
+                  <a id="exactFixed">
+                    <a href="#exactFixed">
+                      <code><span>VirtualLookupRange.exactFixed&#32;<span>selector</span></span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="543">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>VirtualLookupRange.exactFixed&#32;<span>selector</span></span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        selector
+                      </b>
+                      :
+                      <code><span>'T&#32;->&#32;<span>int64&#32;*&#32;int64</span></span></code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><a href="/Deedle/reference/deedle-virtual-lookuprangemode-1.html">LookupRangeMode</a>&lt;'T&gt;</span></code>
+                  </span>
+                  <br/>
+                  Type parameters: 
+                  &#39;T
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <div class="fsdocs-member-xmldoc-column">
+              <div class="icon-button-row">
+                <a href="" class="fsdocs-source-link" title="Source on GitHub">
+                  <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                </a>
+              </div>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    selector
+                  </span>
+                  :
+                  <code><span>'T&#32;->&#32;<span>int64&#32;*&#32;int64</span></span></code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+              </dl>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code><span><a href="/Deedle/reference/deedle-virtual-lookuprangemode-1.html">LookupRangeMode</a>&lt;'T&gt;</span></code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="544" data-fsdocs-tip-unique="544">
+                <p>
+                  <a id="forCategorical">
+                    <a href="#forCategorical">
+                      <code><span>VirtualLookupRange.forCategorical&#32;<span>indicesByValue</span></span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="544">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>VirtualLookupRange.forCategorical&#32;<span>indicesByValue</span></span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        indicesByValue
+                      </b>
+                      :
+                      <code><span><a href="https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-fsharpmap-2">Map</a>&lt;<span>'T,&#32;<span>int64&#32;list</span></span>&gt;</span></code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><a href="/Deedle/reference/deedle-virtual-lookuprangemode-1.html">LookupRangeMode</a>&lt;'T&gt;</span></code>
+                  </span>
+                  <br/>
+                  Type parameters: 
+                  &#39;T (requires comparison)
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                       IndexList LookupRange from a pre-built map of value -> row indices.
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:Deedle.Virtual.VirtualLookupRange.forCategorical``1\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('```cref:M:Deedle.Virtual.VirtualLookupRange.forCategorical``1```')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    indicesByValue
+                  </span>
+                  :
+                  <code><span><a href="https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-fsharpmap-2">Map</a>&lt;<span>'T,&#32;<span>int64&#32;list</span></span>&gt;</span></code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+              </dl>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code><span><a href="/Deedle/reference/deedle-virtual-lookuprangemode-1.html">LookupRangeMode</a>&lt;'T&gt;</span></code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="545" data-fsdocs-tip-unique="545">
+                <p>
+                  <a id="forCategoricalScan">
+                    <a href="#forCategoricalScan">
+                      <code><span>VirtualLookupRange.forCategoricalScan&#32;<span>length&#32;valueAt</span></span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="545">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>VirtualLookupRange.forCategoricalScan&#32;<span>length&#32;valueAt</span></span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        length
+                      </b>
+                      :
+                      <code>int64</code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        valueAt
+                      </b>
+                      :
+                      <code><span>int64&#32;->&#32;'T</span></code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><a href="/Deedle/reference/deedle-virtual-lookuprangemode-1.html">LookupRangeMode</a>&lt;'T&gt;</span></code>
+                  </span>
+                  <br/>
+                  Type parameters: 
+                  &#39;T (requires comparison)
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                       Build categorical IndexList by scanning column values once at frame construction.
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:Deedle.Virtual.VirtualLookupRange.forCategoricalScan``1\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('```cref:M:Deedle.Virtual.VirtualLookupRange.forCategoricalScan``1```')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    length
+                  </span>
+                  :
+                  <code>int64</code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    valueAt
+                  </span>
+                  :
+                  <code><span>int64&#32;->&#32;'T</span></code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+              </dl>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code><span><a href="/Deedle/reference/deedle-virtual-lookuprangemode-1.html">LookupRangeMode</a>&lt;'T&gt;</span></code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="546" data-fsdocs-tip-unique="546">
+                <p>
+                  <a id="forCategoricalScanPresent">
+                    <a href="#forCategoricalScanPresent">
+                      <code><span>VirtualLookupRange.forCategoricalScanPresent&#32;<span>length&#32;valueAt</span></span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="546">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>VirtualLookupRange.forCategoricalScanPresent&#32;<span>length&#32;valueAt</span></span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        length
+                      </b>
+                      :
+                      <code>int64</code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        valueAt
+                      </b>
+                      :
+                      <code><span>int64&#32;->&#32;<span>'T&#32;option</span></span></code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><a href="/Deedle/reference/deedle-virtual-lookuprangemode-1.html">LookupRangeMode</a>&lt;'T&gt;</span></code>
+                  </span>
+                  <br/>
+                  Type parameters: 
+                  &#39;T (requires comparison)
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                       Build categorical IndexList by scanning present (non-missing) values once at frame construction.
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:Deedle.Virtual.VirtualLookupRange.forCategoricalScanPresent``1\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('```cref:M:Deedle.Virtual.VirtualLookupRange.forCategoricalScanPresent``1```')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    length
+                  </span>
+                  :
+                  <code>int64</code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    valueAt
+                  </span>
+                  :
+                  <code><span>int64&#32;->&#32;<span>'T&#32;option</span></span></code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+              </dl>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code><span><a href="/Deedle/reference/deedle-virtual-lookuprangemode-1.html">LookupRangeMode</a>&lt;'T&gt;</span></code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="547" data-fsdocs-tip-unique="547">
+                <p>
+                  <a id="forRepeatingCycle">
+                    <a href="#forRepeatingCycle">
+                      <code><span>VirtualLookupRange.forRepeatingCycle&#32;<span>values</span></span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="547">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>VirtualLookupRange.forRepeatingCycle&#32;<span>values</span></span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        values
+                      </b>
+                      :
+                      <code><span>'T[]</span></code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><a href="/Deedle/reference/deedle-virtual-lookuprangemode-1.html">LookupRangeMode</a>&lt;'T&gt;</span></code>
+                  </span>
+                  <br/>
+                  Type parameters: 
+                  &#39;T (requires equality)
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                       Step LookupRange for values repeating on a fixed cycle (periodic categorical data).
+ Unknown values yield an empty range (negative offset) instead of throwing.
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:Deedle.Virtual.VirtualLookupRange.forRepeatingCycle``1\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('```cref:M:Deedle.Virtual.VirtualLookupRange.forRepeatingCycle``1```')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    values
+                  </span>
+                  :
+                  <code><span>'T[]</span></code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+              </dl>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code><span><a href="/Deedle/reference/deedle-virtual-lookuprangemode-1.html">LookupRangeMode</a>&lt;'T&gt;</span></code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="548" data-fsdocs-tip-unique="548">
+                <p>
+                  <a id="fullFixed">
+                    <a href="#fullFixed">
+                      <code><span>VirtualLookupRange.fullFixed&#32;<span></span></span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="548">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>VirtualLookupRange.fullFixed&#32;<span></span></span></code>
+                  <br/>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><a href="/Deedle/reference/deedle-virtual-lookuprangemode-1.html">LookupRangeMode</a>&lt;'a&gt;</span></code>
+                  </span>
+                  <br/>
+                  Type parameters: 
+                  &#39;a
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <div class="fsdocs-member-xmldoc-column">
+              <div class="icon-button-row">
+                <a href="" class="fsdocs-source-link" title="Source on GitHub">
+                  <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                </a>
+              </div>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code><span><a href="/Deedle/reference/deedle-virtual-lookuprangemode-1.html">LookupRangeMode</a>&lt;'a&gt;</span></code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="549" data-fsdocs-tip-unique="549">
+                <p>
+                  <a id="resolveSearchColumnsLookupRange">
+                    <a href="#resolveSearchColumnsLookupRange">
+                      <code><span>VirtualLookupRange.resolveSearchColumnsLookupRange&#32;<span>apiName&#32;searchColumns&#32;columnName&#32;columnKind&#32;inferStringValues&#32;inferInt64Values&#32;inferFloatValues</span></span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="549">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>VirtualLookupRange.resolveSearchColumnsLookupRange&#32;<span>apiName&#32;searchColumns&#32;columnName&#32;columnKind&#32;inferStringValues&#32;inferInt64Values&#32;inferFloatValues</span></span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        apiName
+                      </b>
+                      :
+                      <code>string</code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        searchColumns
+                      </b>
+                      :
+                      <code><span><a href="/Deedle/reference/deedle-virtual-virtualsearchcolumn.html">VirtualSearchColumn</a>&#32;list</span></code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        columnName
+                      </b>
+                      :
+                      <code>string</code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        columnKind
+                      </b>
+                      :
+                      <code>string</code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        inferStringValues
+                      </b>
+                      :
+                      <code><span>unit&#32;->&#32;<span><span>(<span><span><a href="/Deedle/reference/deedle-virtual-lookuprangemode-1.html">LookupRangeMode</a>&lt;string&gt;</span>&#32;*&#32;string</span>)</span>&#32;option</span></span></code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        inferInt64Values
+                      </b>
+                      :
+                      <code><span>unit&#32;->&#32;<span><span>(<span><span><a href="/Deedle/reference/deedle-virtual-lookuprangemode-1.html">LookupRangeMode</a>&lt;int64&gt;</span>&#32;*&#32;string</span>)</span>&#32;option</span></span></code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        inferFloatValues
+                      </b>
+                      :
+                      <code><span>unit&#32;->&#32;<span><span>(<span><span><a href="/Deedle/reference/deedle-virtual-lookuprangemode-1.html">LookupRangeMode</a>&lt;float&gt;</span>&#32;*&#32;string</span>)</span>&#32;option</span></span></code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><a href="/Deedle/reference/deedle-virtual-resolvedcolumnsearch.html">ResolvedColumnSearch</a></code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                       Resolve LookupRange for one column from [`VirtualReadCsvOptions.SearchColumns`] / Parquet equivalent.
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:Deedle.Virtual.VirtualLookupRange.resolveSearchColumnsLookupRange\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:M:Deedle.Virtual.VirtualLookupRange.resolveSearchColumnsLookupRange`')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    apiName
+                  </span>
+                  :
+                  <code>string</code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    searchColumns
+                  </span>
+                  :
+                  <code><span><a href="/Deedle/reference/deedle-virtual-virtualsearchcolumn.html">VirtualSearchColumn</a>&#32;list</span></code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    columnName
+                  </span>
+                  :
+                  <code>string</code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    columnKind
+                  </span>
+                  :
+                  <code>string</code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    inferStringValues
+                  </span>
+                  :
+                  <code><span>unit&#32;->&#32;<span><span>(<span><span><a href="/Deedle/reference/deedle-virtual-lookuprangemode-1.html">LookupRangeMode</a>&lt;string&gt;</span>&#32;*&#32;string</span>)</span>&#32;option</span></span></code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    inferInt64Values
+                  </span>
+                  :
+                  <code><span>unit&#32;->&#32;<span><span>(<span><span><a href="/Deedle/reference/deedle-virtual-lookuprangemode-1.html">LookupRangeMode</a>&lt;int64&gt;</span>&#32;*&#32;string</span>)</span>&#32;option</span></span></code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    inferFloatValues
+                  </span>
+                  :
+                  <code><span>unit&#32;->&#32;<span><span>(<span><span><a href="/Deedle/reference/deedle-virtual-lookuprangemode-1.html">LookupRangeMode</a>&lt;float&gt;</span>&#32;*&#32;string</span>)</span>&#32;option</span></span></code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+              </dl>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code><a href="/Deedle/reference/deedle-virtual-resolvedcolumnsearch.html">ResolvedColumnSearch</a></code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="550" data-fsdocs-tip-unique="550">
+                <p>
+                  <a id="scan">
+                    <a href="#scan">
+                      <code><span>VirtualLookupRange.scan&#32;<span>length&#32;valueAt</span></span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="550">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>VirtualLookupRange.scan&#32;<span>length&#32;valueAt</span></span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        length
+                      </b>
+                      :
+                      <code>int64</code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        valueAt
+                      </b>
+                      :
+                      <code><span>int64&#32;->&#32;'T</span></code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><a href="/Deedle/reference/deedle-virtual-lookuprangemode-1.html">LookupRangeMode</a>&lt;'T&gt;</span></code>
+                  </span>
+                  <br/>
+                  Type parameters: 
+                  &#39;T (requires equality)
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                       Correct but O(N) per filter - scans all rows when LookupRange is invoked.
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:Deedle.Virtual.VirtualLookupRange.scan``1\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('```cref:M:Deedle.Virtual.VirtualLookupRange.scan``1```')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    length
+                  </span>
+                  :
+                  <code>int64</code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    valueAt
+                  </span>
+                  :
+                  <code><span>int64&#32;->&#32;'T</span></code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+              </dl>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code><span><a href="/Deedle/reference/deedle-virtual-lookuprangemode-1.html">LookupRangeMode</a>&lt;'T&gt;</span></code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="551" data-fsdocs-tip-unique="551">
+                <p>
+                  <a id="tryInferFloatLookupRange">
+                    <a href="#tryInferFloatLookupRange">
+                      <code><span>VirtualLookupRange.tryInferFloatLookupRange&#32;<span>length&#32;valueAt</span></span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="551">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>VirtualLookupRange.tryInferFloatLookupRange&#32;<span>length&#32;valueAt</span></span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        length
+                      </b>
+                      :
+                      <code>int64</code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        valueAt
+                      </b>
+                      :
+                      <code><span>int64&#32;->&#32;<span>float&#32;option</span></span></code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><span>(<span><span><a href="/Deedle/reference/deedle-virtual-lookuprangemode-1.html">LookupRangeMode</a>&lt;float&gt;</span>&#32;*&#32;string</span>)</span>&#32;option</span></code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                       Infer Step or categorical IndexList LookupRange for float columns (≤ [`MaxInferredSearchCardinality`] distinct present values).
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:Deedle.Virtual.VirtualLookupRange.tryInferFloatLookupRange\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:M:Deedle.Virtual.VirtualLookupRange.tryInferFloatLookupRange`')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    length
+                  </span>
+                  :
+                  <code>int64</code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    valueAt
+                  </span>
+                  :
+                  <code><span>int64&#32;->&#32;<span>float&#32;option</span></span></code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+              </dl>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code><span><span>(<span><span><a href="/Deedle/reference/deedle-virtual-lookuprangemode-1.html">LookupRangeMode</a>&lt;float&gt;</span>&#32;*&#32;string</span>)</span>&#32;option</span></code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="552" data-fsdocs-tip-unique="552">
+                <p>
+                  <a id="tryInferInt64LookupRange">
+                    <a href="#tryInferInt64LookupRange">
+                      <code><span>VirtualLookupRange.tryInferInt64LookupRange&#32;<span>length&#32;valueAt</span></span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="552">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>VirtualLookupRange.tryInferInt64LookupRange&#32;<span>length&#32;valueAt</span></span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        length
+                      </b>
+                      :
+                      <code>int64</code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        valueAt
+                      </b>
+                      :
+                      <code><span>int64&#32;->&#32;<span>int64&#32;option</span></span></code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><span>(<span><span><a href="/Deedle/reference/deedle-virtual-lookuprangemode-1.html">LookupRangeMode</a>&lt;int64&gt;</span>&#32;*&#32;string</span>)</span>&#32;option</span></code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                       Infer Step or categorical IndexList LookupRange for int64 columns (≤ [`MaxInferredSearchCardinality`] distinct present values).
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:Deedle.Virtual.VirtualLookupRange.tryInferInt64LookupRange\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:M:Deedle.Virtual.VirtualLookupRange.tryInferInt64LookupRange`')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    length
+                  </span>
+                  :
+                  <code>int64</code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    valueAt
+                  </span>
+                  :
+                  <code><span>int64&#32;->&#32;<span>int64&#32;option</span></span></code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+              </dl>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code><span><span>(<span><span><a href="/Deedle/reference/deedle-virtual-lookuprangemode-1.html">LookupRangeMode</a>&lt;int64&gt;</span>&#32;*&#32;string</span>)</span>&#32;option</span></code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="553" data-fsdocs-tip-unique="553">
+                <p>
+                  <a id="tryInferStringLookupRange">
+                    <a href="#tryInferStringLookupRange">
+                      <code><span>VirtualLookupRange.tryInferStringLookupRange&#32;<span>length&#32;valueAt</span></span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="553">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>VirtualLookupRange.tryInferStringLookupRange&#32;<span>length&#32;valueAt</span></span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        length
+                      </b>
+                      :
+                      <code>int64</code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        valueAt
+                      </b>
+                      :
+                      <code><span>int64&#32;->&#32;string</span></code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><span>(<span><span><a href="/Deedle/reference/deedle-virtual-lookuprangemode-1.html">LookupRangeMode</a>&lt;string&gt;</span>&#32;*&#32;string</span>)</span>&#32;option</span></code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                       Infer Step or categorical IndexList LookupRange from column values (ReadCsv / ReadParquet).
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:Deedle.Virtual.VirtualLookupRange.tryInferStringLookupRange\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:M:Deedle.Virtual.VirtualLookupRange.tryInferStringLookupRange`')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    length
+                  </span>
+                  :
+                  <code>int64</code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    valueAt
+                  </span>
+                  :
+                  <code><span>int64&#32;->&#32;string</span></code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+              </dl>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code><span><span>(<span><span><a href="/Deedle/reference/deedle-virtual-lookuprangemode-1.html">LookupRangeMode</a>&lt;string&gt;</span>&#32;*&#32;string</span>)</span>&#32;option</span></code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+</div>
+        
+    </div>
+</main>
+<aside id="fsdocs-page-menu">
+    <p id="on-this-page">On this page</p>
+    <div class="empty"></div>
+</aside>
+<dialog>
+    <input type="search" placeholder="Search docs" />
+    <div class="results">
+        <ul></ul>
+        <p class="empty">Type something to start searching.</p>
+    </div>
+</dialog>
+<script type="module" src="/Deedle/content/fsdocs-tips.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-theme-toggle.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-details-toggle.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-theme.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-search.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-copy-button.js"></script>
+
+</body>
+</html>

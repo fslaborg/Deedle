@@ -1,0 +1,1458 @@
+<!DOCTYPE html>
+<html lang="en" data-root="/Deedle/">
+<head>
+    <meta charset="UTF-8">
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="Deedle.Arrow" name="author">
+    <!-- Opengraph properties (https://ogp.me/) -->
+    <meta property="og:site_name" content="Deedle">
+    <meta property="og:title" content="Big Deedle — virtual frames" />
+    <meta property="og:url" content="/Deedle/bigdeedle.html">
+    <meta property="og:type" content="website" />
+    <!-- Twitter cards (https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/summary-card-with-large-image) -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="/Deedle/">
+    <meta name="twitter:title" content="Big Deedle — virtual frames">
+    <meta name="description" content="Load large CSV and Parquet as virtual frames, filter without full materialize, and know what stays lazy">
+<meta name="twitter:site" content="Load large CSV and Parquet as virtual frames, filter without full materialize, and know what stays lazy">
+<meta name="og:description" content="Load large CSV and Parquet as virtual frames, filter without full materialize, and know what stays lazy">
+<meta name="keywords" content="big deedle, virtual frame, LookupRange, Virtual.ReadCsv, Virtual.ReadParquet, out-of-core">
+    <title>Big Deedle — virtual frames | Deedle</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code&display=swap" rel="stylesheet">
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <link href="/Deedle/img/favicon.ico" rel="icon" sizes="32x32" type="image/png"/>
+    <script type="application/javascript" src="/Deedle/content/fsdocs-theme-set-dark.js"></script>
+    <script type="application/javascript" src="/Deedle/content/fsdocs-details-set-expanded.js"></script>
+    <link href="/Deedle/content/fsdocs-default.css" rel="stylesheet" type="text/css"/>
+    <link href="/Deedle/content/fsdocs-theme.css" rel="stylesheet" type="text/css"/>
+    
+    
+</head>
+<body class="content">
+<header>
+    <div class="start">
+        <div id="menu-toggle">
+            <iconify-icon class="icon closed" height="22" icon="eva:menu-fill" width="22"></iconify-icon>
+            <iconify-icon class="icon open" height="22" icon="mi:close" width="22"></iconify-icon>
+            <input type="checkbox" name="mobile-menu" />
+            <ul class="menu">
+                <li class="nav-header">Links</li>
+                <li class="license-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fslaborg/Deedle/blob/master/LICENSE.md">License</a>
+                </li>
+                <li class="release-notes-menu-item builtin-menu-item nav-item"><a class="nav-link"
+                                        href="https://github.com/fslaborg/Deedle/blob/master/RELEASE_NOTES.md">Release
+                    Notes</a></li>
+                <li class="repository-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fslaborg/Deedle/">Source
+                    Repository</a></li>
+                <li class="nav-header active">
+  Guides
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/tutorial.html">
+    Deedle in 10 minutes
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/frame.html">
+    Data frame features
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/series.html">
+    Series and time series features
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/stats.html">
+    Calculating frame and series statistics
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/missing.html">
+    Handling missing values
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/joining.html">
+    Joining, merging and appending frames
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/lazysource.html">
+    Delay-loaded series
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/csharp.html">
+    Deedle in C#
+  </a>
+</li>             
+<li class="nav-item active">
+  <a class="nav-link" href="/Deedle/bigdeedle.html">
+    Big Deedle — virtual frames
+  </a>
+</li>             
+<li class="nav-header ">
+  Integrations
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/excel.html">
+    Excel integration — ExcelReader &amp; ExcelWriter
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/arrow.html">
+    Deedle.Arrow — Apache Arrow and Feather integration
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/parquet.html">
+    Deedle.Parquet — Apache Parquet integration
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/math.html">
+    Deedle.MathNetNumerics — MathNet.Numerics integration
+  </a>
+</li>             
+<li class="nav-header ">
+  Design
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/design.html">
+    Design notes
+  </a>
+</li>
+                <li class="nav-header">
+  API Reference
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="/Deedle/reference/index.html">
+    All Namespaces
+  </a>
+</li>
+            </ul>
+        </div>
+        <a href="/Deedle/">
+            <img alt="Logo" src="/Deedle/img/logo.png">
+            <strong>Deedle</strong>
+        </a>
+    </div>
+    <div class="end">
+        <a href="https://github.com/fslaborg/Deedle/" target="_blank">
+            <iconify-icon icon="uil:github" width="26" height="26"></iconify-icon>
+        </a>
+        <iconify-icon id="search-btn" icon="carbon:search" class="search" width="24" height="24"></iconify-icon>
+        <fsdocs-theme-toggle></fsdocs-theme-toggle>
+    </div>
+</header>
+<aside id="fsdocs-main-menu">
+    <ul class="menu">
+        <li class="nav-header">Links</li>
+        <li class="license-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fslaborg/Deedle/blob/master/LICENSE.md">License</a>
+        </li>
+        <li class="release-notes-menu-item builtin-menu-item nav-item"><a class="nav-link"
+                                href="https://github.com/fslaborg/Deedle/blob/master/RELEASE_NOTES.md">Release
+            Notes</a></li>
+        <li class="repository-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fslaborg/Deedle/">Source
+            Repository</a></li>
+        <li class="nav-header active">
+  Guides
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/tutorial.html">
+    Deedle in 10 minutes
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/frame.html">
+    Data frame features
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/series.html">
+    Series and time series features
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/stats.html">
+    Calculating frame and series statistics
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/missing.html">
+    Handling missing values
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/joining.html">
+    Joining, merging and appending frames
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/lazysource.html">
+    Delay-loaded series
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/csharp.html">
+    Deedle in C#
+  </a>
+</li>             
+<li class="nav-item active">
+  <a class="nav-link" href="/Deedle/bigdeedle.html">
+    Big Deedle — virtual frames
+  </a>
+</li>             
+<li class="nav-header ">
+  Integrations
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/excel.html">
+    Excel integration — ExcelReader &amp; ExcelWriter
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/arrow.html">
+    Deedle.Arrow — Apache Arrow and Feather integration
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/parquet.html">
+    Deedle.Parquet — Apache Parquet integration
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/math.html">
+    Deedle.MathNetNumerics — MathNet.Numerics integration
+  </a>
+</li>             
+<li class="nav-header ">
+  Design
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/design.html">
+    Design notes
+  </a>
+</li>
+        <li class="nav-header">
+  API Reference
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="/Deedle/reference/index.html">
+    All Namespaces
+  </a>
+</li>
+    </ul>
+</aside>
+<main>
+    <div id="content">
+        
+<h1><a name="Big-Deedle-virtual-frames" class="anchor" href="#Big-Deedle-virtual-frames">Big Deedle — virtual frames</a></h1>
+<p>Big Deedle opens large CSV or Parquet files as <strong>virtual</strong> frames: metadata and filters stay
+cheap, and cells are decoded when you read them. The typical workflow is <strong>load → filter →
+slice → project → materialize a subset → analytics / export</strong>.</p>
+<a name="load"></a>
+<h2><a name="1-Creating-a-virtual-frame" class="anchor" href="#1-Creating-a-virtual-frame">1. Creating a virtual frame</a></h2>
+<p><code>Virtual.ReadCsv</code> loads a CSV without materializing the full table. The sample below uses
+<code>data/bigdeedle-prices.csv</code> with inferred <code>LookupRange</code> on <code>Category</code> and <code>Cycle</code>.</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span data-fsdocs-tip="fs18" data-fsdocs-tip-unique="26" class="id">prices</span> <span class="o">=</span>
+  <span data-fsdocs-tip="fs19" data-fsdocs-tip-unique="27" class="rt">Virtual</span><span class="pn">.</span><span data-fsdocs-tip="fs20" data-fsdocs-tip-unique="28" class="id">ReadCsv</span><span class="pn">(</span>
+    <span data-fsdocs-tip="fs7" data-fsdocs-tip-unique="29" class="id">path</span><span class="pn">,</span>
+    <span class="fn">searchColumns</span> <span class="o">=</span>
+      <span class="pn">[</span> <span data-fsdocs-tip="fs21" data-fsdocs-tip-unique="30" class="m">VirtualSearchColumn</span><span class="pn">.</span><span data-fsdocs-tip="fs22" data-fsdocs-tip-unique="31" class="id">infer</span> <span class="s">&quot;Category&quot;</span>
+        <span data-fsdocs-tip="fs21" data-fsdocs-tip-unique="32" class="m">VirtualSearchColumn</span><span class="pn">.</span><span data-fsdocs-tip="fs22" data-fsdocs-tip-unique="33" class="id">infer</span> <span class="s">&quot;Cycle&quot;</span> <span class="pn">]</span><span class="pn">,</span>
+    <span class="fn">columnKeys</span> <span class="o">=</span> <span class="pn">[</span> <span class="s">&quot;Category&quot;</span><span class="pn">;</span> <span class="s">&quot;Open&quot;</span><span class="pn">;</span> <span class="s">&quot;Close&quot;</span><span class="pn">;</span> <span class="s">&quot;Volume&quot;</span><span class="pn">;</span> <span class="s">&quot;Cycle&quot;</span> <span class="pn">]</span><span class="pn">)</span>
+
+<span data-fsdocs-tip="fs19" data-fsdocs-tip-unique="34" class="rt">Virtual</span><span class="pn">.</span><span data-fsdocs-tip="fs23" data-fsdocs-tip-unique="35" class="id">Describe</span> <span data-fsdocs-tip="fs18" data-fsdocs-tip-unique="36" class="id">prices</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val prices: Frame&lt;int64,string&gt; =
+  
+      Category Open  Close Volume  Cycle 
+0  -&gt; tech     37.5  37.8  1200000 1     
+1  -&gt; energy   38.1  37.9  980000  2     
+2  -&gt; tech     37.95 38.4  1100000 3     
+3  -&gt; retail   38.5  38.2  870000  1     
+4  -&gt; tech     38.25 38.9  1350000 2     
+5  -&gt; energy   39    38.7  920000  3     
+6  -&gt; tech     38.8  39.2  1010000 1     
+7  -&gt; retail   39.4  39.1  760000  2     
+8  -&gt; tech     39.15 39.6  1180000 3     
+9  -&gt; energy   39.7  39.4  890000  1     
+10 -&gt; tech     39.5  40    1420000 2     
+11 -&gt; retail   40.1  39.8  810000  3     
+12 -&gt; tech     39.9  40.3  1250000 1     
+13 -&gt; energy   40.4  40.1  950000  2     
+14 -&gt; tech     40.2  40.7  1300000 3     
+15 -&gt; retail   40.8  40.5  780000  1     
+16 -&gt; tech     40.6  41    1150000 2     
+17 -&gt; energy   41.1  40.8  900000  3     
+18 -&gt; tech     40.9  41.4  1280000 1     
+19 -&gt; retail   41.5  41.2  830000  2     
+20 -&gt; tech     41.3  41.8  1400000 3     
+21 -&gt; energy   41.9  41.6  910000  1     
+22 -&gt; tech     41.7  42.1  1220000 2     
+23 -&gt; retail   42.2  41.9  790000  3     
+
+val it: string = "rows=24, rowIndex=ordinal virtual (0..N-1), columns=5"</code></pre></td></tr></table>
+<pre class="fssnip highlighted"><code lang="fsharp"><span data-fsdocs-tip="fs18" data-fsdocs-tip-unique="37" class="id">prices</span><span class="pn">.</span><span data-fsdocs-tip="fs24" data-fsdocs-tip-unique="38" class="id">ColumnKeys</span> <span class="o">|&gt;</span> <span data-fsdocs-tip="fs25" data-fsdocs-tip-unique="39" class="m">Seq</span><span class="pn">.</span><span data-fsdocs-tip="fs26" data-fsdocs-tip-unique="40" class="id">toList</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val it: string list = ["Category"; "Open"; "Close"; "Volume"; "Cycle"]</code></pre></td></tr></table>
+<p>ReadCsv parameters:</p>
+<p>Path, IndexColumn, SearchColumn, ColumnKeys, ByteOffsetIndex</p>
+<p>IndexColumn if passed - checks if the column is ascending and unique, if not, falls back to default - an ordinal index.</p>
+<p><strong>When to use ordinal vs ordered row index</strong></p>
+<ul>
+<li><strong>Ordinal</strong> (<code>0 .. N-1</code>, default): row keys are positions in file order. Use when you mostly filter by column values (<code>filterRowsBy</code>), scan subsets, or export batches — you do not need to slice with a business key. <code>Virtual.ReadCsvDirectory</code> always uses ordinal.</li>
+<li><strong>Ordered</strong> (<code>indexColumn</code> when strictly increasing and unique): row keys come from this column (timestamps, IDs). Use for time-series key-range slices (<code>frame.Rows.[t1 .. t2]</code>), nearest-key lookup and aligning on real keys. Pass an explicit type argument for <code>DateTime</code> / <code>DateTimeOffset</code> columns.</li>
+</ul>
+<p>If you pass a DateTime column as indexColumn, you have to use explicit type argument. If the column is not ordered or has duplicate values, the index will fall back to ordinal.</p>
+<p>Empty/<code>NA</code> cells become missing values</p>
+<p>SearchColumns -</p>
+<p>You can choose columns for quick and virtual FilterByRows. For each column a VirtualLookupRange will be created. You can choose to either pass VirtualSearchColumn.infer, for Deedle to pick best LookupRange, or select an explicit mode so the full scan isn't performed. Be careful, if you pass a Step, and the data isn't actually cyclical, the results for operations on that column won't be correct - Deedle doesn't check correctness of explicitly passed VirtualSearchColumn mode.</p>
+<p>columnKeys:</p>
+<p>List of columns to be included in the Virtual Frame. If ommited, all columns will be used.
+Deedle takes the first row of the data as the column keys.
+If you have data without Labels - use hasHeaders = false. In that case columns will be named Column1, Column2 etc, same as in normal Frame. At this point schema is not supported in Virtual Frames.</p>
+<a name="lookup"></a>
+<h2><a name="2-VirtualLookupRange" class="anchor" href="#2-VirtualLookupRange">2. VirtualLookupRange</a></h2>
+<p>To pass an explicit LookupRange, you have to know the type of data in the column (eg. VirtualSearchColumn.withString), the type of LookupRange (eg.VirtualLookupRange.forRepeatingCycle) and with cycle columns, the specific values - or a range (if for example there are 20 consecutive numbers that are repeating)</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span data-fsdocs-tip="fs27" data-fsdocs-tip-unique="41" class="id">explicitCycle</span> <span class="o">=</span>
+  <span data-fsdocs-tip="fs19" data-fsdocs-tip-unique="42" class="rt">Virtual</span><span class="pn">.</span><span data-fsdocs-tip="fs20" data-fsdocs-tip-unique="43" class="id">ReadCsv</span><span class="pn">(</span>
+    <span data-fsdocs-tip="fs7" data-fsdocs-tip-unique="44" class="id">path</span><span class="pn">,</span>
+    <span class="fn">searchColumns</span> <span class="o">=</span>
+      <span class="pn">[</span> <span data-fsdocs-tip="fs21" data-fsdocs-tip-unique="45" class="m">VirtualSearchColumn</span><span class="pn">.</span><span data-fsdocs-tip="fs28" data-fsdocs-tip-unique="46" class="id">withString</span> <span class="s">&quot;Category&quot;</span>
+          <span class="pn">(</span><span data-fsdocs-tip="fs29" data-fsdocs-tip-unique="47" class="m">VirtualLookupRange</span><span class="pn">.</span><span data-fsdocs-tip="fs30" data-fsdocs-tip-unique="48" class="id">forRepeatingCycle</span> <span class="pn">[|</span> <span class="s">&quot;tech&quot;</span><span class="pn">;</span> <span class="s">&quot;energy&quot;</span><span class="pn">;</span> <span class="s">&quot;retail&quot;</span> <span class="pn">|]</span><span class="pn">)</span>
+        <span data-fsdocs-tip="fs21" data-fsdocs-tip-unique="49" class="m">VirtualSearchColumn</span><span class="pn">.</span><span data-fsdocs-tip="fs31" data-fsdocs-tip-unique="50" class="id">withInt64</span> <span class="s">&quot;Cycle&quot;</span>
+          <span class="pn">(</span><span data-fsdocs-tip="fs29" data-fsdocs-tip-unique="51" class="m">VirtualLookupRange</span><span class="pn">.</span><span data-fsdocs-tip="fs30" data-fsdocs-tip-unique="52" class="id">forRepeatingCycle</span> <span class="pn">[|</span> <span class="n">1L</span><span class="o">..</span><span class="n">3L</span> <span class="pn">|]</span><span class="pn">)</span> <span class="pn">]</span><span class="pn">,</span>
+    <span class="fn">columnKeys</span> <span class="o">=</span> <span class="pn">[</span> <span class="s">&quot;Category&quot;</span><span class="pn">;</span> <span class="s">&quot;Open&quot;</span><span class="pn">;</span> <span class="s">&quot;Close&quot;</span><span class="pn">;</span> <span class="s">&quot;Volume&quot;</span><span class="pn">;</span> <span class="s">&quot;Cycle&quot;</span> <span class="pn">]</span><span class="pn">)</span>
+</code></pre>
+<p>If you don't want to list all of the values, you can just use <code>VirtualSearchColumn.infer</code>. In this case there will be a full scan performedat the creation of the Frame.</p>
+<p>Options for explicit LookupRanges:</p>
+<table>
+<thead>
+<tr class="header">
+<th><p>Data shape</p></th>
+<th><p>Helper</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><p>Repeating cycle</p></td>
+<td><p><code>VirtualLookupRange.forRepeatingCycle words</code></p></td>
+</tr>
+<tr class="even">
+<td><p>Known categorical levels</p></td>
+<td><p><code>VirtualLookupRange.forCategorical map</code></p></td>
+</tr>
+<tr class="odd">
+<td><p>Build map once at construction</p></td>
+<td><p><code>VirtualLookupRange.forCategoricalScan length valueAt</code></p></td>
+</tr>
+<tr class="even">
+<td><p>Irregular / high cardinality</p></td>
+<td><p><code>VirtualLookupRange.scan length valueAt</code> (correct, O(N) per filter)</p></td>
+</tr>
+<tr class="odd">
+<td><p>Low-cardinality CSV/Parquet string</p></td>
+<td><p><code>VirtualSearchColumn.infer "ColumnName"</code> at load</p></td>
+</tr>
+</tbody>
+</table>
+
+<a name="explore"></a>
+<h2><a name="3-Explore-without-materializing" class="anchor" href="#3-Explore-without-materializing">3. Explore without materializing</a></h2>
+<p>You can inspect structure and filter rows without pulling every cell.</p>
+<p>Row count and filter by column value:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span data-fsdocs-tip="fs18" data-fsdocs-tip-unique="53" class="id">prices</span><span class="pn">.</span><span data-fsdocs-tip="fs32" data-fsdocs-tip-unique="54" class="id">RowCount</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val it: int = 24</code></pre></td></tr></table>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span data-fsdocs-tip="fs33" data-fsdocs-tip-unique="55" class="id">tech</span> <span class="o">=</span> <span data-fsdocs-tip="fs18" data-fsdocs-tip-unique="56" class="id">prices</span> <span class="o">|&gt;</span> <span data-fsdocs-tip="fs34" data-fsdocs-tip-unique="57" class="m">Frame</span><span class="pn">.</span><span data-fsdocs-tip="fs35" data-fsdocs-tip-unique="58" class="id">filterRowsBy</span> <span class="s">&quot;Category&quot;</span> <span class="s">&quot;tech&quot;</span>
+<span data-fsdocs-tip="fs33" data-fsdocs-tip-unique="59" class="id">tech</span><span class="pn">.</span><span data-fsdocs-tip="fs32" data-fsdocs-tip-unique="60" class="id">RowCount</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val tech: Frame&lt;int64,string&gt; =
+  
+      Category Open  Close Volume  Cycle 
+0  -&gt; tech     37.5  37.8  1200000 1     
+2  -&gt; tech     37.95 38.4  1100000 3     
+4  -&gt; tech     38.25 38.9  1350000 2     
+6  -&gt; tech     38.8  39.2  1010000 1     
+8  -&gt; tech     39.15 39.6  1180000 3     
+10 -&gt; tech     39.5  40    1420000 2     
+12 -&gt; tech     39.9  40.3  1250000 1     
+14 -&gt; tech     40.2  40.7  1300000 3     
+16 -&gt; tech     40.6  41    1150000 2     
+18 -&gt; tech     40.9  41.4  1280000 1     
+20 -&gt; tech     41.3  41.8  1400000 3     
+22 -&gt; tech     41.7  42.1  1220000 2     
+
+val it: int = 12</code></pre></td></tr></table>
+<pre class="fssnip highlighted"><code lang="fsharp"><span data-fsdocs-tip="fs19" data-fsdocs-tip-unique="61" class="rt">Virtual</span><span class="pn">.</span><span data-fsdocs-tip="fs36" data-fsdocs-tip-unique="62" class="id">IsVirtualRowIndex</span> <span data-fsdocs-tip="fs33" data-fsdocs-tip-unique="63" class="id">tech</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val it: bool = true</code></pre></td></tr></table>
+<p>Two predicates — <code>filterRowsBy2</code> intersects both LookupRanges in one pass when the row index is ordered. On ordinal frames it falls back to two chained <code>filterRowsBy</code> calls (still virtual, still correct):</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span data-fsdocs-tip="fs37" data-fsdocs-tip-unique="64" class="id">techCycle1</span> <span class="o">=</span>
+  <span data-fsdocs-tip="fs18" data-fsdocs-tip-unique="65" class="id">prices</span>
+  <span class="o">|&gt;</span> <span data-fsdocs-tip="fs34" data-fsdocs-tip-unique="66" class="m">Frame</span><span class="pn">.</span><span data-fsdocs-tip="fs38" data-fsdocs-tip-unique="67" class="id">filterRowsBy2</span> <span class="s">&quot;Category&quot;</span> <span class="s">&quot;tech&quot;</span> <span class="s">&quot;Cycle&quot;</span> <span class="n">1L</span>
+
+<span data-fsdocs-tip="fs37" data-fsdocs-tip-unique="68" class="id">techCycle1</span><span class="pn">.</span><span data-fsdocs-tip="fs32" data-fsdocs-tip-unique="69" class="id">RowCount</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val techCycle1: Frame&lt;int64,string&gt; =
+  
+      Category Open Close Volume  Cycle 
+0  -&gt; tech     37.5 37.8  1200000 1     
+6  -&gt; tech     38.8 39.2  1010000 1     
+12 -&gt; tech     39.9 40.3  1250000 1     
+18 -&gt; tech     40.9 41.4  1280000 1     
+
+val it: int = 4</code></pre></td></tr></table>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span data-fsdocs-tip="fs39" data-fsdocs-tip-unique="70" class="id">techCycle1Chain</span> <span class="o">=</span>
+  <span data-fsdocs-tip="fs18" data-fsdocs-tip-unique="71" class="id">prices</span>
+  <span class="o">|&gt;</span> <span data-fsdocs-tip="fs34" data-fsdocs-tip-unique="72" class="m">Frame</span><span class="pn">.</span><span data-fsdocs-tip="fs35" data-fsdocs-tip-unique="73" class="id">filterRowsBy</span> <span class="s">&quot;Category&quot;</span> <span class="s">&quot;tech&quot;</span>
+  <span class="o">|&gt;</span> <span data-fsdocs-tip="fs34" data-fsdocs-tip-unique="74" class="m">Frame</span><span class="pn">.</span><span data-fsdocs-tip="fs35" data-fsdocs-tip-unique="75" class="id">filterRowsBy</span> <span class="s">&quot;Cycle&quot;</span> <span class="n">1L</span>
+
+<span data-fsdocs-tip="fs37" data-fsdocs-tip-unique="76" class="id">techCycle1</span><span class="pn">.</span><span data-fsdocs-tip="fs32" data-fsdocs-tip-unique="77" class="id">RowCount</span> <span class="o">=</span> <span data-fsdocs-tip="fs39" data-fsdocs-tip-unique="78" class="id">techCycle1Chain</span><span class="pn">.</span><span data-fsdocs-tip="fs32" data-fsdocs-tip-unique="79" class="id">RowCount</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val techCycle1Chain: Frame&lt;int64,string&gt; =
+  
+      Category Open Close Volume  Cycle 
+0  -&gt; tech     37.5 37.8  1200000 1     
+6  -&gt; tech     38.8 39.2  1010000 1     
+12 -&gt; tech     39.9 40.3  1250000 1     
+18 -&gt; tech     40.9 41.4  1280000 1     
+
+val it: bool = true</code></pre></td></tr></table>
+<p>Peek one value — a single decode, not a full-column pull:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span data-fsdocs-tip="fs40" data-fsdocs-tip-unique="80" class="id">firstTech</span> <span class="o">=</span> <span data-fsdocs-tip="fs33" data-fsdocs-tip-unique="81" class="id">tech</span><span class="pn">.</span><span data-fsdocs-tip="fs41" data-fsdocs-tip-unique="82" class="id">RowKeys</span> <span class="o">|&gt;</span> <span data-fsdocs-tip="fs25" data-fsdocs-tip-unique="83" class="m">Seq</span><span class="pn">.</span><span data-fsdocs-tip="fs42" data-fsdocs-tip-unique="84" class="id">head</span>
+<span data-fsdocs-tip="fs33" data-fsdocs-tip-unique="85" class="id">tech</span><span class="pn">.</span><span data-fsdocs-tip="fs43" data-fsdocs-tip-unique="86" class="id">GetColumn</span><span class="pn">&lt;</span><span data-fsdocs-tip="fs44" data-fsdocs-tip-unique="87" class="vt">float</span><span class="pn">&gt;</span><span class="pn">(</span><span class="s">&quot;Close&quot;</span><span class="pn">)</span><span class="pn">.</span><span class="pn">[</span><span data-fsdocs-tip="fs40" data-fsdocs-tip-unique="88" class="id">firstTech</span><span class="pn">]</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val firstTech: int64 = 0L
+val it: float = 37.8</code></pre></td></tr></table>
+<p>Other ways to explore without loading everything into memory:</p>
+<ul>
+<li><code>Virtual.Describe frame</code> — row count, column types, virtual index kind</li>
+<li><code>Virtual.TryGetLookupRange(frame, "Column")</code> — <code>LookupRange</code> mode for a search column</li>
+<li><code>Virtual.IsVirtualRowIndex frame</code> — whether the row index is still virtual</li>
+<li><code>frame.ColumnKeys</code>, <code>frame.RowCount</code>, <code>frame.GetRowAt(0)</code> — metadata / one row</li>
+<li>Row/column slices (<code>frame.Rows.[..]</code>, <code>Frame.sliceCols</code>) — stay virtual; narrow before heavy work</li>
+</ul>
+<a name="operations"></a>
+<h2><a name="4-Operations-on-virtual-frames" class="anchor" href="#4-Operations-on-virtual-frames">4. Operations on virtual frames</a></h2>
+<p>Most <code>Frame</code> / <code>Series</code> APIs work. The distinction is whether the <strong>result stays virtual</strong>
+or <strong>pulls data into memory</strong>.</p>
+<p><strong>Stays virtual (prep pipeline):</strong></p>
+<ul>
+<li><code>filterRowsBy</code>, <code>filterRowsBy2</code>, <code>dropMissing</code></li>
+<li>Row/column slice, <code>map</code>, <code>fillMissing</code>, <code>Series.shift</code> / <code>diff</code> / <code>pctChange</code></li>
+<li><code>Frame.sliceCols</code>, adding/replacing columns with aligned virtual series</li>
+<li>Identical-ordinal zip / join</li>
+</ul>
+<p><strong>Materializes (use on a filtered slice, not the full file):</strong></p>
+<ul>
+<li>Full-series <code>Stats.*</code> — O(N) read of kept rows</li>
+<li><code>groupBy</code>, window aggregates, <code>sortRows</code> / <code>sortRowsBy</code> (by value)</li>
+<li>Mismatched-key join, <code>joinOn</code></li>
+</ul>
+<p>Example prep that remains virtual:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span data-fsdocs-tip="fs45" data-fsdocs-tip-unique="89" class="id">prepared</span> <span class="o">=</span>
+  <span data-fsdocs-tip="fs33" data-fsdocs-tip-unique="90" class="id">tech</span>
+  <span class="o">|&gt;</span> <span data-fsdocs-tip="fs34" data-fsdocs-tip-unique="91" class="m">Frame</span><span class="pn">.</span><span data-fsdocs-tip="fs46" data-fsdocs-tip-unique="92" class="id">sliceCols</span> <span class="pn">[</span> <span class="s">&quot;Open&quot;</span><span class="pn">;</span> <span class="s">&quot;Close&quot;</span> <span class="pn">]</span>
+  <span class="o">|&gt;</span> <span class="k">fun</span> <span data-fsdocs-tip="fs47" data-fsdocs-tip-unique="93" class="fn">f</span> <span class="k">-&gt;</span> <span data-fsdocs-tip="fs47" data-fsdocs-tip-unique="94" class="fn">f</span><span class="pn">.</span><span data-fsdocs-tip="fs48" data-fsdocs-tip-unique="95" class="id">Rows</span><span class="pn">.</span><span class="pn">[</span><span data-fsdocs-tip="fs47" data-fsdocs-tip-unique="96" class="fn">f</span><span class="pn">.</span><span data-fsdocs-tip="fs41" data-fsdocs-tip-unique="97" class="id">RowKeys</span> <span class="o">|&gt;</span> <span data-fsdocs-tip="fs25" data-fsdocs-tip-unique="98" class="m">Seq</span><span class="pn">.</span><span data-fsdocs-tip="fs42" data-fsdocs-tip-unique="99" class="id">head</span> <span class="o">..</span> <span data-fsdocs-tip="fs47" data-fsdocs-tip-unique="100" class="fn">f</span><span class="pn">.</span><span data-fsdocs-tip="fs41" data-fsdocs-tip-unique="101" class="id">RowKeys</span> <span class="o">|&gt;</span> <span data-fsdocs-tip="fs25" data-fsdocs-tip-unique="102" class="m">Seq</span><span class="pn">.</span><span data-fsdocs-tip="fs49" data-fsdocs-tip-unique="103" class="id">skip</span> <span class="n">4</span> <span class="o">|&gt;</span> <span data-fsdocs-tip="fs25" data-fsdocs-tip-unique="104" class="m">Seq</span><span class="pn">.</span><span data-fsdocs-tip="fs42" data-fsdocs-tip-unique="105" class="id">head</span><span class="pn">]</span>
+
+<span class="k">let</span> <span data-fsdocs-tip="fs50" data-fsdocs-tip-unique="106" class="id">closeShifted</span> <span class="o">=</span> <span data-fsdocs-tip="fs45" data-fsdocs-tip-unique="107" class="id">prepared</span><span class="pn">.</span><span data-fsdocs-tip="fs43" data-fsdocs-tip-unique="108" class="id">GetColumn</span><span class="pn">&lt;</span><span data-fsdocs-tip="fs44" data-fsdocs-tip-unique="109" class="vt">float</span><span class="pn">&gt;</span><span class="pn">(</span><span class="s">&quot;Close&quot;</span><span class="pn">)</span> <span class="o">|&gt;</span> <span data-fsdocs-tip="fs51" data-fsdocs-tip-unique="110" class="m">Series</span><span class="pn">.</span><span data-fsdocs-tip="fs52" data-fsdocs-tip-unique="111" class="id">shift</span> <span class="n">1</span>
+<span data-fsdocs-tip="fs50" data-fsdocs-tip-unique="112" class="id">closeShifted</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val prepared: Frame&lt;int64,string&gt; =
+  
+     Open  Close 
+0 -&gt; 37.5  37.8  
+2 -&gt; 37.95 38.4  
+4 -&gt; 38.25 38.9  
+6 -&gt; 38.8  39.2  
+8 -&gt; 39.15 39.6  
+
+val closeShifted: Series&lt;int64,float&gt; =
+  
+2 -&gt; 37.8 
+4 -&gt; 38.4 
+6 -&gt; 38.9 
+8 -&gt; 39.2 
+
+val it: Series&lt;int64,float&gt; = 
+2 -&gt; 37.8 
+4 -&gt; 38.4 
+6 -&gt; 38.9 
+8 -&gt; 39.2</code></pre></td></tr></table>
+<p><code>Stats.sum</code> on a column reads every row in the subset (materialize pull over those rows only):</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span data-fsdocs-tip="fs45" data-fsdocs-tip-unique="113" class="id">prepared</span><span class="pn">.</span><span data-fsdocs-tip="fs43" data-fsdocs-tip-unique="114" class="id">GetColumn</span><span class="pn">&lt;</span><span data-fsdocs-tip="fs44" data-fsdocs-tip-unique="115" class="vt">float</span><span class="pn">&gt;</span><span class="pn">(</span><span class="s">&quot;Close&quot;</span><span class="pn">)</span> <span class="o">|&gt;</span> <span data-fsdocs-tip="fs53" data-fsdocs-tip-unique="116" class="rt">Stats</span><span class="pn">.</span><span data-fsdocs-tip="fs54" data-fsdocs-tip-unique="117" class="id">sum</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val it: float = 193.9</code></pre></td></tr></table>
+<a name="matrix"></a>
+<h2><a name="5-What-stays-virtual-vs-what-materializes" class="anchor" href="#5-What-stays-virtual-vs-what-materializes">5. What stays virtual vs what materializes</a></h2>
+<table>
+<thead>
+<tr class="header">
+<th><p>Operation</p></th>
+<th><p>Result</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><p><code>Virtual.ReadCsv</code> / <code>ReadCsvDirectory</code> / <code>ReadParquet</code>, metadata, <code>Describe</code></p></td>
+<td><p><strong>VIRTUAL</strong></p></td>
+</tr>
+<tr class="even">
+<td><p><code>filterRowsBy</code> / <code>filterRowsBy2</code> (with LookupRange)</p></td>
+<td><p><strong>VIRTUAL</strong></p></td>
+</tr>
+<tr class="odd">
+<td><p>Slice / map / fill / shift / diff / pctChange</p></td>
+<td><p><strong>VIRTUAL</strong></p></td>
+</tr>
+<tr class="even">
+<td><p>Nested <code>windowSize</code> / <code>chunkSize</code> (identity)</p></td>
+<td><p><strong>VIRTUAL</strong> nested slices</p></td>
+</tr>
+<tr class="odd">
+<td><p>Identical-ordinal zip / join</p></td>
+<td><p><strong>VIRTUAL</strong></p></td>
+</tr>
+<tr class="even">
+<td><p><code>dropMissing</code></p></td>
+<td><p><strong>VIRTUAL</strong> (presence scan + sub-vector)</p></td>
+</tr>
+<tr class="odd">
+<td><p>Full-series <code>Stats.*</code></p></td>
+<td><p><strong>MATERIALIZE</strong> pull (O(N)); prefer <strong>slice first</strong></p></td>
+</tr>
+<tr class="even">
+<td><p>Window <strong>aggregates</strong>, <code>groupBy</code>, value <code>sortBy</code></p></td>
+<td><p><strong>MATERIALIZE</strong></p></td>
+</tr>
+<tr class="odd">
+<td><p>Mismatched-key join, <code>joinOn</code>, nearest lookup</p></td>
+<td><p><strong>MATERIALIZE</strong></p></td>
+</tr>
+<tr class="even">
+<td><p><code>Virtual.MaterializeFloatBatches</code></p></td>
+<td><p>Explicit <strong>subset</strong> pull for ML</p></td>
+</tr>
+</tbody>
+</table>
+
+<a name="ml"></a>
+<h2><a name="6-ML-export-with" class="anchor" href="#6-ML-export-with">6. ML export with <code>MaterializeFloatBatches</code></a></h2>
+<p>MaterializeFloatBatches yields data one batch of a given size at a time, without performing a full scan.
+You can choose which columns will be used, and set a labels column, that will be returned separately. Each batch is produced by slicing the frame and reading only those rows × columns.
+Set order to <code>FloatBatchOrder.Shuffled</code> / <code>ShuffledWithSeed</code> if you want rows order to berandomized once per enumeration (each row appears in exactly one batch).</p>
+<table>
+<thead>
+<tr class="header">
+<th><p>Parameter</p></th>
+<th><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><p><code>frame</code></p></td>
+<td><p>Source frame (virtual or in-memory)</p></td>
+</tr>
+<tr class="even">
+<td><p><code>batchSize</code></p></td>
+<td><p>Rows per batch (last batch may be smaller)</p></td>
+</tr>
+<tr class="odd">
+<td><p><code>columns</code></p></td>
+<td><p>Column keys to materialize (<code>float</code> or <code>int64</code>)</p></td>
+</tr>
+<tr class="even">
+<td><p><code>missingPolicy</code></p></td>
+<td><p>Missing cells (default <code>FloatMissingPolicy.NaN</code>)</p></td>
+</tr>
+<tr class="odd">
+<td><p><code>includeRowKeys</code></p></td>
+<td><p>Copy row keys for each batch</p></td>
+</tr>
+<tr class="even">
+<td><p><code>labelsColumn</code></p></td>
+<td><p>Optional label column (<code>float</code> or <code>int64</code>)</p></td>
+</tr>
+<tr class="odd">
+<td><p><code>layout</code></p></td>
+<td><p>Row-major (default) or column-major flat layout</p></td>
+</tr>
+<tr class="even">
+<td><p><code>includeMissingMask</code></p></td>
+<td><p><code>FloatBatch.MissingMask</code> for feature cells</p></td>
+</tr>
+<tr class="odd">
+<td><p><code>maxRows</code></p></td>
+<td><p>Cap total rows exported across all batches</p></td>
+</tr>
+<tr class="even">
+<td><p><code>order</code></p></td>
+<td><p><code>FloatBatchOrder.Sequential</code> (default) or shuffled variants</p></td>
+</tr>
+</tbody>
+</table>
+
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span data-fsdocs-tip="fs55" data-fsdocs-tip-unique="118" class="id">batches</span> <span class="o">=</span>
+  <span data-fsdocs-tip="fs19" data-fsdocs-tip-unique="119" class="rt">Virtual</span><span class="pn">.</span><span data-fsdocs-tip="fs56" data-fsdocs-tip-unique="120" class="id">MaterializeFloatBatches</span><span class="pn">(</span>
+    <span data-fsdocs-tip="fs33" data-fsdocs-tip-unique="121" class="id">tech</span><span class="pn">,</span>
+    <span class="fn">batchSize</span> <span class="o">=</span> <span class="n">4L</span><span class="pn">,</span>
+    <span class="fn">columns</span> <span class="o">=</span> <span class="pn">[</span> <span class="s">&quot;Open&quot;</span><span class="pn">;</span> <span class="s">&quot;Close&quot;</span> <span class="pn">]</span><span class="pn">,</span>
+    <span class="fn">order</span> <span class="o">=</span> <span data-fsdocs-tip="fs57" data-fsdocs-tip-unique="122" class="rt">FloatBatchOrder</span><span class="pn">.</span><span data-fsdocs-tip="fs58" data-fsdocs-tip-unique="123" class="id">ShuffledWithSeed</span> <span class="n">42</span><span class="pn">,</span>
+    <span class="fn">missingPolicy</span> <span class="o">=</span> <span data-fsdocs-tip="fs59" data-fsdocs-tip-unique="124" class="rt">FloatMissingPolicy</span><span class="pn">.</span><span data-fsdocs-tip="fs60" data-fsdocs-tip-unique="125" class="id">NaN</span><span class="pn">)</span>
+
+<span class="k">let</span> <span data-fsdocs-tip="fs61" data-fsdocs-tip-unique="126" class="id">firstBatch</span> <span class="o">=</span> <span data-fsdocs-tip="fs55" data-fsdocs-tip-unique="127" class="id">batches</span> <span class="o">|&gt;</span> <span data-fsdocs-tip="fs25" data-fsdocs-tip-unique="128" class="m">Seq</span><span class="pn">.</span><span data-fsdocs-tip="fs42" data-fsdocs-tip-unique="129" class="id">head</span>
+<span data-fsdocs-tip="fs61" data-fsdocs-tip-unique="130" class="id">firstBatch</span><span class="pn">.</span><span data-fsdocs-tip="fs62" data-fsdocs-tip-unique="131" class="id">Rows</span><span class="pn">,</span> <span data-fsdocs-tip="fs61" data-fsdocs-tip-unique="132" class="id">firstBatch</span><span class="pn">.</span><span data-fsdocs-tip="fs63" data-fsdocs-tip-unique="133" class="id">Cols</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val batches: FloatBatch&lt;int64&gt; seq
+val firstBatch: FloatBatch&lt;int64&gt; =
+  { Rows = 4
+    Cols = 2
+    Layout = RowMajor
+    FeaturesFlat = [|39.9; 40.3; 38.8; 39.2; 39.5; 40.0; 37.5; 37.8|]
+    Labels = None
+    MissingMask = None
+    RowKeys = None }
+val it: int * int = (4, 2)</code></pre></td></tr></table>
+<pre class="fssnip highlighted"><code lang="fsharp"><span data-fsdocs-tip="fs61" data-fsdocs-tip-unique="134" class="id">firstBatch</span><span class="pn">.</span><span data-fsdocs-tip="fs64" data-fsdocs-tip-unique="135" class="id">FeaturesFlat</span><span class="pn">.</span><span class="pn">[</span><span class="n">0..</span><span class="n">1</span><span class="pn">]</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val it: float array = [|39.9; 40.3|]</code></pre></td></tr></table>
+<a name="delayed"></a>
+<h2><a name="7-DelayedSeries-vs-virtual-vs" class="anchor" href="#7-DelayedSeries-vs-virtual-vs">7. DelayedSeries vs virtual vs <code>ReadCsv</code></a></h2>
+<table>
+<thead>
+<tr class="header">
+<th><p>Model</p></th>
+<th><p>When to use</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><p>*<em><code>Frame.ReadCsv</code>*</em></p></td>
+<td><p>Small/medium data (as in the <a href="tutorial.html">tutorial</a>); full API in RAM</p></td>
+</tr>
+<tr class="even">
+<td><p>*<em><code>Virtual.ReadCsv</code>*</em></p></td>
+<td><p>Single CSV; ordinal <code>0..N-1</code> by default, or ordered index when <code>indexColumn</code> is valid</p></td>
+</tr>
+<tr class="odd">
+<td><p>*<em><code>Virtual.ReadCsvDirectory</code>*</em></p></td>
+<td><p>Multiple same-schema CSVs concatenated as ordinal <code>0..N-1</code></p></td>
+</tr>
+<tr class="even">
+<td><p>*<em><code>Virtual.ReadParquet</code>*</em></p></td>
+<td><p>Columnar files; same LookupRange story after <code>open Deedle.Parquet</code></p></td>
+</tr>
+<tr class="odd">
+<td><p>*<em><code>DelayedSeries</code>*</em></p></td>
+<td><p>Lazy <strong>range loaders</strong> (DB/API); see <a href="lazysource.html">Delay-loaded series</a></p></td>
+</tr>
+</tbody>
+</table>
+
+<p>Virtual frames are <strong>source-first</strong> (<code>IVirtualVectorSource</code>), not a full custom builder
+rewrite. Design background: <a href="design.html#bigdeedle">Design notes</a>.</p>
+<a name="custom"></a>
+<h2><a name="8-Custom" class="anchor" href="#8-Custom">8. Custom <code>IVirtualVectorSource</code></a></h2>
+<p>For backends other than CSV/Parquet, implement <code>IVirtualVectorSource&lt;'T&gt;</code> (<code>Length</code>, <code>ValueAt</code>,
+<code>GetSubVector</code>, and preferably <code>LookupRange</code> on searchable columns), then wrap with
+<code>Virtual.CreateOrdinalFrame</code> or <code>Virtual.CreateFrame</code>. All columns must share the same
+addressing scheme id.</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span data-fsdocs-tip="fs65" data-fsdocs-tip-unique="136" class="id">n</span> <span class="o">=</span> <span class="n">20L</span>
+<span class="k">let</span> <span data-fsdocs-tip="fs66" data-fsdocs-tip-unique="137" class="id">cats</span> <span class="o">=</span> <span class="pn">[|</span> <span class="s">&quot;tech&quot;</span><span class="pn">;</span> <span class="s">&quot;energy&quot;</span><span class="pn">;</span> <span class="s">&quot;retail&quot;</span> <span class="pn">|]</span>
+<span class="k">let</span> <span data-fsdocs-tip="fs67" data-fsdocs-tip-unique="138" class="id">scheme</span> <span class="o">=</span> <span class="s">&quot;demo-ordinal&quot;</span>
+
+<span class="k">let</span> <span data-fsdocs-tip="fs68" data-fsdocs-tip-unique="139" class="id">catSource</span> <span class="o">=</span>
+  <span data-fsdocs-tip="fs69" data-fsdocs-tip-unique="140" class="fn">OrdinalVirtualSource</span><span class="pn">&lt;</span><span data-fsdocs-tip="fs17" data-fsdocs-tip-unique="141" class="rt">string</span><span class="pn">&gt;</span><span class="pn">(</span>
+    <span data-fsdocs-tip="fs65" data-fsdocs-tip-unique="142" class="id">n</span><span class="pn">,</span>
+    <span class="pn">(</span><span class="k">fun</span> <span data-fsdocs-tip="fs70" data-fsdocs-tip-unique="143" class="fn">i</span> <span class="k">-&gt;</span> <span data-fsdocs-tip="fs71" data-fsdocs-tip-unique="144" class="fn">OptionalValue</span><span class="pn">(</span><span data-fsdocs-tip="fs66" data-fsdocs-tip-unique="145" class="id">cats</span><span class="pn">.</span><span class="pn">[</span><span data-fsdocs-tip="fs72" data-fsdocs-tip-unique="146" class="fn">int</span> <span class="pn">(</span><span data-fsdocs-tip="fs70" data-fsdocs-tip-unique="147" class="fn">i</span> <span class="o">%</span> <span data-fsdocs-tip="fs73" data-fsdocs-tip-unique="148" class="fn">int64</span> <span data-fsdocs-tip="fs66" data-fsdocs-tip-unique="149" class="id">cats</span><span class="pn">.</span><span data-fsdocs-tip="fs74" data-fsdocs-tip-unique="150" class="id">Length</span><span class="pn">)</span><span class="pn">]</span><span class="pn">)</span><span class="pn">)</span><span class="pn">,</span>
+    <span data-fsdocs-tip="fs67" data-fsdocs-tip-unique="151" class="id">scheme</span><span class="pn">,</span>
+    <span class="fn">lookupRange</span> <span class="o">=</span> <span data-fsdocs-tip="fs29" data-fsdocs-tip-unique="152" class="m">VirtualLookupRange</span><span class="pn">.</span><span data-fsdocs-tip="fs30" data-fsdocs-tip-unique="153" class="id">forRepeatingCycle</span> <span data-fsdocs-tip="fs66" data-fsdocs-tip-unique="154" class="id">cats</span><span class="pn">)</span>
+
+<span class="k">let</span> <span data-fsdocs-tip="fs75" data-fsdocs-tip-unique="155" class="id">closeSource</span> <span class="o">=</span>
+  <span data-fsdocs-tip="fs69" data-fsdocs-tip-unique="156" class="fn">OrdinalVirtualSource</span><span class="pn">&lt;</span><span data-fsdocs-tip="fs44" data-fsdocs-tip-unique="157" class="vt">float</span><span class="pn">&gt;</span><span class="pn">(</span>
+    <span data-fsdocs-tip="fs65" data-fsdocs-tip-unique="158" class="id">n</span><span class="pn">,</span>
+    <span class="pn">(</span><span class="k">fun</span> <span data-fsdocs-tip="fs70" data-fsdocs-tip-unique="159" class="fn">i</span> <span class="k">-&gt;</span> <span data-fsdocs-tip="fs71" data-fsdocs-tip-unique="160" class="fn">OptionalValue</span><span class="pn">(</span><span class="n">40.0</span> <span class="o">+</span> <span data-fsdocs-tip="fs44" data-fsdocs-tip-unique="161" class="fn">float</span> <span data-fsdocs-tip="fs70" data-fsdocs-tip-unique="162" class="fn">i</span><span class="pn">)</span><span class="pn">)</span><span class="pn">,</span>
+    <span data-fsdocs-tip="fs67" data-fsdocs-tip-unique="163" class="id">scheme</span><span class="pn">)</span>
+
+<span class="k">let</span> <span data-fsdocs-tip="fs76" data-fsdocs-tip-unique="164" class="id">demo</span> <span class="o">=</span>
+  <span data-fsdocs-tip="fs19" data-fsdocs-tip-unique="165" class="rt">Virtual</span><span class="pn">.</span><span data-fsdocs-tip="fs77" data-fsdocs-tip-unique="166" class="id">CreateOrdinalFrame</span><span class="pn">(</span>
+    <span class="pn">[</span> <span class="s">&quot;Category&quot;</span><span class="pn">;</span> <span class="s">&quot;Close&quot;</span> <span class="pn">]</span><span class="pn">,</span>
+    <span class="pn">[</span> <span data-fsdocs-tip="fs68" data-fsdocs-tip-unique="167" class="id">catSource</span> <span class="o">:&gt;</span> <span data-fsdocs-tip="fs78" data-fsdocs-tip-unique="168" class="if">IVirtualVectorSource</span><span class="pn">;</span> <span data-fsdocs-tip="fs75" data-fsdocs-tip-unique="169" class="id">closeSource</span> <span class="o">:&gt;</span> <span data-fsdocs-tip="fs78" data-fsdocs-tip-unique="170" class="if">IVirtualVectorSource</span> <span class="pn">]</span><span class="pn">)</span>
+
+<span data-fsdocs-tip="fs19" data-fsdocs-tip-unique="171" class="rt">Virtual</span><span class="pn">.</span><span data-fsdocs-tip="fs23" data-fsdocs-tip-unique="172" class="id">Describe</span> <span data-fsdocs-tip="fs76" data-fsdocs-tip-unique="173" class="id">demo</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val n: int64 = 20L
+val cats: string array = [|"tech"; "energy"; "retail"|]
+val scheme: string = "demo-ordinal"
+val catSource: OrdinalVirtualSource&lt;string&gt;
+val closeSource: OrdinalVirtualSource&lt;float&gt;
+val demo: Frame&lt;int64,string&gt; =
+  
+      Category Close 
+0  -&gt; tech     40    
+1  -&gt; energy   41    
+2  -&gt; retail   42    
+3  -&gt; tech     43    
+4  -&gt; energy   44    
+5  -&gt; retail   45    
+6  -&gt; tech     46    
+7  -&gt; energy   47    
+8  -&gt; retail   48    
+9  -&gt; tech     49    
+10 -&gt; energy   50    
+11 -&gt; retail   51    
+12 -&gt; tech     52    
+13 -&gt; energy   53    
+14 -&gt; retail   54    
+15 -&gt; tech     55    
+16 -&gt; energy   56    
+17 -&gt; retail   57    
+18 -&gt; tech     58    
+19 -&gt; energy   59    
+
+val it: string = "rows=20, rowIndex=ordinal virtual (0..N-1), columns=2"</code></pre></td></tr></table>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="prop">(</span><span data-fsdocs-tip="fs76" data-fsdocs-tip-unique="174" class="id">demo</span> <span class="o">|&gt;</span> <span data-fsdocs-tip="fs34" data-fsdocs-tip-unique="175" class="m">Frame</span><span class="pn">.</span><span data-fsdocs-tip="fs35" data-fsdocs-tip-unique="176" class="id">filterRowsBy</span> <span class="s">&quot;Category&quot;</span> <span class="s">&quot;tech&quot;</span><span class="pn">)</span><span class="pn">.</span><span class="id">RowCount</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val it: int = 7</code></pre></td></tr></table>
+
+        <div popover class="fsdocs-tip" id="fs1">namespace System</div>
+<div popover class="fsdocs-tip" id="fs2">namespace Deedle</div>
+<div popover class="fsdocs-tip" id="fs3">namespace Deedle.Virtual</div>
+<div popover class="fsdocs-tip" id="fs4">namespace Deedle.Vectors</div>
+<div popover class="fsdocs-tip" id="fs5">namespace Deedle.Vectors.Virtual</div>
+<div popover class="fsdocs-tip" id="fs6">val root: string</div>
+<div popover class="fsdocs-tip" id="fs7">val path: string</div>
+<div popover class="fsdocs-tip" id="fs8">val fsi: FSharp.Compiler.Interactive.InteractiveSession</div>
+<div popover class="fsdocs-tip" id="fs9">member FSharp.Compiler.Interactive.InteractiveSession.AddPrinter: (&#39;T -&gt; string) -&gt; unit</div>
+<div popover class="fsdocs-tip" id="fs10">val o: obj</div>
+<div popover class="fsdocs-tip" id="fs11">type obj = Object</div>
+<div popover class="fsdocs-tip" id="fs12">val iface: Type</div>
+<div popover class="fsdocs-tip" id="fs13">Object.GetType() : Type</div>
+<div popover class="fsdocs-tip" id="fs14">val fmt: Reflection.MethodInfo</div>
+<div popover class="fsdocs-tip" id="fs15">
+Type.GetMethod(name: string) : Reflection.MethodInfo<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />
+Type.GetMethod(name: string, types: Type array) : Reflection.MethodInfo<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />
+Type.GetMethod(name: string, bindingAttr: Reflection.BindingFlags) : Reflection.MethodInfo<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />
+Type.GetMethod(name: string, types: Type array, modifiers: Reflection.ParameterModifier array) : Reflection.MethodInfo<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />
+Type.GetMethod(name: string, bindingAttr: Reflection.BindingFlags, types: Type array) : Reflection.MethodInfo<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />
+Type.GetMethod(name: string, genericParameterCount: int, types: Type array) : Reflection.MethodInfo<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />
+Type.GetMethod(name: string, genericParameterCount: int, types: Type array, modifiers: Reflection.ParameterModifier array) : Reflection.MethodInfo<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />
+Type.GetMethod(name: string, genericParameterCount: int, bindingAttr: Reflection.BindingFlags, types: Type array) : Reflection.MethodInfo<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />
+Type.GetMethod(name: string, bindingAttr: Reflection.BindingFlags, binder: Reflection.Binder, types: Type array, modifiers: Reflection.ParameterModifier array) : Reflection.MethodInfo<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />
+Type.GetMethod(name: string, bindingAttr: Reflection.BindingFlags, binder: Reflection.Binder, callConvention: Reflection.CallingConventions, types: Type array, modifiers: Reflection.ParameterModifier array) : Reflection.MethodInfo<br />&#160;&#160;&#160;<em>(+0 other overloads)</em></div>
+<div popover class="fsdocs-tip" id="fs16">Reflection.MethodBase.Invoke(obj: obj, parameters: obj array) : obj<br />Reflection.MethodBase.Invoke(obj: obj, invokeAttr: Reflection.BindingFlags, binder: Reflection.Binder, parameters: obj array, culture: Globalization.CultureInfo) : obj</div>
+<div popover class="fsdocs-tip" id="fs17">Multiple items<br />val string: value: &#39;T -&gt; string<br /><br />--------------------<br />type string = String</div>
+<div popover class="fsdocs-tip" id="fs18">val prices: Frame&lt;int64,string&gt;</div>
+<div popover class="fsdocs-tip" id="fs19">Multiple items<br />namespace Deedle.Virtual<br /><br />--------------------<br />type Virtual =
+  static member CreateFrame: indexSource: IVirtualVectorSource&lt;&#39;a&gt; * keys: &#39;b seq * sources: IVirtualVectorSource seq -&gt; Frame&lt;&#39;a,&#39;b&gt; (requires equality and equality)
+  static member CreateOrdinalFrame: keys: &#39;a seq * sources: IVirtualVectorSource seq -&gt; Frame&lt;int64,&#39;a&gt; (requires equality)
+  static member CreateOrdinalSeries: source: IVirtualVectorSource&lt;&#39;a&gt; -&gt; Series&lt;int64,&#39;a&gt;
+  static member CreateSeries: indexSource: IVirtualVectorSource&lt;&#39;a&gt; * valueSource: IVirtualVectorSource&lt;&#39;b&gt; -&gt; Series&lt;&#39;a,&#39;b&gt; (requires equality)
+  static member Describe: frame: Frame&lt;&#39;R,&#39;C&gt; -&gt; string (requires equality and equality)
+  static member GetRowIndexKind: frame: Frame&lt;&#39;R,&#39;C&gt; -&gt; VirtualRowIndexKind (requires equality and equality)
+  static member IsVirtualColumn: frame: Frame&lt;&#39;R,&#39;C&gt; * column: &#39;C -&gt; bool (requires equality and equality)
+  static member IsVirtualRowIndex: frame: Frame&lt;&#39;R,&#39;C&gt; -&gt; bool (requires equality and equality)
+  static member MaterializeFloatBatches: frame: Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * batchSize: int64 * columns: &#39;TColumnKey list * ?missingPolicy: FloatMissingPolicy * ?includeRowKeys: bool * ?labelsColumn: &#39;TColumnKey * ?layout: FloatBatchLayout * ?includeMissingMask: bool * ?maxRows: int64 * ?order: FloatBatchOrder -&gt; FloatBatch&lt;&#39;TRowKey&gt; seq (requires equality and equality)
+  static member TryGetLookupRange: frame: Frame&lt;&#39;R,&#39;C&gt; * column: &#39;C -&gt; VirtualColumnLookupRange option (requires equality and equality)
+  ...<br /><em>&lt;summary&gt;
+ Provides static methods for creating virtual series and virtual frames.
+ Those provide necessary wrapping around `IVirtualVectorSource` values
+&lt;/summary&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs20">static member Virtual.ReadCsv: path: string * ?searchColumns: VirtualSearchColumn list * ?columnKeys: string list * ?byteOffsetIndex: bool * ?hasHeaders: bool -&gt; Frame&lt;int64,string&gt;<br />static member Virtual.ReadCsv: path: string * indexColumn: string * ?searchColumns: VirtualSearchColumn list * ?columnKeys: string list * ?byteOffsetIndex: bool * ?hasHeaders: bool -&gt; Frame&lt;&#39;R,string&gt; (requires equality)</div>
+<div popover class="fsdocs-tip" id="fs21">Multiple items<br />module VirtualSearchColumn
+
+from Deedle.Virtual<br /><em>&lt;summary&gt;
+ Helpers for building [`VirtualSearchColumn`] lists.
+&lt;/summary&gt;</em><br /><br />--------------------<br />type VirtualSearchColumn =
+  {
+    Name: string
+    Mode: VirtualSearchColumnMode
+  }<br /><em>&lt;summary&gt;
+ One searchable column on [`Virtual.ReadCsv`] / [`Virtual.ReadParquet`].
+&lt;/summary&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs22">val infer: name: string -&gt; VirtualSearchColumn</div>
+<div popover class="fsdocs-tip" id="fs23">static member Virtual.Describe: frame: Frame&lt;&#39;R,&#39;C&gt; -&gt; string (requires equality and equality)</div>
+<div popover class="fsdocs-tip" id="fs24">property Frame.ColumnKeys: string seq with get<br /><em>&lt;category&gt;Accessors and slicing&lt;/category&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs25">module Seq
+
+from Microsoft.FSharp.Collections</div>
+<div popover class="fsdocs-tip" id="fs26">val toList: source: &#39;T seq -&gt; &#39;T list</div>
+<div popover class="fsdocs-tip" id="fs27">val explicitCycle: Frame&lt;int64,string&gt;</div>
+<div popover class="fsdocs-tip" id="fs28">val withString: name: string -&gt; mode: LookupRangeMode&lt;string&gt; -&gt; VirtualSearchColumn</div>
+<div popover class="fsdocs-tip" id="fs29">module VirtualLookupRange
+
+from Deedle.Virtual<br /><em>&lt;summary&gt;
+ Helpers for configuring searchable columns on virtual sources.
+&lt;/summary&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs30">val forRepeatingCycle: values: &#39;T array -&gt; LookupRangeMode&lt;&#39;T&gt; (requires equality)<br /><em>&lt;summary&gt;
+ Step LookupRange for values repeating on a fixed cycle (periodic categorical data).
+ Unknown values yield an empty range (negative offset) instead of throwing.
+&lt;/summary&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs31">val withInt64: name: string -&gt; mode: LookupRangeMode&lt;int64&gt; -&gt; VirtualSearchColumn</div>
+<div popover class="fsdocs-tip" id="fs32">property Frame.RowCount: int with get</div>
+<div popover class="fsdocs-tip" id="fs33">val tech: Frame&lt;int64,string&gt;</div>
+<div popover class="fsdocs-tip" id="fs34">Multiple items<br />module Frame
+
+from Deedle<br /><em>&lt;summary&gt;
+ The `Frame` module provides an F#-friendly API for working with data frames.
+ The module follows the usual desing for collection-processing in F#, so the
+ functions work well with the pipelining operator (`|&amp;gt;`). For example, given
+ a frame with two columns representing prices, we can use `Frame.pctChange` to
+ calculate daily returns like this:
+
+     let df = frame [ &quot;MSFT&quot; =&amp;gt; prices1; &quot;AAPL&quot; =&amp;gt; prices2 ]
+     let rets = df |&amp;gt; Frame.pctChange 1
+     rets |&amp;gt; Stats.mean
+
+ Note that the `Stats.mean` operation is overloaded and works both on series
+ (returning a number) and on frames (returning a series). You can also use
+ `Frame.diff` if you need absolute differences rather than relative changes.
+
+ The functions in this module are designed to be used from F#. For a C#-friendly
+ API, see the `FrameExtensions` type. For working with individual series, see the
+ `Series` module. The functions in the `Frame` module are grouped in a number of
+ categories and documented below.
+
+ Accessing frame data and lookup
+ -------------------------------
+
+ Functions in this category provide access to the values in the fame. You can
+ also add and remove columns from a frame (which both return a new value).
+
+ - `addCol`, `replaceCol` and `dropCol` can be used to create a new data frame
+   with a new column, by replacing an existing column with a new one, or by dropping
+   an existing column
+
+ - `cols` and `rows` return the columns or rows of a frame as a series containing
+   objects; `getCols` and `getRows` return a generic series and cast the values to
+   the type inferred from the context (columns or rows of incompatible types are skipped);
+   `getNumericCols` returns columns of a type convertible to `float` for convenience.
+
+ - You can get a specific row or column using `get[Col|Row]` or `lookup[Col|Row]` functions.
+   The `lookup` variant lets you specify lookup behavior for key matching (e.g. find the
+   nearest smaller key than the specified value). There are also `[try]get` and `[try]Lookup`
+   functions that return optional values and functions returning entire observations
+   (key together with the series).
+
+ - `sliceCols` and `sliceRows` return a sub-frame containing only the specified columns
+   or rows. Finally, `toArray2D` returns the frame data as a 2D array.
+
+ Grouping, windowing and chunking
+ --------------------------------
+
+ The basic grouping functions in this category can be used to group the rows of a
+ data frame by a specified projection or column to create a frame with hierarchical
+ index such as &lt;c&gt;Frame&amp;lt;&#39;K1 * &#39;K2, &#39;C&amp;gt;&lt;/c&gt;. The functions always aggregate rows, so if you
+ want to group columns, you need to use `Frame.transpose` first.
+
+ The function `groupRowsBy` groups rows by the value of a specified column. Use
+ `groupRowsBy[Int|Float|String...]` if you want to specify the type of the column in
+ an easier way than using type inference; `groupRowsUsing` groups rows using the
+ specified _projection function_ and `groupRowsByIndex` projects the grouping key just
+ from the row index.
+
+ More advanced functions include: `aggregateRowsBy` which groups the rows by a
+ specified sequence of columns and aggregates each group into a single value;
+ `pivotTable` implements the pivoting operation [as documented in the
+ tutorials](../frame.html#pivot).
+
+ The `melt` and `unmelt` functions turn the data frame into a single data frame
+ containing columns `Row`, `Column` and `Value` containing the data of the original
+ frame; `unmelt` can be used to turn this representation back into an original frame.
+
+ The `stack` and `unstack` functions implement pandas-style reshape operations.
+ `stack` converts `Frame&amp;lt;&#39;R,&#39;C&amp;gt;` to a long-format `Frame&amp;lt;&#39;R*&#39;C, string&amp;gt;` where each
+ cell becomes a row keyed by `(rowKey, colKey)` with a single `&quot;Value&quot;` column.
+ `unstack` promotes the inner row-key level to column keys, producing
+ `Frame&amp;lt;&#39;R1, &#39;C*&#39;R2&amp;gt;` from `Frame&amp;lt;&#39;R1*&#39;R2,&#39;C&amp;gt;`.
+
+ A simple windowing functions that are exposed for an entire frame operations are
+ `window` and `windowInto`. For more complex windowing operations, you currently have
+ to use `mapRows` or `mapCols` and apply windowing on individual series.
+
+ Sorting and index manipulation
+ ------------------------------
+
+ A frame is indexed by row keys and column keys. Both of these indices can be sorted
+ (by the keys). A frame that is sorted allows a number of additional operations (such
+ as lookup using the `Lookp.ExactOrSmaller` lookup behavior). The functions in this
+ category provide ways for manipulating the indices. It is expected that most operations
+ are done on rows and so more functions are available in a row-wise way. A frame can
+ alwyas be transposed using `Frame.transpose`.
+
+ Index operations:
+
+ The existing row/column keys can be replaced by a sequence of new keys using the
+ `indexColsWith` and `indexRowsWith` functions. Row keys can also be replaced by
+ ordinal numbers using `indexRowsOrdinally`.
+
+ The function `indexRows` uses the specified column of the original frame as the
+ index. It removes the column from the resulting frame (to avoid this, use overloaded
+ `IndexRows` method). This function infers the type of row keys from the context, so it
+ is usually more convenient to use `indexRows[Date|String|Int|...]` functions. Finally,
+ if you want to calculate the index value based on multiple columns of the row, you
+ can use `indexRowsUsing`.
+
+ Sorting frame rows:
+
+ Frame rows can be sorted according to the value of a specified column using the
+ `sortRows` function; `sortRowsBy` takes a projection function which lets you
+ transform the value of a column (e.g. to project a part of the value).
+
+ The functions `sortRowsByKey` and `sortColsByKey` sort the rows or columns
+ using the default ordering on the key values. The result is a frame with ordered
+ index.
+
+ Expanding columns:
+
+ When the frame contains a series with complex .NET objects such as F# records or
+ C# classes, it can be useful to &quot;expand&quot; the column. This operation looks at the
+ type of the objects, gets all properties of the objects (recursively) and
+ generates multiple series representing the properties as columns.
+
+ The function `expandCols` expands the specified columns while `expandAllCols`
+ applies the expansion to all columns of the data frame.
+
+ Frame transformations
+ ---------------------
+
+ Functions in this category perform standard transformations on data frames including
+ projections, filtering, taking some sub-frame of the frame, aggregating values
+ using scanning and so on.
+
+ Projection and filtering functions such as `[map|filter][Cols|Rows]` call the
+ specified function with the column or row key and an &lt;c&gt;ObjectSeries&amp;lt;&#39;K&amp;gt;&lt;/c&gt; representing
+ the column or row. You can use functions ending with `Values` (such as `mapRowValues`)
+ when you do not require the row key, but only the row series; `mapRowKeys` and
+ `mapColKeys` can be used to transform the keys.
+
+ You can use `reduceValues` to apply a custom reduction to values of columns. Other
+ aggregations are available in the `Stats` module. You can also get a row with the
+ greaterst or smallest value of a given column using `[min|max]RowBy`.
+
+ The functions `take[Last]` and `skip[Last]` can be used to take a sub-frame of the
+ original source frame by skipping a specified number of rows. Note that this
+ does not require an ordered frame and it ignores the index - for index-based lookup
+ use slicing, such as `df.Rows.[lo .. hi]`, instead.
+
+ Finally the `shift` function can be used to obtain a frame with values shifted by
+ the specified offset. This can be used e.g. to get previous value for each key using
+ `Frame.shift 1 df`. The `diff` function calculates difference from previous value using
+ `df - (Frame.shift offs df)`.
+
+ Processing frames with exceptions
+ ---------------------------------
+
+ The functions in this group can be used to write computations over frames that may fail.
+ They use the type &lt;c&gt;tryval&amp;lt;&#39;T&amp;gt;&lt;/c&gt; which is defined as a discriminated union
+ with two cases: Success containing a value, or Error containing an exception.
+
+ Using &lt;c&gt;tryval&amp;lt;&#39;T&amp;gt;&lt;/c&gt; as a value in a data frame is not generally recommended, because
+ the type of values cannot be tracked in the type. For this reason, it is better to use
+ &lt;c&gt;tryval&amp;lt;&#39;T&amp;gt;&lt;/c&gt; with individual series. However, `tryValues` and `fillErrorsWith` functions
+ can be used to get values, or fill failed values inside an entire data frame.
+
+ The `tryMapRows` function is more useful. It can be used to write a transformation
+ that applies a computation (which may fail) to each row of a data frame. The resulting
+ series is of type &lt;c&gt;Series&amp;lt;&#39;R, tryval&amp;lt;&#39;T&amp;gt;&amp;gt;&lt;/c&gt; and can be processed using the &lt;c&gt;Series&lt;/c&gt; module
+ functions.
+
+ Missing values
+ --------------
+
+ This group of functions provides a way of working with missing values in a data frame.
+ The category provides the following functions that can be used to fill missing values:
+
+  * `fillMissingWith` fills missing values with a specified constant
+  * `fillMissingUsing` calls a specified function for every missing value
+  * `fillMissing` and variants propagates values from previous/later keys
+
+ We use the terms _sparse_ and _dense_ to denote series that contain some missing values
+ or do not contain any missing values, respectively. The functions `denseCols` and
+ `denseRows` return a series that contains only dense columns or rows and all sparse
+ rows or columns are replaced with a missing value. The `dropSparseCols` and `dropSparseRows`
+ functions drop these missing values and return a frame with no missing values.
+
+ Joining, merging and zipping
+ ----------------------------
+
+ The simplest way to join two frames is to use the `join` operation which can be used to
+ perform left, right, outer or inner join of two frames. When the row keys of the frames do
+ not match exactly, you can use `joinAlign` which takes an additional parameter that specifies
+ how to find matching key in left/right join (e.g. by taking the nearest smaller available key).
+
+ Frames that do not contian overlapping values can be combined using `merge` (when combining
+ just two frames) or using `mergeAll` (for larger number of frames). Tha latter is optimized
+ to work well for a large number of data frames.
+
+ Finally, frames with overlapping values can be combined using `zip`. It takes a function
+ that is used to combine the overlapping values. A `zipAlign` function provides a variant
+ with more flexible row key matching (as in `joinAlign`)
+
+ Hierarchical index operations
+ -----------------------------
+
+ A data frame has a hierarchical row index if the row index is formed by a tuple, such as
+ &lt;c&gt;Frame&amp;lt;&#39;R1 * &#39;R2, &#39;C&amp;gt;&lt;/c&gt;. Frames of this kind are returned, for example, by the grouping
+ functions such as &lt;c&gt;Frame.groupRowsBy&lt;/c&gt;. The functions in this category provide ways for
+ working with data frames that have hierarchical row keys.
+
+ The functions &lt;c&gt;applyLevel&lt;/c&gt; and &lt;c&gt;reduceLevel&lt;/c&gt; can be used to reduce values according to
+ one of the levels. The &lt;c&gt;applyLevel&lt;/c&gt; function takes a reduction of type &lt;c&gt;Series&amp;lt;&#39;K, &#39;T&amp;gt; -&amp;gt; &#39;T&lt;/c&gt;
+ while &lt;c&gt;reduceLevel&lt;/c&gt; reduces individual values using a function of type &lt;c&gt;&#39;T -&amp;gt; &#39;T -&amp;gt; &#39;T&lt;/c&gt;.
+
+ The functions &lt;c&gt;nest&lt;/c&gt; and &lt;c&gt;unnest&lt;/c&gt; can be used to convert between frames with
+ hierarchical indices (&lt;c&gt;Frame&amp;lt;&#39;K1 * &#39;K2, &#39;C&amp;gt;&lt;/c&gt;) and series of frames that represent
+ individual groups (&lt;c&gt;Series&amp;lt;&#39;K1, Frame&amp;lt;&#39;K2, &#39;C&amp;gt;&amp;gt;&lt;/c&gt;). The &lt;c&gt;nestBy&lt;/c&gt; function can be
+ used to perform group by operation and return the result as a series of frems.
+ &lt;/summary&gt;<br />&lt;category&gt;Frame and series operations&lt;/category&gt;</em><br /><br />--------------------<br />type Frame =
+  static member ReadCsv: location: string * hasHeaders: Nullable&lt;bool&gt; * inferTypes: Nullable&lt;bool&gt; * inferRows: Nullable&lt;int&gt; * schema: string * separators: string * culture: string * maxRows: Nullable&lt;int&gt; * missingValues: string array * preferOptions: bool * encoding: Encoding -&gt; Frame&lt;int,string&gt; + 1 overload
+  static member ReadReader: reader: IDataReader -&gt; Frame&lt;int,string&gt;
+  static member CustomExpanders: Dictionary&lt;Type,Func&lt;obj,(string * Type * obj) seq&gt;&gt;
+  static member NonExpandableInterfaces: ResizeArray&lt;Type&gt;
+  static member NonExpandableTypes: HashSet&lt;Type&gt;<br /><em>&lt;summary&gt;
+ Provides static methods for creating frames, reading frame data
+ from CSV files and database (via IDataReader). The type also provides
+ global configuration for reflection-based expansion.
+ &lt;/summary&gt;<br />&lt;category&gt;Frame and series operations&lt;/category&gt;</em><br /><br />--------------------<br />type Frame&lt;&#39;TRowKey,&#39;TColumnKey (requires equality and equality)&gt; =
+  interface IDynamicMetaObjectProvider
+  interface INotifyCollectionChanged
+  interface IFrameFormattable
+  interface IFsiFormattable
+  interface IFrame
+  new: rowIndex: IIndex&lt;&#39;TRowKey&gt; * columnIndex: IIndex&lt;&#39;TColumnKey&gt; * data: IVector&lt;IVector&gt; * indexBuilder: IIndexBuilder * vectorBuilder: IVectorBuilder -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; + 1 overload
+  member AddColumn: column: &#39;TColumnKey * series: &#39;V seq -&gt; unit + 3 overloads
+  member AggregateRowsBy: groupBy: &#39;TColumnKey seq * aggBy: &#39;TColumnKey seq * aggFunc: Func&lt;Series&lt;&#39;TRowKey,&#39;a&gt;,&#39;b&gt; -&gt; Frame&lt;int,&#39;TColumnKey&gt;
+  member Clone: unit -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;
+  member ColumnApply: f: Func&lt;Series&lt;&#39;TRowKey,&#39;T&gt;,ISeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; + 1 overload
+  ...<br /><em>&lt;summary&gt;
+ A frame is the key Deedle data structure (together with series). It represents a
+ data table (think spreadsheet or CSV file) with multiple rows and columns. The frame
+ consists of row index, column index and data. The indices are used for efficient
+ lookup when accessing data by the row key `&#39;TRowKey` or by the column key
+ `&#39;TColumnKey`. Deedle frames are optimized for the scenario when all values in a given
+ column are of the same type (but types of different columns can differ).
+ &lt;/summary&gt;<br />&lt;remarks&gt;&lt;para&gt;Joining, zipping and appending:&lt;/para&gt;&lt;para&gt;
+ More info
+ &lt;/para&gt;&lt;/remarks&gt;<br />&lt;category&gt;Core frame and series types&lt;/category&gt;</em><br /><br />--------------------<br />new: names: &#39;TColumnKey seq * columns: ISeries&lt;&#39;TRowKey&gt; seq -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />new: rowIndex: Indices.IIndex&lt;&#39;TRowKey&gt; * columnIndex: Indices.IIndex&lt;&#39;TColumnKey&gt; * data: IVector&lt;IVector&gt; * indexBuilder: Indices.IIndexBuilder * vectorBuilder: Vectors.IVectorBuilder -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;</div>
+<div popover class="fsdocs-tip" id="fs35">val filterRowsBy: column: &#39;C -&gt; value: &#39;V -&gt; frame: Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt; (requires equality and equality and equality)<br /><em>&lt;summary&gt;
+ Returns a new data frame containing only the rows of the input frame
+ for which the specified `column` has the specified `value`. The operation
+ may be implemented via an index for virtualized Deedle frames.
+ &lt;/summary&gt;<br />&lt;param name=&quot;frame&quot;&gt;Input data frame to be transformed&lt;/param&gt;<br />&lt;param name=&quot;column&quot;&gt;The name of the column to be matched&lt;/param&gt;<br />&lt;param name=&quot;value&quot;&gt;Required value of the column. Note that the function is generic and no conversions are performed, so the value has to match including the actual type.&lt;/param&gt;<br />&lt;category&gt;Frame transformations&lt;/category&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs36">static member Virtual.IsVirtualRowIndex: frame: Frame&lt;&#39;R,&#39;C&gt; -&gt; bool (requires equality and equality)</div>
+<div popover class="fsdocs-tip" id="fs37">val techCycle1: Frame&lt;int64,string&gt;</div>
+<div popover class="fsdocs-tip" id="fs38">val filterRowsBy2: column1: &#39;C -&gt; value1: &#39;V1 -&gt; column2: &#39;C -&gt; value2: &#39;V2 -&gt; frame: Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt; (requires equality and equality and equality and equality)<br /><em>&lt;summary&gt;
+ Filter rows by two column/value predicates in one virtual Search.
+ The two &lt;c&gt;LookupRange&lt;/c&gt; results are intersected and applied once, so column
+ &lt;c&gt;GetSubVector&lt;/c&gt; runs a single time (unlike chaining &lt;c&gt;filterRowsBy&lt;/c&gt;).
+ Non-virtual frames fall back to two sequential &lt;c&gt;filterRowsBy&lt;/c&gt; calls.
+ &lt;/summary&gt;<br />&lt;category&gt;Frame transformations&lt;/category&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs39">val techCycle1Chain: Frame&lt;int64,string&gt;</div>
+<div popover class="fsdocs-tip" id="fs40">val firstTech: int64</div>
+<div popover class="fsdocs-tip" id="fs41">property Frame.RowKeys: int64 seq with get<br /><em>&lt;category&gt;Accessors and slicing&lt;/category&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs42">val head: source: &#39;T seq -&gt; &#39;T</div>
+<div popover class="fsdocs-tip" id="fs43">member Frame.GetColumn&lt;&#39;R&gt; : column: &#39;TColumnKey -&gt; Series&lt;&#39;TRowKey,&#39;R&gt;<br />member Frame.GetColumn&lt;&#39;R&gt; : column: &#39;TColumnKey * lookup: Lookup -&gt; Series&lt;&#39;TRowKey,&#39;R&gt;</div>
+<div popover class="fsdocs-tip" id="fs44">Multiple items<br />val float: value: &#39;T -&gt; float (requires member op_Explicit)<br /><br />--------------------<br />type float = Double<br /><br />--------------------<br />type float&lt;&#39;Measure&gt; =
+  float</div>
+<div popover class="fsdocs-tip" id="fs45">val prepared: Frame&lt;int64,string&gt;</div>
+<div popover class="fsdocs-tip" id="fs46">val sliceCols: columns: &#39;C seq -&gt; frame: Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt; (requires equality and equality)<br /><em>&lt;summary&gt;
+ Returns a frame consisting of the specified columns from the original
+ data frame. The function uses exact key matching semantics.
+
+ &amp;lt;category&amp;gt;Accessing frame data and lookup&amp;lt;/category&amp;gt;
+&lt;/summary&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs47">val f: Frame&lt;int64,string&gt;</div>
+<div popover class="fsdocs-tip" id="fs48">property Frame.Rows: RowSeries&lt;int64,string&gt; with get<br /><em>&lt;category&gt;Accessors and slicing&lt;/category&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs49">val skip: count: int -&gt; source: &#39;T seq -&gt; &#39;T seq</div>
+<div popover class="fsdocs-tip" id="fs50">val closeShifted: Series&lt;int64,float&gt;</div>
+<div popover class="fsdocs-tip" id="fs51">Multiple items<br />module Series
+
+from Deedle<br /><em>&lt;summary&gt;
+ The `Series` module provides an F#-friendly API for working with data and time series.
+ The API follows the usual design for collection-processing in F#, so the functions work
+ well with the pipelining (&lt;c&gt;|&amp;gt;&lt;/c&gt;) operator. For example, given a series with ages,
+ we can use `Series.filterValues` to filter outliers and then `Stats.mean` to calculate
+ the mean:
+
+     ages
+     |&amp;gt; Series.filterValues (fun v -&amp;gt; v &amp;gt; 0.0 &amp;amp;&amp;amp; v &amp;lt; 120.0)
+     |&amp;gt; Stats.mean
+
+ The module provides comprehensive set of functions for working with series. The same
+ API is also exposed using C#-friendly extension methods. In C#, the above snippet could
+ be written as:
+
+     [lang=csharp]
+     ages
+       .Where(kvp =&amp;gt; kvp.Value &amp;gt; 0.0 &amp;amp;&amp;amp; kvp.Value &amp;lt; 120.0)
+       .Mean()
+
+ For more information about similar frame-manipulation functions, see the `Frame` module.
+ For more information about C#-friendly extensions, see `SeriesExtensions`. The functions
+ in the `Series` module are grouped in a number of categories and documented below.
+
+ Accessing series data and lookup
+ --------------------------------
+
+ Functions in this category provide access to the values in the series.
+
+  - The term _observation_ is used for a key value pair in the series.
+  - When working with a sorted series, it is possible to perform lookup using
+    keys that are not present in the series - you can specify to search for the
+    previous or next available value using _lookup behavior_.
+  - Functions such as `get` and `getAll` have their counterparts `lookup` and
+    `lookupAll` that let you specify lookup behavior.
+  - For most of the functions that may fail, there is a `try[Foo]` variant that
+    returns `None` instead of failing.
+  - Functions with a name ending with `At` perform lookup based on the absolute
+    integer offset (and ignore the keys of the series)
+
+ Series transformations
+ ----------------------
+
+ Functions in this category perform standard transformations on series including
+ projections, filtering, taking some sub-series of the series, aggregating values
+ using scanning and so on.
+
+ Projection and filtering functions generally skip over missing values, but there
+ are variants `filterAll` and `mapAll` that let you handle missing values explicitly.
+ Keys can be transformed using `mapKeys`. When you do not need to consider the keys,
+ and only care about values, use `filterValues` and `mapValues` (which is also aliased
+ as the `$` operator).
+
+ Series supports standard set of folding functions including `reduce` and `fold` (to
+ reduce series values into a single value) as well as the `scan[All]` function, which
+ can be used to fold values of a series into a series of intermeidate folding results.
+
+ The functions `take[Last]` and `skip[Last]` can be used to take a sub-series of the
+ original source series by skipping a specified number of elements. Note that this
+ does not require an ordered series and it ignores the index - for index-based lookup
+ use slicing, such as `series.[lo .. hi]`, instead.
+
+ Finally the `shift` function can be used to obtain a series with values shifted by
+ the specified offset. This can be used e.g. to get previous value for each key using
+ `Series.shift 1 ts`. The `diff` function calculates difference from previous value using
+ `ts - (Series.shift offs ts)`.
+
+ Processing series with exceptions
+ ---------------------------------
+
+ The functions in this group can be used to write computations over series that may fail.
+ They use the type &lt;c&gt;tryval&amp;lt;&#39;T&amp;gt;&lt;/c&gt; which is defined as a discriminated union
+ with two cases: Success containing a value, or Error containing an exception.
+
+ The function `tryMap` lets you create &lt;c&gt;Series&amp;lt;&#39;K, tryval&amp;lt;&#39;T&amp;gt;&amp;gt;&lt;/c&gt; by mapping over values
+ of an original series. You can then extract values using `tryValues`, which throws
+ `AggregateException` if there were any errors. Functions `tryErrors` and `trySuccesses`
+ give series containing only errors and successes. You can fill failed values with
+ a constant using `fillErrorsWith`.
+
+ Hierarchical index operations
+ -----------------------------
+
+ When the key of a series is tuple, the elements of the tuple can be treated
+ as multiple levels of a index. For example &lt;c&gt;Series&amp;lt;&#39;K1 * &#39;K2, &#39;V&amp;gt;&lt;/c&gt; has two
+ levels with keys of types &lt;c&gt;&#39;K1&lt;/c&gt; and &lt;c&gt;&#39;K2&lt;/c&gt; respectively.
+
+ The functions in this cateogry provide a way for aggregating values in the
+ series at one of the levels. For example, given a series `input` indexed by
+ two-element tuple, you can calculate mean for different first-level values as
+ follows:
+
+     input |&amp;gt; applyLevel fst Stats.mean
+
+ Note that the `Stats` module provides helpers for typical statistical operations,
+ so the above could be written just as `input |&amp;gt; Stats.levelMean fst`.
+
+ Grouping, windowing and chunking
+ --------------------------------
+
+ This category includes functions that group data from a series in some way. Two key
+ concepts here are _window_ and _chunk_. Window refers to (overlapping) sliding windows
+ over the input series while chunk refers to non-overlapping blocks of the series.
+
+ The boundary behavior can be specified using the `Boundary` flags. The value
+ `Skip` means that boundaries (incomplete windows or chunks) should be skipped. The value
+ `AtBeginning` and `AtEnding` can be used to define at which side should the boundary be
+ returned (or skipped). For chunking, `AtBeginning ||| Skip` makes sense and it means that
+ the incomplete chunk at the beginning should be skipped (aligning the last chunk with the end).
+
+ The behavior may be specified in a number of ways (which is reflected in the name):
+  - `dist` - using an absolute distance between the keys
+  - `while` - using a condition on the first and last key
+  - `size` - by specifying the absolute size of the window/chunk
+
+ The functions ending with `Into` take a function to be applied to the window/chunk.
+ The functions `window`, `windowInto` and `chunk`, `chunkInto` are simplified versions
+ that take a size. There is also `pairwise` function for sliding window of size two.
+
+ Missing values
+ --------------
+
+ This group of functions provides a way of working with missing values in a series.
+ The `dropMissing` function drops all keys for which there are no values in the series.
+ The `withMissingFrom` function lets you copy missing values from another series.
+ The remaining functions provide different mechanism for filling the missing values.
+
+  * `fillMissingWith` fills missing values with a specified constant
+  * `fillMissingUsing` calls a specified function for every missing value
+  * `fillMissing` and variants propagates values from previous/later keys
+
+ Sorting and index manipulation
+ ------------------------------
+
+ A series that is sorted by keys allows a number of additional operations (such as lookup
+ using the `Lookp.ExactOrSmaller` lookup behavior). However, it is also possible to sort
+ series based on the values - although the functions for manipulation with series do not
+ guarantee that the order will be preserved.
+
+ To sort series by keys, use `sortByKey`. Other sorting functions let you sort the series
+ using a specified comparer function (`sortWith`), using a projection function (`sortBy`)
+ and using the default comparison (`sort`).
+
+ In addition, you can also replace the keys of a series with other keys using `indexWith`
+ or with integers using `indexOrdinally`. To pick and reorder series values using to match
+ a list of keys use `realign`.
+
+ Sampling, resampling and advanced lookup
+ ----------------------------------------
+
+ Given a (typically) time series sampling or resampling makes it possible to
+ get time series with representative values at lower or uniform frequency.
+ We use the following terminology:
+
+  - `lookup` and `sample` functions find values at specified key; if a key is not
+    available, they can look for value associated with the nearest smaller or
+    the nearest greater key.
+
+  - `resample` function aggregate values values into chunks based
+    on a specified collection of keys (e.g. explicitly provided times), or
+    based on some relation between keys (e.g. date times having the same date).
+
+  - `resampleUniform` is similar to resampling, but we specify keys by
+    providing functions that generate a uniform sequence of keys (e.g. days),
+    the operation also fills value for days that have no corresponding
+    observations in the input sequence.
+
+ Joining, merging and zipping
+ ----------------------------
+
+ Given two series, there are two ways to combine the values. If the keys in the series
+ are not overlapping (or you want to throw away values from one or the other series),
+ then you can use `merge` or `mergeUsing`. To merge more than 2 series efficiently, use
+ the `mergeAll` function, which has been optimized for large number of series.
+
+ If you want to align two series, you can use the _zipping_ operation. This aligns
+ two series based on their keys and gives you tuples of values. The default behavior
+ (`zip`) uses outer join and exact matching. For ordered series, you can specify
+ other forms of key lookups (e.g. find the greatest smaller key) using `zipAlign`.
+ functions ending with `Into` are generally easier to use as they call a specified
+ function to turn the tuple (of possibly missing values) into a new value.
+
+ For more complicated behaviors, it is often convenient to use joins on frames instead
+ of working with series. Create two frames with single columns and then use the join
+ operation. The result will be a frame with two columns (which is easier to use than
+ series of tuples).
+ &lt;/summary&gt;<br />&lt;category&gt;Frame and series operations&lt;/category&gt;</em><br /><br />--------------------<br />type Series =
+  static member ofNullables: values: Nullable&lt;&#39;a&gt; seq -&gt; Series&lt;int,&#39;a&gt; (requires default constructor and value type and &#39;a :&gt; ValueType)
+  static member ofObservations: observations: (&#39;a * &#39;b) seq -&gt; Series&lt;&#39;a,&#39;b&gt; (requires equality)
+  static member ofOptionalObservations: observations: (&#39;K * &#39;a option) seq -&gt; Series&lt;&#39;K,&#39;a&gt; (requires equality)
+  static member ofValues: values: &#39;a seq -&gt; Series&lt;int,&#39;a&gt;<br /><br />--------------------<br />type Series&lt;&#39;K,&#39;V (requires equality)&gt; =
+  interface ISeriesFormattable
+  interface IFsiFormattable
+  interface ISeries&lt;&#39;K&gt;
+  new: index: IIndex&lt;&#39;K&gt; * vector: IVector&lt;&#39;V&gt; * vectorBuilder: IVectorBuilder * indexBuilder: IIndexBuilder -&gt; Series&lt;&#39;K,&#39;V&gt; + 3 overloads
+  member After: lowerExclusive: &#39;K -&gt; Series&lt;&#39;K,&#39;V&gt;
+  member Aggregate: aggregation: Aggregation&lt;&#39;K&gt; * keySelector: Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,&#39;TNewKey&gt; * valueSelector: Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,OptionalValue&lt;&#39;R&gt;&gt; -&gt; Series&lt;&#39;TNewKey,&#39;R&gt; (requires equality) + 1 overload
+  member AsyncMaterialize: unit -&gt; Async&lt;Series&lt;&#39;K,&#39;V&gt;&gt;
+  member Before: upperExclusive: &#39;K -&gt; Series&lt;&#39;K,&#39;V&gt;
+  member Between: lowerInclusive: &#39;K * upperInclusive: &#39;K -&gt; Series&lt;&#39;K,&#39;V&gt;
+  member Compare: another: Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,Diff&lt;&#39;V&gt;&gt;
+  ...<br /><em>&lt;summary&gt;
+ The type &lt;c&gt;Series&amp;lt;K, V&amp;gt;&lt;/c&gt; represents a data series consisting of values `V` indexed by
+ keys `K`. The keys of a series may or may not be ordered
+ &lt;/summary&gt;<br />&lt;category&gt;Core frame and series types&lt;/category&gt;</em><br /><br />--------------------<br />new: pairs: Collections.Generic.KeyValuePair&lt;&#39;K,&#39;V&gt; seq -&gt; Series&lt;&#39;K,&#39;V&gt;<br />new: keys: &#39;K seq * values: &#39;V seq -&gt; Series&lt;&#39;K,&#39;V&gt;<br />new: keys: &#39;K array * values: &#39;V array -&gt; Series&lt;&#39;K,&#39;V&gt;<br />new: index: Indices.IIndex&lt;&#39;K&gt; * vector: IVector&lt;&#39;V&gt; * vectorBuilder: Vectors.IVectorBuilder * indexBuilder: Indices.IIndexBuilder -&gt; Series&lt;&#39;K,&#39;V&gt;</div>
+<div popover class="fsdocs-tip" id="fs52">val shift: offset: int -&gt; series: Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt; (requires equality)<br /><em>&lt;summary&gt;
+ Returns a series with values shifted by the specified offset. When the offset is
+ positive, the values are shifted forward and first `offset` keys are dropped. When the
+ offset is negative, the values are shifted backwards and the last `offset` keys are dropped.
+ Expressed in pseudo-code:
+
+     result[k] = series[k - offset]
+ &lt;/summary&gt;<br />&lt;param name=&quot;offset&quot;&gt;Can be both positive and negative number.&lt;/param&gt;<br />&lt;param name=&quot;series&quot;&gt;The input series to be shifted.&lt;/param&gt;<br />&lt;remarks&gt;
+ If you want to calculate the difference, e.g. `s - (Series.shift 1 s)`, you can
+ use `Series.diff` which will be a little bit faster.
+ &lt;/remarks&gt;<br />&lt;category&gt;Series transformations&lt;/category&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs53">type Stats =
+  static member corr: series1: Series&lt;&#39;K,&#39;V1&gt; -&gt; series2: Series&lt;&#39;K,&#39;V2&gt; -&gt; float (requires equality)
+  static member corrFrame: frame: Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;C,&#39;C&gt; (requires equality and equality)
+  static member count: series: Series&lt;&#39;K,&#39;V&gt; -&gt; int (requires equality) + 1 overload
+  static member cov: series1: Series&lt;&#39;K,&#39;V1&gt; -&gt; series2: Series&lt;&#39;K,&#39;V2&gt; -&gt; float (requires equality)
+  static member covFrame: frame: Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;C,&#39;C&gt; (requires equality and equality)
+  static member describe: series: Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;string,float&gt; (requires equality and equality) + 1 overload
+  static member expandingCount: series: Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,float&gt; (requires equality)
+  static member expandingKurt: series: Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,float&gt; (requires equality)
+  static member expandingMax: series: Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,float&gt; (requires equality)
+  static member expandingMean: series: Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,float&gt; (requires equality)
+  ...</div>
+<div popover class="fsdocs-tip" id="fs54">static member Stats.sum: frame: Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt; (requires equality and equality)<br />static member Stats.sum: series: Series&lt;&#39;K,&#39;V&gt; -&gt; float (requires equality)</div>
+<div popover class="fsdocs-tip" id="fs55">val batches: FloatBatch&lt;int64&gt; seq</div>
+<div popover class="fsdocs-tip" id="fs56">static member Virtual.MaterializeFloatBatches: frame: Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * batchSize: int64 * columns: &#39;TColumnKey list * ?missingPolicy: FloatMissingPolicy * ?includeRowKeys: bool * ?labelsColumn: &#39;TColumnKey * ?layout: FloatBatchLayout * ?includeMissingMask: bool * ?maxRows: int64 * ?order: FloatBatchOrder -&gt; FloatBatch&lt;&#39;TRowKey&gt; seq (requires equality and equality)</div>
+<div popover class="fsdocs-tip" id="fs57">type FloatBatchOrder =
+  | Sequential
+  | Shuffled
+  | ShuffledWithSeed of seed: int<br /><em>&lt;summary&gt;
+ Row order when splitting a frame into mini-batches.
+&lt;/summary&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs58">union case FloatBatchOrder.ShuffledWithSeed: seed: int -&gt; FloatBatchOrder<br /><em>&lt;summary&gt;
+ Like &amp;lt;see cref=&quot;Shuffled&quot;/&amp;gt;, with a fixed seed for reproducibility.
+&lt;/summary&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs59">type FloatMissingPolicy =
+  | NaN
+  | Value of float<br /><em>&lt;summary&gt;
+ Missing-value handling used by [`Virtual.MaterializeFloatBatches`].
+&lt;/summary&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs60">union case FloatMissingPolicy.NaN: FloatMissingPolicy<br /><em>&lt;summary&gt;
+ Map missing cells to `Double.NaN`.
+&lt;/summary&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs61">val firstBatch: FloatBatch&lt;int64&gt;</div>
+<div popover class="fsdocs-tip" id="fs62">FloatBatch.Rows: int</div>
+<div popover class="fsdocs-tip" id="fs63">FloatBatch.Cols: int</div>
+<div popover class="fsdocs-tip" id="fs64">FloatBatch.FeaturesFlat: float array<br /><em>&lt;summary&gt;
+ Contiguous feature matrix (`Rows * Cols` elements).
+&lt;/summary&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs65">val n: int64</div>
+<div popover class="fsdocs-tip" id="fs66">val cats: string array</div>
+<div popover class="fsdocs-tip" id="fs67">val scheme: string</div>
+<div popover class="fsdocs-tip" id="fs68">val catSource: OrdinalVirtualSource&lt;string&gt;</div>
+<div popover class="fsdocs-tip" id="fs69">Multiple items<br />type OrdinalVirtualSource&lt;&#39;T&gt; =
+  interface IVirtualVectorSourceLookupDiagnostics
+  interface IVirtualVectorSource&lt;&#39;T&gt;
+  interface IVirtualVectorSource
+  new: length: int64 * valueAt: (int64 -&gt; OptionalValue&lt;&#39;T&gt;) * schemeId: string * ?asLong: (&#39;T -&gt; int64) * ?lookupRange: LookupRangeMode&lt;&#39;T&gt; * ?searchColumnConfigured: bool -&gt; OrdinalVirtualSource&lt;&#39;T&gt;
+  member RawValueAt: i: int64 -&gt; OptionalValue&lt;&#39;T&gt;
+  member TryGetLookupRange: unit -&gt; VirtualColumnLookupRange option
+  member Length: int64<br /><em>&lt;summary&gt;
+ Ordinal pull-on-read virtual source with optional LookupRange semantics.
+&lt;/summary&gt;</em><br /><br />--------------------<br />new: length: int64 * valueAt: (int64 -&gt; OptionalValue&lt;&#39;T&gt;) * schemeId: string * ?asLong: (&#39;T -&gt; int64) * ?lookupRange: LookupRangeMode&lt;&#39;T&gt; * ?searchColumnConfigured: bool -&gt; OrdinalVirtualSource&lt;&#39;T&gt;</div>
+<div popover class="fsdocs-tip" id="fs70">val i: int64</div>
+<div popover class="fsdocs-tip" id="fs71">Multiple items<br />module OptionalValue
+
+from Deedle<br /><em>&lt;summary&gt;
+ Provides various helper functions for using the &lt;c&gt;OptionalValue&amp;lt;T&amp;gt;&lt;/c&gt; type from F#
+ (The functions are similar to those in the standard &lt;c&gt;Option&lt;/c&gt; module).
+ &lt;/summary&gt;<br />&lt;category&gt;Primitive types and values&lt;/category&gt;</em><br /><br />--------------------<br />type OptionalValue =
+  class end<br /><em>&lt;summary&gt;
+ Non-generic type that makes it easier to create &lt;c&gt;OptionalValue&amp;lt;T&amp;gt;&lt;/c&gt; values
+ from C# by benefiting the type inference for generic method invocations.
+ &lt;/summary&gt;<br />&lt;category&gt;Primitive types and values&lt;/category&gt;</em><br /><br />--------------------<br />
+type OptionalValue&lt;&#39;T&gt; =
+  new: value: &#39;T -&gt; OptionalValue&lt;&#39;T&gt;
+  override Equals: y: obj -&gt; bool
+  override GetHashCode: unit -&gt; int
+  override ToString: unit -&gt; string
+  member HasValue: bool
+  member Value: &#39;T
+  member ValueOrDefault: &#39;T
+  static member Missing: OptionalValue&lt;&#39;T&gt;<br /><em>&lt;summary&gt;
+ Value type that represents a potentially missing value. This is similar to
+ &lt;c&gt;System.Nullable&amp;lt;T&amp;gt;&lt;/c&gt;, but does not restrict the contained value to be a value
+ type, so it can be used for storing values of any types. When obtained from
+ &lt;c&gt;DataFrame&amp;lt;R, C&amp;gt;&lt;/c&gt; or &lt;c&gt;Series&amp;lt;K, T&amp;gt;&lt;/c&gt;, the &lt;c&gt;Value&lt;/c&gt; will never be &lt;c&gt;Double.NaN&lt;/c&gt; or &lt;c&gt;null&lt;/c&gt;
+ (but this is not, in general, checked when constructing the value).
+
+ The type is only used in C#-friendly API. F# operations generally use expose
+ standard F# &lt;c&gt;option&amp;lt;T&amp;gt;&lt;/c&gt; type instead. However, there the &lt;c&gt;OptionalValue&lt;/c&gt; module
+ contains helper functions for using this type from F# as well as &lt;c&gt;Missing&lt;/c&gt; and
+ &lt;c&gt;Present&lt;/c&gt; active patterns.
+ &lt;/summary&gt;<br />&lt;category&gt;Primitive types and values&lt;/category&gt;</em><br /><br />--------------------<br />OptionalValue ()<br />new: value: &#39;T -&gt; OptionalValue&lt;&#39;T&gt;</div>
+<div popover class="fsdocs-tip" id="fs72">Multiple items<br />val int: value: &#39;T -&gt; int (requires member op_Explicit)<br /><br />--------------------<br />type int = int32<br /><br />--------------------<br />type int&lt;&#39;Measure&gt; =
+  int</div>
+<div popover class="fsdocs-tip" id="fs73">Multiple items<br />val int64: value: &#39;T -&gt; int64 (requires member op_Explicit)<br /><br />--------------------<br />type int64 = Int64<br /><br />--------------------<br />type int64&lt;&#39;Measure&gt; =
+  int64</div>
+<div popover class="fsdocs-tip" id="fs74">property Array.Length: int with get<br /><em>&lt;summary&gt;Gets the total number of elements in all the dimensions of the &lt;see cref=&quot;T:System.Array&quot; /&gt;.&lt;/summary&gt;<br />&lt;exception cref=&quot;T:System.OverflowException&quot;&gt;The array is multidimensional and contains more than &lt;see cref=&quot;F:System.Int32.MaxValue&quot;&gt;Int32.MaxValue&lt;/see&gt; elements.&lt;/exception&gt;<br />&lt;returns&gt;The total number of elements in all the dimensions of the &lt;see cref=&quot;T:System.Array&quot; /&gt;; zero if there are no elements in the array.&lt;/returns&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs75">val closeSource: OrdinalVirtualSource&lt;float&gt;</div>
+<div popover class="fsdocs-tip" id="fs76">val demo: Frame&lt;int64,string&gt;</div>
+<div popover class="fsdocs-tip" id="fs77">static member Virtual.CreateOrdinalFrame: keys: &#39;a seq * sources: IVirtualVectorSource seq -&gt; Frame&lt;int64,&#39;a&gt; (requires equality)</div>
+<div popover class="fsdocs-tip" id="fs78">Multiple items<br />type IVirtualVectorSource =
+  abstract Invoke: IVirtualVectorSourceOperation&lt;&#39;R&gt; -&gt; &#39;R
+  abstract AddressOperations: IAddressOperations
+  abstract AddressingSchemeID: string
+  abstract ElementType: Type
+  abstract Length: int64<br /><em>&lt;summary&gt;
+ Non-generic part of the `IVirtualVectorSource&amp;lt;&#39;V&amp;gt;` interface, which
+ provides some basic information about the virtualized data source
+&lt;/summary&gt;</em><br /><br />--------------------<br />type IVirtualVectorSource&lt;&#39;V&gt; =
+  inherit IVirtualVectorSource
+  abstract GetSubVector: RangeRestriction&lt;Address&gt; -&gt; IVirtualVectorSource&lt;&#39;V&gt;
+  abstract LookupRange: &#39;V -&gt; RangeRestriction&lt;Address&gt;
+  abstract LookupValue: &#39;V * Lookup * Func&lt;Address,bool&gt; -&gt; OptionalValue&lt;&#39;V * Address&gt;
+  abstract MergeWith: IVirtualVectorSource&lt;&#39;V&gt; seq -&gt; IVirtualVectorSource&lt;&#39;V&gt;
+  abstract ValueAt: IVectorLocation -&gt; OptionalValue&lt;&#39;V&gt;<br /><em>&lt;summary&gt;
+ Represents a data source for Big Deedle. The interface is used both as a representation
+ of data source for `VirtualVector` (this file) and `VirtualIndex` (another file). The
+ index uses `Length` and `ValueAt` to perform binary search when looking for a key; the
+ vector simply provides an access to values using `ValueAt`.
+&lt;/summary&gt;</em></div>
+
+    </div>
+</main>
+<aside id="fsdocs-page-menu">
+    <p id="on-this-page">On this page</p>
+    <ul>
+  <li class="level-1">
+    <a href="#Big-Deedle-virtual-frames">
+      Big Deedle — virtual frames
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#1-Creating-a-virtual-frame">
+      1. Creating a virtual frame
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#2-VirtualLookupRange">
+      2. VirtualLookupRange
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#3-Explore-without-materializing">
+      3. Explore without materializing
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#4-Operations-on-virtual-frames">
+      4. Operations on virtual frames
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#5-What-stays-virtual-vs-what-materializes">
+      5. What stays virtual vs what materializes
+    </a>
+  </li>
+</ul>
+</aside>
+<dialog>
+    <input type="search" placeholder="Search docs" />
+    <div class="results">
+        <ul></ul>
+        <p class="empty">Type something to start searching.</p>
+    </div>
+</dialog>
+<script type="module" src="/Deedle/content/fsdocs-tips.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-theme-toggle.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-details-toggle.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-theme.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-search.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-copy-button.js"></script>
+
+</body>
+</html>
