@@ -34,6 +34,7 @@
 - Added tests for `Frame.renameCol` and `Frame.renameColsUsing`.
 - Added tests for `Frame.head` / `Frame.tail` and `Series.head` / `Series.tail`.
 - Added tests for Virtual CSV/Parquet, lookup range, frame diagnostics, series/vector/index.
+- Added tests for core `IVector<'T>` members (`GetValue`, `Data`/`DataSequence`, `ObjectSequence`, `ElementType`, `Length`, `Select`, `Convert`) and the C#-friendly `Vector.CreateMissing` overloads, previously untested in isolation.
 - Added Benchmarks for Virtual operations.
 - Added **`Deedle.VirtualPreservation`**: per-op virtual vs materialize checks (counting ValueAt ops).
 
