@@ -37,6 +37,10 @@
 - Added Benchmarks for Virtual operations.
 - Added **`Deedle.VirtualPreservation`**: per-op virtual vs materialize checks (counting ValueAt ops).
 
+### Infrastructure
+
+- Updated `NUnit3TestAdapter` and the `Microsoft.Testing.Platform`/`Microsoft.NET.Test.Sdk` toolchain (`Microsoft.Testing.Platform` 2.1 → 2.4.1, `Microsoft.TestPlatform.ObjectModel`/`TestHost` 18.3 → 18.10.1) via `dotnet paket update NUnit3TestAdapter --keep-major`. Test-infrastructure only — no library dependency changes.
+
 ## 8.0.0 - 2026-05-09
 
 ### Breaking changes
