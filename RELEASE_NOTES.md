@@ -6,6 +6,7 @@
 
 - **`Frame.head` / `Frame.tail`**: convenience aliases for `Frame.take` / `Frame.takeLast`, returning the first or last *n* rows of a frame.
 - **`Series.head` / `Series.tail`**: convenience aliases for `Series.take` / `Series.takeLast`, returning the first or last *n* elements of a series.
+- **`Frame.Between` / `Frame.After` / `Frame.Before` / `Frame.StartAt` / `Frame.EndAt`**: row-range slicing members and matching `Frame` module functions, mirroring the existing `Series.Between` / `Series.After` / `Series.Before` / `Series.StartAt` / `Series.EndAt` members. Lets you slice a frame's rows by key range directly, e.g. `df.Between(startDate, endDate)`, without going through `df.Rows |> Series.between ... |> Frame.ofRows`.
 - **`Virtual.ReadCsv`**: file-backed virtual `Frame`; ordinal `0..N-1` or `indexColumn` when strictly increasing and unique (else ordinal + trace). Missing cells, quoted fields, `hasHeaders=false`. Byte-offset row index by default (`byteOffsetIndex=false` caches lines in RAM).
 - **`Virtual.ReadCsvDirectory`**: concatenate same-schema CSVs into one ordinal virtual frame.
 - **`Virtual.ReadParquet`** (`Deedle.Parquet`): file-backed virtual frame; columns read on demand; CLR types match `Frame.readParquet`.
@@ -35,6 +36,7 @@
 
 - Added tests for `Frame.renameCol` and `Frame.renameColsUsing`.
 - Added tests for `Frame.head` / `Frame.tail` and `Series.head` / `Series.tail`.
+- Added tests for `Frame.Between` / `Frame.After` / `Frame.Before` / `Frame.StartAt` / `Frame.EndAt` and their module function equivalents.
 - Added tests for `Series.windowDist` / `Series.windowDistInto`, `Series.chunkDist` / `Series.chunkDistInto`, and `Series.pairwiseWith`, which previously had no test coverage.
 - Added tests for Virtual CSV/Parquet, lookup range, frame diagnostics, series/vector/index.
 - Added tests for core `IVector<'T>` members (`GetValue`, `Data`/`DataSequence`, `ObjectSequence`, `ElementType`, `Length`, `Select`, `Convert`) and the C#-friendly `Vector.CreateMissing` overloads, previously untested in isolation.
