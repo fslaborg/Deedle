@@ -6,10 +6,17 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Deedle\Deedle.fsproj" />
+    <ProjectReference Include="..\..\src\Deedle.Parquet\Deedle.Parquet.fsproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="../Common/FsUnit.fs">
       <Link>FsUnit.fs</Link>
+    </Compile>
+    <Compile Include="../Common/CsvTestData.fs">
+      <Link>CsvTestData.fs</Link>
+    </Compile>
+    <Compile Include="../Common/ParquetTestData.fs">
+      <Link>ParquetTestData.fs</Link>
     </Compile>
     <Compile Include="Common.fs" />
     <Compile Include="Vector.fs" />
@@ -20,7 +27,15 @@
     <Compile Include="Frame.fs" />
     <Compile Include="LazySeries.fs" />
     <Compile Include="Ranges.fs" />
+    <Compile Include="VirtualInstrumentation.fs" />
     <Compile Include="VirtualFrame.fs" />
+    <Compile Include="VirtualVector.fs" />
+    <Compile Include="VirtualIndex.fs" />
+    <Compile Include="VirtualSeries.fs" />
+    <Compile Include="VirtualLookupRange.fs" />
+    <Compile Include="VirtualCsvSource.fs" />
+    <Compile Include="VirtualParquetSource.fs" />
+    <Compile Include="VirtualFrameDiagnostics.fs" />
     <Compile Include="VirtualPartitioned.fs" />
     <Compile Include="Formatting.fs" />
     <None Include="paket.references" />

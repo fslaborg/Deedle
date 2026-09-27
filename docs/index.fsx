@@ -85,7 +85,10 @@ Then we add nice namings, sort the frame and build a new data frame with a nice 
 
  * [Joining and merging frames](joining.html) — inner/outer/left/right joins and appending
 
- * [Creating lazily loaded series](lazysource.html) — virtual series backed by custom loaders
+ * [Creating lazily loaded series](lazysource.html) — delayed series backed by custom range loaders
+
+ * [Big Deedle — virtual frames](bigdeedle.html) — loading large CSV and Parquet files,
+   filtering and slicing without full materialize, and which operations stay virtual
 
  * [`Series` module](reference/deedle-seriesmodule.html) provides functions for working
    with individual data series and time-series values.
