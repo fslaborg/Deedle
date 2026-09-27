@@ -33,7 +33,7 @@ More information can be found in the [documentation](http://fslab.org/Deedle/).
    features of Deedle. Start here for a 10 minute intro!
 * [Data frame features](http://fslab.org/Deedle/frame.html) provides more examples of using data frames including slicing, joining, grouping and aggregation.
 * [Time series features](http://fslab.org/Deedle/series.html) discusses data and time-series manipulation, such as sliding windows, sampling and statistics.
-* [Using Deedle from C#](http://fslab.org/Deedle/csharpintro.html) shows the idiomatic C# API for working with Deedle.
+* [Using Deedle from C#](http://fslab.org/Deedle/csharp.html) shows the idiomatic C# API for working with Deedle.
 
 Automatically generated documentation for all types, modules and functions in the library
 is available in the [API Reference](http://fslab.org/Deedle/reference/index.html):
