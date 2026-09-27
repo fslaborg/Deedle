@@ -1167,6 +1167,35 @@ let ``Frame.head and Frame.tail are aliases for take and takeLast`` () =
   Frame.tail 0 df |> shouldEqual <| empty
 
 [<Test>]
+let ``Frame.Between/After/Before/StartAt/EndAt slice rows by key range`` () =
+  let s1 = series [ for i in 10.0 .. 20.0 -> i => int i ]
+  let df = frame [ "S1" =?> s1 ]
+
+  df.Between(13.0, 17.0).RowKeys |> List.ofSeq |> shouldEqual [ 13.0 .. 17.0 ]
+  df.Between(5.0, 25.0).RowKeys |> List.ofSeq |> shouldEqual [ 10.0 .. 20.0 ]
+  df.Between(5.0, 5.0).RowKeys |> List.ofSeq |> shouldEqual []
+
+  df.After(15.0).RowKeys |> List.ofSeq |> shouldEqual [ 16.0 .. 20.0 ]
+  df.After(25.0).RowKeys |> List.ofSeq |> shouldEqual []
+
+  df.Before(15.0).RowKeys |> List.ofSeq |> shouldEqual [ 10.0 .. 14.0 ]
+  df.Before(5.0).RowKeys |> List.ofSeq |> shouldEqual []
+
+  df.StartAt(15.0).RowKeys |> List.ofSeq |> shouldEqual [ 15.0 .. 20.0 ]
+  df.EndAt(15.0).RowKeys |> List.ofSeq |> shouldEqual [ 10.0 .. 15.0 ]
+
+[<Test>]
+let ``Frame.between/after/before/startAt/endAt module functions match members`` () =
+  let s1 = series [ for i in 10.0 .. 20.0 -> i => int i ]
+  let df = frame [ "S1" =?> s1 ]
+
+  df |> Frame.between 13.0 17.0 |> shouldEqual <| df.Between(13.0, 17.0)
+  df |> Frame.after 15.0 |> shouldEqual <| df.After(15.0)
+  df |> Frame.before 15.0 |> shouldEqual <| df.Before(15.0)
+  df |> Frame.startAt 15.0 |> shouldEqual <| df.StartAt(15.0)
+  df |> Frame.endAt 15.0 |> shouldEqual <| df.EndAt(15.0)
+
+[<Test>]
 let ``Can skip N elements from front and back`` () =
   let s1 = series [ for i in 1 .. 100 -> i => float i]
   let s2 = series [ for i in 1 .. 100 -> i => "N" + (string i) ]
