@@ -1095,7 +1095,7 @@ module Frame =
   /// <category>Sorting and index manipulation</category>
   [<CompiledName("IndexColumnsWith")>]
   let indexColsWith (keys:seq<'C2>) (frame:Frame<'R, 'C1>) =
-    if Seq.length frame.ColumnKeys <> Seq.length keys then invalidArg "keys" "New keys do not match current column index length"
+    if frame.ColumnCount <> Seq.length keys then invalidArg "keys" "New keys do not match current column index length"
     Frame<_, _>(frame.RowIndex, Index.ofKeys (ReadOnlyCollection.ofSeq keys), frame.Data, frame.IndexBuilder, frame.VectorBuilder)
 
   /// <summary>

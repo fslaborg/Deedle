@@ -340,7 +340,10 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
         if k.HasValue then Some(k.Value, v) else None)
       windows
       |> Seq.map (fun (key, win) ->
-        let len = Seq.length win |> int64
+        // Materialize 'win' once - it is a lazy grouping sequence and would
+        // otherwise be enumerated twice (for 'len' and for the relocations/index)
+        let win = ReadOnlyCollection.ofSeq win
+        let len = win.Count |> int64
         let relocations =
             seq { for k, newAddr in Seq.zip win (Seq.range 0L (len-1L) ) ->
                   Address.ofInt64 newAddr, index.Locate(k) }
