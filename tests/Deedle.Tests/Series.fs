@@ -302,6 +302,47 @@ let ``Series.pairwise on single-element series returns empty series`` () =
   let actual = s |> Series.pairwise
   actual |> Series.countKeys |> should equal 0
 
+[<Test>]
+let ``Series.pairwiseWith combines key and pair using the provided function`` () =
+  let s = series [ 1 => 10; 2 => 20; 3 => 30 ]
+  let actual = s |> Series.pairwiseWith (fun k (v1, v2) -> sprintf "%d:%d-%d" k v1 v2)
+  let expected = series [ 2 => "2:10-20"; 3 => "3:20-30" ]
+  actual |> shouldEqual expected
+
+[<Test>]
+let ``Series.pairwiseWith on single-element series returns empty series`` () =
+  let s = series [ 42 => "only" ]
+  let actual = s |> Series.pairwiseWith (fun k (v1:string, v2:string) -> v1 + v2)
+  actual |> Series.countKeys |> should equal 0
+
+[<Test>]
+let ``Series.windowDistInto works on sample input`` () =
+  let s = series [ 1 => 1; 2 => 2; 3 => 3; 10 => 10; 11 => 11 ]
+  let actual = s |> Series.windowDistInto 5 (Series.values >> List.ofSeq)
+  let expected = series [ 1 => [1;2;3]; 2 => [2;3]; 3 => [3]; 10 => [10;11]; 11 => [11] ]
+  actual |> shouldEqual expected
+
+[<Test>]
+let ``Series.windowDist works on sample input`` () =
+  let s = series [ 1 => 1; 2 => 2; 3 => 3; 10 => 10; 11 => 11 ]
+  let actual = s |> Series.windowDist 5
+  actual.Get(1) |> Series.values |> List.ofSeq |> shouldEqual [1;2;3]
+  actual.Get(10) |> Series.values |> List.ofSeq |> shouldEqual [10;11]
+
+[<Test>]
+let ``Series.chunkDistInto works on sample input`` () =
+  let s = series [ 1 => 1; 2 => 2; 3 => 3; 10 => 10; 11 => 11 ]
+  let actual = s |> Series.chunkDistInto 5 (Series.values >> List.ofSeq)
+  let expected = series [ 1 => [1;2;3]; 10 => [10;11] ]
+  actual |> shouldEqual expected
+
+[<Test>]
+let ``Series.chunkDist works on sample input`` () =
+  let s = series [ 1 => 1; 2 => 2; 3 => 3; 10 => 10; 11 => 11 ]
+  let actual = s |> Series.chunkDist 5
+  actual.Get(1) |> Series.values |> List.ofSeq |> shouldEqual [1;2;3]
+  actual.Get(10) |> Series.values |> List.ofSeq |> shouldEqual [10;11]
+
 // ------------------------------------------------------------------------------------------------
 // Numerics
 // ------------------------------------------------------------------------------------------------
