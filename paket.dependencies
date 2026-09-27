@@ -8,7 +8,7 @@ nuget FSharp.Compiler.Service
 nuget FSharp.Data
 nuget MathNet.Numerics
 nuget MathNet.Numerics.FSharp
-nuget NUnit
+nuget NUnit ~> 4.5.1
 nuget NUnit.ConsoleRunner
 nuget FsUnit
 nuget System.Reflection.Emit
@@ -23,7 +23,7 @@ nuget Microsoft.ML
 nuget ExcelDataReader
 nuget ExcelDataReader.DataSet
 nuget MiniExcel
-nuget Parquet.Net
+nuget Parquet.Net < 6.0
 nuget Snappier >= 1.3.1
 nuget OpenTelemetry.Api >= 1.15.3
 
