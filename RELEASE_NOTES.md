@@ -46,6 +46,9 @@
 ### Infrastructure
 
 - Updated `NUnit3TestAdapter` and the `Microsoft.Testing.Platform`/`Microsoft.NET.Test.Sdk` toolchain (`Microsoft.Testing.Platform` 2.1 → 2.4.1, `Microsoft.TestPlatform.ObjectModel`/`TestHost` 18.3 → 18.10.1) via `dotnet paket update NUnit3TestAdapter --keep-major`. Test-infrastructure only — no library dependency changes.
+- **Security**: pinned transitive `Snappier` dependency (via `Parquet.Net`) to `>= 1.3.1`, fixing a high-severity infinite-loop advisory ([GHSA-pggp-6c3x-2xmx](https://github.com/advisories/GHSA-pggp-6c3x-2xmx)).
+- **Security**: pinned transitive `OpenTelemetry.Api` dependency to `>= 1.15.3`, fixing a moderate-severity excessive-memory-allocation advisory ([GHSA-g94r-2vxg-569j](https://github.com/advisories/GHSA-g94r-2vxg-569j)).
+- Fixed a CI build/test break introduced by the `Snappier`/`OpenTelemetry.Api` security pins: the unconstrained `NUnit` and `Parquet.Net` references let paket resolve `NUnit 5.0` (which removes the `TestDelegate` type used by `FsUnit 7.1.1` and `tests/Deedle.Tests/VirtualVector.fs`, causing `TypeLoadException`/build errors) and `Parquet.Net 6.1` (whose API renames broke `src/Deedle.Parquet/Parquet.fs`). Pinned `NUnit ~> 4.5.1` and `Parquet.Net < 6.0` in `paket.dependencies` to restore the previously-working, tested versions while keeping the `Snappier`/`OpenTelemetry.Api` fixes.
 
 ## 8.0.0 - 2026-05-09
 
