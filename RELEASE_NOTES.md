@@ -23,6 +23,7 @@
 - **CSV**: per-row parsed-field cache; decode scoped to requested `LookupRange`.
 - **Parquet**: per-column cache on virtual frames; file handle kept for frame lifetime.
 - **`filterRowsBy`**: `LookupRange` path on `VirtualOrdinalIndex` and ordered virtual indices (not full-file scan when configured).
+- **`Series.GroupBy` / `Frame.GroupRowsBy`**: avoid enumerating each group's lazy key sequence twice (once for the count, once for building the relocations/index); the group is now materialized a single time.
 
 ### Documentation
 
