@@ -35,6 +35,7 @@
     <Compile Include="Vectors/ArrayVector.fs" />
     <Compile Include="Vectors/VectorExtensions.fs" />
     <Compile Include="Vectors/VirtualVector.fs" />
+    <Compile Include="VirtualLookupRange.fs" />
     <Compile Include="Indices/MultiKey.fs" />
     <Compile Include="Indices/Index.fs" />
     <Compile Include="Indices/LinearIndex.fs" />
@@ -53,6 +54,7 @@
     <Compile Include="FrameStatsExtensions.fs" />
     <Compile Include="DelayedSeries.fs" />
     <Compile Include="VirtualFrame.fs" />
+    <Compile Include="VirtualCsvSource.fs" />
     <None Include="paket.references" />
     <None Include="Deedle.fsx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

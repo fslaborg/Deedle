@@ -45,6 +45,20 @@ let ``Merging ranges joins ranges`` () =
   res.Ranges |> shouldEqual [| (10L, 39L); (50L, 69L) |]
 
 [<Test>]
+let ``Restricting ranges using custom key sequence coalesces adjacent keys`` () =
+  let keys = [| 12L; 13L; 30L; 31L |]
+  let custom =
+    { new IRangeRestriction<int64> with
+        member _.Count = int64 keys.Length
+      interface seq<int64> with
+        member _.GetEnumerator() = (keys :> seq<int64>).GetEnumerator()
+      interface System.Collections.IEnumerable with
+        member _.GetEnumerator() = (keys :> System.Collections.IEnumerable).GetEnumerator() }
+    |> RangeRestriction.Custom
+  let res = rng |> Ranges.restrictRanges custom
+  res.Ranges |> shouldEqual [| (12L, 13L); (30L, 31L) |]
+
+[<Test>]
 let ``Merging overlapping ranges fails`` () =
   let rng1 = Ranges.inlineCreate (+) [| (10L, 19L); (30L, 39L); (50L, 59L) |]
   let rng2 = Ranges.inlineCreate (+) [| (20L, 29L); (45L, 69L) |]

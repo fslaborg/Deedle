@@ -1,4 +1,4 @@
-ï»¿namespace Deedle.Vectors.Virtual
+namespace Deedle.Vectors.Virtual
 
 // ------------------------------------------------------------------------------------------------
 // Virtual vector - implements a virtualized data storage for Deedle (together with
@@ -158,21 +158,147 @@ module VirtualVectorSource =
     abstract Source : IVirtualVectorSource<'T>
     abstract Function : unit // TODO: Check that the applied function is the same
 
+  /// Marks a source reindexed onto contiguous linear addresses `0 .. Length-1`.
+  /// Used by virtual `Shift`/`Diff` so absolute-address backends (partitioned Ranges)
+  /// align the same way as remapping ordinal/CSV sources.
+  type ILinearAddressedSource<'T> =
+    abstract Source : IVirtualVectorSource<'T>
+
+  /// Linear `0 .. length-1` address ops with structural equality (needed by Combine uniqueBy).
+  type ContiguousLinearAddressOperations(length: int64) =
+    let hi = max 0L (length - 1L)
+    member _.Length = length
+    override _.GetHashCode() = hash length
+    override _.Equals(other) =
+      match other with
+      | :? ContiguousLinearAddressOperations as o -> o.Length = length
+      | _ -> false
+    interface IAddressOperations with
+      member _.FirstElement = LinearAddress.ofInt64 0L
+      member _.LastElement = LinearAddress.ofInt64 hi
+      member _.AddressOf(offset) = LinearAddress.ofInt64 offset
+      member _.OffsetOf(addr) = LinearAddress.asInt64 addr
+      member _.AdjustBy(addr, offset) = LinearAddress.ofInt64 (LinearAddress.asInt64 addr + offset)
+      member _.Range =
+        if length <= 0L then Seq.empty
+        else seq { for i in 0L .. hi -> LinearAddress.ofInt64 i }
+
+  let private nonExactLookupMessage =
+    "Non-exact LookupValue is not supported on this virtual wrapper. " +
+    "Use Lookup.Exact, provide a reverse mapping, or call Series.Materialize() first."
+
+  /// Scan every address and keep those whose `ValueAt` equals `search`.
+  /// Used when a wrapper cannot reverse-map a LookupRange query to the inner source.
+  let scanLookupRange
+      (addrOps: IAddressOperations)
+      (valueAt: IVectorLocation -> OptionalValue<'V>)
+      (search: 'V) =
+    let scanIndices =
+      addrOps.Range
+      |> Seq.choosel (fun idx addr ->
+          match valueAt (KnownLocation(addr, idx)) with
+          | OptionalValue.Present rv when Object.Equals(search, rv) -> Some addr
+          | _ -> None)
+      |> Array.ofSeq
+    RangeRestriction.ofSeq (int64 scanIndices.Length) scanIndices
+
+  /// Scan-based LookupRange using the source's own `ValueAt` / addressing.
+  let scanLookupRangeOf (source: IVirtualVectorSource<'V>) (search: 'V) =
+    scanLookupRange source.AddressOperations source.ValueAt search
+
+  /// Exact lookup by scanning addresses. Non-exact lookups throw `NotSupportedException`.
+  let lookupValueOrScan
+      (addrOps: IAddressOperations)
+      (valueAt: IVectorLocation -> OptionalValue<'V>)
+      (v: 'V)
+      (lookup: Lookup)
+      (check: Func<Address, bool>) =
+    if lookup = Lookup.Exact then
+      addrOps.Range
+      |> Seq.tryPick (fun addr ->
+          if not (check.Invoke addr) then None
+          else
+            match valueAt (DelayedLocation(addr, addrOps)) with
+            | OptionalValue.Present rv when Object.Equals(v, rv) -> Some(rv, addr)
+            | _ -> None)
+      |> OptionalValue.ofOption
+    else
+      raise (NotSupportedException(nonExactLookupMessage))
+
+  /// Reindex a virtual source onto linear addresses `0L .. Length-1L`.
+  /// Used after ordered `GetSubVector` / `GetRange` so absolute-address backends
+  /// (partitioned Ranges) share the same address space as remapping ordinal sources.
+  /// No-op when the source is already linearly addressed from 0.
+  let rec withLinearAddressing (source: IVirtualVectorSource<'T>) : IVirtualVectorSource<'T> =
+    let length = source.Length
+    let ops = source.AddressOperations
+    let alreadyLinear =
+      match source with
+      | :? ILinearAddressedSource<'T> -> true
+      | _ when length = 0L -> true
+      | _ ->
+          ops.FirstElement = LinearAddress.ofInt64 0L &&
+          ops.LastElement = LinearAddress.ofInt64 (length - 1L) &&
+          ops.AddressOf(0L) = LinearAddress.ofInt64 0L
+    if alreadyLinear then source
+    else
+      let toUnderlying addr = ops.AddressOf(LinearAddress.asInt64 addr)
+      let toLinear addr = LinearAddress.ofInt64 (ops.OffsetOf(addr))
+      let addressing = ContiguousLinearAddressOperations(length) :> IAddressOperations
+      { new IVirtualVectorSource<'T> with
+          member _.ValueAt(loc) =
+            let i = LinearAddress.asInt64 loc.Address
+            source.ValueAt(KnownLocation(toUnderlying loc.Address, i))
+          member _.LookupRange(search) =
+            source.LookupRange(search) |> RangeRestriction.map toLinear
+          member _.LookupValue(v, lookup, check) =
+            let checkUnderlying = Func<Address, bool>(fun addr -> check.Invoke(toLinear addr))
+            source.LookupValue(v, lookup, checkUnderlying)
+            |> OptionalValue.map (fun (value, addr) -> value, toLinear addr)
+          member _.GetSubVector(range) =
+            withLinearAddressing (source.GetSubVector(RangeRestriction.map toUnderlying range))
+          member _.MergeWith(sources) =
+            let inners =
+              source ::
+              [ for s in sources ->
+                  match s with
+                  | :? ILinearAddressedSource<'T> as w -> w.Source
+                  | other -> other ]
+            match inners with
+            | h :: t -> withLinearAddressing (h.MergeWith(t))
+            | [] -> failwith "withLinearAddressing.MergeWith: empty"
+        interface ILinearAddressedSource<'T> with
+          member _.Source = source
+        interface IVirtualVectorSource with
+          member _.AddressingSchemeID = source.AddressingSchemeID
+          member _.ElementType = typeof<'T>
+          member _.Length = length
+          member _.AddressOperations = addressing
+          member x.Invoke(op) = op.Invoke(x :?> IVirtualVectorSource<'T>) }
 
   /// Creates a new vector source that boxes all values
   /// The result also implements IBoxedVectorSource
   let rec boxSource (source:IVirtualVectorSource<'T>) =
     { new IVirtualVectorSource<obj> with
         member x.ValueAt(address) = source.ValueAt(address) |> OptionalValue.map box
-        member x.LookupRange(search) = failwith "Search not implemented on boxed vector"
-        member x.LookupValue(v, l, c) = failwith "Lookup not implemented on boxed vector"
+        member x.LookupRange(search) =
+          match search with
+          | :? 'T as t -> source.LookupRange(t)
+          | _ -> scanLookupRange source.AddressOperations x.ValueAt search
+        member x.LookupValue(v, l, c) =
+          match v with
+          | :? 'T as t ->
+              source.LookupValue(t, l, c)
+              |> OptionalValue.map (fun (tv, a) -> box tv, a)
+          | _ ->
+              lookupValueOrScan source.AddressOperations x.ValueAt v l c
         member x.GetSubVector(range) = boxSource (source.GetSubVector(range))
         member x.MergeWith(sources) =
           let sources = sources |> List.ofSeq |> List.tryChooseBy (function
             | :? IBoxedVectorSource<'T> as src -> Some(src.Source)
             | _ -> None)
           match sources with
-          | None -> failwith "Cannot merge with vectors that are not created by boxing."
+          | None -> invalidOp "Cannot merge with vectors that are not created by boxing."
           | Some sources -> boxSource (source.MergeWith(sources))
 
       interface IBoxedVectorSource<'T> with
@@ -191,15 +317,17 @@ module VirtualVectorSource =
   let rec combine (f:OptionalValue<'T> list -> OptionalValue<'R>) (sources:IVirtualVectorSource<'T> list) =
     { new IVirtualVectorSource<'R> with
         member x.ValueAt(address) = f [ for s in sources -> s.ValueAt(address)  ]
-        member x.LookupRange(search) = failwith "Search not implemented on combined vector"
-        member x.LookupValue(v, l, c) = failwith "Lookup not implemented on combined vector"
+        member x.LookupRange(search) =
+          scanLookupRange (List.head sources).AddressOperations x.ValueAt search
+        member x.LookupValue(v, l, c) =
+          lookupValueOrScan (List.head sources).AddressOperations x.ValueAt v l c
         member x.GetSubVector(range) = combine f [ for s in sources -> s.GetSubVector(range) ]
         member x.MergeWith(sources) =
           let sources = Seq.append [x] sources |> List.ofSeq |> List.tryChooseBy (function
             | :? ICombinedVectorSource<'T> as src -> Some(src.Sources |> Array.ofSeq)
             | _ -> None)
           match sources with
-          | None -> failwith "Cannot merge frames or series not created by combine"
+          | None -> invalidOp "Cannot merge frames or series not created by combine"
           | Some sources ->
               // Make sure that all sources are combinations of the same number of vectors
               let length = sources |> Seq.uniqueBy Array.length
@@ -226,14 +354,6 @@ module VirtualVectorSource =
   /// The result also implements IMappedVectorSource
   let rec map rev f (source:IVirtualVectorSource<'V>) =
 
-    /// 'rev' aka reverse lookup (converting back) is required by some operations
-    /// this helper fails when 'rev' is not available and calls 'op' otherwise
-    let withReverseLookup op =
-      match rev with
-      | None -> failwith "Cannot lookup on virtual vector without reverse lookup"
-      | Some g -> op g
-
-    /// Caputre function for handling NA values for more efficient processing
     let flattenNA = MissingValues.flattenNA<'TNew>()
 
     { new IVirtualVectorSource<'TNew> with
@@ -244,38 +364,25 @@ module VirtualVectorSource =
           let sources = sources |> List.ofSeq |> List.tryChooseBy (function
               | :? IMappedVectorSource<'V, 'TNew> as src -> Some(src.Source) | _ -> None)
           match sources with
-          | None -> failwith "Cannot merge frames or series not created by combine"
+          | None -> invalidOp "Cannot merge frames or series not created by mapping"
           | Some sources -> map rev f (source.MergeWith(sources))
 
         member x.LookupRange(search) =
           // If we have reverse mapping, we can call the original source
           // otherwise, we need to perform full scan over the indices
           match rev with
-          | Some f -> source.LookupRange(f search)
-          | None ->
-              let scanFunc loc ov =
-                match f loc ov with
-                | OptionalValue.Present(rv) -> Object.Equals(search, rv)
-                | _ -> false
-
-              let scanIndices =
-                source.AddressOperations.Range
-                |> Seq.choosel (fun idx addr ->
-                    let loc = KnownLocation(addr, idx)
-                    if scanFunc loc (source.ValueAt(loc)) then Some(addr)
-                    else None)
-                |> Array.ofSeq
-
-              RangeRestriction.ofSeq (int64 scanIndices.Length) scanIndices
+          | Some g -> source.LookupRange(g search)
+          | None -> scanLookupRange source.AddressOperations x.ValueAt search
 
         member x.LookupValue(v, l, c) =
-          // Lookup can only be performed if we have a revse mapping function
-          // However, we no longer know the offset, so we need 'DelayedLocation' here
-          withReverseLookup (fun g ->
+          match rev with
+          | Some g ->
               source.LookupValue(g v, l, c)
-              |> OptionalValue.bind (fun (v, a) ->
-                  f (DelayedLocation(a, source.AddressOperations)) (OptionalValue v)
-                  |> OptionalValue.map (fun v -> v, a))  )
+              |> OptionalValue.bind (fun (inner, a) ->
+                  f (DelayedLocation(a, source.AddressOperations)) (OptionalValue inner)
+                  |> OptionalValue.map (fun mapped -> mapped, a))
+          | None ->
+              lookupValueOrScan source.AddressOperations x.ValueAt v l c
 
         member x.GetSubVector(range) = map rev f (source.GetSubVector(range))
 
@@ -300,8 +407,10 @@ module VirtualVectorSource =
     { new IVirtualVectorSource<IVector<obj>> with
         member x.ValueAt(loc) =
           OptionalValue(RowReaderVector<_>(vectors, builder, loc.Address, irt.ColumnAddressAt) :> IVector<_>)
-        member x.LookupRange(search) = failwith "Search not implemented on combined vector"
-        member x.LookupValue(v, l, c) = failwith "Lookup not implemented on combined vector"
+        member x.LookupRange(search) =
+          scanLookupRange (List.head sources).AddressOperations x.ValueAt search
+        member x.LookupValue(v, l, c) =
+          lookupValueOrScan (List.head sources).AddressOperations x.ValueAt v l c
         member x.GetSubVector(range) =
           let subSources = [ for s in sources -> s.GetSubVector(range) ]
           let subVectors = Vector.ofValues [ for s in subSources -> vectorCtor s ]
@@ -313,7 +422,7 @@ module VirtualVectorSource =
             | :? ICombinedVectorSource<'T> as src -> Some(src.Sources |> Array.ofSeq)
             | _ -> None)
           match sources with
-          | None -> failwith "Cannot merge frames or series not created by combine"
+          | None -> invalidOp "Cannot merge frames or series not created by combine"
           | Some sources ->
               // Make sure that all sources are combinations of the same number of vectors
               let length = sources |> Seq.uniqueBy Array.length
@@ -334,6 +443,35 @@ module VirtualVectorSource =
         member x.Length = sources |> Seq.uniqueBy (fun s -> s.Length)
         member x.AddressOperations = sources |> Seq.uniqueBy (fun s -> s.AddressOperations)
         member x.AddressingSchemeID = sources |> Seq.uniqueBy (fun s -> s.AddressingSchemeID) }
+
+  /// Virtual FillMissing: constant fill is a map; directional fill walks neighbouring
+  /// offsets on demand. Both preserve the virtual addressing scheme.
+  let fillMissing (mode: VectorFillMissing) (source: IVirtualVectorSource<'T>) =
+    match mode with
+    | VectorFillMissing.Constant fill ->
+        let typed =
+          if fill :? 'T then Some (unbox<'T> fill)
+          elif Convert.canConvertType<'T> ConversionKind.Safe fill then
+            Some (Convert.convertType<'T> ConversionKind.Safe fill)
+          else None
+        match typed with
+        | Some v when typeof<'T> = typeof<float> && Convert.ToDouble(v) |> Double.IsNaN ->
+            source
+        | Some v ->
+            map None (fun _ ov -> if ov.HasValue then ov else OptionalValue v) source
+        | None -> source
+    | VectorFillMissing.Direction dir ->
+        let step = if dir = Direction.Forward then -1L else 1L
+        let addrOps = source.AddressOperations
+        let len = source.Length
+        let rec walk offs =
+          if offs < 0L || offs >= len then OptionalValue.Missing
+          else
+            let loc = KnownLocation(addrOps.AddressOf offs, offs)
+            match source.ValueAt(loc) with
+            | OptionalValue.Present _ as p -> p
+            | _ -> walk (offs + step)
+        map None (fun loc ov -> if ov.HasValue then ov else walk (loc.Offset + step)) source
 
 // ------------------------------------------------------------------------------------------------
 // VirtualVector - represents vector created from IVirtualVectorSource
@@ -430,12 +568,16 @@ type VirtualVectorBuilder() =
     member builder.CreateMissing(optValues) = baseBuilder.CreateMissing(optValues)
 
     member builder.AsyncBuild(scheme, cmd, args) =
-      // If the required result is linearly-addressed, call base builder
-      // otherwise we cannot perform the operation so fail
+      // Public Series.AsyncMaterialize / Materialize first turn the index linear,
+      // so this path receives LinearAddressingScheme and delegates to ArrayVector.
+      // There is no async protocol on IVirtualVectorSource, so a virtual scheme
+      // cannot be built asynchronously — call Series.Materialize() instead.
       if scheme = LinearAddressingScheme.Instance then
         baseBuilder.AsyncBuild<'T>(scheme, cmd, args)
       else
-        failwith "VirtualVectorBuilder.AsyncBuild: Not supported for virtual vectors"
+        raise (NotSupportedException(
+          "VirtualVectorBuilder.AsyncBuild is not supported for a virtual addressing scheme. " +
+          "Use Series.Materialize() or Series.AsyncMaterialize() to load values into memory."))
 
     member builder.Build<'T>(topLevelScheme, cmd, args) =
 
@@ -481,12 +623,21 @@ type VirtualVectorBuilder() =
               baseBuilder.CreateMissing(Array.ofSeq vector.DataSequence)
             else failwith "VirtualVectorBuilder.Build: Can only create linearly addressed vectors"
 
+        | AnyOrVirtual, FillMissing(source, fill) ->
+            match build schemeOpt source with
+            | :? VirtualVector<'T> as source ->
+                VirtualVector(VirtualVectorSource.fillMissing fill source.Source) :> IVector<'T>
+            | other ->
+                baseBuilder.Build(LinearAddressingScheme.Instance, FillMissing(Return 0, fill), [| other |])
+
         | AnyOrVirtual, GetRange(source, range) ->
             match build schemeOpt source with
             | vector & (:? VirtualVector<'T> as source) when
                   // Also make sure that the addressing scheme is the same (if it is specified)
                   schemeOpt = None || Some(vector.AddressingScheme) = schemeOpt ->
-                let subSource = source.Source.GetSubVector(range)
+                // Normalize absolute-address slices onto 0..n-1 so Shift/Diff Combine aligns.
+                let subSource =
+                  VirtualVectorSource.withLinearAddressing (source.Source.GetSubVector(range))
                 VirtualVector<'T>(subSource) :> IVector<'T>
             | _ ->
                 failwith "VirtualVectorBuilder.Build: GetRange - vector does not use matching virtual addressing"
