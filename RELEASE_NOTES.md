@@ -24,6 +24,7 @@
 - **CSV**: per-row parsed-field cache; decode scoped to requested `LookupRange`.
 - **Parquet**: per-column cache on virtual frames; file handle kept for frame lifetime.
 - **`filterRowsBy`**: `LookupRange` path on `VirtualOrdinalIndex` and ordered virtual indices (not full-file scan when configured).
+- **`Frame.AddColumn` (sequence overload)**, **`Frame.RenameColumns`**, **`Frame.indexColsWith`**: use the O(1) `RowCount`/`ColumnCount` properties instead of `Seq.length` over the full key sequence, avoiding an O(N) row/column scan.
 
 ### Documentation
 
@@ -36,8 +37,13 @@
 - Added tests for `Frame.head` / `Frame.tail` and `Series.head` / `Series.tail`.
 - Added tests for `Frame.Between` / `Frame.After` / `Frame.Before` / `Frame.StartAt` / `Frame.EndAt` and their module function equivalents.
 - Added tests for Virtual CSV/Parquet, lookup range, frame diagnostics, series/vector/index.
+- Added tests for core `IVector<'T>` members (`GetValue`, `Data`/`DataSequence`, `ObjectSequence`, `ElementType`, `Length`, `Select`, `Convert`) and the C#-friendly `Vector.CreateMissing` overloads, previously untested in isolation.
 - Added Benchmarks for Virtual operations.
 - Added **`Deedle.VirtualPreservation`**: per-op virtual vs materialize checks (counting ValueAt ops).
+
+### Infrastructure
+
+- Updated `NUnit3TestAdapter` and the `Microsoft.Testing.Platform`/`Microsoft.NET.Test.Sdk` toolchain (`Microsoft.Testing.Platform` 2.1 → 2.4.1, `Microsoft.TestPlatform.ObjectModel`/`TestHost` 18.3 → 18.10.1) via `dotnet paket update NUnit3TestAdapter --keep-major`. Test-infrastructure only — no library dependency changes.
 
 ## 8.0.0 - 2026-05-09
 

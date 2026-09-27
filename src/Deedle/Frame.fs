@@ -747,7 +747,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
         invalidOp "Adding data sequence to an empty frame with non-integer columns is not supported."
     else
       let count = Seq.length series
-      let rowCount = Seq.length frame.RowIndex.Keys
+      let rowCount = frame.RowCount
       // Pad with missing values, if there is not enough, or trim if there is more
       let vector =
         if count >= rowCount then
@@ -927,7 +927,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
 
   /// <category>Series operations</category>
   member frame.RenameColumns(columnKeys) =
-    if Seq.length columnIndex.Keys <> Seq.length columnKeys then
+    if frame.ColumnCount <> Seq.length columnKeys then
       invalidArg "columnKeys" "The number of new column keys does not match with the number of columns"
     frame.setColumnIndex (Index.ofKeys (ReadOnlyCollection.ofSeq columnKeys))
 
