@@ -150,3 +150,19 @@ let ``ExcelFrame.ReadExcelSheetByIndex reads sheet at index`` () =
 [<Test>]
 let ``ExcelFrame.SheetNames returns all sheet names`` () =
     ExcelFrame.SheetNames(testFile) |> should equal ["Sheet1"; "Prices"]
+
+// ---------------------------------------------------------------------------
+// Frame.ReadExcel type extension
+// ---------------------------------------------------------------------------
+
+[<Test>]
+let ``Frame.ReadExcel extension reads first sheet`` () =
+    let df = Frame.ReadExcel testFile
+    df.RowCount |> should equal 3
+
+[<Test>]
+let ``Frame.ReadExcel extension reads sheet by name and index`` () =
+    let byName = Frame.ReadExcel(testFile, "Prices")
+    let byIndex = Frame.ReadExcel(testFile, 1)
+    byName.ColumnKeys |> Seq.toList |> should equal (byIndex.ColumnKeys |> Seq.toList)
+    byName.RowCount |> should equal byIndex.RowCount
