@@ -1,9 +1,9 @@
 (**
 ---
 title: Deedle in 10 minutes
-category: Guides
-categoryindex: 1
-index: 2
+category: Tutorials
+categoryindex: 0
+index: 0
 description: A quick-start tutorial covering data frames, series, grouping, and missing values in F#
 keywords: tutorial, quick start, getting started, F#, data frame, series
 ---

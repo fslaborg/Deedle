@@ -29,6 +29,7 @@
 
 ### Documentation
 
+- **New "Tutorials" section** (#744): scenario-driven pandas-style tutorials `docs/tutorial-stocks.fsx` (stock prices) and `docs/tutorial-cleaning.fsx` (data cleaning); "Deedle in 10 minutes" moved into it and the docs index/README simplified to link to them.
 - **`docs/bigdeedle.fsx`**: virtual load, filter, prep, ML export, custom `IVirtualVectorSource`; sample data in `docs/data/bigdeedle-prices.csv`.
 - **`docs/design.fsx`**, **`docs/index.fsx`**: virtual stack overview and navigation.
 

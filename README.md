@@ -31,6 +31,9 @@ More information can be found in the [documentation](http://fslab.org/Deedle/).
 
 * [Quick start tutorial](http://fslab.org/Deedle/tutorial.html) shows how to use the most important
    features of Deedle. Start here for a 10 minute intro!
+* [Analysing stock prices](http://fslab.org/Deedle/tutorial-stocks.html) and
+  [Cleaning messy data](http://fslab.org/Deedle/tutorial-cleaning.html) are scenario-driven tutorials
+  for people coming from pandas.
 * [Data frame features](http://fslab.org/Deedle/frame.html) provides more examples of using data frames including slicing, joining, grouping and aggregation.
 * [Time series features](http://fslab.org/Deedle/series.html) discusses data and time-series manipulation, such as sliding windows, sampling and statistics.
 * [Using Deedle from C#](http://fslab.org/Deedle/csharp.html) shows the idiomatic C# API for working with Deedle.
