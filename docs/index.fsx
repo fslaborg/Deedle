@@ -72,11 +72,20 @@ of Boolean values. Then we reduce each group using `applyLevel`. This calls a sp
 function for each passenger class. We count the number of survivors and casualties.
 Then we add nice namings, sort the frame and build a new data frame with a nice summary.
 
-## Tutorials & documentation
+## Tutorials
 
-**Start here:** [Quick start tutorial](tutorial.html) (F#) and [Deedle in C# — Cookbook](csharp.html) (C#).
+Step-by-step, scenario-driven walkthroughs. If you know Python's pandas, these cover the same
+ground in F#:
 
- * [Quick start tutorial](tutorial.html) — a 10-minute tour of Deedle
+ * [Deedle in 10 minutes](tutorial.html) — a quick tour using the Titanic data set
+
+ * [Analysing stock prices](tutorial-stocks.html) — align time series, compute returns,
+   volatility, rolling averages and monthly resamples
+
+ * [Cleaning messy data](tutorial-cleaning.html) — find and fill missing values, derive columns,
+   filter, group and aggregate
+
+## Guides and reference
 
  * [Deedle in C# — Cookbook](csharp.html) — creating frames/series, slicing rows and columns,
    missing values, statistics, windowing, and more for C# developers

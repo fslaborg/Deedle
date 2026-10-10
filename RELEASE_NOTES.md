@@ -30,6 +30,7 @@
 
 ### Documentation
 
+- **New "Tutorials" section** (#744): scenario-driven pandas-style tutorials `docs/tutorial-stocks.fsx` (stock prices) and `docs/tutorial-cleaning.fsx` (data cleaning); "Deedle in 10 minutes" moved into it and the docs index/README simplified to link to them.
 - **`Deedle.Excel` deprecated**: the Windows-only live COM integration (`src/Deedle.Excel`) and its documentation were removed; use `Deedle.ExcelReader` / `Deedle.ExcelWriter`.
 - Made the tutorials more prominent on the docs home page with a "Start here" callout.
 - **`docs/bigdeedle.fsx`**: virtual load, filter, prep, ML export, custom `IVirtualVectorSource`; sample data in `docs/data/bigdeedle-prices.csv`.
