@@ -28,6 +28,10 @@ let root = __SOURCE_DIRECTORY__ + "/data/"
 
 Deedle is an F# library for data frames and time series.
 
+> **New to Deedle?** Start with the [**10-minute tutorial**](tutorial.html), then see the
+> [**C# cookbook**](csharp.html) if you work in C#, or browse the
+> [Data frame](frame.html) and [Series](series.html) guides.
+
 Deedle supports working with structured data frames, ordered and unordered data, 
 and time series. It implements a wide range of operations for data manipulation including 
 advanced indexing and slicing, joining and aligning data, handling of missing values,
@@ -69,6 +73,8 @@ function for each passenger class. We count the number of survivors and casualti
 Then we add nice namings, sort the frame and build a new data frame with a nice summary.
 
 ## Tutorials & documentation
+
+**Start here:** [Quick start tutorial](tutorial.html) (F#) and [Deedle in C# — Cookbook](csharp.html) (C#).
 
  * [Quick start tutorial](tutorial.html) — a 10-minute tour of Deedle
 
@@ -115,14 +121,7 @@ These optional packages integrate Deedle with other data formats:
  * [Deedle.Parquet](parquet.html) — columnar storage I/O with Apache Parquet
 
  * [Excel integration](excel.html) — reading `.xlsx`/`.xls` files cross-platform with `Deedle.ExcelReader`;
-   writing `.xlsx` files cross-platform with `Deedle.ExcelWriter`;
-   live read/write via `Deedle.Excel` (Windows-only)
-
-## Tooling Integrations
-
-These optional packages integrate Deedle with other interactive tools:
-
- * [Deedle.Excel](excel.html) — live read/write via `Deedle.Excel` (Windows-only)
+   writing `.xlsx` files cross-platform with `Deedle.ExcelWriter`
 
 ## Contributing and copyright
 
