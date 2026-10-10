@@ -4,6 +4,7 @@
 
 ### New operations
 
+- **`Frame.ReadExcel`** (`Deedle.ExcelReader`): F# type extension so Excel files can be read like `Frame.ReadCsv`: `Frame.ReadExcel(path)`, `Frame.ReadExcel(path, sheetName)`, `Frame.ReadExcel(path, sheetIndex)`.
 - **`Frame.head` / `Frame.tail`**: convenience aliases for `Frame.take` / `Frame.takeLast`, returning the first or last *n* rows of a frame.
 - **`Series.head` / `Series.tail`**: convenience aliases for `Series.take` / `Series.takeLast`, returning the first or last *n* elements of a series.
 - **`Frame.Between` / `Frame.After` / `Frame.Before` / `Frame.StartAt` / `Frame.EndAt`**: row-range slicing members and matching `Frame` module functions, mirroring the existing `Series.Between` / `Series.After` / `Series.Before` / `Series.StartAt` / `Series.EndAt` members. Lets you slice a frame's rows by key range directly, e.g. `df.Between(startDate, endDate)`, without going through `df.Rows |> Series.between ... |> Frame.ofRows`.
@@ -30,6 +31,8 @@
 ### Documentation
 
 - **New "Tutorials" section** (#744): scenario-driven pandas-style tutorials `docs/tutorial-stocks.fsx` (stock prices) and `docs/tutorial-cleaning.fsx` (data cleaning); "Deedle in 10 minutes" moved into it and the docs index/README simplified to link to them.
+- **`Deedle.Excel` deprecated**: the Windows-only live COM integration (`src/Deedle.Excel`) and its documentation were removed; use `Deedle.ExcelReader` / `Deedle.ExcelWriter`.
+- Made the tutorials more prominent on the docs home page with a "Start here" callout.
 - **`docs/bigdeedle.fsx`**: virtual load, filter, prep, ML export, custom `IVirtualVectorSource`; sample data in `docs/data/bigdeedle-prices.csv`.
 - **`docs/design.fsx`**, **`docs/index.fsx`**: virtual stack overview and navigation.
 

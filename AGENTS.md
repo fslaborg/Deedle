@@ -11,7 +11,7 @@ Key sub-projects:
 | Core library | `src/Deedle/` |
 | .NET Interactive formatting | `src/Deedle.DotNetInteractive/` |
 | MathNet.Numerics integration | `src/Deedle.MathNetNumerics/` |
-| Excel integration | `src/Deedle.Excel/` |
+| Excel reading / writing | `src/Deedle.ExcelReader/`, `src/Deedle.ExcelWriter/` |
 
 Tests live under `tests/`.
 

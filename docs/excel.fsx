@@ -32,15 +32,15 @@ open Deedle.ExcelReader
 
 # Excel integration — ExcelReader & ExcelWriter
 
-Deedle provides three separate packages for working with Microsoft Excel files:
+Deedle provides two packages for working with Microsoft Excel files:
 
 | Package | What it does |
 |---|---|
 | **`Deedle.ExcelReader`** | Cross-platform reading of `.xlsx` and `.xls` files via [ExcelDataReader](https://github.com/ExcelDataReader/ExcelDataReader) |
 | **`Deedle.ExcelWriter`** | Cross-platform writing of `.xlsx` files via [MiniExcel](https://github.com/mini-software/MiniExcel) |
-| **`Deedle.Excel`** | Live read/write to an open Excel workbook via [NetOffice](https://netoffice.io/) (Windows + Excel required) |
 
-This page covers the cross-platform `Deedle.ExcelReader` and `Deedle.ExcelWriter`.
+> **Note:** the Windows-only `Deedle.Excel` package (live COM/NetOffice integration) is deprecated
+> and no longer maintained. Use `Deedle.ExcelReader` and `Deedle.ExcelWriter` instead.
 
 ---
 
@@ -92,6 +92,13 @@ let sales : Frame<int, string> = Frame.readExcel samplePath
 (**
 The first row of the worksheet is used as column headers. Subsequent rows become
 frame rows; the row keys are contiguous integers starting at 0.
+
+You can also use the `Frame.ReadExcel` static member (a type extension, like `Frame.ReadCsv`):
+
+    [lang=fsharp]
+    let sales2 = Frame.ReadExcel(samplePath)                 // first sheet
+    let q1b    = Frame.ReadExcel(multiPath, "Q1 Sales")      // by name
+    let q2b    = Frame.ReadExcel(multiPath, 1)               // by zero-based index
 
 ### Reading a specific sheet by name
 
@@ -290,36 +297,4 @@ let input  = Frame.readExcel "input.xlsx"
 let output = input |> Frame.filterRows (fun _ row -> row.GetAs<float>("Score") > 90.0)
 Frame.writeExcel "output.xlsx" output
 ```
-
----
-
-<a name="excel-writer"></a>
-
-## Live Excel integration (Windows only)
-
-The `Deedle.Excel` package exposes a live read/write API that works by
-communicating with a running Excel instance via [NetOffice](https://netoffice.io/).
-Because it requires an active COM connection it is **Windows-only** and suitable
-for interactive / scripting scenarios (e.g. F# Interactive with Excel open).
-
-Install with:
-
-```
-dotnet add package Deedle.Excel
-```
-
-Basic usage in F# Interactive:
-
-```fsharp
-open Deedle
-open Deedle.Excel
-
-// Push a frame to the active Excel workbook
-xl?A1 <- myFrame
-
-// Keep Excel in sync as the frame changes
-xl.KeepInSync <- true
-xl?A1 <- myFrame
-```
 *)
-

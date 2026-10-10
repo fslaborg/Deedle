@@ -168,3 +168,31 @@ type ExcelFrame =
     /// </summary>
     static member SheetNames(path: string) : string list =
         sheetNames path
+
+// ------------------------------------------------------------------------------------------------
+// F# type extension: Frame.ReadExcel(...) alongside Frame.ReadCsv(...)
+// ------------------------------------------------------------------------------------------------
+
+[<AutoOpen>]
+module FrameExcelExtensions =
+
+    type Deedle.Frame with
+
+        /// <summary>
+        /// Read the first worksheet of an Excel file (.xls or .xlsx) as a
+        /// <c>Frame&lt;int, string&gt;</c>. The first row is treated as column headers.
+        /// </summary>
+        static member ReadExcel(path: string) : Frame<int, string> =
+            Implementation.readExcel path
+
+        /// <summary>
+        /// Read a specific worksheet by name from an Excel file (.xls or .xlsx).
+        /// </summary>
+        static member ReadExcel(path: string, sheetName: string) : Frame<int, string> =
+            Implementation.readExcelSheet path sheetName
+
+        /// <summary>
+        /// Read a specific worksheet by zero-based index from an Excel file (.xls or .xlsx).
+        /// </summary>
+        static member ReadExcel(path: string, sheetIndex: int) : Frame<int, string> =
+            Implementation.readExcelSheetByIndex path sheetIndex
