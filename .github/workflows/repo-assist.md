@@ -332,7 +332,7 @@ steps:
           json.dump(result, f, indent=2)
       EOF
 
-source: githubnext/agentics/workflows/repo-assist.md@3efa3db307e0f5568f4a24d8e1814065c2a95698
+source: githubnext/agentics/workflows/repo-assist.md@c37c59984b429ef6aa4b354ece4afee53c1dfe65
 ---
 
 # Repo Assist
@@ -371,6 +371,8 @@ The schema stores only:
 - `priorities`: a short queue of concrete follow-up work
 
 Keep notes terse and current. Replace superseded entries, remove resolved issue records and closed fix records once they are no longer needed for duplicate prevention, and never store run-by-run narration, exhaustive label histories, stale PR inventories, copied GitHub content, or facts that can be cheaply queried again. Stay within the schema's array and text limits; do not create another memory file.
+
+After every change to `notes.json`, run `jq empty /tmp/gh-aw/repo-memory/default/notes.json`, then call `push_repo_memory`. A successful tool result is required before finishing the run. If either check reports an error, repair `notes.json` and retry both checks. Prefer `jq` with a temporary file and atomic rename over manual partial JSON edits.
 
 **Important**: Memory may not be 100% accurate. Issues may have been created, closed, or commented on; PRs may have been created, merged, commented on, or closed since the last run. Always verify memory against current repository state — reviewing recent activity since your last run is wise before acting on stale assumptions.
 
