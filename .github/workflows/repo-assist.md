@@ -96,7 +96,8 @@ tools:
         const path = require("node:path");
         const fail = message => { throw new Error(`notes.json: ${message}`); };
         const notesPath = path.join(memoryRoot, "notes.json");
-        const memoryEntries = fs.readdirSync(memoryRoot, { withFileTypes: true });
+        const memoryEntries = fs.readdirSync(memoryRoot, { withFileTypes: true })
+          .filter(entry => entry.name !== ".git");
         if (memoryEntries.length !== 1 || !memoryEntries[0].isFile() || memoryEntries[0].name !== "notes.json") {
           fail(`must be the only file in repo memory; found: ${memoryEntries.map(entry => entry.name).join(", ") || "(none)"}`);
         }
@@ -331,7 +332,7 @@ steps:
           json.dump(result, f, indent=2)
       EOF
 
-source: githubnext/agentics/workflows/repo-assist.md@e37241b21c78a7b636faecb61a43d81c1474c889
+source: githubnext/agentics/workflows/repo-assist.md@3efa3db307e0f5568f4a24d8e1814065c2a95698
 ---
 
 # Repo Assist
