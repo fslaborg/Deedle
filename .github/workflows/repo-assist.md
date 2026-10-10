@@ -83,11 +83,10 @@ tools:
     min-integrity: none # This workflow is allowed to examine and comment on any issues or PRs
   bash: true
   repo-memory:
+    branch-name: memory/repo-assist-memory
     max-file-size: 65536
     max-patch-size: 65536
-    # Allow one migration commit to delete up to five legacy entries while
-    # notes.json remains the only persisted file accepted by validation.
-    max-file-count: 6
+    max-file-count: 1
     format-json: true
     allowed-extensions: [".json"]
     validation:
@@ -220,21 +219,6 @@ safe-outputs:
     target: "*"
 
 steps:
-  - name: Migrate legacy Repo Assist memory
-    env:
-      MEMORY_DIR: /tmp/gh-aw/repo-memory/default
-    run: |
-      node <<'EOF'
-      const fs = require("node:fs");
-      const path = require("node:path");
-      const memoryDir = process.env.MEMORY_DIR;
-      for (const entry of fs.readdirSync(memoryDir, { withFileTypes: true })) {
-        if (entry.name !== ".git" && entry.name !== "notes.json") {
-          fs.rmSync(path.join(memoryDir, entry.name), { recursive: true, force: true });
-        }
-      }
-      EOF
-
   - name: Fetch repo data for task weighting
     env:
       GH_TOKEN: ${{ github.token }}
@@ -326,7 +310,7 @@ steps:
           json.dump(result, f, indent=2)
       EOF
 
-source: githubnext/agentics/workflows/repo-assist.md@055e90108e3d3c40e842f8aa40288f8a19204c4e
+source: githubnext/agentics/workflows/repo-assist.md@faa9c7d63dfc9d0bb6c48acfb0c9704e16ec98cc
 ---
 
 # Repo Assist
