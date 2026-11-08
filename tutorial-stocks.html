@@ -1,0 +1,1414 @@
+<!DOCTYPE html>
+<html lang="en" data-root="/Deedle/">
+<head>
+    <meta charset="UTF-8">
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="Deedle.Arrow" name="author">
+    <!-- Opengraph properties (https://ogp.me/) -->
+    <meta property="og:site_name" content="Deedle">
+    <meta property="og:title" content="Tutorial: Analysing stock prices" />
+    <meta property="og:url" content="/Deedle/tutorial-stocks.html">
+    <meta property="og:type" content="website" />
+    <!-- Twitter cards (https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/summary-card-with-large-image) -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="/Deedle/">
+    <meta name="twitter:title" content="Tutorial: Analysing stock prices">
+    <meta name="description" content="Load, align, resample and analyse stock price time series: returns, volatility, rolling averages, drawdown">
+<meta name="twitter:site" content="Load, align, resample and analyse stock price time series: returns, volatility, rolling averages, drawdown">
+<meta name="og:description" content="Load, align, resample and analyse stock price time series: returns, volatility, rolling averages, drawdown">
+<meta name="keywords" content="tutorial, stock prices, time series, finance, returns, pandas, F#">
+    <title>Tutorial: Analysing stock prices | Deedle</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code&display=swap" rel="stylesheet">
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <link href="/Deedle/img/favicon.ico" rel="icon" sizes="32x32" type="image/png"/>
+    <script type="application/javascript" src="/Deedle/content/fsdocs-theme-set-dark.js"></script>
+    <script type="application/javascript" src="/Deedle/content/fsdocs-details-set-expanded.js"></script>
+    <link href="/Deedle/content/fsdocs-default.css" rel="stylesheet" type="text/css"/>
+    <link href="/Deedle/content/fsdocs-theme.css" rel="stylesheet" type="text/css"/>
+    
+    
+</head>
+<body class="content">
+<header>
+    <div class="start">
+        <div id="menu-toggle">
+            <iconify-icon class="icon closed" height="22" icon="eva:menu-fill" width="22"></iconify-icon>
+            <iconify-icon class="icon open" height="22" icon="mi:close" width="22"></iconify-icon>
+            <input type="checkbox" name="mobile-menu" />
+            <ul class="menu">
+                <li class="nav-header">Links</li>
+                <li class="license-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fslaborg/Deedle/blob/master/LICENSE.md">License</a>
+                </li>
+                <li class="release-notes-menu-item builtin-menu-item nav-item"><a class="nav-link"
+                                        href="https://github.com/fslaborg/Deedle/blob/master/RELEASE_NOTES.md">Release
+                    Notes</a></li>
+                <li class="repository-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fslaborg/Deedle/">Source
+                    Repository</a></li>
+                <li class="nav-header active">
+  Tutorials
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/tutorial.html">
+    Deedle in 10 minutes
+  </a>
+</li>             
+<li class="nav-item active">
+  <a class="nav-link" href="/Deedle/tutorial-stocks.html">
+    Tutorial: Analysing stock prices
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/tutorial-cleaning.html">
+    Tutorial: Cleaning messy data
+  </a>
+</li>             
+<li class="nav-header ">
+  Guides
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/frame.html">
+    Data frame features
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/series.html">
+    Series and time series features
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/stats.html">
+    Calculating frame and series statistics
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/missing.html">
+    Handling missing values
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/joining.html">
+    Joining, merging and appending frames
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/lazysource.html">
+    Delay-loaded series
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/csharp.html">
+    Deedle in C#
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/bigdeedle.html">
+    Big Deedle — virtual frames
+  </a>
+</li>             
+<li class="nav-header ">
+  Integrations
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/excel.html">
+    Excel integration — ExcelReader &amp; ExcelWriter
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/arrow.html">
+    Deedle.Arrow — Apache Arrow and Feather integration
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/parquet.html">
+    Deedle.Parquet — Apache Parquet integration
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/math.html">
+    Deedle.MathNetNumerics — MathNet.Numerics integration
+  </a>
+</li>             
+<li class="nav-header ">
+  Design
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/design.html">
+    Design notes
+  </a>
+</li>
+                <li class="nav-header">
+  API Reference
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="/Deedle/reference/index.html">
+    All Namespaces
+  </a>
+</li>
+            </ul>
+        </div>
+        <a href="/Deedle/">
+            <img alt="Logo" src="/Deedle/img/logo.png">
+            <strong>Deedle</strong>
+        </a>
+    </div>
+    <div class="end">
+        <a href="https://github.com/fslaborg/Deedle/" target="_blank">
+            <iconify-icon icon="uil:github" width="26" height="26"></iconify-icon>
+        </a>
+        <iconify-icon id="search-btn" icon="carbon:search" class="search" width="24" height="24"></iconify-icon>
+        <fsdocs-theme-toggle></fsdocs-theme-toggle>
+    </div>
+</header>
+<aside id="fsdocs-main-menu">
+    <ul class="menu">
+        <li class="nav-header">Links</li>
+        <li class="license-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fslaborg/Deedle/blob/master/LICENSE.md">License</a>
+        </li>
+        <li class="release-notes-menu-item builtin-menu-item nav-item"><a class="nav-link"
+                                href="https://github.com/fslaborg/Deedle/blob/master/RELEASE_NOTES.md">Release
+            Notes</a></li>
+        <li class="repository-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fslaborg/Deedle/">Source
+            Repository</a></li>
+        <li class="nav-header active">
+  Tutorials
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/tutorial.html">
+    Deedle in 10 minutes
+  </a>
+</li>             
+<li class="nav-item active">
+  <a class="nav-link" href="/Deedle/tutorial-stocks.html">
+    Tutorial: Analysing stock prices
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/tutorial-cleaning.html">
+    Tutorial: Cleaning messy data
+  </a>
+</li>             
+<li class="nav-header ">
+  Guides
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/frame.html">
+    Data frame features
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/series.html">
+    Series and time series features
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/stats.html">
+    Calculating frame and series statistics
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/missing.html">
+    Handling missing values
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/joining.html">
+    Joining, merging and appending frames
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/lazysource.html">
+    Delay-loaded series
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/csharp.html">
+    Deedle in C#
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/bigdeedle.html">
+    Big Deedle — virtual frames
+  </a>
+</li>             
+<li class="nav-header ">
+  Integrations
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/excel.html">
+    Excel integration — ExcelReader &amp; ExcelWriter
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/arrow.html">
+    Deedle.Arrow — Apache Arrow and Feather integration
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/parquet.html">
+    Deedle.Parquet — Apache Parquet integration
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/math.html">
+    Deedle.MathNetNumerics — MathNet.Numerics integration
+  </a>
+</li>             
+<li class="nav-header ">
+  Design
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/Deedle/design.html">
+    Design notes
+  </a>
+</li>
+        <li class="nav-header">
+  API Reference
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="/Deedle/reference/index.html">
+    All Namespaces
+  </a>
+</li>
+    </ul>
+</aside>
+<main>
+    <div id="content">
+        
+<h1><a name="Tutorial-Analysing-stock-prices" class="anchor" href="#Tutorial-Analysing-stock-prices">Tutorial: Analysing stock prices</a></h1>
+<p><em>This is the Deedle equivalent of the classic "pandas stock analysis" tutorial.</em>
+We load daily prices for four companies, align them into a single frame, compute
+returns and volatility, smooth them with rolling windows, and downsample to monthly data.
+The CSV files in <code>docs/data/stocks</code> come from Yahoo Finance (2013).</p>
+<h2><a name="Load-one-file-per-ticker" class="anchor" href="#Load-one-file-per-ticker">Load one file per ticker</a></h2>
+<p>Each file has <code>Date,Open,High,Low,Close,Volume,Adj Close</code> columns, newest row first.
+We turn <code>Date</code> into the row index and sort so that time runs forward:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span data-fsdocs-tip="fs14" data-fsdocs-tip-unique="19" class="fn">loadStock</span> <span class="pn">(</span><span data-fsdocs-tip="fs15" data-fsdocs-tip-unique="20" class="fn">ticker</span><span class="pn">:</span> <span data-fsdocs-tip="fs13" data-fsdocs-tip-unique="21" class="rt">string</span><span class="pn">)</span> <span class="o">=</span>
+  <span data-fsdocs-tip="fs16" data-fsdocs-tip-unique="22" class="rt">Frame</span><span class="pn">.</span><span data-fsdocs-tip="fs17" data-fsdocs-tip-unique="23" class="id">ReadCsv</span><span class="pn">(</span><span data-fsdocs-tip="fs3" data-fsdocs-tip-unique="24" class="id">root</span> <span class="o">+</span> <span class="s">&quot;stocks/&quot;</span> <span class="o">+</span> <span data-fsdocs-tip="fs15" data-fsdocs-tip-unique="25" class="fn">ticker</span> <span class="o">+</span> <span class="s">&quot;.csv&quot;</span><span class="pn">)</span>
+  <span class="o">|&gt;</span> <span data-fsdocs-tip="fs16" data-fsdocs-tip-unique="26" class="m">Frame</span><span class="pn">.</span><span data-fsdocs-tip="fs18" data-fsdocs-tip-unique="27" class="id">indexRowsDateTime</span> <span class="s">&quot;Date&quot;</span>
+  <span class="o">|&gt;</span> <span data-fsdocs-tip="fs16" data-fsdocs-tip-unique="28" class="m">Frame</span><span class="pn">.</span><span data-fsdocs-tip="fs19" data-fsdocs-tip-unique="29" class="id">sortRowsByKey</span>
+
+<span class="k">let</span> <span data-fsdocs-tip="fs20" data-fsdocs-tip-unique="30" class="id">msft</span> <span class="o">=</span> <span data-fsdocs-tip="fs14" data-fsdocs-tip-unique="31" class="fn">loadStock</span> <span class="s">&quot;msft&quot;</span>
+<span data-fsdocs-tip="fs20" data-fsdocs-tip-unique="32" class="id">msft</span> <span class="o">|&gt;</span> <span data-fsdocs-tip="fs16" data-fsdocs-tip-unique="33" class="m">Frame</span><span class="pn">.</span><span data-fsdocs-tip="fs21" data-fsdocs-tip-unique="34" class="id">take</span> <span class="n">3</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val loadStock: ticker: string -&gt; Frame&lt;DateTime,string&gt;
+val msft: Frame&lt;DateTime,string&gt; =
+  
+              Open  High  Low   Close Volume     Adj Close 
+03/13/1986 -&gt; 25.50 29.25 25.50 28.00 1031788800 0.07      
+03/14/1986 -&gt; 28.00 29.50 28.00 29.00 308160000  0.07      
+03/17/1986 -&gt; 29.00 29.75 29.00 29.50 133171200  0.08      
+03/18/1986 -&gt; 29.50 29.75 28.50 28.75 67766400   0.07      
+03/19/1986 -&gt; 28.75 29.00 28.00 28.25 47894400   0.07      
+03/20/1986 -&gt; 28.25 28.25 27.25 27.50 58435200   0.07      
+03/21/1986 -&gt; 27.50 28.00 26.25 26.75 59990400   0.07      
+03/24/1986 -&gt; 26.75 26.75 25.75 26.00 65289600   0.07      
+03/25/1986 -&gt; 26.00 26.50 25.75 26.50 32083200   0.07      
+03/26/1986 -&gt; 26.50 27.50 26.25 27.25 22752000   0.07      
+03/27/1986 -&gt; 27.25 27.75 27.25 27.75 16848000   0.07      
+03/31/1986 -&gt; 27.75 27.75 27.00 27.50 12873600   0.07      
+04/01/1986 -&gt; 27.50 27.50 27.25 27.25 11088000   0.07      
+04/02/1986 -&gt; 27.25 28.00 27.25 27.50 27014400   0.07      
+04/03/1986 -&gt; 27.75 28.50 27.75 27.75 23040000   0.07      
+:             ...   ...   ...   ...   ...        ...       
+10/18/2013 -&gt; 34.82 34.99 34.33 34.96 41811700   34.96     
+10/21/2013 -&gt; 34.98 35.20 34.91 34.99 27433500   34.99     
+10/22/2013 -&gt; 35.02 35.10 34.52 34.58 40438500   34.58     
+10/23/2013 -&gt; 34.35 34.49 33.67 33.76 58600500   33.76     
+10/24/2013 -&gt; 33.82 34.10 33.57 33.72 53209700   33.72     
+10/25/2013 -&gt; 35.88 36.29 35.47 35.73 113494000  35.73     
+10/28/2013 -&gt; 35.61 35.73 35.27 35.57 38383600   35.57     
+10/29/2013 -&gt; 35.63 35.72 35.26 35.52 31702200   35.52     
+10/30/2013 -&gt; 35.53 35.79 35.43 35.54 36997700   35.54     
+10/31/2013 -&gt; 35.66 35.69 35.34 35.41 41682300   35.41     
+11/01/2013 -&gt; 35.67 35.69 35.39 35.53 40264600   35.53     
+11/04/2013 -&gt; 35.59 35.98 35.55 35.94 28060700   35.94     
+11/05/2013 -&gt; 35.79 36.71 35.77 36.64 51646300   36.64     
+11/06/2013 -&gt; 37.24 38.22 37.06 38.18 88615100   38.18     
+11/07/2013 -&gt; 37.96 38.01 37.43 37.50 60437400   37.50     
+
+val it: Frame&lt;DateTime,string&gt; =
+  
+              Open  High  Low   Close Volume     Adj Close 
+03/13/1986 -&gt; 25.50 29.25 25.50 28.00 1031788800 0.07      
+03/14/1986 -&gt; 28.00 29.50 28.00 29.00 308160000  0.07      
+03/17/1986 -&gt; 29.00 29.75 29.00 29.50 133171200  0.08</code></pre></td></tr></table>
+<h2><a name="Combine-adjusted-closing-prices-into-one-frame" class="anchor" href="#Combine-adjusted-closing-prices-into-one-frame">Combine adjusted closing prices into one frame</a></h2>
+<p>Building a frame from named series <em>aligns them by date automatically</em>. Dates where a
+company did not trade yet (Facebook only listed in 2012) become missing values:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span data-fsdocs-tip="fs22" data-fsdocs-tip-unique="35" class="id">closes</span> <span class="o">=</span>
+  <span data-fsdocs-tip="fs23" data-fsdocs-tip-unique="36" class="fn">frame</span> <span class="pn">[</span> <span class="k">for</span> <span data-fsdocs-tip="fs24" data-fsdocs-tip-unique="37" class="fn">t</span> <span class="k">in</span> <span class="pn">[</span><span class="s">&quot;msft&quot;</span><span class="pn">;</span> <span class="s">&quot;goog&quot;</span><span class="pn">;</span> <span class="s">&quot;aapl&quot;</span><span class="pn">;</span> <span class="s">&quot;fb&quot;</span><span class="pn">]</span> <span class="k">-&gt;</span>
+            <span data-fsdocs-tip="fs24" data-fsdocs-tip-unique="38" class="fn">t</span> <span class="o">=&gt;</span> <span class="pn">(</span><span data-fsdocs-tip="fs14" data-fsdocs-tip-unique="39" class="fn">loadStock</span> <span data-fsdocs-tip="fs24" data-fsdocs-tip-unique="40" class="fn">t</span><span class="pn">)</span><span class="pn">?</span><span class="id">``Adj Close``</span> <span class="pn">]</span>
+
+<span data-fsdocs-tip="fs22" data-fsdocs-tip-unique="41" class="id">closes</span> <span class="o">|&gt;</span> <span data-fsdocs-tip="fs16" data-fsdocs-tip-unique="42" class="m">Frame</span><span class="pn">.</span><span data-fsdocs-tip="fs21" data-fsdocs-tip-unique="43" class="id">take</span> <span class="n">3</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val closes: Frame&lt;DateTime,string&gt; =
+  
+              msft      goog      aapl   fb        
+09/07/1984 -&gt; &lt;missing&gt; &lt;missing&gt; 2.92   &lt;missing&gt; 
+09/10/1984 -&gt; &lt;missing&gt; &lt;missing&gt; 2.91   &lt;missing&gt; 
+09/11/1984 -&gt; &lt;missing&gt; &lt;missing&gt; 2.96   &lt;missing&gt; 
+09/12/1984 -&gt; &lt;missing&gt; &lt;missing&gt; 2.88   &lt;missing&gt; 
+09/13/1984 -&gt; &lt;missing&gt; &lt;missing&gt; 3.03   &lt;missing&gt; 
+09/14/1984 -&gt; &lt;missing&gt; &lt;missing&gt; 3.07   &lt;missing&gt; 
+09/17/1984 -&gt; &lt;missing&gt; &lt;missing&gt; 3.16   &lt;missing&gt; 
+09/18/1984 -&gt; &lt;missing&gt; &lt;missing&gt; 3.05   &lt;missing&gt; 
+09/19/1984 -&gt; &lt;missing&gt; &lt;missing&gt; 2.98   &lt;missing&gt; 
+09/20/1984 -&gt; &lt;missing&gt; &lt;missing&gt; 2.99   &lt;missing&gt; 
+09/21/1984 -&gt; &lt;missing&gt; &lt;missing&gt; 2.96   &lt;missing&gt; 
+09/24/1984 -&gt; &lt;missing&gt; &lt;missing&gt; 2.94   &lt;missing&gt; 
+09/25/1984 -&gt; &lt;missing&gt; &lt;missing&gt; 2.88   &lt;missing&gt; 
+09/26/1984 -&gt; &lt;missing&gt; &lt;missing&gt; 2.84   &lt;missing&gt; 
+09/27/1984 -&gt; &lt;missing&gt; &lt;missing&gt; 2.84   &lt;missing&gt; 
+:             ...       ...       ...    ...       
+10/18/2013 -&gt; 34.96     1011.41   505.94 54.22     
+10/21/2013 -&gt; 34.99     1003.3    518.33 53.85     
+10/22/2013 -&gt; 34.58     1007      516.85 52.68     
+10/23/2013 -&gt; 33.76     1031.41   521.91 51.9      
+10/24/2013 -&gt; 33.72     1025.55   528.82 52.45     
+10/25/2013 -&gt; 35.73     1015.2    522.91 51.95     
+10/28/2013 -&gt; 35.57     1015      526.8  50.23     
+10/29/2013 -&gt; 35.52     1036.24   513.68 49.4      
+10/30/2013 -&gt; 35.54     1030.42   521.85 49.01     
+10/31/2013 -&gt; 35.41     1030.58   519.67 50.21     
+11/01/2013 -&gt; 35.53     1027.04   517.01 49.75     
+11/04/2013 -&gt; 35.94     1026.11   523.69 48.22     
+11/05/2013 -&gt; 36.64     1021.52   522.4  50.11     
+11/06/2013 -&gt; 38.18     1022.75   520.92 49.12     
+11/07/2013 -&gt; 37.5      1007.95   512.49 47.56     
+
+val it: Frame&lt;DateTime,string&gt; =
+  
+              msft      goog      aapl fb        
+09/07/1984 -&gt; &lt;missing&gt; &lt;missing&gt; 2.92 &lt;missing&gt; 
+09/10/1984 -&gt; &lt;missing&gt; &lt;missing&gt; 2.91 &lt;missing&gt; 
+09/11/1984 -&gt; &lt;missing&gt; &lt;missing&gt; 2.96 &lt;missing&gt;</code></pre></td></tr></table>
+<p>We only want dates where every stock has a price, so drop rows with any missing value:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span data-fsdocs-tip="fs25" data-fsdocs-tip-unique="44" class="id">prices</span> <span class="o">=</span> <span data-fsdocs-tip="fs22" data-fsdocs-tip-unique="45" class="id">closes</span> <span class="o">|&gt;</span> <span data-fsdocs-tip="fs16" data-fsdocs-tip-unique="46" class="m">Frame</span><span class="pn">.</span><span data-fsdocs-tip="fs26" data-fsdocs-tip-unique="47" class="id">dropSparseRows</span>
+<span data-fsdocs-tip="fs25" data-fsdocs-tip-unique="48" class="id">prices</span><span class="pn">.</span><span data-fsdocs-tip="fs27" data-fsdocs-tip-unique="49" class="id">RowCount</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val prices: Frame&lt;DateTime,string&gt; =
+  
+              msft  goog    aapl   fb    
+05/18/2012 -&gt; 28.21 600.4   512.83 38.23 
+05/21/2012 -&gt; 28.67 614.11  542.71 34.03 
+05/22/2012 -&gt; 28.68 600.8   538.54 31    
+05/23/2012 -&gt; 28.05 609.46  551.68 32    
+05/24/2012 -&gt; 28.01 603.66  546.61 33.03 
+05/25/2012 -&gt; 28    591.53  543.68 31.91 
+05/29/2012 -&gt; 28.49 594.34  553.33 28.84 
+05/30/2012 -&gt; 28.27 588.23  560    28.19 
+05/31/2012 -&gt; 28.13 580.86  558.61 29.6  
+06/01/2012 -&gt; 27.42 570.98  542.43 27.72 
+06/04/2012 -&gt; 27.51 578.59  545.62 26.9  
+06/05/2012 -&gt; 27.47 570.41  544.2  25.87 
+06/06/2012 -&gt; 28.28 580.57  552.55 26.81 
+06/07/2012 -&gt; 28.17 578.23  552.8  26.31 
+06/08/2012 -&gt; 28.57 580.45  561.12 27.1  
+:             ...   ...     ...    ...   
+10/18/2013 -&gt; 34.96 1011.41 505.94 54.22 
+10/21/2013 -&gt; 34.99 1003.3  518.33 53.85 
+10/22/2013 -&gt; 34.58 1007    516.85 52.68 
+10/23/2013 -&gt; 33.76 1031.41 521.91 51.9  
+10/24/2013 -&gt; 33.72 1025.55 528.82 52.45 
+10/25/2013 -&gt; 35.73 1015.2  522.91 51.95 
+10/28/2013 -&gt; 35.57 1015    526.8  50.23 
+10/29/2013 -&gt; 35.52 1036.24 513.68 49.4  
+10/30/2013 -&gt; 35.54 1030.42 521.85 49.01 
+10/31/2013 -&gt; 35.41 1030.58 519.67 50.21 
+11/01/2013 -&gt; 35.53 1027.04 517.01 49.75 
+11/04/2013 -&gt; 35.94 1026.11 523.69 48.22 
+11/05/2013 -&gt; 36.64 1021.52 522.4  50.11 
+11/06/2013 -&gt; 38.18 1022.75 520.92 49.12 
+11/07/2013 -&gt; 37.5  1007.95 512.49 47.56 
+
+val it: int = 371</code></pre></td></tr></table>
+<h2><a name="Slice-by-date" class="anchor" href="#Slice-by-date">Slice by date</a></h2>
+<p>Row slicing with dates works on ordered indices, and is inclusive at both ends:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span data-fsdocs-tip="fs25" data-fsdocs-tip-unique="50" class="id">prices</span><span class="pn">.</span><span data-fsdocs-tip="fs28" data-fsdocs-tip-unique="51" class="id">Rows</span><span class="pn">.</span><span class="pn">[</span><span data-fsdocs-tip="fs29" data-fsdocs-tip-unique="52" class="fn">DateTime</span><span class="pn">(</span><span class="n">2013</span><span class="pn">,</span> <span class="n">10</span><span class="pn">,</span> <span class="n">1</span><span class="pn">)</span> <span class="o">..</span> <span data-fsdocs-tip="fs29" data-fsdocs-tip-unique="53" class="fn">DateTime</span><span class="pn">(</span><span class="n">2013</span><span class="pn">,</span> <span class="n">10</span><span class="pn">,</span> <span class="n">4</span><span class="pn">)</span><span class="pn">]</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val it: Frame&lt;DateTime,string&gt; =
+  
+              msft  goog   aapl   fb    
+10/01/2013 -&gt; 33.58 887    485.13 50.42 
+10/02/2013 -&gt; 33.92 887.99 486.72 50.28 
+10/03/2013 -&gt; 33.86 876.09 480.6  49.18 
+10/04/2013 -&gt; 33.88 872.35 480.23 51.04</code></pre></td></tr></table>
+<h2><a name="Daily-returns" class="anchor" href="#Daily-returns">Daily returns</a></h2>
+<p><code>Frame.shift 1</code> moves every value one row forward, so dividing the frame by its shifted copy
+gives day-over-day price ratios:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span data-fsdocs-tip="fs30" data-fsdocs-tip-unique="54" class="id">returns</span> <span class="o">=</span> <span data-fsdocs-tip="fs22" data-fsdocs-tip-unique="55" class="id">closes</span> <span class="o">/</span> <span class="pn">(</span><span data-fsdocs-tip="fs22" data-fsdocs-tip-unique="56" class="id">closes</span> <span class="o">|&gt;</span> <span data-fsdocs-tip="fs16" data-fsdocs-tip-unique="57" class="m">Frame</span><span class="pn">.</span><span data-fsdocs-tip="fs31" data-fsdocs-tip-unique="58" class="id">shift</span> <span class="n">1</span><span class="pn">)</span> <span class="o">-</span> <span class="n">1.0</span> <span class="o">|&gt;</span> <span data-fsdocs-tip="fs16" data-fsdocs-tip-unique="59" class="m">Frame</span><span class="pn">.</span><span data-fsdocs-tip="fs26" data-fsdocs-tip-unique="60" class="id">dropSparseRows</span>
+
+<span data-fsdocs-tip="fs30" data-fsdocs-tip-unique="61" class="id">returns</span> <span class="o">|&gt;</span> <span data-fsdocs-tip="fs16" data-fsdocs-tip-unique="62" class="m">Frame</span><span class="pn">.</span><span data-fsdocs-tip="fs21" data-fsdocs-tip-unique="63" class="id">take</span> <span class="n">3</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val returns: Frame&lt;DateTime,string&gt; =
+  
+              msft                    goog                    aapl                   fb                     
+05/21/2012 -&gt; 0.016306274370790463    0.022834776815456426    0.058264922098941074   -0.10986136541982727   
+05/22/2012 -&gt; 0.0003487966515520746   -0.02167364153001916    -0.007683661624071969  -0.089039083161916     
+05/23/2012 -&gt; -0.021966527196652708   0.014414114513981557    0.024399301816021124   0.032258064516129004   
+05/24/2012 -&gt; -0.0014260249554366444  -0.009516621271289494   -0.009190110208816549  0.032187500000000036   
+05/25/2012 -&gt; -0.00035701535166021703 -0.020094092701189448   -0.005360311739631696  -0.03390856796851349   
+05/29/2012 -&gt; 0.01749999999999985     0.004750393048535306    0.01774941141848152    -0.09620808523973678   
+05/30/2012 -&gt; -0.007722007722007707   -0.010280310933135972   0.012054289483671488   -0.022538141470180295  
+05/31/2012 -&gt; -0.004952246197382437   -0.012529112762014849   -0.002482142857142877  0.050017736786094336   
+06/01/2012 -&gt; -0.025239957340917107   -0.017009262128568015   -0.028964751794633203  -0.06351351351351364   
+06/04/2012 -&gt; 0.003282275711159688    0.01332796245052359     0.0058809431631732245  -0.029581529581529598  
+06/05/2012 -&gt; -0.001454016721192386   -0.014137817798441144   -0.002602543895018461  -0.038289962825278745  
+06/06/2012 -&gt; 0.02948671277757553     0.01781174944338293     0.01534362366776909    0.036335523772709655   
+06/07/2012 -&gt; -0.0038896746817538297  -0.0040305217286460415  0.00045244774228581086 -0.01864975755315179   
+06/08/2012 -&gt; 0.014199503017394255    0.0038393026996177415   0.015050651230101408   0.03002660585328787    
+06/11/2012 -&gt; -0.02520126006300316    -0.0205874752347317     -0.01577202737382377   -0.0033210332103320583 
+:             ...                     ...                     ...                    ...                    
+10/18/2013 -&gt; 0.001145475372279492    0.13796284836688089     0.008712642303168039   0.03849837195939476    
+10/21/2013 -&gt; 0.0008581235697939782   -0.00801850881442745    0.024489069850179845   -0.006824050165990414  
+10/22/2013 -&gt; -0.011717633609602873   0.0036878301604705843   -0.002855323828449108  -0.021727019498607225  
+10/23/2013 -&gt; -0.023713128976286857   0.024240317775571008    0.009790074489697043   -0.014806378132118492  
+10/24/2013 -&gt; -0.0011848341232226778  -0.005681542742459467   0.013239830622138182   0.010597302504816941   
+10/25/2013 -&gt; 0.059608540925266906    -0.010092145677928821   -0.011175825422639285  -0.009532888465204947  
+10/28/2013 -&gt; -0.004478029666946437   -0.00019700551615453588 0.007439138666309741   -0.03310875842155936   
+10/29/2013 -&gt; -0.0014056789429293115  0.020926108374384356    -0.024905087319665897  -0.016523989647620918  
+10/30/2013 -&gt; 0.000563063063062863    -0.0056164595074499335  0.015904843482323683   -0.007894736842105288  
+10/31/2013 -&gt; -0.003657850309510491   0.00015527648919833048  -0.004177445626137866  0.024484799020608072   
+11/01/2013 -&gt; 0.003388873199661191    -0.003434958955151446   -0.005118632978621029  -0.009161521609241219  
+11/04/2013 -&gt; 0.011539544047283856    -0.0009055148777068478  0.012920446413028808   -0.030753768844221097  
+11/05/2013 -&gt; 0.019476905954368462    -0.004473204627184146   -0.0024632893505701636 0.03919535462463708    
+11/06/2013 -&gt; 0.04203056768558944     0.0012040880256871667   -0.0028330781010720285 -0.019756535621632487  
+11/07/2013 -&gt; -0.01781037192247248    -0.014470789538010176   -0.01618290716424775   -0.03175895765472303   
+
+val it: Frame&lt;DateTime,string&gt; =
+  
+              msft                  goog                 aapl                  fb                   
+05/21/2012 -&gt; 0.016306274370790463  0.022834776815456426 0.058264922098941074  -0.10986136541982727 
+05/22/2012 -&gt; 0.0003487966515520746 -0.02167364153001916 -0.007683661624071969 -0.089039083161916   
+05/23/2012 -&gt; -0.021966527196652708 0.014414114513981557 0.024399301816021124  0.032258064516129004</code></pre></td></tr></table>
+<h2><a name="Summary-statistics-volatility-and-correlation" class="anchor" href="#Summary-statistics-volatility-and-correlation">Summary statistics, volatility and correlation</a></h2>
+<p><code>Stats.describe</code> summarises every column at once:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span data-fsdocs-tip="fs32" data-fsdocs-tip-unique="64" class="rt">Stats</span><span class="pn">.</span><span data-fsdocs-tip="fs33" data-fsdocs-tip-unique="65" class="id">describe</span> <span data-fsdocs-tip="fs30" data-fsdocs-tip-unique="66" class="id">returns</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val it: Frame&lt;string,string&gt; =
+  
+          msft                  goog                   aapl                   fb                     
+unique -&gt; 365                   370                    370                    368                    
+mean   -&gt; 0.0008848066626554045 0.0014991837393051174  0.00017014982272304036 0.001175904429556346   
+std    -&gt; 0.015138334103441365  0.014160309802394213   0.01847604712823422    0.03488665729220036    
+min    -&gt; -0.11395282750781466  -0.08006724112827435   -0.12355158453162096   -0.1169459962756052    
+0.25   -&gt; -0.006900609187201562 -0.005963396138735033  -0.009181137316708526  -0.016309550280494245  
+0.5    -&gt; 0.0003075677067334581 0.00019293620321392257 9.165741497829671E-05  -0.0012261549381270553 
+0.75   -&gt; 0.008185903160786268  0.008096426124321765   0.011486644933301537   0.01645885493487048    
+max    -&gt; 0.07286199444272912   0.13796284836688089    0.07211267605633798    0.2961146737080347</code></pre></td></tr></table>
+<p>The standard deviation of daily returns is the usual measure of volatility.
+Here Facebook is clearly the most volatile:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span data-fsdocs-tip="fs30" data-fsdocs-tip-unique="67" class="id">returns</span> <span class="o">|&gt;</span> <span data-fsdocs-tip="fs16" data-fsdocs-tip-unique="68" class="m">Frame</span><span class="pn">.</span><span data-fsdocs-tip="fs34" data-fsdocs-tip-unique="69" class="id">getNumericCols</span> <span class="o">|&gt;</span> <span data-fsdocs-tip="fs35" data-fsdocs-tip-unique="70" class="m">Series</span><span class="pn">.</span><span data-fsdocs-tip="fs36" data-fsdocs-tip-unique="71" class="id">mapValues</span> <span data-fsdocs-tip="fs32" data-fsdocs-tip-unique="72" class="rt">Stats</span><span class="pn">.</span><span data-fsdocs-tip="fs37" data-fsdocs-tip-unique="73" class="id">stdDev</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val it: Series&lt;string,float&gt; =
+  
+msft -&gt; 0.015138334103441365 
+goog -&gt; 0.014160309802394213 
+aapl -&gt; 0.01847604712823422  
+fb   -&gt; 0.03488665729220036</code></pre></td></tr></table>
+<p>How closely do Microsoft and Google move together?</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span data-fsdocs-tip="fs32" data-fsdocs-tip-unique="74" class="rt">Stats</span><span class="pn">.</span><span data-fsdocs-tip="fs38" data-fsdocs-tip-unique="75" class="id">corr</span> <span data-fsdocs-tip="fs30" data-fsdocs-tip-unique="76" class="id">returns</span><span class="pn">?</span><span data-fsdocs-tip="fs20" data-fsdocs-tip-unique="77" class="id">msft</span> <span data-fsdocs-tip="fs30" data-fsdocs-tip-unique="78" class="id">returns</span><span class="pn">?</span><span class="id">goog</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val it: float = 0.287529089</code></pre></td></tr></table>
+<h2><a name="Best-days" class="anchor" href="#Best-days">Best days</a></h2>
+<p>Sort a series by value to find the largest one-day gains:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span data-fsdocs-tip="fs30" data-fsdocs-tip-unique="79" class="id">returns</span><span class="pn">?</span><span data-fsdocs-tip="fs20" data-fsdocs-tip-unique="80" class="id">msft</span> <span class="o">|&gt;</span> <span data-fsdocs-tip="fs35" data-fsdocs-tip-unique="81" class="m">Series</span><span class="pn">.</span><span data-fsdocs-tip="fs39" data-fsdocs-tip-unique="82" class="id">sortBy</span> <span class="pn">(</span><span class="k">fun</span> <span data-fsdocs-tip="fs40" data-fsdocs-tip-unique="83" class="fn">v</span> <span class="k">-&gt;</span> <span class="o">-</span><span data-fsdocs-tip="fs40" data-fsdocs-tip-unique="84" class="fn">v</span><span class="pn">)</span> <span class="o">|&gt;</span> <span data-fsdocs-tip="fs35" data-fsdocs-tip-unique="85" class="m">Series</span><span class="pn">.</span><span data-fsdocs-tip="fs41" data-fsdocs-tip-unique="86" class="id">take</span> <span class="n">3</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val it: Series&lt;DateTime,float&gt; =
+  
+08/23/2013 -&gt; 0.07286199444272912  
+10/25/2013 -&gt; 0.059608540925266906 
+11/06/2013 -&gt; 0.04203056768558944</code></pre></td></tr></table>
+<h2><a name="Rolling-windows" class="anchor" href="#Rolling-windows">Rolling windows</a></h2>
+<p><code>Stats.movingMean</code> computes a trailing average. Comparing a price to its 20-day average
+is a simple trend signal. Here we count how many days Microsoft traded above its average:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span data-fsdocs-tip="fs42" data-fsdocs-tip-unique="87" class="id">ma20</span> <span class="o">=</span> <span data-fsdocs-tip="fs25" data-fsdocs-tip-unique="88" class="id">prices</span><span class="pn">?</span><span data-fsdocs-tip="fs20" data-fsdocs-tip-unique="89" class="id">msft</span> <span class="o">|&gt;</span> <span data-fsdocs-tip="fs32" data-fsdocs-tip-unique="90" class="rt">Stats</span><span class="pn">.</span><span data-fsdocs-tip="fs43" data-fsdocs-tip-unique="91" class="id">movingMean</span> <span class="n">20</span>
+<span class="k">let</span> <span data-fsdocs-tip="fs44" data-fsdocs-tip-unique="92" class="id">aboveTrend</span> <span class="o">=</span>
+  <span class="pn">(</span><span data-fsdocs-tip="fs25" data-fsdocs-tip-unique="93" class="id">prices</span><span class="pn">?</span><span data-fsdocs-tip="fs20" data-fsdocs-tip-unique="94" class="id">msft</span> <span class="o">-</span> <span data-fsdocs-tip="fs42" data-fsdocs-tip-unique="95" class="id">ma20</span><span class="pn">)</span>
+  <span class="o">|&gt;</span> <span data-fsdocs-tip="fs35" data-fsdocs-tip-unique="96" class="m">Series</span><span class="pn">.</span><span data-fsdocs-tip="fs45" data-fsdocs-tip-unique="97" class="id">dropMissing</span>
+  <span class="o">|&gt;</span> <span data-fsdocs-tip="fs35" data-fsdocs-tip-unique="98" class="m">Series</span><span class="pn">.</span><span data-fsdocs-tip="fs46" data-fsdocs-tip-unique="99" class="id">filterValues</span> <span class="pn">(</span><span class="k">fun</span> <span data-fsdocs-tip="fs40" data-fsdocs-tip-unique="100" class="fn">v</span> <span class="k">-&gt;</span> <span data-fsdocs-tip="fs40" data-fsdocs-tip-unique="101" class="fn">v</span> <span class="o">&gt;</span> <span class="n">0.0</span><span class="pn">)</span>
+
+<span data-fsdocs-tip="fs44" data-fsdocs-tip-unique="102" class="id">aboveTrend</span><span class="pn">.</span><span data-fsdocs-tip="fs47" data-fsdocs-tip-unique="103" class="id">KeyCount</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val ma20: Series&lt;DateTime,float&gt; =
+  
+05/18/2012 -&gt; &lt;missing&gt;          
+05/21/2012 -&gt; &lt;missing&gt;          
+05/22/2012 -&gt; &lt;missing&gt;          
+05/23/2012 -&gt; &lt;missing&gt;          
+05/24/2012 -&gt; &lt;missing&gt;          
+05/25/2012 -&gt; &lt;missing&gt;          
+05/29/2012 -&gt; &lt;missing&gt;          
+05/30/2012 -&gt; &lt;missing&gt;          
+05/31/2012 -&gt; &lt;missing&gt;          
+06/01/2012 -&gt; &lt;missing&gt;          
+06/04/2012 -&gt; &lt;missing&gt;          
+06/05/2012 -&gt; &lt;missing&gt;          
+06/06/2012 -&gt; &lt;missing&gt;          
+06/07/2012 -&gt; &lt;missing&gt;          
+06/08/2012 -&gt; &lt;missing&gt;          
+...        -&gt; ...                
+10/18/2013 -&gt; 33.6495            
+10/21/2013 -&gt; 33.762             
+10/22/2013 -&gt; 33.8685            
+10/23/2013 -&gt; 33.931             
+10/24/2013 -&gt; 33.978500000000004 
+10/25/2013 -&gt; 34.1015            
+10/28/2013 -&gt; 34.21600000000001  
+10/29/2013 -&gt; 34.313             
+10/30/2013 -&gt; 34.394000000000005 
+10/31/2013 -&gt; 34.471500000000006 
+11/01/2013 -&gt; 34.554             
+11/04/2013 -&gt; 34.686             
+11/05/2013 -&gt; 34.8675            
+11/06/2013 -&gt; 35.123             
+11/07/2013 -&gt; 35.309999999999995 
+
+val aboveTrend: Series&lt;DateTime,float&gt; =
+  
+06/15/2012 -&gt; 0.7665000000000006  
+06/18/2012 -&gt; 0.5595000000000034  
+06/19/2012 -&gt; 1.3439999999999976  
+06/20/2012 -&gt; 1.5174999999999983  
+06/21/2012 -&gt; 0.6979999999999968  
+06/22/2012 -&gt; 1.1594999999999942  
+06/25/2012 -&gt; 0.3204999999999991  
+06/26/2012 -&gt; 0.44849999999999923 
+06/27/2012 -&gt; 0.5484999999999971  
+06/28/2012 -&gt; 0.2639999999999958  
+06/29/2012 -&gt; 0.8209999999999908  
+07/02/2012 -&gt; 0.6939999999999884  
+07/03/2012 -&gt; 0.7754999999999903  
+07/05/2012 -&gt; 0.6504999999999868  
+07/06/2012 -&gt; 0.11449999999998184 
+...        -&gt; ...                 
+10/16/2013 -&gt; 1.1630000000000038  
+10/17/2013 -&gt; 1.3790000000000049  
+10/18/2013 -&gt; 1.3104999999999976  
+10/21/2013 -&gt; 1.2280000000000015  
+10/22/2013 -&gt; 0.7115000000000009  
+10/25/2013 -&gt; 1.6284999999999954  
+10/28/2013 -&gt; 1.353999999999992   
+10/29/2013 -&gt; 1.2070000000000007  
+10/30/2013 -&gt; 1.1459999999999937  
+10/31/2013 -&gt; 0.9384999999999906  
+11/01/2013 -&gt; 0.9759999999999991  
+11/04/2013 -&gt; 1.2539999999999978  
+11/05/2013 -&gt; 1.7725000000000009  
+11/06/2013 -&gt; 3.057000000000002   
+11/07/2013 -&gt; 2.190000000000005   
+
+val it: int = 225</code></pre></td></tr></table>
+<p>Expanding functions use <em>all</em> history up to each point. The running maximum gives the
+maximum drawdown (the worst fall from a previous peak):</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span data-fsdocs-tip="fs48" data-fsdocs-tip-unique="104" class="id">drawdown</span> <span class="o">=</span> <span data-fsdocs-tip="fs25" data-fsdocs-tip-unique="105" class="id">prices</span><span class="pn">?</span><span data-fsdocs-tip="fs20" data-fsdocs-tip-unique="106" class="id">msft</span> <span class="o">/</span> <span data-fsdocs-tip="fs32" data-fsdocs-tip-unique="107" class="rt">Stats</span><span class="pn">.</span><span data-fsdocs-tip="fs49" data-fsdocs-tip-unique="108" class="id">expandingMax</span> <span data-fsdocs-tip="fs25" data-fsdocs-tip-unique="109" class="id">prices</span><span class="pn">?</span><span data-fsdocs-tip="fs20" data-fsdocs-tip-unique="110" class="id">msft</span> <span class="o">-</span> <span class="n">1.0</span>
+<span data-fsdocs-tip="fs32" data-fsdocs-tip-unique="111" class="rt">Stats</span><span class="pn">.</span><span data-fsdocs-tip="fs50" data-fsdocs-tip-unique="112" class="id">min</span> <span data-fsdocs-tip="fs48" data-fsdocs-tip-unique="113" class="id">drawdown</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val drawdown: Series&lt;DateTime,float&gt; =
+  
+05/18/2012 -&gt; 0                      
+05/21/2012 -&gt; 0                      
+05/22/2012 -&gt; 0                      
+05/23/2012 -&gt; -0.021966527196652708  
+05/24/2012 -&gt; -0.02336122733612267   
+05/25/2012 -&gt; -0.023709902370990243  
+05/29/2012 -&gt; -0.00662482566248257   
+05/30/2012 -&gt; -0.014295676429567639  
+05/31/2012 -&gt; -0.019177126917712672  
+06/01/2012 -&gt; -0.043933054393305415  
+06/04/2012 -&gt; -0.040794979079497806  
+06/05/2012 -&gt; -0.04218967921896799   
+06/06/2012 -&gt; -0.013947001394700065  
+06/07/2012 -&gt; -0.0177824267782426    
+06/08/2012 -&gt; -0.0038354253835425345 
+...        -&gt; ...                    
+10/18/2013 -&gt; -0.029428095502498697  
+10/21/2013 -&gt; -0.02859522487506938   
+10/22/2013 -&gt; -0.03997779011660196   
+10/23/2013 -&gt; -0.06274292059966702   
+10/24/2013 -&gt; -0.06385341476957263   
+10/25/2013 -&gt; -0.008051082731815873  
+10/28/2013 -&gt; -0.01249305941143819   
+10/29/2013 -&gt; -0.013881177123820088  
+10/30/2013 -&gt; -0.013325930038867395  
+10/31/2013 -&gt; -0.01693503609106073   
+11/01/2013 -&gt; -0.013603553581343797  
+11/04/2013 -&gt; -0.002220988339811325  
+11/05/2013 -&gt; 0                      
+11/06/2013 -&gt; 0                      
+11/07/2013 -&gt; -0.01781037192247248   
+
+val it: float = -0.1547033759</code></pre></td></tr></table>
+<h2><a name="Downsample-to-monthly-data" class="anchor" href="#Downsample-to-monthly-data">Downsample to monthly data</a></h2>
+<p><code>Series.resampleEquiv</code> groups observations whose keys map to the same value.
+Mapping every date to the first of its month and taking the last price in each group
+gives month-end prices:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span data-fsdocs-tip="fs51" data-fsdocs-tip-unique="114" class="id">monthly</span> <span class="o">=</span>
+  <span data-fsdocs-tip="fs25" data-fsdocs-tip-unique="115" class="id">prices</span>
+  <span class="o">|&gt;</span> <span data-fsdocs-tip="fs16" data-fsdocs-tip-unique="116" class="m">Frame</span><span class="pn">.</span><span data-fsdocs-tip="fs52" data-fsdocs-tip-unique="117" class="id">mapCols</span> <span class="pn">(</span><span class="k">fun</span> <span class="id">_</span> <span data-fsdocs-tip="fs53" data-fsdocs-tip-unique="118" class="fn">s</span> <span class="k">-&gt;</span>
+      <span data-fsdocs-tip="fs53" data-fsdocs-tip-unique="119" class="fn">s</span><span class="pn">.</span><span data-fsdocs-tip="fs54" data-fsdocs-tip-unique="120" class="id">As</span><span class="pn">&lt;</span><span data-fsdocs-tip="fs55" data-fsdocs-tip-unique="121" class="vt">float</span><span class="pn">&gt;</span><span class="pn">(</span><span class="pn">)</span>
+      <span class="o">|&gt;</span> <span data-fsdocs-tip="fs35" data-fsdocs-tip-unique="122" class="m">Series</span><span class="pn">.</span><span data-fsdocs-tip="fs56" data-fsdocs-tip-unique="123" class="id">resampleEquiv</span> <span class="pn">(</span><span class="k">fun</span> <span data-fsdocs-tip="fs57" data-fsdocs-tip-unique="124" class="fn">d</span> <span class="k">-&gt;</span> <span data-fsdocs-tip="fs29" data-fsdocs-tip-unique="125" class="fn">DateTime</span><span class="pn">(</span><span data-fsdocs-tip="fs57" data-fsdocs-tip-unique="126" class="fn">d</span><span class="pn">.</span><span data-fsdocs-tip="fs58" data-fsdocs-tip-unique="127" class="id">Year</span><span class="pn">,</span> <span data-fsdocs-tip="fs57" data-fsdocs-tip-unique="128" class="fn">d</span><span class="pn">.</span><span data-fsdocs-tip="fs59" data-fsdocs-tip-unique="129" class="id">Month</span><span class="pn">,</span> <span class="n">1</span><span class="pn">)</span><span class="pn">)</span>
+      <span class="o">|&gt;</span> <span data-fsdocs-tip="fs35" data-fsdocs-tip-unique="130" class="m">Series</span><span class="pn">.</span><span data-fsdocs-tip="fs36" data-fsdocs-tip-unique="131" class="id">mapValues</span> <span data-fsdocs-tip="fs35" data-fsdocs-tip-unique="132" class="m">Series</span><span class="pn">.</span><span data-fsdocs-tip="fs60" data-fsdocs-tip-unique="133" class="id">lastValue</span>
+      <span class="o">:&gt;</span> <span data-fsdocs-tip="fs61" data-fsdocs-tip-unique="134" class="if">ISeries</span><span class="pn">&lt;</span><span class="id">_</span><span class="pn">&gt;</span><span class="pn">)</span>
+
+<span data-fsdocs-tip="fs51" data-fsdocs-tip-unique="135" class="id">monthly</span> <span class="o">|&gt;</span> <span data-fsdocs-tip="fs16" data-fsdocs-tip-unique="136" class="m">Frame</span><span class="pn">.</span><span data-fsdocs-tip="fs21" data-fsdocs-tip-unique="137" class="id">take</span> <span class="n">3</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val monthly: Frame&lt;DateTime,string&gt; =
+  
+              msft  goog    aapl   fb    
+05/01/2012 -&gt; 28.13 580.86  558.61 29.6  
+06/01/2012 -&gt; 29.48 580.07  564.67 31.1  
+07/01/2012 -&gt; 28.4  632.97  590.55 21.71 
+08/01/2012 -&gt; 29.9  685.09  645.99 18.06 
+09/01/2012 -&gt; 28.87 754.5   647.79 21.66 
+10/01/2012 -&gt; 27.68 680.3   578.09 21.11 
+11/01/2012 -&gt; 26.03 698.37  570.94 28    
+12/01/2012 -&gt; 26.12 707.38  519.13 26.62 
+01/01/2013 -&gt; 26.85 755.69  444.33 30.98 
+02/01/2013 -&gt; 27.41 801.2   433.09 27.25 
+03/01/2013 -&gt; 28.21 794.19  434.33 25.58 
+04/01/2013 -&gt; 32.64 824.57  434.45 27.77 
+05/01/2013 -&gt; 34.66 871.22  444.19 24.35 
+06/01/2013 -&gt; 34.3  880.37  391.64 24.88 
+07/01/2013 -&gt; 31.62 887.75  446.95 36.8  
+08/01/2013 -&gt; 33.4  846.9   484.39 41.29 
+09/01/2013 -&gt; 33.28 875.91  473.98 50.23 
+10/01/2013 -&gt; 35.41 1030.58 519.67 50.21 
+11/01/2013 -&gt; 37.5  1007.95 512.49 47.56 
+
+val it: Frame&lt;DateTime,string&gt; =
+  
+              msft  goog   aapl   fb    
+05/01/2012 -&gt; 28.13 580.86 558.61 29.6  
+06/01/2012 -&gt; 29.48 580.07 564.67 31.1  
+07/01/2012 -&gt; 28.4  632.97 590.55 21.71</code></pre></td></tr></table>
+<h2><a name="Where-next" class="anchor" href="#Where-next">Where next?</a></h2>
+<ul>
+<li>
+<a href="series.html">Series and time series features</a> covers windowing, chunking and
+sampling in depth.
+</li>
+<li><a href="stats.html">Calculating statistics</a> lists all moving-window and expanding functions.</li>
+<li><a href="math.html">Deedle.MathNetNumerics</a> adds exponentially weighted statistics and regression.</li>
+</ul>
+
+        <div popover class="fsdocs-tip" id="fs1">namespace System</div>
+<div popover class="fsdocs-tip" id="fs2">namespace Deedle</div>
+<div popover class="fsdocs-tip" id="fs3">val root: string</div>
+<div popover class="fsdocs-tip" id="fs4">val fsi: FSharp.Compiler.Interactive.InteractiveSession</div>
+<div popover class="fsdocs-tip" id="fs5">member FSharp.Compiler.Interactive.InteractiveSession.AddPrinter: (&#39;T -&gt; string) -&gt; unit</div>
+<div popover class="fsdocs-tip" id="fs6">val o: obj</div>
+<div popover class="fsdocs-tip" id="fs7">type obj = Object</div>
+<div popover class="fsdocs-tip" id="fs8">val iface: Type</div>
+<div popover class="fsdocs-tip" id="fs9">Object.GetType() : Type</div>
+<div popover class="fsdocs-tip" id="fs10">val fmt: Reflection.MethodInfo</div>
+<div popover class="fsdocs-tip" id="fs11">
+Type.GetMethod(name: string) : Reflection.MethodInfo<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />
+Type.GetMethod(name: string, types: Type array) : Reflection.MethodInfo<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />
+Type.GetMethod(name: string, bindingAttr: Reflection.BindingFlags) : Reflection.MethodInfo<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />
+Type.GetMethod(name: string, types: Type array, modifiers: Reflection.ParameterModifier array) : Reflection.MethodInfo<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />
+Type.GetMethod(name: string, bindingAttr: Reflection.BindingFlags, types: Type array) : Reflection.MethodInfo<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />
+Type.GetMethod(name: string, genericParameterCount: int, types: Type array) : Reflection.MethodInfo<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />
+Type.GetMethod(name: string, genericParameterCount: int, types: Type array, modifiers: Reflection.ParameterModifier array) : Reflection.MethodInfo<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />
+Type.GetMethod(name: string, genericParameterCount: int, bindingAttr: Reflection.BindingFlags, types: Type array) : Reflection.MethodInfo<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />
+Type.GetMethod(name: string, bindingAttr: Reflection.BindingFlags, binder: Reflection.Binder, types: Type array, modifiers: Reflection.ParameterModifier array) : Reflection.MethodInfo<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />
+Type.GetMethod(name: string, bindingAttr: Reflection.BindingFlags, binder: Reflection.Binder, callConvention: Reflection.CallingConventions, types: Type array, modifiers: Reflection.ParameterModifier array) : Reflection.MethodInfo<br />&#160;&#160;&#160;<em>(+0 other overloads)</em></div>
+<div popover class="fsdocs-tip" id="fs12">Reflection.MethodBase.Invoke(obj: obj, parameters: obj array) : obj<br />Reflection.MethodBase.Invoke(obj: obj, invokeAttr: Reflection.BindingFlags, binder: Reflection.Binder, parameters: obj array, culture: Globalization.CultureInfo) : obj</div>
+<div popover class="fsdocs-tip" id="fs13">Multiple items<br />val string: value: &#39;T -&gt; string<br /><br />--------------------<br />type string = String</div>
+<div popover class="fsdocs-tip" id="fs14">val loadStock: ticker: string -&gt; Frame&lt;DateTime,string&gt;</div>
+<div popover class="fsdocs-tip" id="fs15">val ticker: string</div>
+<div popover class="fsdocs-tip" id="fs16">Multiple items<br />module Frame
+
+from Deedle<br /><em>&lt;summary&gt;
+ The `Frame` module provides an F#-friendly API for working with data frames.
+ The module follows the usual desing for collection-processing in F#, so the
+ functions work well with the pipelining operator (`|&amp;gt;`). For example, given
+ a frame with two columns representing prices, we can use `Frame.pctChange` to
+ calculate daily returns like this:
+
+     let df = frame [ &quot;MSFT&quot; =&amp;gt; prices1; &quot;AAPL&quot; =&amp;gt; prices2 ]
+     let rets = df |&amp;gt; Frame.pctChange 1
+     rets |&amp;gt; Stats.mean
+
+ Note that the `Stats.mean` operation is overloaded and works both on series
+ (returning a number) and on frames (returning a series). You can also use
+ `Frame.diff` if you need absolute differences rather than relative changes.
+
+ The functions in this module are designed to be used from F#. For a C#-friendly
+ API, see the `FrameExtensions` type. For working with individual series, see the
+ `Series` module. The functions in the `Frame` module are grouped in a number of
+ categories and documented below.
+
+ Accessing frame data and lookup
+ -------------------------------
+
+ Functions in this category provide access to the values in the fame. You can
+ also add and remove columns from a frame (which both return a new value).
+
+ - `addCol`, `replaceCol` and `dropCol` can be used to create a new data frame
+   with a new column, by replacing an existing column with a new one, or by dropping
+   an existing column
+
+ - `cols` and `rows` return the columns or rows of a frame as a series containing
+   objects; `getCols` and `getRows` return a generic series and cast the values to
+   the type inferred from the context (columns or rows of incompatible types are skipped);
+   `getNumericCols` returns columns of a type convertible to `float` for convenience.
+
+ - You can get a specific row or column using `get[Col|Row]` or `lookup[Col|Row]` functions.
+   The `lookup` variant lets you specify lookup behavior for key matching (e.g. find the
+   nearest smaller key than the specified value). There are also `[try]get` and `[try]Lookup`
+   functions that return optional values and functions returning entire observations
+   (key together with the series).
+
+ - `sliceCols` and `sliceRows` return a sub-frame containing only the specified columns
+   or rows. Finally, `toArray2D` returns the frame data as a 2D array.
+
+ Grouping, windowing and chunking
+ --------------------------------
+
+ The basic grouping functions in this category can be used to group the rows of a
+ data frame by a specified projection or column to create a frame with hierarchical
+ index such as &lt;c&gt;Frame&amp;lt;&#39;K1 * &#39;K2, &#39;C&amp;gt;&lt;/c&gt;. The functions always aggregate rows, so if you
+ want to group columns, you need to use `Frame.transpose` first.
+
+ The function `groupRowsBy` groups rows by the value of a specified column. Use
+ `groupRowsBy[Int|Float|String...]` if you want to specify the type of the column in
+ an easier way than using type inference; `groupRowsUsing` groups rows using the
+ specified _projection function_ and `groupRowsByIndex` projects the grouping key just
+ from the row index.
+
+ More advanced functions include: `aggregateRowsBy` which groups the rows by a
+ specified sequence of columns and aggregates each group into a single value;
+ `pivotTable` implements the pivoting operation [as documented in the
+ tutorials](../frame.html#pivot).
+
+ The `melt` and `unmelt` functions turn the data frame into a single data frame
+ containing columns `Row`, `Column` and `Value` containing the data of the original
+ frame; `unmelt` can be used to turn this representation back into an original frame.
+
+ The `stack` and `unstack` functions implement pandas-style reshape operations.
+ `stack` converts `Frame&amp;lt;&#39;R,&#39;C&amp;gt;` to a long-format `Frame&amp;lt;&#39;R*&#39;C, string&amp;gt;` where each
+ cell becomes a row keyed by `(rowKey, colKey)` with a single `&quot;Value&quot;` column.
+ `unstack` promotes the inner row-key level to column keys, producing
+ `Frame&amp;lt;&#39;R1, &#39;C*&#39;R2&amp;gt;` from `Frame&amp;lt;&#39;R1*&#39;R2,&#39;C&amp;gt;`.
+
+ A simple windowing functions that are exposed for an entire frame operations are
+ `window` and `windowInto`. For more complex windowing operations, you currently have
+ to use `mapRows` or `mapCols` and apply windowing on individual series.
+
+ Sorting and index manipulation
+ ------------------------------
+
+ A frame is indexed by row keys and column keys. Both of these indices can be sorted
+ (by the keys). A frame that is sorted allows a number of additional operations (such
+ as lookup using the `Lookp.ExactOrSmaller` lookup behavior). The functions in this
+ category provide ways for manipulating the indices. It is expected that most operations
+ are done on rows and so more functions are available in a row-wise way. A frame can
+ alwyas be transposed using `Frame.transpose`.
+
+ Index operations:
+
+ The existing row/column keys can be replaced by a sequence of new keys using the
+ `indexColsWith` and `indexRowsWith` functions. Row keys can also be replaced by
+ ordinal numbers using `indexRowsOrdinally`.
+
+ The function `indexRows` uses the specified column of the original frame as the
+ index. It removes the column from the resulting frame (to avoid this, use overloaded
+ `IndexRows` method). This function infers the type of row keys from the context, so it
+ is usually more convenient to use `indexRows[Date|String|Int|...]` functions. Finally,
+ if you want to calculate the index value based on multiple columns of the row, you
+ can use `indexRowsUsing`.
+
+ Sorting frame rows:
+
+ Frame rows can be sorted according to the value of a specified column using the
+ `sortRows` function; `sortRowsBy` takes a projection function which lets you
+ transform the value of a column (e.g. to project a part of the value).
+
+ The functions `sortRowsByKey` and `sortColsByKey` sort the rows or columns
+ using the default ordering on the key values. The result is a frame with ordered
+ index.
+
+ Expanding columns:
+
+ When the frame contains a series with complex .NET objects such as F# records or
+ C# classes, it can be useful to &quot;expand&quot; the column. This operation looks at the
+ type of the objects, gets all properties of the objects (recursively) and
+ generates multiple series representing the properties as columns.
+
+ The function `expandCols` expands the specified columns while `expandAllCols`
+ applies the expansion to all columns of the data frame.
+
+ Frame transformations
+ ---------------------
+
+ Functions in this category perform standard transformations on data frames including
+ projections, filtering, taking some sub-frame of the frame, aggregating values
+ using scanning and so on.
+
+ Projection and filtering functions such as `[map|filter][Cols|Rows]` call the
+ specified function with the column or row key and an &lt;c&gt;ObjectSeries&amp;lt;&#39;K&amp;gt;&lt;/c&gt; representing
+ the column or row. You can use functions ending with `Values` (such as `mapRowValues`)
+ when you do not require the row key, but only the row series; `mapRowKeys` and
+ `mapColKeys` can be used to transform the keys.
+
+ You can use `reduceValues` to apply a custom reduction to values of columns. Other
+ aggregations are available in the `Stats` module. You can also get a row with the
+ greaterst or smallest value of a given column using `[min|max]RowBy`.
+
+ The functions `take[Last]` and `skip[Last]` can be used to take a sub-frame of the
+ original source frame by skipping a specified number of rows. Note that this
+ does not require an ordered frame and it ignores the index - for index-based lookup
+ use slicing, such as `df.Rows.[lo .. hi]`, instead.
+
+ Finally the `shift` function can be used to obtain a frame with values shifted by
+ the specified offset. This can be used e.g. to get previous value for each key using
+ `Frame.shift 1 df`. The `diff` function calculates difference from previous value using
+ `df - (Frame.shift offs df)`.
+
+ Processing frames with exceptions
+ ---------------------------------
+
+ The functions in this group can be used to write computations over frames that may fail.
+ They use the type &lt;c&gt;tryval&amp;lt;&#39;T&amp;gt;&lt;/c&gt; which is defined as a discriminated union
+ with two cases: Success containing a value, or Error containing an exception.
+
+ Using &lt;c&gt;tryval&amp;lt;&#39;T&amp;gt;&lt;/c&gt; as a value in a data frame is not generally recommended, because
+ the type of values cannot be tracked in the type. For this reason, it is better to use
+ &lt;c&gt;tryval&amp;lt;&#39;T&amp;gt;&lt;/c&gt; with individual series. However, `tryValues` and `fillErrorsWith` functions
+ can be used to get values, or fill failed values inside an entire data frame.
+
+ The `tryMapRows` function is more useful. It can be used to write a transformation
+ that applies a computation (which may fail) to each row of a data frame. The resulting
+ series is of type &lt;c&gt;Series&amp;lt;&#39;R, tryval&amp;lt;&#39;T&amp;gt;&amp;gt;&lt;/c&gt; and can be processed using the &lt;c&gt;Series&lt;/c&gt; module
+ functions.
+
+ Missing values
+ --------------
+
+ This group of functions provides a way of working with missing values in a data frame.
+ The category provides the following functions that can be used to fill missing values:
+
+  * `fillMissingWith` fills missing values with a specified constant
+  * `fillMissingUsing` calls a specified function for every missing value
+  * `fillMissing` and variants propagates values from previous/later keys
+
+ We use the terms _sparse_ and _dense_ to denote series that contain some missing values
+ or do not contain any missing values, respectively. The functions `denseCols` and
+ `denseRows` return a series that contains only dense columns or rows and all sparse
+ rows or columns are replaced with a missing value. The `dropSparseCols` and `dropSparseRows`
+ functions drop these missing values and return a frame with no missing values.
+
+ Joining, merging and zipping
+ ----------------------------
+
+ The simplest way to join two frames is to use the `join` operation which can be used to
+ perform left, right, outer or inner join of two frames. When the row keys of the frames do
+ not match exactly, you can use `joinAlign` which takes an additional parameter that specifies
+ how to find matching key in left/right join (e.g. by taking the nearest smaller available key).
+
+ Frames that do not contian overlapping values can be combined using `merge` (when combining
+ just two frames) or using `mergeAll` (for larger number of frames). Tha latter is optimized
+ to work well for a large number of data frames.
+
+ Finally, frames with overlapping values can be combined using `zip`. It takes a function
+ that is used to combine the overlapping values. A `zipAlign` function provides a variant
+ with more flexible row key matching (as in `joinAlign`)
+
+ Hierarchical index operations
+ -----------------------------
+
+ A data frame has a hierarchical row index if the row index is formed by a tuple, such as
+ &lt;c&gt;Frame&amp;lt;&#39;R1 * &#39;R2, &#39;C&amp;gt;&lt;/c&gt;. Frames of this kind are returned, for example, by the grouping
+ functions such as &lt;c&gt;Frame.groupRowsBy&lt;/c&gt;. The functions in this category provide ways for
+ working with data frames that have hierarchical row keys.
+
+ The functions &lt;c&gt;applyLevel&lt;/c&gt; and &lt;c&gt;reduceLevel&lt;/c&gt; can be used to reduce values according to
+ one of the levels. The &lt;c&gt;applyLevel&lt;/c&gt; function takes a reduction of type &lt;c&gt;Series&amp;lt;&#39;K, &#39;T&amp;gt; -&amp;gt; &#39;T&lt;/c&gt;
+ while &lt;c&gt;reduceLevel&lt;/c&gt; reduces individual values using a function of type &lt;c&gt;&#39;T -&amp;gt; &#39;T -&amp;gt; &#39;T&lt;/c&gt;.
+
+ The functions &lt;c&gt;nest&lt;/c&gt; and &lt;c&gt;unnest&lt;/c&gt; can be used to convert between frames with
+ hierarchical indices (&lt;c&gt;Frame&amp;lt;&#39;K1 * &#39;K2, &#39;C&amp;gt;&lt;/c&gt;) and series of frames that represent
+ individual groups (&lt;c&gt;Series&amp;lt;&#39;K1, Frame&amp;lt;&#39;K2, &#39;C&amp;gt;&amp;gt;&lt;/c&gt;). The &lt;c&gt;nestBy&lt;/c&gt; function can be
+ used to perform group by operation and return the result as a series of frems.
+ &lt;/summary&gt;<br />&lt;category&gt;Frame and series operations&lt;/category&gt;</em><br /><br />--------------------<br />type Frame =
+  static member ReadCsv: location: string * hasHeaders: Nullable&lt;bool&gt; * inferTypes: Nullable&lt;bool&gt; * inferRows: Nullable&lt;int&gt; * schema: string * separators: string * culture: string * maxRows: Nullable&lt;int&gt; * missingValues: string array * preferOptions: bool * encoding: Encoding -&gt; Frame&lt;int,string&gt; + 1 overload
+  static member ReadReader: reader: IDataReader -&gt; Frame&lt;int,string&gt;
+  static member CustomExpanders: Dictionary&lt;Type,Func&lt;obj,(string * Type * obj) seq&gt;&gt;
+  static member NonExpandableInterfaces: ResizeArray&lt;Type&gt;
+  static member NonExpandableTypes: HashSet&lt;Type&gt;<br /><em>&lt;summary&gt;
+ Provides static methods for creating frames, reading frame data
+ from CSV files and database (via IDataReader). The type also provides
+ global configuration for reflection-based expansion.
+ &lt;/summary&gt;<br />&lt;category&gt;Frame and series operations&lt;/category&gt;</em><br /><br />--------------------<br />type Frame&lt;&#39;TRowKey,&#39;TColumnKey (requires equality and equality)&gt; =
+  interface IDynamicMetaObjectProvider
+  interface INotifyCollectionChanged
+  interface IFrameFormattable
+  interface IFsiFormattable
+  interface IFrame
+  new: rowIndex: IIndex&lt;&#39;TRowKey&gt; * columnIndex: IIndex&lt;&#39;TColumnKey&gt; * data: IVector&lt;IVector&gt; * indexBuilder: IIndexBuilder * vectorBuilder: IVectorBuilder -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; + 1 overload
+  member AddColumn: column: &#39;TColumnKey * series: &#39;V seq -&gt; unit + 3 overloads
+  member After: lowerExclusive: &#39;TRowKey -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;
+  member AggregateRowsBy: groupBy: &#39;TColumnKey seq * aggBy: &#39;TColumnKey seq * aggFunc: Func&lt;Series&lt;&#39;TRowKey,&#39;a&gt;,&#39;b&gt; -&gt; Frame&lt;int,&#39;TColumnKey&gt;
+  member Before: upperExclusive: &#39;TRowKey -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;
+  ...<br /><em>&lt;summary&gt;
+ A frame is the key Deedle data structure (together with series). It represents a
+ data table (think spreadsheet or CSV file) with multiple rows and columns. The frame
+ consists of row index, column index and data. The indices are used for efficient
+ lookup when accessing data by the row key `&#39;TRowKey` or by the column key
+ `&#39;TColumnKey`. Deedle frames are optimized for the scenario when all values in a given
+ column are of the same type (but types of different columns can differ).
+ &lt;/summary&gt;<br />&lt;remarks&gt;&lt;para&gt;Joining, zipping and appending:&lt;/para&gt;&lt;para&gt;
+ More info
+ &lt;/para&gt;&lt;/remarks&gt;<br />&lt;category&gt;Core frame and series types&lt;/category&gt;</em><br /><br />--------------------<br />new: names: &#39;TColumnKey seq * columns: ISeries&lt;&#39;TRowKey&gt; seq -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />new: rowIndex: Indices.IIndex&lt;&#39;TRowKey&gt; * columnIndex: Indices.IIndex&lt;&#39;TColumnKey&gt; * data: IVector&lt;IVector&gt; * indexBuilder: Indices.IIndexBuilder * vectorBuilder: Vectors.IVectorBuilder -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;</div>
+<div popover class="fsdocs-tip" id="fs17">static member Frame.ReadCsv: reader: IO.TextReader * ?hasHeaders: bool * ?inferTypes: bool * ?inferRows: int * ?schema: string * ?separators: string * ?culture: string * ?maxRows: int * ?missingValues: string array * ?preferOptions: bool * ?typeResolver: (string -&gt; string option) -&gt; Frame&lt;int,string&gt;<br />static member Frame.ReadCsv: stream: IO.Stream * hasHeaders: Nullable&lt;bool&gt; * inferTypes: Nullable&lt;bool&gt; * inferRows: Nullable&lt;int&gt; * schema: string * separators: string * culture: string * maxRows: Nullable&lt;int&gt; * missingValues: string array * preferOptions: Nullable&lt;bool&gt; * encoding: Text.Encoding -&gt; Frame&lt;int,string&gt;<br />static member Frame.ReadCsv: location: string * hasHeaders: Nullable&lt;bool&gt; * inferTypes: Nullable&lt;bool&gt; * inferRows: Nullable&lt;int&gt; * schema: string * separators: string * culture: string * maxRows: Nullable&lt;int&gt; * missingValues: string array * preferOptions: bool * encoding: Text.Encoding -&gt; Frame&lt;int,string&gt;<br />static member Frame.ReadCsv: path: string * ?hasHeaders: bool * ?inferTypes: bool * ?inferRows: int * ?schema: string * ?separators: string * ?culture: string * ?maxRows: int * ?missingValues: string array * ?preferOptions: bool * ?typeResolver: (string -&gt; string option) * ?encoding: Text.Encoding -&gt; Frame&lt;int,string&gt;<br />static member Frame.ReadCsv: stream: IO.Stream * ?hasHeaders: bool * ?inferTypes: bool * ?inferRows: int * ?schema: string * ?separators: string * ?culture: string * ?maxRows: int * ?missingValues: string array * ?preferOptions: bool * ?typeResolver: (string -&gt; string option) * ?encoding: Text.Encoding -&gt; Frame&lt;int,string&gt;<br />static member Frame.ReadCsv: path: string * indexCol: string * ?hasHeaders: bool * ?inferTypes: bool * ?inferRows: int * ?schema: string * ?separators: string * ?culture: string * ?maxRows: int * ?missingValues: string array * ?preferOptions: bool * ?typeResolver: (string -&gt; string option) * ?encoding: Text.Encoding -&gt; Frame&lt;&#39;R,string&gt; (requires equality)</div>
+<div popover class="fsdocs-tip" id="fs18">val indexRowsDateTime: column: &#39;C -&gt; frame: Frame&lt;&#39;R1,&#39;C&gt; -&gt; Frame&lt;DateTime,&#39;C&gt; (requires equality and equality)<br /><em>&lt;summary&gt;
+ Returns a data frame whose rows are indexed based on the specified column of the original
+ data frame. This function casts (or converts) the column key to values of type `DateTime`
+ (a generic variant that may require some type annotation is `Frame.indexRows`)
+ The specified column is removed from the resulting frame.
+ &lt;/summary&gt;<br />&lt;param name=&quot;frame&quot;&gt;Source data frame whose row index is to be replaced.&lt;/param&gt;<br />&lt;param name=&quot;column&quot;&gt;The name of a column in the original data frame that will be used for the new index. Note that the values in the column need to be unique.&lt;/param&gt;<br />&lt;category&gt;Sorting and index manipulation&lt;/category&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs19">val sortRowsByKey: frame: Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt; (requires equality and equality)<br /><em>&lt;summary&gt;
+ Returns a data frame that contains the same data as the input,
+ but whose rows are an ordered series. This allows using operations that are
+ only available on indexed series such as alignment and inexact lookup.
+
+ &amp;lt;category&amp;gt;Sorting and index manipulation&amp;lt;/category&amp;gt;
+&lt;/summary&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs20">val msft: Frame&lt;DateTime,string&gt;</div>
+<div popover class="fsdocs-tip" id="fs21">val take: count: int -&gt; frame: Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt; (requires equality and equality)<br /><em>&lt;summary&gt;
+ Returns a frame that contains the specified `count` of rows from the
+ original frame; `count` must be smaller or equal to the original number of rows.
+
+ &amp;lt;category&amp;gt;Frame transformations&amp;lt;/category&amp;gt;
+&lt;/summary&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs22">val closes: Frame&lt;DateTime,string&gt;</div>
+<div popover class="fsdocs-tip" id="fs23">val frame: columns: (&#39;a * #ISeries&lt;&#39;c&gt;) seq -&gt; Frame&lt;&#39;c,&#39;a&gt; (requires equality and equality)<br /><em>&lt;summary&gt;
+ A function for constructing data frame from a sequence of name - column pairs.
+ This provides a nicer syntactic sugar for `Frame.ofColumns`.
+ &lt;/summary&gt;<br />&lt;example&gt;
+ To create a simple frame with two columns, you can write:
+ &lt;code&gt;
+ frame [ &quot;A&quot; =&amp;gt; series [ 1 =&amp;gt; 30.0; 2 =&amp;gt; 35.0 ]
+         &quot;B&quot; =&amp;gt; series [ 1 =&amp;gt; 30.0; 3 =&amp;gt; 40.0 ] ]
+ &lt;/code&gt;&lt;/example&gt;<br />&lt;category&gt;Frame construction&lt;/category&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs24">val t: string</div>
+<div popover class="fsdocs-tip" id="fs25">val prices: Frame&lt;DateTime,string&gt;</div>
+<div popover class="fsdocs-tip" id="fs26">val dropSparseRows: frame: Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt; (requires equality and equality)<br /><em>&lt;summary&gt;
+ Creates a new data frame that contains only those rows of the original
+ data frame that are _dense_, meaning that they have a value for each column.
+ The resulting data frame has the same number of columns, but may have
+ fewer rows (or no rows at all).
+ &lt;/summary&gt;<br />&lt;category&gt;Missing values&lt;/category&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs27">property Frame.RowCount: int with get</div>
+<div popover class="fsdocs-tip" id="fs28">property Frame.Rows: RowSeries&lt;DateTime,string&gt; with get<br /><em>&lt;category&gt;Accessors and slicing&lt;/category&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs29">Multiple items<br />
+type DateTime =
+  new: date: DateOnly * time: TimeOnly -&gt; unit + 16 overloads
+  member Add: value: TimeSpan -&gt; DateTime
+  member AddDays: value: float -&gt; DateTime
+  member AddHours: value: float -&gt; DateTime
+  member AddMicroseconds: value: float -&gt; DateTime
+  member AddMilliseconds: value: float -&gt; DateTime
+  member AddMinutes: value: float -&gt; DateTime
+  member AddMonths: months: int -&gt; DateTime
+  member AddSeconds: value: float -&gt; DateTime
+  member AddTicks: value: int64 -&gt; DateTime
+  ...<br /><em>&lt;summary&gt;Represents an instant in time, typically expressed as a date and time of day.&lt;/summary&gt;</em><br /><br />--------------------<br />DateTime ()<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(ticks: int64) : DateTime<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(date: DateOnly, time: TimeOnly) : DateTime<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(ticks: int64, kind: DateTimeKind) : DateTime<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(date: DateOnly, time: TimeOnly, kind: DateTimeKind) : DateTime<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(year: int, month: int, day: int) : DateTime<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(year: int, month: int, day: int, calendar: Globalization.Calendar) : DateTime<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(year: int, month: int, day: int, hour: int, minute: int, second: int) : DateTime<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(year: int, month: int, day: int, hour: int, minute: int, second: int, kind: DateTimeKind) : DateTime<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(year: int, month: int, day: int, hour: int, minute: int, second: int, calendar: Globalization.Calendar) : DateTime<br />&#160;&#160;&#160;<em>(+0 other overloads)</em></div>
+<div popover class="fsdocs-tip" id="fs30">val returns: Frame&lt;DateTime,string&gt;</div>
+<div popover class="fsdocs-tip" id="fs31">val shift: offset: int -&gt; frame: Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt; (requires equality and equality)<br /><em>&lt;summary&gt;
+ Returns a frame with columns shifted by the specified offset. When the offset is
+ positive, the values are shifted forward and first `offset` keys are dropped. When the
+ offset is negative, the values are shifted backwards and the last `offset` keys are dropped.
+ Expressed in pseudo-code:
+
+     result[k] = series[k - offset]
+ &lt;/summary&gt;<br />&lt;param name=&quot;offset&quot;&gt;Can be both positive and negative number.&lt;/param&gt;<br />&lt;param name=&quot;frame&quot;&gt;The input frame whose columns are to be shifted.&lt;/param&gt;<br />&lt;remarks&gt;
+ If you want to calculate the difference, e.g. `df - (Frame.shift 1 df)`, you can
+ use `Frame.diff` which will be a little bit faster.
+ &lt;/remarks&gt;<br />&lt;category&gt;Frame transformations&lt;/category&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs32">type Stats =
+  static member corr: series1: Series&lt;&#39;K,&#39;V1&gt; -&gt; series2: Series&lt;&#39;K,&#39;V2&gt; -&gt; float (requires equality)
+  static member corrFrame: frame: Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;C,&#39;C&gt; (requires equality and equality)
+  static member count: series: Series&lt;&#39;K,&#39;V&gt; -&gt; int (requires equality) + 1 overload
+  static member cov: series1: Series&lt;&#39;K,&#39;V1&gt; -&gt; series2: Series&lt;&#39;K,&#39;V2&gt; -&gt; float (requires equality)
+  static member covFrame: frame: Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;C,&#39;C&gt; (requires equality and equality)
+  static member describe: series: Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;string,float&gt; (requires equality and equality) + 1 overload
+  static member expandingCount: series: Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,float&gt; (requires equality)
+  static member expandingKurt: series: Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,float&gt; (requires equality)
+  static member expandingMax: series: Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,float&gt; (requires equality)
+  static member expandingMean: series: Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,float&gt; (requires equality)
+  ...</div>
+<div popover class="fsdocs-tip" id="fs33">static member Stats.describe: frame: Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;string,&#39;C&gt; (requires equality and equality)<br />static member Stats.describe: series: Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;string,float&gt; (requires equality and equality)</div>
+<div popover class="fsdocs-tip" id="fs34">val getNumericCols: frame: Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,Series&lt;&#39;R,float&gt;&gt; (requires equality and equality)<br /><em>&lt;summary&gt;
+ Returns a series of columns of the data frame indexed by the column keys,
+ which contains those series whose values are convertible to float, and with
+ missing values where the conversion fails.
+ &lt;/summary&gt;<br />&lt;category&gt;Accessing frame data and lookup&lt;/category&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs35">Multiple items<br />module Series
+
+from Deedle<br /><em>&lt;summary&gt;
+ The `Series` module provides an F#-friendly API for working with data and time series.
+ The API follows the usual design for collection-processing in F#, so the functions work
+ well with the pipelining (&lt;c&gt;|&amp;gt;&lt;/c&gt;) operator. For example, given a series with ages,
+ we can use `Series.filterValues` to filter outliers and then `Stats.mean` to calculate
+ the mean:
+
+     ages
+     |&amp;gt; Series.filterValues (fun v -&amp;gt; v &amp;gt; 0.0 &amp;amp;&amp;amp; v &amp;lt; 120.0)
+     |&amp;gt; Stats.mean
+
+ The module provides comprehensive set of functions for working with series. The same
+ API is also exposed using C#-friendly extension methods. In C#, the above snippet could
+ be written as:
+
+     [lang=csharp]
+     ages
+       .Where(kvp =&amp;gt; kvp.Value &amp;gt; 0.0 &amp;amp;&amp;amp; kvp.Value &amp;lt; 120.0)
+       .Mean()
+
+ For more information about similar frame-manipulation functions, see the `Frame` module.
+ For more information about C#-friendly extensions, see `SeriesExtensions`. The functions
+ in the `Series` module are grouped in a number of categories and documented below.
+
+ Accessing series data and lookup
+ --------------------------------
+
+ Functions in this category provide access to the values in the series.
+
+  - The term _observation_ is used for a key value pair in the series.
+  - When working with a sorted series, it is possible to perform lookup using
+    keys that are not present in the series - you can specify to search for the
+    previous or next available value using _lookup behavior_.
+  - Functions such as `get` and `getAll` have their counterparts `lookup` and
+    `lookupAll` that let you specify lookup behavior.
+  - For most of the functions that may fail, there is a `try[Foo]` variant that
+    returns `None` instead of failing.
+  - Functions with a name ending with `At` perform lookup based on the absolute
+    integer offset (and ignore the keys of the series)
+
+ Series transformations
+ ----------------------
+
+ Functions in this category perform standard transformations on series including
+ projections, filtering, taking some sub-series of the series, aggregating values
+ using scanning and so on.
+
+ Projection and filtering functions generally skip over missing values, but there
+ are variants `filterAll` and `mapAll` that let you handle missing values explicitly.
+ Keys can be transformed using `mapKeys`. When you do not need to consider the keys,
+ and only care about values, use `filterValues` and `mapValues` (which is also aliased
+ as the `$` operator).
+
+ Series supports standard set of folding functions including `reduce` and `fold` (to
+ reduce series values into a single value) as well as the `scan[All]` function, which
+ can be used to fold values of a series into a series of intermeidate folding results.
+
+ The functions `take[Last]` and `skip[Last]` can be used to take a sub-series of the
+ original source series by skipping a specified number of elements. Note that this
+ does not require an ordered series and it ignores the index - for index-based lookup
+ use slicing, such as `series.[lo .. hi]`, instead.
+
+ Finally the `shift` function can be used to obtain a series with values shifted by
+ the specified offset. This can be used e.g. to get previous value for each key using
+ `Series.shift 1 ts`. The `diff` function calculates difference from previous value using
+ `ts - (Series.shift offs ts)`.
+
+ Processing series with exceptions
+ ---------------------------------
+
+ The functions in this group can be used to write computations over series that may fail.
+ They use the type &lt;c&gt;tryval&amp;lt;&#39;T&amp;gt;&lt;/c&gt; which is defined as a discriminated union
+ with two cases: Success containing a value, or Error containing an exception.
+
+ The function `tryMap` lets you create &lt;c&gt;Series&amp;lt;&#39;K, tryval&amp;lt;&#39;T&amp;gt;&amp;gt;&lt;/c&gt; by mapping over values
+ of an original series. You can then extract values using `tryValues`, which throws
+ `AggregateException` if there were any errors. Functions `tryErrors` and `trySuccesses`
+ give series containing only errors and successes. You can fill failed values with
+ a constant using `fillErrorsWith`.
+
+ Hierarchical index operations
+ -----------------------------
+
+ When the key of a series is tuple, the elements of the tuple can be treated
+ as multiple levels of a index. For example &lt;c&gt;Series&amp;lt;&#39;K1 * &#39;K2, &#39;V&amp;gt;&lt;/c&gt; has two
+ levels with keys of types &lt;c&gt;&#39;K1&lt;/c&gt; and &lt;c&gt;&#39;K2&lt;/c&gt; respectively.
+
+ The functions in this cateogry provide a way for aggregating values in the
+ series at one of the levels. For example, given a series `input` indexed by
+ two-element tuple, you can calculate mean for different first-level values as
+ follows:
+
+     input |&amp;gt; applyLevel fst Stats.mean
+
+ Note that the `Stats` module provides helpers for typical statistical operations,
+ so the above could be written just as `input |&amp;gt; Stats.levelMean fst`.
+
+ Grouping, windowing and chunking
+ --------------------------------
+
+ This category includes functions that group data from a series in some way. Two key
+ concepts here are _window_ and _chunk_. Window refers to (overlapping) sliding windows
+ over the input series while chunk refers to non-overlapping blocks of the series.
+
+ The boundary behavior can be specified using the `Boundary` flags. The value
+ `Skip` means that boundaries (incomplete windows or chunks) should be skipped. The value
+ `AtBeginning` and `AtEnding` can be used to define at which side should the boundary be
+ returned (or skipped). For chunking, `AtBeginning ||| Skip` makes sense and it means that
+ the incomplete chunk at the beginning should be skipped (aligning the last chunk with the end).
+
+ The behavior may be specified in a number of ways (which is reflected in the name):
+  - `dist` - using an absolute distance between the keys
+  - `while` - using a condition on the first and last key
+  - `size` - by specifying the absolute size of the window/chunk
+
+ The functions ending with `Into` take a function to be applied to the window/chunk.
+ The functions `window`, `windowInto` and `chunk`, `chunkInto` are simplified versions
+ that take a size. There is also `pairwise` function for sliding window of size two.
+
+ Missing values
+ --------------
+
+ This group of functions provides a way of working with missing values in a series.
+ The `dropMissing` function drops all keys for which there are no values in the series.
+ The `withMissingFrom` function lets you copy missing values from another series.
+ The remaining functions provide different mechanism for filling the missing values.
+
+  * `fillMissingWith` fills missing values with a specified constant
+  * `fillMissingUsing` calls a specified function for every missing value
+  * `fillMissing` and variants propagates values from previous/later keys
+
+ Sorting and index manipulation
+ ------------------------------
+
+ A series that is sorted by keys allows a number of additional operations (such as lookup
+ using the `Lookp.ExactOrSmaller` lookup behavior). However, it is also possible to sort
+ series based on the values - although the functions for manipulation with series do not
+ guarantee that the order will be preserved.
+
+ To sort series by keys, use `sortByKey`. Other sorting functions let you sort the series
+ using a specified comparer function (`sortWith`), using a projection function (`sortBy`)
+ and using the default comparison (`sort`).
+
+ In addition, you can also replace the keys of a series with other keys using `indexWith`
+ or with integers using `indexOrdinally`. To pick and reorder series values using to match
+ a list of keys use `realign`.
+
+ Sampling, resampling and advanced lookup
+ ----------------------------------------
+
+ Given a (typically) time series sampling or resampling makes it possible to
+ get time series with representative values at lower or uniform frequency.
+ We use the following terminology:
+
+  - `lookup` and `sample` functions find values at specified key; if a key is not
+    available, they can look for value associated with the nearest smaller or
+    the nearest greater key.
+
+  - `resample` function aggregate values values into chunks based
+    on a specified collection of keys (e.g. explicitly provided times), or
+    based on some relation between keys (e.g. date times having the same date).
+
+  - `resampleUniform` is similar to resampling, but we specify keys by
+    providing functions that generate a uniform sequence of keys (e.g. days),
+    the operation also fills value for days that have no corresponding
+    observations in the input sequence.
+
+ Joining, merging and zipping
+ ----------------------------
+
+ Given two series, there are two ways to combine the values. If the keys in the series
+ are not overlapping (or you want to throw away values from one or the other series),
+ then you can use `merge` or `mergeUsing`. To merge more than 2 series efficiently, use
+ the `mergeAll` function, which has been optimized for large number of series.
+
+ If you want to align two series, you can use the _zipping_ operation. This aligns
+ two series based on their keys and gives you tuples of values. The default behavior
+ (`zip`) uses outer join and exact matching. For ordered series, you can specify
+ other forms of key lookups (e.g. find the greatest smaller key) using `zipAlign`.
+ functions ending with `Into` are generally easier to use as they call a specified
+ function to turn the tuple (of possibly missing values) into a new value.
+
+ For more complicated behaviors, it is often convenient to use joins on frames instead
+ of working with series. Create two frames with single columns and then use the join
+ operation. The result will be a frame with two columns (which is easier to use than
+ series of tuples).
+ &lt;/summary&gt;<br />&lt;category&gt;Frame and series operations&lt;/category&gt;</em><br /><br />--------------------<br />type Series =
+  static member ofNullables: values: Nullable&lt;&#39;a&gt; seq -&gt; Series&lt;int,&#39;a&gt; (requires default constructor and value type and &#39;a :&gt; ValueType)
+  static member ofObservations: observations: (&#39;a * &#39;b) seq -&gt; Series&lt;&#39;a,&#39;b&gt; (requires equality)
+  static member ofOptionalObservations: observations: (&#39;K * &#39;a option) seq -&gt; Series&lt;&#39;K,&#39;a&gt; (requires equality)
+  static member ofValues: values: &#39;a seq -&gt; Series&lt;int,&#39;a&gt;<br /><br />--------------------<br />type Series&lt;&#39;K,&#39;V (requires equality)&gt; =
+  interface ISeriesFormattable
+  interface IFsiFormattable
+  interface ISeries&lt;&#39;K&gt;
+  new: index: IIndex&lt;&#39;K&gt; * vector: IVector&lt;&#39;V&gt; * vectorBuilder: IVectorBuilder * indexBuilder: IIndexBuilder -&gt; Series&lt;&#39;K,&#39;V&gt; + 3 overloads
+  member After: lowerExclusive: &#39;K -&gt; Series&lt;&#39;K,&#39;V&gt;
+  member Aggregate: aggregation: Aggregation&lt;&#39;K&gt; * keySelector: Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,&#39;TNewKey&gt; * valueSelector: Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,OptionalValue&lt;&#39;R&gt;&gt; -&gt; Series&lt;&#39;TNewKey,&#39;R&gt; (requires equality) + 1 overload
+  member AsyncMaterialize: unit -&gt; Async&lt;Series&lt;&#39;K,&#39;V&gt;&gt;
+  member Before: upperExclusive: &#39;K -&gt; Series&lt;&#39;K,&#39;V&gt;
+  member Between: lowerInclusive: &#39;K * upperInclusive: &#39;K -&gt; Series&lt;&#39;K,&#39;V&gt;
+  member Compare: another: Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,Diff&lt;&#39;V&gt;&gt;
+  ...<br /><em>&lt;summary&gt;
+ The type &lt;c&gt;Series&amp;lt;K, V&amp;gt;&lt;/c&gt; represents a data series consisting of values `V` indexed by
+ keys `K`. The keys of a series may or may not be ordered
+ &lt;/summary&gt;<br />&lt;category&gt;Core frame and series types&lt;/category&gt;</em><br /><br />--------------------<br />new: pairs: Collections.Generic.KeyValuePair&lt;&#39;K,&#39;V&gt; seq -&gt; Series&lt;&#39;K,&#39;V&gt;<br />new: keys: &#39;K seq * values: &#39;V seq -&gt; Series&lt;&#39;K,&#39;V&gt;<br />new: keys: &#39;K array * values: &#39;V array -&gt; Series&lt;&#39;K,&#39;V&gt;<br />new: index: Indices.IIndex&lt;&#39;K&gt; * vector: IVector&lt;&#39;V&gt; * vectorBuilder: Vectors.IVectorBuilder * indexBuilder: Indices.IIndexBuilder -&gt; Series&lt;&#39;K,&#39;V&gt;</div>
+<div popover class="fsdocs-tip" id="fs36">val mapValues: f: (&#39;T -&gt; &#39;R) -&gt; series: Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;R&gt; (requires equality)<br /><em>&lt;summary&gt;
+ Returns a new series whose values are the results of applying the given function to
+ values of the original series. This function skips over missing values and call the
+ function with just values. It is also aliased using the `$` operator so you can write
+ `series $ func` for `series |&amp;gt; Series.mapValues func`.
+ &lt;/summary&gt;<br />&lt;category&gt;Series transformations&lt;/category&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs37">static member Stats.stdDev: frame: Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt; (requires equality and equality)<br />static member Stats.stdDev: series: Series&lt;&#39;K,&#39;V&gt; -&gt; float (requires equality)</div>
+<div popover class="fsdocs-tip" id="fs38">static member Stats.corr: series1: Series&lt;&#39;K,&#39;V1&gt; -&gt; series2: Series&lt;&#39;K,&#39;V2&gt; -&gt; float (requires equality)</div>
+<div popover class="fsdocs-tip" id="fs39">val sortBy: proj: (&#39;T -&gt; &#39;V) -&gt; series: Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt; (requires comparison and equality)<br /><em>&lt;summary&gt;
+ Returns a new series, containing the observations of the original series sorted by
+ values returned by the specified projection function.
+ Sorting by value reads the whole series and materializes a linear result, including
+ on virtual series. To keep a virtual series, use &lt;c&gt;Series.sortByKey&lt;/c&gt; when the
+ index is already ordered (a no-op).
+ &lt;/summary&gt;<br />&lt;param name=&quot;series&quot;&gt;An input series whose values are sorter&lt;/param&gt;<br />&lt;param name=&quot;proj&quot;&gt;A projection function that returns a value to be compared for each value contained in the original input series.&lt;/param&gt;<br />&lt;category&gt;Sorting and index manipulation&lt;/category&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs40">val v: float</div>
+<div popover class="fsdocs-tip" id="fs41">val take: count: int -&gt; series: Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt; (requires equality)<br /><em>&lt;summary&gt;
+ Returns a series that contains the specified number of keys from the original series.
+ &lt;/summary&gt;<br />&lt;param name=&quot;count&quot;&gt;Number of keys to take; must be smaller or equal to the original number of keys&lt;/param&gt;<br />&lt;param name=&quot;series&quot;&gt;Input series from which the keys are taken&lt;/param&gt;<br />&lt;category&gt;Series transformations&lt;/category&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs42">val ma20: Series&lt;DateTime,float&gt;</div>
+<div popover class="fsdocs-tip" id="fs43">static member Stats.movingMean: size: int -&gt; series: Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,float&gt; (requires equality)</div>
+<div popover class="fsdocs-tip" id="fs44">val aboveTrend: Series&lt;DateTime,float&gt;</div>
+<div popover class="fsdocs-tip" id="fs45">val dropMissing: series: Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt; (requires equality)<br /><em>&lt;summary&gt;
+ Drop missing values from the specified series. The returned series contains
+ only those keys for which there is a value available in the original one.
+ On a virtual series this scans once for present addresses, then keeps a
+ virtual sub-vector (it does not copy values into a linear array).
+ &lt;/summary&gt;<br />&lt;param name=&quot;series&quot;&gt;An input series to be filtered&lt;/param&gt;<br />&lt;example&gt;&lt;code&gt;
+ let s = series [ 1 =&amp;gt; 1.0; 2 =&amp;gt; Double.NaN ]
+ s |&amp;gt; Series.dropMissing
+ // val it : Series&amp;lt;int,float&amp;gt; = series [ 1 =&amp;gt; 1]
+ &lt;/code&gt;&lt;/example&gt;<br />&lt;category&gt;Missing values&lt;/category&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs46">val filterValues: f: (&#39;T -&gt; bool) -&gt; series: Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt; (requires equality)<br /><em>&lt;summary&gt;
+ Returns a new series containing only the elements for which the specified predicate
+ returns `true`. The function skips over missing values and calls the predicate with
+ just the value. See also `filterAll` and `filter` for more options.
+ &lt;/summary&gt;<br />&lt;category&gt;Series transformations&lt;/category&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs47">property Series.KeyCount: int with get<br /><em>&lt;summary&gt;
+ Returns the total number of keys in the specified series. This returns
+ the total length of the series, including keys for which there is no
+ value available.
+ &lt;/summary&gt;<br />&lt;category&gt;Series data&lt;/category&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs48">val drawdown: Series&lt;DateTime,float&gt;</div>
+<div popover class="fsdocs-tip" id="fs49">static member Stats.expandingMax: series: Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,float&gt; (requires equality)</div>
+<div popover class="fsdocs-tip" id="fs50">static member Stats.min: frame: Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt; (requires equality and equality)<br />static member Stats.min: series: Series&lt;&#39;K,&#39;V&gt; -&gt; float (requires equality)</div>
+<div popover class="fsdocs-tip" id="fs51">val monthly: Frame&lt;DateTime,string&gt;</div>
+<div popover class="fsdocs-tip" id="fs52">val mapCols: f: (&#39;C -&gt; ObjectSeries&lt;&#39;R&gt; -&gt; #ISeries&lt;&#39;b&gt;) -&gt; frame: Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;b,&#39;C&gt; (requires equality and equality and equality)<br /><em>&lt;summary&gt;
+ Builds a new data frame whose columns are the results of applying the specified
+ function on the columns of the input data frame. The function is called
+ with the column key and object series that represents the column data.
+ &lt;/summary&gt;<br />&lt;param name=&quot;frame&quot;&gt;Input data frame to be transformed&lt;/param&gt;<br />&lt;param name=&quot;f&quot;&gt;Function of two arguments that defines the column mapping&lt;/param&gt;<br />&lt;category&gt;Frame transformations&lt;/category&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs53">val s: ObjectSeries&lt;DateTime&gt;</div>
+<div popover class="fsdocs-tip" id="fs54">member ObjectSeries.As: unit -&gt; Series&lt;&#39;K,&#39;R&gt;</div>
+<div popover class="fsdocs-tip" id="fs55">Multiple items<br />val float: value: &#39;T -&gt; float (requires member op_Explicit)<br /><br />--------------------<br />type float = Double<br /><br />--------------------<br />type float&lt;&#39;Measure&gt; =
+  float</div>
+<div popover class="fsdocs-tip" id="fs56">val resampleEquiv: keyProj: (&#39;K1 -&gt; &#39;K2) -&gt; series: Series&lt;&#39;K1,&#39;V1&gt; -&gt; Series&lt;&#39;K2,Series&lt;&#39;K1,&#39;V1&gt;&gt; (requires equality and equality)<br /><em>&lt;summary&gt;
+ Resample the series based on equivalence class on the keys. A specified function
+ `keyProj` is used to project keys to another space and the observations for which the
+ projected keys are equivalent are grouped into chunks. The chunks are then returned
+ as nested series.
+ &lt;/summary&gt;<br />&lt;param name=&quot;series&quot;&gt;An input series to be resampled&lt;/param&gt;<br />&lt;param name=&quot;keyProj&quot;&gt;A function that transforms keys from original space to a new space (which is then used for grouping based on equivalence)&lt;/param&gt;<br />&lt;remarks&gt;
+ This function is similar to `Series.chunkBy`, with the exception that it transforms
+ keys to a new space.
+
+ This operation is only supported on ordered series. The method throws
+ `InvalidOperationException` when the series is not ordered. For unordered
+ series, similar functionality can be implemented using `Series.groupBy`.
+ &lt;/remarks&gt;<br />&lt;category&gt;Sampling, resampling and advanced lookup&lt;/category&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs57">val d: DateTime</div>
+<div popover class="fsdocs-tip" id="fs58">property DateTime.Year: int with get<br /><em>&lt;summary&gt;Gets the year component of the date represented by this instance.&lt;/summary&gt;<br />&lt;returns&gt;The year, between 1 and 9999.&lt;/returns&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs59">property DateTime.Month: int with get<br /><em>&lt;summary&gt;Gets the month component of the date represented by this instance.&lt;/summary&gt;<br />&lt;returns&gt;The month component, expressed as a value between 1 and 12.&lt;/returns&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs60">val lastValue: series: Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;V (requires equality)<br /><em>&lt;summary&gt;
+ Returns the last value of the series. This fails if the last value is missing.
+ &lt;/summary&gt;<br />&lt;category&gt;Accessing series data and lookup&lt;/category&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs61">type ISeries&lt;&#39;K (requires equality)&gt; =
+  abstract TryGetObject: &#39;K -&gt; OptionalValue&lt;obj&gt;
+  abstract Index: IIndex&lt;&#39;K&gt;
+  abstract Vector: IVector
+  abstract VectorBuilder: IVectorBuilder<br /><em>&lt;summary&gt;
+ Represents an untyped series with keys of type `K` and values of some unknown type
+ (This type should not generally be used directly, but it can be used when you need
+ to write code that works on a sequence of series of heterogeneous types).
+ &lt;/summary&gt;<br />&lt;category&gt;Core frame and series types&lt;/category&gt;</em></div>
+
+    </div>
+</main>
+<aside id="fsdocs-page-menu">
+    <p id="on-this-page">On this page</p>
+    <ul>
+  <li class="level-1">
+    <a href="#Tutorial-Analysing-stock-prices">
+      Tutorial: Analysing stock prices
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Load-one-file-per-ticker">
+      Load one file per ticker
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Combine-adjusted-closing-prices-into-one-frame">
+      Combine adjusted closing prices into one frame
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Slice-by-date">
+      Slice by date
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Daily-returns">
+      Daily returns
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Summary-statistics-volatility-and-correlation">
+      Summary statistics, volatility and correlation
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Best-days">
+      Best days
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Rolling-windows">
+      Rolling windows
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Downsample-to-monthly-data">
+      Downsample to monthly data
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Where-next">
+      Where next?
+    </a>
+  </li>
+</ul>
+</aside>
+<dialog>
+    <input type="search" placeholder="Search docs" />
+    <div class="results">
+        <ul></ul>
+        <p class="empty">Type something to start searching.</p>
+    </div>
+</dialog>
+<script type="module" src="/Deedle/content/fsdocs-tips.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-theme-toggle.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-details-toggle.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-theme.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-search.js"></script>
+<script type="module" src="/Deedle/content/fsdocs-copy-button.js"></script>
+
+</body>
+</html>
